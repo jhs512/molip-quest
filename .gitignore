@@ -1,0 +1,11 @@
+# Rust build output
+/target/
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+
+# OS files
+.DS_Store
+Thumbs.db
