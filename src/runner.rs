@@ -85,8 +85,11 @@ async fn execute_python(
         .kill_on_drop(true);
     if let Some(checker) = checker {
         std::fs::write(directory.path().join("checker.py"), checker).map_err(|e| e.to_string())?;
+        std::fs::write(directory.path().join("check_runner.py"),
+            "import runpy,sys,traceback\ntry:\n    runpy.run_path('checker.py',run_name='__main__')\nexcept AssertionError:\n    traceback.print_exc()\n    sys.exit(1)\nexcept SystemExit as e:\n    sys.exit(0 if e.code is None else e.code)\nexcept BaseException:\n    traceback.print_exc()\n    sys.exit(2)\n"
+        ).map_err(|e| e.to_string())?;
         command
-            .arg("checker.py")
+            .arg("check_runner.py")
             .arg(directory.path().join("main.py"));
     } else {
         command.arg("main.py");
@@ -130,6 +133,10 @@ async fn execute_python(
                     "output_limit"
                 } else if status.success() {
                     "finished"
+                } else if checker.is_some() && status.code() == Some(1) {
+                    "wrong_answer"
+                } else if checker.is_some() {
+                    "checker_error"
                 } else {
                     "runtime_error"
                 }

@@ -8,6 +8,51 @@ use serde_json::{json, Value};
 use std::collections::HashMap;
 use tower::ServiceExt;
 
+#[tokio::test]
+async fn provisioned_admin_can_publish_but_student_cannot_be_promoted_by_provisioning() {
+    let state = AppState::connect("sqlite::memory:").await.unwrap();
+    state
+        .provision_admin("admin@example.test", "admin-password-123")
+        .await
+        .unwrap();
+    let app = router(state.clone());
+    let (_, login) = request(
+        &app,
+        "/api/login",
+        json!({"email":"admin@example.test","password":"admin-password-123"}),
+        None,
+    )
+    .await;
+    assert_eq!(login["user"]["role"], "admin");
+    let course: Value =
+        serde_json::from_str(include_str!("../courses/getting-started.json")).unwrap();
+    assert_eq!(
+        request(&app, "/api/courses", course, login["token"].as_str())
+            .await
+            .0,
+        StatusCode::OK
+    );
+    request(
+        &app,
+        "/api/register",
+        json!({"email":"student@example.test","password":"student-password-123"}),
+        None,
+    )
+    .await;
+    assert!(state
+        .provision_admin("student@example.test", "another-password-123")
+        .await
+        .is_err());
+    let (_, login) = request(
+        &app,
+        "/api/login",
+        json!({"email":"student@example.test","password":"student-password-123"}),
+        None,
+    )
+    .await;
+    assert_eq!(login["user"]["role"], "student");
+}
+
 async fn request(
     app: &axum::Router,
     path: &str,

@@ -85,6 +85,19 @@ impl AppState {
     }
 
     pub async fn provision_instructor(&self, email: &str, password: &str) -> Result<(), ApiError> {
+        self.provision_staff(email, password, "instructor").await
+    }
+
+    pub async fn provision_admin(&self, email: &str, password: &str) -> Result<(), ApiError> {
+        self.provision_staff(email, password, "admin").await
+    }
+
+    async fn provision_staff(
+        &self,
+        email: &str,
+        password: &str,
+        role: &str,
+    ) -> Result<(), ApiError> {
         let credentials = Credentials {
             email: email.into(),
             password: password.into(),
@@ -102,14 +115,13 @@ impl AppState {
             ));
         }
         let hash = hash_password(credentials.password).await?;
-        sqlx::query(
-            "INSERT INTO users (id,email,password_hash,role) VALUES ($1,$2,$3,'instructor')",
-        )
-        .bind(identifier())
-        .bind(email)
-        .bind(hash)
-        .execute(&self.pool)
-        .await?;
+        sqlx::query("INSERT INTO users (id,email,password_hash,role) VALUES ($1,$2,$3,$4)")
+            .bind(identifier())
+            .bind(email)
+            .bind(hash)
+            .bind(role)
+            .execute(&self.pool)
+            .await?;
         Ok(())
     }
 }
@@ -430,11 +442,12 @@ async fn create_course(
         unit.revision = 1;
         unit.reset_completion = false;
     }
+    let mut tx = state.pool.begin().await?;
     let result = sqlx::query("INSERT INTO courses (id,author_id,document) VALUES ($1,$2,$3)")
         .bind(&course.id)
         .bind(user.id)
         .bind(serde_json::to_string(&course).unwrap())
-        .execute(&state.pool)
+        .execute(&mut *tx)
         .await;
     match result {
         Ok(_) => {
@@ -445,9 +458,10 @@ async fn create_course(
                 .bind(&course.id)
                 .bind(&unit.id)
                 .bind(unit.revision)
-                .execute(&state.pool)
+                .execute(&mut *tx)
                 .await?;
             }
+            tx.commit().await?;
             Ok(Json(json!({"id":course.id})))
         }
         Err(sqlx::Error::Database(error)) if error.is_unique_violation() => {

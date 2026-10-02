@@ -28,7 +28,7 @@ cargo build --bins
 ./scripts/start-demo.ps1 -Instructor
 ```
 
-데모 전용 계정은 `teacher@molip.local`, `student@molip.local`이며 비밀번호는 `MolipQuest-Demo-2026!`입니다. 실제 서비스에서 사용하지 마세요. DB와 로그는 무시되는 `target/demo` 안에 저장됩니다. 실행 파일은 빌드를 방해하지 않도록 `target/demo/bin`에 복사합니다. 새 빌드를 데모에 반영하려면 데모 프로세스를 종료하고 이 폴더의 실행 파일을 새 빌드로 교체하세요.
+데모 전용 계정은 `admin@molip.local`, `teacher@molip.local`, `student@molip.local`이며 비밀번호는 `MolipQuest-Demo-2026!`입니다. 실제 서비스에서 사용하지 마세요. DB와 로그는 무시되는 `target/demo` 안에 저장됩니다. 실행 파일은 빌드를 방해하지 않도록 `target/demo/bin`에 복사합니다. 새 빌드를 데모에 반영하려면 데모 프로세스를 종료하고 이 폴더의 실행 파일을 새 빌드로 교체하세요.
 
 ## 서버와 앱 별도 실행
 
@@ -64,7 +64,7 @@ AI 비용과 사용 한도는 사용자 계정에 따릅니다. 검사와 학생
 
 [courses/getting-started.json](courses/getting-started.json)에 코드 작성·빈칸·입출력·사용자 정의 검사 예제가 있습니다. 강사 또는 관리자가 수업 작성 화면에 JSON을 입력해 공개합니다. 다른 작성자의 수업은 수정하거나 복사할 수 없습니다.
 
-`tests`는 `input`·`expected` 배열이며 줄바꿈을 정규화하고 마지막 줄바꿈을 제외해 출력을 비교합니다. `blanks`는 `starter_code`의 `{{name}}` 자리만 편집합니다. `checker`는 학생 코드 파일 경로를 첫 번째 인자로 받는 Python 코드로, 종료 상태 0이 통과입니다. 본질적으로 바꾼 단원에 `reset_completion: true`를 지정하면 이전 완료가 무효화되고 제출은 보존됩니다.
+`tests`는 `input`·`expected` 배열이며 줄바꿈을 정규화하고 마지막 줄바꿈을 제외해 출력을 비교합니다. `blanks`는 `starter_code`의 `{{name}}` 자리만 편집합니다. `checker`는 학생 코드 파일 경로를 첫 번째 인자로 받는 Python 코드입니다. 종료 상태 0이 통과이고 AssertionError 또는 종료 상태 1은 오답, 다른 예외 또는 종료 상태는 검사 오류입니다. 본질적으로 바꾼 단원에 `reset_completion: true`를 지정하면 이전 완료가 무효화되고 제출은 보존됩니다.
 
 ## 검증 상태
 
@@ -84,3 +84,6 @@ Windows에서 빌드·창 실행과 실제 Claude Code 연결을 확인했습니
 - [도메인 용어](CONTEXT.md)
 - [구현 명세](.scratch/molip-quest/spec.md)
 - [구현 티켓](.scratch/molip-quest/issues)
+
+직접 학생 로그인을 하려면 ./scripts/start-demo.ps1 -Login을 실행합니다. 학생은 이미 클래스룸에 참여해 있으며 로그인하면 첫 문제로 들어갑니다. 관리자 화면은 -Admin으로 실행합니다. 서버 관리자 계정 최초 생성은 MOLIP_ADMIN_EMAIL과 MOLIP_ADMIN_PASSWORD를 사용합니다.
+

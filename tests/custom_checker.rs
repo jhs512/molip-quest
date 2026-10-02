@@ -12,10 +12,14 @@ async fn student_runs_author_checker_and_sees_pass_or_failure() {
             .unwrap()
             .passed
     );
-    assert!(
-        !check_unit(unit, "def add(a,b):\n    return a-b\n")
-            .await
-            .unwrap()
-            .passed
-    );
+    let failed = check_unit(unit, "def add(a,b):\n    return a-b\n")
+        .await
+        .unwrap();
+    assert!(!failed.passed);
+    assert_eq!(failed.cases[0].state, "wrong_answer");
+    let mut broken = unit.clone();
+    broken.checker = Some("this is not valid python !!!".into());
+    let error = check_unit(&broken, "").await.unwrap();
+    assert!(!error.passed);
+    assert_eq!(error.cases[0].state, "checker_error");
 }

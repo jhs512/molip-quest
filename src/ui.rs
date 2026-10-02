@@ -36,10 +36,16 @@ pub fn ClassDetails(
             let submissions = api
                 .get::<Vec<Value>>(&format!("/api/classrooms/{id}/submissions"))
                 .await?;
-            Ok::<_, String>((assigned, progress, submissions))
+            let students = if staff {
+                api.get::<Vec<Value>>(&format!("/api/classrooms/{id}/students"))
+                    .await?
+            } else {
+                Vec::new()
+            };
+            Ok::<_, String>((assigned, progress, submissions, students))
         }
     });
-    let (assigned, progress, submissions) = data
+    let (assigned, progress, submissions, students) = data
         .read()
         .as_ref()
         .and_then(|r| r.as_ref().ok())
@@ -57,6 +63,7 @@ pub fn ClassDetails(
         }button{class:"primary",onclick:{let api=api.clone();let id=classroom.clone();move |_|{let api=api.clone();let id=id.clone();async move{match api.post::<Value>(&format!("/api/classrooms/{id}/assign"),json!({"course_id":pick()})).await{Ok(_)=>{message.set("배정했습니다.".into());refresh+=1;},Err(e)=>message.set(e)}}}},"배정하기"}p{role:"status","{message}"}}}
         h2{"배정된 수업"}if assigned.is_empty(){p{class:"muted","아직 배정된 수업이 없습니다."}}
         for course in assigned{button{class:"course-open",onclick:{let id=course["id"].as_str().unwrap_or_default().to_string();move |_|oncourse.call(id.clone())},{format!("{} · {} 단원 →",course["title"].as_str().unwrap_or_default(),course["total_units"])}}}
+        if staff {h2{"참여 학생 ({students.len()})"}for student in students {p{{student["email"].as_str().unwrap_or_default()}}}}
         h2{if staff{"학생별 진도"}else{"나의 진도"}}
         for row in progress{div{class:"card student-row",span{{format!("{} · {}",row["email"].as_str().unwrap_or_default(),row["course_title"].as_str().unwrap_or_default())}}strong{{format!("{} / {} 단원",row["completed_units"],row["total_units"])}}}}
         h2{"제출 기록"}p{class:"muted","학생 컴퓨터에서 실행한 검사 결과입니다. 최근 제출 100개를 표시합니다."}
@@ -108,17 +115,39 @@ pub fn Learning(
     let mut refresh = use_signal(|| 0u64);
     let fetch_api = api.clone();
     let fetch_id = course_id.clone();
+    let fetch_classroom = classroom.clone();
     let course = use_resource(move || {
         let _ = refresh();
         let api = fetch_api.clone();
         let id = fetch_id.clone();
-        async move { api.get::<Course>(&format!("/api/courses/{id}")).await }
+        let classroom = fetch_classroom.clone();
+        async move {
+            let course = api.get::<Course>(&format!("/api/courses/{id}")).await?;
+            let progress = api
+                .get::<Vec<Value>>(&format!("/api/classrooms/{classroom}/progress"))
+                .await?;
+            Ok::<_, String>((course, progress))
+        }
     });
     let result = course.read().as_ref().cloned();
     match result {
         None => rsx! {p{"수업을 불러오는 중입니다."}},
         Some(Err(e)) => rsx! {p{class:"error","{e}"}},
-        Some(Ok(course)) => {
+        Some(Ok((course, progress))) => {
+            let completed: Vec<String> = progress
+                .iter()
+                .find(|p| {
+                    p["student_id"].as_str() == Some(student_id.as_str())
+                        && p["course_id"].as_str() == Some(course_id.as_str())
+                })
+                .and_then(|p| p["units"].as_array())
+                .map(|units| {
+                    units
+                        .iter()
+                        .filter_map(|u| u.as_str().map(str::to_string))
+                        .collect()
+                })
+                .unwrap_or_default();
             let active = course
                 .chapters
                 .iter()
@@ -126,10 +155,10 @@ pub fn Learning(
                 .find(|u| u.id == selected())
                 .unwrap_or(&course.chapters[0].units[0])
                 .clone();
-            rsx! {h1{"{course.title}"}button{onclick:move |_|refresh+=1,"최신 수업 불러오기"}
+            rsx! {h1{"{course.title}"}p{{format!("완료 {} / {} 단원",completed.len(),course.total_units())}}button{onclick:move |_|refresh+=1,"최신 수업 불러오기"}
                 div{class:"learning",nav{class:"card curriculum",h2{"수업 목차"}
-                    for chapter in &course.chapters{h3{"{chapter.title}"}for unit in &chapter.units{button{class:"unit",onclick:{let id=unit.id.clone();move |_|selected.set(id.clone())},"{unit.title}"}}}
-                }for active in [active]{UnitWorkspace{key:"{active.id}-{active.revision}",api:api.clone(),classroom:classroom.clone(),course_id:course_id.clone(),student_id:student_id.clone(),unit:active,can_submit,oncompleted}}}
+                    for chapter in &course.chapters{h3{{format!("{} · {}/{}",chapter.title,chapter.units.iter().filter(|u| completed.contains(&u.id)).count(),chapter.units.len())}}for unit in &chapter.units{button{class:"unit",onclick:{let id=unit.id.clone();move |_|selected.set(id.clone())},{format!("{} {}",if completed.contains(&unit.id) {"✓"}else{"○"},unit.title)}}}}
+                }for active in [active]{UnitWorkspace{key:"{active.id}-{active.revision}",api:api.clone(),classroom:classroom.clone(),course_id:course_id.clone(),student_id:student_id.clone(),unit:active,can_submit,oncompleted:move |_|{refresh+=1;oncompleted.call(());}}}}
             }
         }
     }
@@ -168,21 +197,22 @@ fn UnitWorkspace(
         if unit.blanks.is_empty(){textarea{class:"code-editor",spellcheck:false,value:code(),oninput:{let key=key.clone();move|e|{code.set(e.value());if let Err(error)=drafts::save(&key,&code(),&answers()){message.set(error)}}}}}
         else{pre{"{unit.starter_code}"}for blank in &unit.blanks{label{"{blank}" input{value:answers.read().get(blank).cloned().unwrap_or_default(),oninput:{let blank=blank.clone();let unit=unit.clone();let key=key.clone();move|e|{answers.write().insert(blank.clone(),e.value());if let Ok(assembled)=assemble(&unit,&answers()){code.set(assembled);if let Err(error)=drafts::save(&key,&code(),&answers()){message.set(error)}}}}}}}}
         label{"실행 입력" textarea{value:input(),oninput:move|e|input.set(e.value())}}
-        div{class:"actions",button{disabled:busy(),onclick:move |_|async move{busy.set(true);match run_python(&code(),&input()).await{Ok(result)=>output.set(format!("{}\n{}\n상태: {}",result.stdout,result.stderr,result.state)),Err(e)=>message.set(e)}busy.set(false);},"실행"}
+        div{class:"actions",button{disabled:busy(),onclick:{let api=api.clone();move |_|{let api=api.clone();async move{busy.set(true);if let Err(e)=api.get::<Value>("/api/me").await{message.set(e);busy.set(false);return;}match run_python(&code(),&input()).await{Ok(result)=>output.set(format!("{}\n{}\n상태: {}",result.stdout,result.stderr,result.state)),Err(e)=>message.set(e)}busy.set(false);}}},"실행"}
             if can_submit{button{class:"primary",disabled:busy(),onclick:{let api=api.clone();let unit=unit.clone();let classroom=classroom.clone();let course_id=course_id.clone();move |_|{let api=api.clone();let unit=unit.clone();let classroom=classroom.clone();let course_id=course_id.clone();async move{
-                busy.set(true);message.set(String::new());let source=code();let blank_answers=answers();
+                busy.set(true);message.set(String::new());if let Err(e)=api.get::<Value>("/api/me").await{message.set(e);busy.set(false);return;}let source=code();let blank_answers=answers();
                 if !unit.blanks.is_empty()&&assemble(&unit,&blank_answers).as_deref()!=Ok(source.as_str()){message.set("지정된 빈칸을 모두 채워주세요.".into());busy.set(false);return;}
                 match check_unit(&unit,&source).await{Err(e)=>message.set(e),Ok(report)=>{output.set(serde_json::to_string_pretty(&report).unwrap());let passed=report.passed;
                     match api.post::<Value>("/api/submissions",json!({"id":uuid::Uuid::new_v4().to_string(),"classroom_id":classroom,"course_id":course_id,"unit_id":unit.id,"revision":unit.revision,"code":source,"answers":blank_answers,"report":report})).await{Ok(_)=>{message.set(if passed{"통과했습니다. 제출과 완료 기록을 서버에 저장했습니다."}else{"검사를 통과하지 못했습니다. 제출 기록은 저장했습니다."}.into());oncompleted.call(());},Err(e)=>message.set(e)}
                 }}busy.set(false);
             }}},"테스트 · 제출"}}
         }p{class:"error",role:"status","{message}"}pre{class:"output","{output}"}
-        AiPanel{unit,code,answers,input,output,busy,draft_key:key}
+        AiPanel{api:api.clone(),unit,code,answers,input,output,busy,draft_key:key}
     }}
 }
 
 #[component]
 fn AiPanel(
+    api: Api,
     unit: Unit,
     mut code: Signal<String>,
     mut answers: Signal<HashMap<String, String>>,
@@ -201,8 +231,8 @@ fn AiPanel(
         label{"연결 키 (필요한 경우)" input{r#type:"password",value:connection.read().key.clone(),oninput:move|e|connection.write().key=e.value()}}
     }textarea{placeholder:"AI에게 질문하거나 수정할 내용을 입력하세요",value:question(),oninput:move|e|question.set(e.value())}
         div{class:"actions",
-            button{disabled:busy(),onclick:{let unit=unit.clone();move |_|{let unit=unit.clone();async move{busy.set(true);match connection().ask(&unit,&code(),&question(),false).await{Ok(answer)=>reply.set(answer.message),Err(e)=>reply.set(e)}busy.set(false);}}},"설명 · 힌트"}
-            button{disabled:busy(),onclick:{let unit=unit.clone();let key=draft_key.clone();move |_|{let unit=unit.clone();let key=key.clone();async move{busy.set(true);
+            button{disabled:busy(),onclick:{let api=api.clone();let unit=unit.clone();move |_|{let api=api.clone();let unit=unit.clone();async move{busy.set(true);if let Err(e)=api.get::<Value>("/api/me").await{reply.set(e);busy.set(false);return;}match connection().ask(&unit,&code(),&question(),false).await{Ok(answer)=>reply.set(answer.message),Err(e)=>reply.set(e)}busy.set(false);}}},"설명 · 힌트"}
+            button{disabled:busy(),onclick:{let api=api.clone();let unit=unit.clone();let key=draft_key.clone();move |_|{let api=api.clone();let unit=unit.clone();let key=key.clone();async move{busy.set(true);if let Err(e)=api.get::<Value>("/api/me").await{reply.set(e);busy.set(false);return;}
                 match connection().ask(&unit,&code(),&question(),true).await{Err(e)=>reply.set(e),Ok(answer)=>{reply.set(answer.message);if let Some(source)=answer.code{code.set(source.clone());if !unit.blanks.is_empty(){answers.set(answer.answers);}if let Err(e)=drafts::save(&key,&source,&answers()){reply.set(e);}match run_python(&source,&input()).await{Ok(result)=>output.set(format!("{}\n{}\n상태: {}",result.stdout,result.stderr,result.state)),Err(e)=>output.set(e)}}}}busy.set(false);
             }}},"AI 수정 · 실행"}
         }p{class:"content","{reply}"}

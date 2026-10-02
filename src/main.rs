@@ -5,7 +5,12 @@ use serde_json::{json, Value};
 use ui::{ClassDetails, CourseAuthor, Learning};
 
 fn main() {
-    dioxus::launch(App);
+    dioxus::LaunchBuilder::new()
+        .with_cfg(
+            dioxus::desktop::Config::new()
+                .with_window(dioxus::desktop::WindowBuilder::new().with_title("몰입 퀘스트")),
+        )
+        .launch(App);
 }
 #[component]
 fn App() -> Element {

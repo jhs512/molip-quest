@@ -13,3 +13,7 @@
 - [ ] 환경·자격 증명·배포 준비가 없는 경우 확인되지 않은 항목을 통과로 보고하지 않는다.
 
 
+
+## Comments
+
+Windows 개발 빌드와 실제 창 실행, 로컬 Python 및 Claude Code 연결을 확인했습니다. 설치 패키지, macOS 검증, 실제 Supabase PostgreSQL 배포 검증은 남아 있습니다. 완료로 처리하지 않습니다.

@@ -1,4 +1,4 @@
-param([switch]$Instructor)
+param([switch]$Instructor, [switch]$Admin, [switch]$Login)
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $demoRoot = Join-Path $projectRoot 'target/demo'
@@ -17,7 +17,7 @@ function Invoke-DemoApi($Method, $Path, $Body, $Token) {
     if ($Token) { $request.Headers = @{ Authorization = "Bearer $Token" } }
     Invoke-RestMethod @request
 }
-$environmentNames = @('DATABASE_URL','MOLIP_INSTRUCTOR_EMAIL','MOLIP_INSTRUCTOR_PASSWORD','MOLIP_SERVER_BIND','MOLIP_SERVER_URL','MOLIP_DEMO_EMAIL','MOLIP_DEMO_PASSWORD','MOLIP_DEMO_CLASSROOM','MOLIP_DEMO_COURSE')
+$environmentNames = @('DATABASE_URL','MOLIP_INSTRUCTOR_EMAIL','MOLIP_INSTRUCTOR_PASSWORD','MOLIP_ADMIN_EMAIL','MOLIP_ADMIN_PASSWORD','MOLIP_SERVER_BIND','MOLIP_SERVER_URL','MOLIP_DEMO_EMAIL','MOLIP_DEMO_PASSWORD','MOLIP_DEMO_CLASSROOM','MOLIP_DEMO_COURSE')
 $savedEnvironment = @{}
 foreach ($name in $environmentNames) { $savedEnvironment[$name] = [Environment]::GetEnvironmentVariable($name, 'Process') }
 try {
@@ -26,6 +26,8 @@ try {
         $env:DATABASE_URL = 'sqlite://server.sqlite3?mode=rwc'
         $env:MOLIP_INSTRUCTOR_EMAIL = 'teacher@molip.local'
         $env:MOLIP_INSTRUCTOR_PASSWORD = $demoPassword
+        $env:MOLIP_ADMIN_EMAIL = 'admin@molip.local'
+        $env:MOLIP_ADMIN_PASSWORD = $demoPassword
         $env:MOLIP_SERVER_BIND = '127.0.0.1:3010'
         $server = Start-Process -FilePath (Join-Path $demoBin 'molip-server.exe') -WorkingDirectory $demoRoot -WindowStyle Hidden -RedirectStandardOutput (Join-Path $demoRoot 'server.log') -RedirectStandardError (Join-Path $demoRoot 'server-error.log') -PassThru
         $server.Id | Set-Content (Join-Path $demoRoot 'server.pid')
@@ -42,20 +44,24 @@ try {
     $classroom = Invoke-DemoApi GET '/api/classrooms' $null $teacher.token | ForEach-Object { $_ } | Where-Object { $_.id } | Select-Object -First 1
     if (!$classroom) { $classroom = Invoke-DemoApi POST '/api/classrooms' @{title='Python 첫 걸음'} $teacher.token }
     Invoke-DemoApi POST "/api/classrooms/$($classroom.id)/assign" @{course_id=$course.id} $teacher.token | Out-Null
-    if (!$Instructor) {
+    if (!$Instructor -and !$Admin) {
         try { Invoke-DemoApi POST '/api/register' @{email='student@molip.local';password=$demoPassword} $null | Out-Null }
         catch { if ([int]$_.Exception.Response.StatusCode -ne 409) { throw } }
         $student = Invoke-DemoApi POST '/api/login' @{email='student@molip.local';password=$demoPassword} $null
         Invoke-DemoApi POST '/api/join' @{invite=$classroom.invite} $student.token | Out-Null
     }
     $env:MOLIP_SERVER_URL = $baseUrl
-    $env:MOLIP_DEMO_EMAIL = if ($Instructor) {'teacher@molip.local'} else {'student@molip.local'}
+    $env:MOLIP_DEMO_EMAIL = if ($Admin) {'admin@molip.local'} elseif ($Instructor) {'teacher@molip.local'} else {'student@molip.local'}
     $env:MOLIP_DEMO_PASSWORD = $demoPassword
-    $env:MOLIP_DEMO_CLASSROOM = $classroom.id
-    $env:MOLIP_DEMO_COURSE = if ($Instructor) {''} else {$course.id}
+    if ($Login) {
+        Remove-Item Env:MOLIP_DEMO_EMAIL -ErrorAction SilentlyContinue
+        Remove-Item Env:MOLIP_DEMO_PASSWORD -ErrorAction SilentlyContinue
+    }
+    $env:MOLIP_DEMO_CLASSROOM = if ($Admin) {''} else {$classroom.id}
+    $env:MOLIP_DEMO_COURSE = if ($Instructor -or $Admin) {''} else {$course.id}
     $app = Start-Process -FilePath (Join-Path $demoBin 'molip-quest.exe') -WorkingDirectory $projectRoot -RedirectStandardOutput (Join-Path $demoRoot 'app.log') -RedirectStandardError (Join-Path $demoRoot 'app-error.log') -PassThru
     $app.Id | Set-Content (Join-Path $demoRoot 'app.pid')
-    Write-Output "Demo app launched. Process: $($app.Id). Mode: $(if ($Instructor) {'instructor'} else {'student'})."
+    Write-Output "Demo app launched. Process: $($app.Id). Mode: $(if ($Admin) {'admin'} elseif ($Instructor) {'instructor'} else {'student'})."
 } finally {
     foreach ($name in $environmentNames) { [Environment]::SetEnvironmentVariable($name, $savedEnvironment[$name], 'Process') }
 }
