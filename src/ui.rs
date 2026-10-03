@@ -286,6 +286,9 @@ fn ActivityView(
         ActivityKind::Quiz { questions } => {
             rsx! {QuizView {course_id,unit:progress,questions,nav_prev,nav_next,onnavigate,oncompleted}}
         }
+        ActivityKind::Slides { markdown } => rsx! {
+            SlidesView {course_id,unit:progress,title:activity.title.clone(),markdown,nav_prev,nav_next,onnavigate,oncompleted}
+        },
     }
 }
 
@@ -414,6 +417,65 @@ fn DataViewer(path: String, onclose: EventHandler<()>) -> Element {
                     }
                 },
             }
+        }
+    } }
+}
+
+/// A slide deck mission: Marp renders the Markdown (assets/slides/slides.js); reaching the
+/// last slide or pressing the button records the mission as finished.
+#[component]
+fn SlidesView(
+    course_id: String,
+    unit: Unit,
+    title: String,
+    markdown: String,
+    nav_prev: bool,
+    nav_next: bool,
+    onnavigate: EventHandler<i32>,
+    oncompleted: EventHandler<bool>,
+) -> Element {
+    let mut done = use_signal(|| {
+        molip_quest::learning_store::LearningStore::user_store()
+            .and_then(|store| {
+                store.completed_items(&Course {
+                    id: course_id.clone(),
+                    title: String::new(),
+                    description: String::new(),
+                    chapters: vec![molip_quest::Chapter {
+                        id: "unit".into(),
+                        title: String::new(),
+                        units: vec![unit.clone()],
+                    }],
+                })
+            })
+            .map(|items| items.contains(&unit.id))
+            .unwrap_or(false)
+    });
+    let mut message = use_signal(String::new);
+    let finish = {
+        let course_id = course_id.clone();
+        let unit = unit.clone();
+        move || match molip_quest::learning_store::LearningStore::user_store()
+            .and_then(|mut store| store.mark_viewed(&course_id, &unit))
+        {
+            Ok(()) => {
+                done.set(true);
+                oncompleted.call(true);
+            }
+            Err(e) => message.set(e),
+        }
+    };
+    rsx! { article { class:"reading-mission slides-mission",
+        span { class:"badge", "슬라이드" } h2 { "{title}" }
+        p { class:"slides-help", "← → 키나 아래 버튼으로 넘기고, 수업 때는 전체 화면으로 띄우세요. 마지막 장까지 보면 미션이 완료됩니다." }
+        div { class:"slides-host", "data-marp-source": markdown.clone() }
+        // The slide script clicks this when the last slide is reached.
+        button { class:"slides-finish", hidden: true, "aria-hidden": "true", tabindex: "-1", onclick: { let mut finish = finish.clone(); move |_| if !done() { finish(); } } }
+        p { class:"execution-status", role:"status", "{message}" }
+        if done() { p { class:"clear-banner", role:"status", "슬라이드를 끝까지 봤습니다. 미션 완료." } }
+        div { class:"quiz-actions",
+            button { class:"primary", disabled: done(), onclick: { let mut finish = finish.clone(); move |_| finish() }, "다 봤어요 · 미션 완료" }
+            MissionNav {nav_prev,nav_next,onnavigate}
         }
     } }
 }
@@ -599,6 +661,132 @@ fn PromptGuide(unit: Unit, code: String, onclose: EventHandler<()>) -> Element {
                     }
                 }}, "기계 버전 복사" }
                 pre { class:"prompt-guide-source", "{prompt}" }
+            }
+        }
+    } }
+}
+
+/// One-page overviews reachable from the classroom home: every deck, every comic, every
+/// interactive picture, or every concept text of the course.
+#[derive(Clone, Copy, PartialEq, Debug)]
+pub enum GalleryKind {
+    Slides,
+    Comics,
+    Interactive,
+    Concepts,
+}
+
+impl GalleryKind {
+    pub const ALL: [GalleryKind; 4] = [
+        GalleryKind::Slides,
+        GalleryKind::Comics,
+        GalleryKind::Interactive,
+        GalleryKind::Concepts,
+    ];
+    pub fn label(self) -> &'static str {
+        match self {
+            GalleryKind::Slides => "PPT 모아보기",
+            GalleryKind::Comics => "만화 모아보기",
+            GalleryKind::Interactive => "발전적 시각화 모아보기",
+            GalleryKind::Concepts => "개념 모아보기",
+        }
+    }
+    fn blurb(self) -> &'static str {
+        match self {
+            GalleryKind::Slides => "수업에서 띄우는 슬라이드 전부를 한 페이지에 펼쳤습니다. 장을 누르면 전체 화면으로 커집니다.",
+            GalleryKind::Comics => "개념, 문제, 슬라이드에 들어 있는 만화 전부입니다. 더블 클릭하면 읽어 줍니다.",
+            GalleryKind::Interactive => "한 단계씩 쌓이는 시각화 전부입니다. 다음 단계 버튼과 슬라이더를 직접 움직여 보세요.",
+            GalleryKind::Concepts => "문제와 퀴즈를 뺀 개념 설명 전부입니다. 개념만 빠르게 훑고 싶을 때 쓰세요.",
+        }
+    }
+}
+
+struct GalleryItem {
+    location: String,
+    title: String,
+    markdown: String,
+    deck: bool,
+}
+
+fn gallery_items(course: &Course, kind: GalleryKind) -> Vec<GalleryItem> {
+    let mut items = Vec::new();
+    for chapter in &course.chapters {
+        for unit in &chapter.units {
+            for activity in &unit.activities {
+                let location = format!("{} · {}", chapter.title, unit.title);
+                match kind {
+                    GalleryKind::Slides => {
+                        if let ActivityKind::Slides { markdown } = &activity.kind {
+                            items.push(GalleryItem {
+                                location,
+                                title: activity.title.clone(),
+                                markdown: markdown.clone(),
+                                deck: true,
+                            });
+                        }
+                    }
+                    GalleryKind::Concepts => {
+                        if let ActivityKind::Concept { body, .. } = &activity.kind {
+                            items.push(GalleryItem {
+                                location,
+                                title: activity.title.clone(),
+                                markdown: body.clone(),
+                                deck: false,
+                            });
+                        }
+                    }
+                    GalleryKind::Comics | GalleryKind::Interactive => {
+                        let lang = if kind == GalleryKind::Comics {
+                            "comic-gen"
+                        } else {
+                            "interactive"
+                        };
+                        let texts: Vec<&str> = match &activity.kind {
+                            ActivityKind::Concept { body, check } => {
+                                vec![body, &check.prompt, &check.explanation]
+                            }
+                            ActivityKind::Coding { problem } => vec![&problem.content],
+                            ActivityKind::Quiz { questions } => questions
+                                .iter()
+                                .flat_map(|q| [q.prompt.as_str(), q.explanation.as_str()])
+                                .collect(),
+                            ActivityKind::Slides { markdown } => vec![markdown],
+                        };
+                        for block in texts
+                            .iter()
+                            .flat_map(|text| molip_quest::curriculum::fenced_blocks(text, lang))
+                        {
+                            items.push(GalleryItem {
+                                location: location.clone(),
+                                title: format!("{} · {}", activity.label(), activity.title),
+                                markdown: format!("```{lang}\n{block}\n```"),
+                                deck: false,
+                            });
+                        }
+                    }
+                }
+            }
+        }
+    }
+    items
+}
+
+#[component]
+pub fn Gallery(course: Course, kind: GalleryKind) -> Element {
+    let items = gallery_items(&course, kind);
+    rsx! { article { class:"reading-mission gallery",
+        span { class:"badge", {kind.label()} } h2 { {kind.label()} }
+        p { class:"slides-help", {kind.blurb()} }
+        p { class:"gallery-count", {format!("모두 {}개", items.len())} }
+        for (n, item) in items.into_iter().enumerate() {
+            section { class:"gallery-item", key:"{kind:?}-{n}",
+                p { class:"gallery-location", "{item.location}" }
+                h3 { "{item.title}" }
+                if item.deck {
+                    div { class:"slides-host slides-all", "data-marp-source": item.markdown.clone(), "data-marp-all": "true" }
+                } else {
+                    Markdown { text: item.markdown.clone() }
+                }
             }
         }
     } }

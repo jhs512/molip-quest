@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "dependencies": {
+    "@marp-team/marp-core": "^4.4.0",
+    "esbuild": "^0.28.2"
+  }
+}

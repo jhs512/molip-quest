@@ -81,6 +81,11 @@ def coding(id, title, goal, hint, starter, solution, check=None, tests=None, int
     return dict(id=id, title=title, kind="coding", problem=problem)
 
 
+def slides(id, title, markdown):
+    """A Marp deck (Markdown with `---` slide breaks) the instructor presents in class."""
+    return dict(id=id, title=title, kind="slides", markdown=text(markdown))
+
+
 def challenge(id, title, **kwargs):
     """A chapter capstone: a coding problem that needs everything the chapter taught."""
     activity = coding(id, '★ 도전 과제 · ' + title, **kwargs)

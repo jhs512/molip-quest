@@ -2,6 +2,8 @@
 import collections
 import re
 
+NL = chr(10)
+
 # Tooling and trivia that students never touch in this course.
 FORBIDDEN = ["uv", "Anaconda", "Jupyter", "Selenium", "yfinance", "FinanceDataReader", "폰트", "891행", "번째 보기"]
 FENCED = re.compile(r"```.*?```", re.S)
@@ -29,6 +31,8 @@ def _texts(activity):
         yield "check", activity["check"]["prompt"] + "\n" + activity["check"]["explanation"]
     elif activity["kind"] == "coding":
         yield "content", activity["problem"]["content"]
+    elif activity["kind"] == "slides":
+        yield "markdown", activity["markdown"]
     else:
         for q in activity["questions"]:
             yield q["id"], q["prompt"] + "\n" + q["explanation"] + "\n" + "\n".join(q.get("options", []))
@@ -49,10 +53,12 @@ def run(chapters):
                     for word in FORBIDDEN:
                         if re.search(rf"(?<![A-Za-z]){re.escape(word)}(?![A-Za-z])", value):
                             problems.append(f"{where} {label}: 수업 밖 용어 {word!r}")
+                if activity["kind"] == "slides" and activity["markdown"].count(NL + "---" + NL) < 2:
+                    problems.append(f"{where}: 슬라이드는 3장 이상이어야 합니다")
                 if activity["kind"] == "concept":
                     paragraphs = [p for p in activity["body"].split("\n\n") if p.strip()]
-                    if not 2 <= len(paragraphs) <= 8:
-                        problems.append(f"{where}: 개념 본문은 2~8문단이어야 합니다 (현재 {len(paragraphs)})")
+                    if not 2 <= len(paragraphs) <= 10:
+                        problems.append(f"{where}: 개념 본문은 2~10문단이어야 합니다 (현재 {len(paragraphs)})")
                     if "```" not in activity["body"]:
                         problems.append(f"{where}: 개념에 코드 예시 블록이 없습니다")
                 if activity["kind"] == "quiz":

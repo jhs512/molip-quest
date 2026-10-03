@@ -88,6 +88,16 @@ impl LearningStore {
         }
         tx.commit().map_err(|e| e.to_string())
     }
+    /// Record a mission the student finished by reading it to the end (slide decks).
+    pub fn mark_viewed(&mut self, course: &str, unit: &Unit) -> Result<(), String> {
+        self.0
+            .execute(
+                "INSERT INTO completed VALUES (?1,?2,?3) ON CONFLICT(course,unit) DO UPDATE SET revision=excluded.revision",
+                params![course, unit.id, unit.revision],
+            )
+            .map(|_| ())
+            .map_err(|e| e.to_string())
+    }
     /// Forget every attempt and completion for one course so the student starts over.
     pub fn reset(&mut self, course: &str) -> Result<(), String> {
         let tx = self.0.transaction().map_err(|e| e.to_string())?;

@@ -19,9 +19,20 @@ pub struct Activity {
 #[derive(Clone, Deserialize, Serialize, PartialEq)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum ActivityKind {
-    Concept { body: String, check: Question },
-    Coding { problem: Unit },
-    Quiz { questions: Vec<Question> },
+    Concept {
+        body: String,
+        check: Question,
+    },
+    Coding {
+        problem: Unit,
+    },
+    Quiz {
+        questions: Vec<Question>,
+    },
+    /// A Marp slide deck the instructor presents; students finish it by reading to the end.
+    Slides {
+        markdown: String,
+    },
 }
 
 #[derive(Clone, Deserialize, Serialize, PartialEq)]
@@ -45,6 +56,30 @@ pub enum QuestionKind {
     },
 }
 
+/// The bodies of every ```lang fenced block in a Markdown text, in order.
+pub fn fenced_blocks(text: &str, lang: &str) -> Vec<String> {
+    let mut blocks = Vec::new();
+    let mut current: Option<String> = None;
+    for line in text.lines() {
+        let trimmed = line.trim_start();
+        if let Some(block) = current.as_mut() {
+            if trimmed.starts_with("```") {
+                blocks.push(block.trim_end().to_string());
+                current = None;
+            } else {
+                block.push_str(line);
+                block.push('\n');
+            }
+        } else if trimmed
+            .strip_prefix("```")
+            .is_some_and(|rest| rest.trim() == lang)
+        {
+            current = Some(String::new());
+        }
+    }
+    blocks
+}
+
 impl Activity {
     pub fn label(&self) -> &'static str {
         match self.kind {
@@ -52,6 +87,7 @@ impl Activity {
             ActivityKind::Coding { .. } if self.challenge => "도전 과제",
             ActivityKind::Coding { .. } => "코딩 미션",
             ActivityKind::Quiz { .. } => "퀴즈",
+            ActivityKind::Slides { .. } => "슬라이드",
         }
     }
     pub fn progress_unit(&self, parent: &Unit) -> Unit {
@@ -258,6 +294,11 @@ pub fn validate(course: &Course) -> Result<(), String> {
             match &activity.kind {
                 ActivityKind::Concept { body, .. } if body.trim().is_empty() => {
                     return Err("개념 설명이 필요합니다.".into())
+                }
+                ActivityKind::Slides { markdown } => {
+                    if markdown.trim().is_empty() {
+                        return Err("슬라이드 내용이 필요합니다.".into());
+                    }
                 }
                 ActivityKind::Concept { check, .. } => {
                     if !matches!(check.kind, QuestionKind::ShortAnswer { .. }) {

@@ -3,6 +3,7 @@ import importlib
 
 from kpc_course.prompts import PROMPTS
 from kpc_course.challenges import CHALLENGES
+from kpc_course.decks import DECK_PLACEMENTS
 
 OUTLINE = [
     ("python", "1. 파이썬 개발 환경과 기본 문법 이해", ["d1_p1_environment", "d1_p2_structures", "d1_p3_control"]),
@@ -21,6 +22,10 @@ def build():
         units = [importlib.import_module(f"kpc_course.{name}").UNIT for name in modules]
         # The chapter ends with a ★ 도전 과제 that needs everything the chapter taught.
         units[-1]["activities"].append(CHALLENGES[chapter_id])
+        # Instructor decks sit where the instructor presents them.
+        for deck_chapter, unit_index, position, deck in DECK_PLACEMENTS:
+            if deck_chapter == chapter_id:
+                units[unit_index]["activities"].insert(position, deck)
         for unit in units:
             for activity in unit["activities"]:
                 if activity["kind"] == "coding":

@@ -49,7 +49,7 @@ UNIT = unit('classifiers', '2일차 · 6교시 — 세 분류 모델과 기준 �
                 내용: |-
                   팀장님 방법이 기준 모델이에요.
                   그걸 먼저 재고 비교할게요.
-              - {화자: 팀장, 상대: 민지, 내용: "기준을 못 넘으면 안 쓰는 걸로."}
+              - {화자: 팀장, 상대: 민지, 내용: "제 방법보다 못 맞히면 안 쓰는 걸로 하죠."}
         ```
 
         ```python
@@ -116,8 +116,8 @@ UNIT = unit('classifiers', '2일차 · 6교시 — 세 분류 모델과 기준 �
               - 화자: 강사
                 상대: 모델
                 내용: |-
-                  질문 수를 제한해요. max_depth.
-                  덜 외우고 더 일반적으로.
+                  질문 횟수를 제한해요(max_depth).
+                  덜 외우고 큰 규칙만 배우게.
         ```
 
         질문 깊이를 제한하지 않은 `DecisionTreeClassifier(random_state=42)`를 손질기와 묶어 `model`에 학습하세요. 그리고 정확도를 두 번 잽니다. 훈련 자료로 잰 `train_accuracy`와 테스트 자료로 잰 `test_accuracy`. 둘을 출력하세요.
@@ -130,7 +130,61 @@ UNIT = unit('classifiers', '2일차 · 6교시 — 세 분류 모델과 기준 �
         starter=MODEL_PREP + "from sklearn.tree import DecisionTreeClassifier\nfrom sklearn.metrics import accuracy_score\n# model, train_accuracy, test_accuracy를 만드세요\n",
         solution=MODEL_PREP + "from sklearn.tree import DecisionTreeClassifier\nfrom sklearn.metrics import accuracy_score\nmodel = Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(random_state=42))])\nmodel.fit(X_train, y_train)\ntrain_accuracy = accuracy_score(y_train, model.predict(X_train))\ntest_accuracy = accuracy_score(y_test, model.predict(X_test))\nprint(train_accuracy, test_accuracy)\n",
         check="assert 0<=s['test_accuracy']<=1 and 0<=s['train_accuracy']<=1\nassert s['train_accuracy']>s['test_accuracy']\nassert s['train_accuracy']>0.9\nassert abs(s['train_accuracy']-(s['model'].predict(s['X_train'])==s['y_train']).mean())<1e-12"),
+    concept('save-model', '한 번 만든 모델은 저장해서 다시 쓴다',
+        body="""
+        지금까지 모든 미션은 실행할 때마다 `fit`부터 다시 했습니다. 승객 1,047명이면 1초라 괜찮지만, 회사 자료는 수백만 행이고 훈련에 몇 시간이 걸리기도 합니다. 그걸 예측할 때마다 다시 배우게 할 이유가 없습니다. 배운 모델은 **파일로 저장**해 두고, 쓸 때는 **불러와서 `predict`만** 합니다.
+
+        ```comic-gen
+        제목: 어제 훈련한 모델은 어디 갔나
+        등장인물:
+          공장장:
+            그림: 사람
+            이름표: 빵 공장장
+            외형: {피부색: "#d6a279", 머리모양: 민머리, 옷색: "#8a6d4b"}
+          모델: {그림: 서버, 이름표: 모델}
+        컷:
+          - 인물: [{식별자: 공장장, 표정: 어리둥절}, {식별자: 모델, 표정: 보통}]
+            대사:
+              - {화자: 공장장, 상대: 모델, 내용: "어제 세 시간 걸려 훈련했는데, 오늘 또 처음부터?"}
+              - {화자: 모델, 상대: 공장장, 내용: "프로그램이 끝나면 저는 사라져요. 저장 안 하셨잖아요."}
+          - 구성: 이전
+            인물: [{식별자: 공장장, 손모양: 가리키는손}, {식별자: 모델, 표정: 기쁨}]
+            대사:
+              - {화자: 공장장, 상대: 모델, 내용: "joblib.dump로 파일에 넣어 둘게."}
+              - {화자: 모델, 상대: 공장장, 내용: "그럼 내일 새벽엔 불러와서 바로 예측만 하면 돼요."}
+        ```
+
+        ```python
+        import joblib
+        joblib.dump(model, 'titanic_model.joblib')      # 훈련 끝난 모델을 파일로
+        loaded = joblib.load('titanic_model.joblib')     # 다른 날, 다른 프로그램에서 불러오기
+        loaded.predict(X_new)                            # 훈련 없이 바로 예측
+        ```
+
+        `joblib`은 `scikit-learn`과 함께 설치되는 저장 도구입니다. 저장하는 것은 모델 하나가 아니라 **파이프라인 전체**입니다. 그래서 5교시에 훈련 자료에서 정한 기준(나이의 중앙값, One-hot 열 목록, 표준화 기준)도 파일 안에 같이 들어가고, 새 자료에도 같은 손질이 그대로 적용됩니다. 손질과 모델을 한 줄로 묶어 둔 또 하나의 이유입니다.
+
+        현장에서는 이렇게 돌아갑니다. 빵 공장은 **매주 월요일에 한 번** 지난 기록으로 다시 훈련해 파일을 갈아 끼우고, **매일 새벽에는 불러와서 오늘 생산량만** 예측합니다. 콜센터의 월요일 인원 예측도 같은 모양입니다. AI에게 "해 줘"라고 시킬 때도 **"모델은 파일로 저장하고, 예측 스크립트는 불러오기만 하게"**라고 한 줄 보태면 매번 훈련하는 코드를 받지 않습니다.
+
+        주의할 점 두 가지. 저장한 파일은 같은 버전의 `scikit-learn`에서 열어야 안전하고, 자료가 많이 바뀌면(새 메뉴, 새 상품) 다시 훈련해야 합니다. 파일은 "그때 배운 규칙"일 뿐이니까요.
+        """,
+        check=short("훈련이 끝난 파이프라인을 파일로 저장할 때 쓰는 함수는 무엇인가요? `joblib.____(model, 'titanic_model.joblib')`", ['dump', 'joblib.dump'],
+                    '`joblib.dump`가 저장, `joblib.load`가 불러오기입니다. 파이프라인째 저장하면 손질 기준도 함께 들어가서 새 자료에 바로 `predict`할 수 있습니다.')),
+    coding('save-and-load', '모델을 파일로 저장하고 다시 불러오기',
+        goal="""
+        로지스틱 회귀를 손질기와 묶어 `model`에 학습한 뒤 `joblib.dump`로 `titanic_model.joblib`에 저장하세요. 그다음 `joblib.load`로 `loaded`에 다시 불러와서 테스트 정확도를 `test_accuracy`에 담고 출력하세요.
+
+        불러온 모델의 예측은 원래 모델과 완전히 같아야 합니다. 저장과 불러오기 사이에 훈련은 없습니다.
+        """,
+        hint="""
+        `model = Pipeline([('prepare', make_preprocessor()), ('model', LogisticRegression(max_iter=1000))])` → `fit(X_train, y_train)` → `joblib.dump(model, 'titanic_model.joblib')` → `loaded = joblib.load('titanic_model.joblib')` → `test_accuracy = accuracy_score(y_test, loaded.predict(X_test))`.
+        """,
+        starter=MODEL_PREP + "import joblib\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import accuracy_score\n# model을 학습해 저장하고, loaded로 불러와 test_accuracy를 구하세요\n",
+        solution=MODEL_PREP + "import joblib\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import accuracy_score\nmodel = Pipeline([('prepare', make_preprocessor()), ('model', LogisticRegression(max_iter=1000))])\nmodel.fit(X_train, y_train)\njoblib.dump(model, 'titanic_model.joblib')\nloaded = joblib.load('titanic_model.joblib')\ntest_accuracy = accuracy_score(y_test, loaded.predict(X_test))\nprint(f'불러온 모델의 테스트 정확도: {test_accuracy:.3f}')\n",
+        check="from pathlib import Path\nassert Path('titanic_model.joblib').exists()\nassert (s['loaded'].predict(s['X_test'])==s['model'].predict(s['X_test'])).all()\nassert abs(s['test_accuracy']-(s['loaded'].predict(s['X_test'])==s['y_test']).mean())<1e-9"),
     quiz('model-check', '2일차 6교시 점검',
+        choice('내일 새벽에도 오늘 훈련한 모델로 예측하려면 어떻게 해야 하나요?',
+               ['`joblib.dump`로 파이프라인째 파일에 저장하고, 쓸 때 `joblib.load`로 불러와 `predict`만 한다', '매일 새벽 `fit`부터 다시 돌린다', '오늘 예측 결과 표만 저장해 둔다'], 0,
+               '저장한 파일에는 모델과 손질 기준이 함께 들어 있어 새 자료에 바로 예측할 수 있습니다. 훈련은 자료가 바뀔 때만 다시 합니다.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「매일 fit부터」: 몇 시간짜리 훈련을 매일 반복하는 삽질이다.\n- 「결과 표만 저장」: 내일 새 입력에는 쓸 수 없다."),
         choice('정확도 78%짜리 모델이 좋은지 판단하려면 무엇과 비교해야 하나요?',
                ['아무것도 보지 않고 가장 많은 답만 찍은 기준 모델의 점수', '훈련 자료로 잰 점수', '100%'], 0,
                '테스트 262명 중 162명이 사망이라 전원 사망으로 찍어도 62%입니다. 기준을 넘는 만큼이 모델이 배운 몫입니다.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「100%」: 100%는 기준이 아니라 불가능한 목표다.\n- 「훈련 자료로 잰 점수」: 외운 점수라 비교 대상이 못 된다."),

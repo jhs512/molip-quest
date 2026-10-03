@@ -21,11 +21,11 @@ UNIT = unit('control', '1일차 · 3교시 — 조건·반복과 DataFrame', [
           - 인물: [준호, 파이썬]
             대사:
               - {화자: 준호, 상대: 파이썬, 내용: "만 원 이상일 때만 알려 줘."}
-              - {화자: 파이썬, 상대: 준호, 내용: "그건 if. 조건이 참일 때만 할게."}
+              - {화자: 파이썬, 상대: 준호, 내용: "그게 if야. 조건에 맞을 때만 할게."}
           - 구성: 이전
             대사:
               - {화자: 준호, 상대: 파이썬, 내용: "사흘치 가격을 하나씩 다 더해 줘."}
-              - {화자: 파이썬, 상대: 준호, 내용: "그건 for. 값이 떨어질 때까지 반복해."}
+              - {화자: 파이썬, 상대: 준호, 내용: "그게 for야. 값이 다 떨어질 때까지 하나씩 반복할게."}
           - 구성: 이전
             인물: [{식별자: 준호, 표정: 어리둥절}, {식별자: 파이썬, 표정: 어리둥절}]
             대사:
@@ -34,7 +34,7 @@ UNIT = unit('control', '1일차 · 3교시 — 조건·반복과 DataFrame', [
                 상대: 준호
                 내용: |-
                   네 칸 들여쓴 줄만
-                  if 안의 일로 치거든.
+                  if에 딸린 일로 알아듣거든.
         ```
 
         ```python
@@ -161,7 +161,7 @@ UNIT = unit('control', '1일차 · 3교시 — 조건·반복과 DataFrame', [
             외형: {옷: 재킷, 옷색: "#5379a7", 안경: true}
         컷:
           - 인물: [{식별자: 강사, 손모양: 가리키는손}]
-            대사: [{화자: 강사, 내용: "같은 키를 가진 딕셔너리들을 세우면 표입니다."}]
+            대사: [{화자: 강사, 내용: "같은 키를 가진 딕셔너리를 줄줄이 세우면 그게 표입니다."}]
             다이어그램:
               종류: 머메이드
               제목: holdings → DataFrame
@@ -227,6 +227,70 @@ UNIT = unit('control', '1일차 · 3교시 — 조건·반복과 DataFrame', [
         starter="import pandas as pd\n" + HOLDINGS_WITH_AMOUNT + "df = pd.DataFrame(holdings)\n# total_amount를 계산하고 출력하세요\n",
         solution="import pandas as pd\n" + HOLDINGS_WITH_AMOUNT + "df = pd.DataFrame(holdings)\ntotal_amount = df['amount'].sum()\nprint(total_amount)\n",
         check="assert s['total_amount']==130000"),
+    concept('why-fast', '리스트로도 되는데 왜 pandas인가',
+        body="""
+        방금 같은 합계를 반복문으로도, 표로도 구했습니다. 그러니 이런 질문이 나올 만합니다. "리스트 안의 딕셔너리로도 다 되는데, 왜 굳이 `pandas`를 배우나요?" 답은 두 가지입니다. **짧고, 빠릅니다.** 짧은 건 방금 봤습니다. 빠른 이유는 `pandas`가 **NumPy**(넘파이)라는 숫자 배열 도구 위에 지어졌기 때문입니다.
+
+        ```comic-gen
+        제목: 백만 개 더하기 시합
+        등장인물:
+          준호:
+            그림: 사람
+            이름표: 준호 · 은행 직원
+            외형: {머리색: "#303746", 옷색: "#b88646"}
+          파이썬: {그림: 서버, 이름표: Python 반복문}
+          넘파이: {그림: 서버, 이름표: NumPy}
+        컷:
+          - 인물: [준호, 파이썬, 넘파이]
+            대사:
+              - {화자: 준호, 상대: 파이썬, 내용: "숫자 백만 개 더해 줘."}
+              - {화자: 파이썬, 상대: 준호, 내용: "하나 꺼내고, 숫자인지 보고, 더하고… 백만 번."}
+          - 구성: 이전
+            인물: [{식별자: 준호, 표정: 어리둥절}, 파이썬, {식별자: 넘파이, 표정: 기쁨}]
+            대사:
+              - {화자: 넘파이, 상대: 준호, 내용: "저는 백만 개를 한 덩어리로 받아서 C 언어로 한 번에 더해요."}
+              - {화자: 준호, 상대: 넘파이, 내용: "그래서 백 배 빠른 거구나."}
+        ```
+
+        Python 반복문은 값을 하나 꺼낼 때마다 "이게 숫자인가, 더할 수 있나"를 매번 확인합니다. 넘파이는 같은 종류의 숫자를 **메모리 한 덩어리**에 나란히 두고, C 언어로 짜인 반복문이 그 덩어리를 한 번에 훑습니다. 요즘 CPU는 숫자 여러 개를 한 명령으로 처리하고 코어도 여러 개라서, 큰 계산은 **여러 코어가 나눠서 병렬로** 합니다. 그래서 백만 행이면 수십 배에서 수백 배 차이가 납니다.
+
+        ```mapping
+        제목: 반복문과 넘파이의 차이
+        왼쪽: Python 반복문
+        오른쪽: NumPy 배열
+        값 하나씩 꺼낸다 → 덩어리째 넘긴다
+        매번 종류를 확인한다 → 종류는 처음 한 번만
+        Python이 한 줄씩 실행 → C 코드가 한 번에 실행
+        코어 하나 → 코어 여러 개가 나눠서
+        ```
+
+        ```python
+        import numpy as np
+        values = np.array([10000, 10200, 9900, 10100])
+        print(values.sum())        # 40200, 반복문 없이
+        print(values * 1.1)        # 네 값 전부에 한 번에 1.1배
+        ```
+
+        넘파이의 자리는 생각보다 큽니다. `pandas`의 표 한 열이 넘파이 배열이고, 내일 쓸 `scikit-learn`도 그래프를 그리는 `matplotlib`도 넘파이 배열을 주고받습니다. 딥러닝 도구(PyTorch, TensorFlow)가 다루는 텐서는 넘파이 배열의 사촌이고, 사진 한 장도 컴퓨터 안에서는 숫자 배열입니다. 이 수업에서 `import numpy`를 직접 칠 일은 거의 없지만, 쓰는 도구 전부가 그 위에 서 있습니다.
+
+        여기서 옛날이야기 하나. 넘파이는 C 코드라서 설치하려면 **컴파일**(C 코드를 기계어로 바꾸는 일)이 필요했고, 윈도우에서는 그게 자주 실패했습니다. 그래서 미리 컴파일된 패키지를 묶어 주는 **아나콘다**(conda)가 거의 필수였습니다. 지금은 `pip`이 미리 컴파일된 파일(wheel)을 그대로 받아오기 때문에 `pip install pandas` 한 줄이면 끝입니다. 이 앱도 conda 없이 돌아갑니다. 오래된 자료가 "먼저 아나콘다를 설치하세요"라고 하면 그 시절 이야기입니다.
+
+        정리하면 "리스트로도 된다"는 말도 맞고, "표는 `pandas`로"라는 말도 맞습니다. 값이 네 개면 차이가 없고, 백만 행이면 차이가 백 배입니다. 다음 미션에서 그 차이를 직접 잽니다.
+        """,
+        check=short("`pandas`의 표 계산이 반복문보다 빠른 이유가 되는, `pandas`가 그 위에 지어진 숫자 배열 도구의 이름은 무엇인가요?", ['numpy', 'NumPy', '넘파이', 'np'],
+                    '넘파이(NumPy)는 같은 종류의 숫자를 메모리 한 덩어리에 두고 C 코드로 한 번에 계산합니다. `pandas`, `scikit-learn`, `matplotlib`, 딥러닝 도구가 전부 그 위에 서 있습니다.')),
+    coding('numpy-race', '백만 개 더하기 시합',
+        goal="""
+        숫자 0부터 999,999까지가 리스트 `values`와 넘파이 배열 `array`에 준비되어 있습니다. 같은 합계를 두 방법으로 구하고 걸린 시간을 잽니다. `for` 반복문으로 더한 합계를 `total`에, 그 시간을 `loop_seconds`에, `array.sum()`의 결과를 `numpy_total`에, 그 시간을 `numpy_seconds`에 담고 두 시간과 몇 배 빠른지를 출력하세요.
+
+        합계는 둘 다 499,999,500,000이고, 넘파이 쪽 시간이 훨씬 짧아야 합니다. 몇 배인지는 컴퓨터마다 다릅니다.
+        """,
+        hint="""
+        시간 재기는 `start = time.perf_counter()`로 시작해 끝난 뒤 `time.perf_counter() - start`를 빼면 초 단위가 나옵니다. 반복문 구간과 `array.sum()` 구간을 각각 감싸세요. 출력은 f-문자열 `{loop_seconds:.4f}`처럼 소수 네 자리로, 배수는 `loop_seconds / numpy_seconds`를 `:.0f`로.
+        """,
+        starter='import time\nimport numpy as np\nvalues = list(range(1_000_000))\narray = np.array(values)\n# total, loop_seconds, numpy_total, numpy_seconds를 만들고 출력하세요\n',
+        solution="import time\nimport numpy as np\nvalues = list(range(1_000_000))\narray = np.array(values)\nstart = time.perf_counter()\ntotal = 0\nfor value in values:\n    total += value\nloop_seconds = time.perf_counter() - start\nstart = time.perf_counter()\nnumpy_total = array.sum()\nnumpy_seconds = time.perf_counter() - start\nprint(f'반복문 {loop_seconds:.4f}초, 넘파이 {numpy_seconds:.4f}초')\nprint(f'넘파이가 {loop_seconds / numpy_seconds:.0f}배 빠르다')\n",
+        check="assert s['total']==499999500000 and int(s['numpy_total'])==499999500000\nassert s['loop_seconds']>s['numpy_seconds']>0"),
     quiz('control-check', '3교시 점검',
         choice('`if price >= 10000:`에서 `price`가 정확히 10000이면 어떻게 되나요?',
                ['조건이 참이라 아래 줄이 실행된다', '조건이 거짓이라 건너뛴다', '같은 값은 오류가 난다'], 0,
@@ -244,6 +308,9 @@ UNIT = unit('control', '1일차 · 3교시 — 조건·반복과 DataFrame', [
         choice('표를 앱 화면에 그려서 보려면 코드 마지막 줄에 무엇을 적나요?',
                ['`df`', "`print('df')`", '`df.sum()`'], 0,
                "마지막 줄에 `df`만 적으면 앱이 표로 그려 줍니다. `print('df')`는 글자 df를 출력할 뿐이고, `df.sum()`은 열마다 합계만 보여 줍니다." "\n\n**다른 보기는 왜 아닌가**\n\n- 「print('df')」: 따옴표 안 글자 df 두 글자가 출력된다.\n- 「df.sum()」: 열별 합계만 나오고 표 전체는 보이지 않는다."),
+        choice('표 계산이 반복문보다 빠른 진짜 이유는 무엇인가요?',
+               ['`pandas`가 C로 짜인 NumPy 배열을 한 덩어리로 한 번에 계산해서', 'Python 반복문은 원래 쓰면 안 되는 문법이라서', '표가 화면에 예쁘게 그려져서'], 0,
+               '넘파이는 같은 종류의 숫자를 메모리 한 덩어리에 두고 C 코드가 한 번에, 코어 여러 개가 나눠서 계산합니다. 반복문은 값마다 종류를 확인하며 한 줄씩 갑니다.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「반복문은 쓰면 안 되는 문법」: 반복문은 멀쩡한 문법이고, 값이 몇 개면 차이도 없다.\n- 「예쁘게 그려져서」: 보기 좋은 것과 빠른 것은 다른 이야기다."),
         choice("""**프롬프트 고르기** · `sum()`을 쓰지 않고 `for`로 합계를 누적하는 연습 문제입니다. 어떤 프롬프트가 연습 목적에 맞는 코드를 받을까요?""",
                ["""파이썬. prices = [10000,10200,9900,10100]. sum() 쓰지 말고 for 반복문으로 total에 누적해서 출력. 코드만 줘""", """리스트 합계 구하는 가장 짧은 코드 줘""", """prices 합계 출력해 줘""", """파이썬 반복문 예제 하나 줘"""], 0,
                """정답은 "sum() 쓰지 말고 for로"라는 금지와 지정이 한 줄에 있습니다. 쉬운 길을 막지 않으면 AI는 늘 sum()을 씁니다.

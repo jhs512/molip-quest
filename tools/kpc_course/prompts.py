@@ -149,6 +149,15 @@ pandas. df(열 name·price·quantity·amount)에서 amount 열의 합을 .sum()�
 """, """
 - `amount 열의 합을 .sum()으로` → 반복문 대신 열 연산. `df['amount'].sum()` 한 줄.
 """),
+    "numpy-race": p("""
+파이썬. values 리스트(0~999999)와 같은 값의 넘파이 배열 array가 있어.
+for 반복문 합계는 total, array.sum()은 numpy_total에 담고
+time.perf_counter()로 걸린 시간을 loop_seconds, numpy_seconds에 재서 두 시간과 몇 배 빠른지 출력
+""", """
+- `time.perf_counter()` → 시간 재는 함수를 지정해야 `time.time()`처럼 거친 시계를 안 쓴다.
+- `total`, `numpy_total`, `loop_seconds`, `numpy_seconds` → 검사기가 읽는 이름 넷.
+- `몇 배 빠른지` → 숫자 둘만 찍고 끝내지 않게.
+"""),
     # ---- 1일차 4교시 ----
     "inspect-frame": p("""
 pandas. orders DataFrame(열 product, price, quantity, 4행)이 있어. 행 수 n_rows, 열 수 n_columns, 열 이름 리스트 column_names에 담고 출력.
@@ -432,6 +441,15 @@ scikit-learn. X_train, X_test, y_train, y_test, make_preprocessor()가 있어. P
 """, """
 - 훈련 정확도와 테스트 정확도를 둘 다 → 과적합을 잡는 방법.
 - `max_depth` 없음 → 일부러 제한 없는 트리. 두 점수가 벌어지는 걸 본다.
+"""),
+    "save-and-load": p("""
+타이타닉 생존 분류. 손질기 make_preprocessor()와 LogisticRegression(max_iter=1000)을 Pipeline으로 묶어 model에 fit.
+joblib.dump로 titanic_model.joblib에 저장하고 joblib.load로 loaded에 불러와
+테스트 정확도를 test_accuracy에 담아 출력. 불러온 뒤에 다시 훈련하지 마
+""", """
+- `joblib.dump`, `joblib.load` → 저장 도구를 정해 준다. 안 정하면 pickle이 올 수도 있다.
+- `Pipeline으로 묶어` → 손질 기준까지 파일에 들어가게.
+- `다시 훈련하지 마` → 불러온 모델로 predict만 하는 코드를 받는다.
 """),
     # ---- 2일차 7교시 ----
     "credit-shape": p("""

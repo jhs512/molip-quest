@@ -1,4 +1,4 @@
-:root { font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif; color: #172d2c; background: #f5f7f5; }
+:root { font-family: 'Pretendard', 'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; color: #172d2c; background: #f5f7f5; }
 * { box-sizing: border-box; }
 body { margin: 0; }
 .login { max-width: 540px; margin: 7vh auto; }
@@ -10,9 +10,9 @@ button:disabled { opacity: .55; cursor: wait; }
 .class-button { width: 100%; text-align: left; background: #285047; color: #eef7f0; margin-bottom: 8px; }
 .course-row, details.card { margin: 16px 0; }
 .course-open { display: block; width: 100%; margin: 10px 0; text-align: left; background: #e8f0e9; }
-.code-editor { min-height: 260px; font-family: Consolas, Menlo, monospace; font-size: 14px; white-space: pre; tab-size: 4; }
+.code-editor { min-height: 260px; font-family: 'JetBrains Mono', 'Pretendard', Consolas, Menlo, monospace; font-size: 14px; white-space: pre; tab-size: 4; }
 .author-editor { min-height: 550px; }
-pre { white-space: pre-wrap; overflow-wrap: anywhere; padding: 16px; background: #f3f6f3; border-radius: 10px; font-family: Consolas, Menlo, monospace; }
+pre { white-space: pre-wrap; overflow-wrap: anywhere; padding: 16px; background: #f3f6f3; border-radius: 10px; font-family: 'JetBrains Mono', 'Pretendard', Consolas, Menlo, monospace; }
 .output { background: #18332c; color: #e7f3e9; min-height: 60px; }
 summary { cursor: pointer; line-height: 1.7; }
 button { font: inherit; cursor: pointer; border: 0; border-radius: 9px; padding: 12px 16px; }
@@ -81,8 +81,8 @@ progress { width: 100%; height: 14px; accent-color: #2c7662; margin: 12px 0 32px
 .pane-actions { display: flex; gap: 8px; }
 .practice-shell .pane-actions button { font-size: 13px; padding: 8px 12px; }
 .editor-pane { min-height: 0; overflow: auto; padding: 16px; }
-.practice-shell .code-editor { background: #202d3e; color: #dce8f4; border: 0; border-radius: 3px; margin: 0; min-height: 100%; height: 100%; resize: none; padding: 18px 20px; font: 15px/1.8 Consolas, monospace; }
-.inline-code { background: #202d3e; padding: 16px 0; min-height: 100%; font: 15px/1.8 Consolas, monospace; }
+.practice-shell .code-editor { background: #202d3e; color: #dce8f4; border: 0; border-radius: 3px; margin: 0; min-height: 100%; height: 100%; resize: none; padding: 18px 20px; font: 15px/1.8 'JetBrains Mono', 'Pretendard', Consolas, monospace; }
+.inline-code { background: #202d3e; padding: 16px 0; min-height: 100%; font: 15px/1.8 'JetBrains Mono', 'Pretendard', Consolas, monospace; }
 .code-line { display: flex; min-height: 30px; }
 .line-number { flex: 0 0 48px; color: #8299ae; text-align: right; padding-right: 18px; user-select: none; }
 .line-source { white-space: pre; color: #8ecbe8; }
@@ -121,7 +121,7 @@ textarea[data-code-editor][hidden] { display: none; }
 .markdown p { margin: .7em 0; white-space: normal; }
 .markdown h1, .markdown h2, .markdown h3, .markdown h4 { color: #a9d9ff; margin: 1.1em 0 .5em; }
 .markdown strong { color: #a6efd1; }
-.markdown code { color: #f7cc91; background: #12212f; padding: .15em .35em; border-radius: 4px; font-family: Consolas, monospace; }
+.markdown code { color: #f7cc91; background: #12212f; padding: .15em .35em; border-radius: 4px; font-family: 'JetBrains Mono', 'Pretendard', Consolas, monospace; font-size: .92em; }
 .markdown pre { background: #101e2b; border: 1px solid #405970; padding: 18px; border-radius: 8px; overflow-x: auto; white-space: pre; }
 .markdown pre code { background: none; padding: 0; font-size: 14px; }
 .markdown blockquote { margin: 18px 0; border-left: 4px solid #60bba6; padding: 8px 18px; background: #213b43; }
@@ -290,7 +290,7 @@ body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { poi
 .interactive { max-width: 760px; margin: 0 auto; padding: 14px 16px 12px; background: #0f1d28; border: 1px solid #405970; border-radius: 10px; }
 .interactive-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 8px; color: #a9d9ff; }
 .interactive-step { color: #9ab0c2; font-size: 13px; }
-.interactive svg { display: block; width: 100%; height: auto; font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif; }
+.interactive svg { display: block; width: 100%; height: auto; font-family: 'Pretendard', 'Segoe UI', 'Apple SD Gothic Neo', sans-serif; }
 .interactive .fade { opacity: 0; transition: opacity .45s ease, transform .45s ease; transform: translateY(6px); }
 .interactive .fade.on { opacity: 1; transform: none; }
 .interactive .axis { stroke: #5b7489; stroke-width: 1.5; }
@@ -339,3 +339,34 @@ body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { poi
 .practice-shell .interactive-action { background: #43596d; color: #fff; padding: 8px 14px; font-size: 13px; }
 .interactive-toggle { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 13px; color: #bcd7ee; }
 .interactive-toggle input { width: 16px; margin: 0; accent-color: #79dcff; }
+
+.cm-editor, .cm-editor .cm-content, .cm-editor .cm-gutters { font-family: 'JetBrains Mono', 'Pretendard', Consolas, monospace !important; }
+
+/* Slide deck missions (Marp): one scaled slide at a time with a control bar. */
+.slides-mission { max-width: 1100px; }
+.slides-help { color: #9ab0c2; font-size: 13px; margin: 0 0 12px; }
+.slides-host { outline: none; }
+.slides-host:fullscreen { background: #000; display: flex; flex-direction: column; justify-content: center; padding: 0 2vw; }
+.slides-host:fullscreen .slides-stage svg { max-height: 88vh; }
+.slides-stage { background: #0b141c; border: 1px solid #405970; border-radius: 10px; padding: 8px; }
+.slides-stage .marpit > svg { display: block; width: 100%; height: auto; margin: 0 auto; max-height: 70vh; }
+.slides-bar { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 10px 0 4px; }
+.slides-counter { color: #bcd7ee; font-size: 14px; min-width: 4em; text-align: center; }
+.practice-shell .slides-bar button { font-size: 13px; padding: 8px 14px; }
+.practice-shell .slides-full { margin-left: 12px; background: #1f3346; border: 1px solid #4f6b84; }
+
+/* Classroom home: start, the four gallery pages and reset sit in one row under the course card. */
+.course-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 10px; }
+.course-actions .reset-progress { margin: 0 0 0 auto; color: #6b7f78; border-color: #c9d6d0; }
+.gallery-link { background: #eef4f1; color: #173d36; border: 1px solid #cfdcd6; }
+.gallery-link:hover { background: #dfeae4; }
+/* Gallery pages */
+.gallery { max-width: 1100px; }
+.gallery-count { color: #bcd7ee; font-size: 13px; margin: 0 0 8px; }
+.gallery-item { margin: 28px 0 0; padding-top: 16px; border-top: 1px solid #3b4f63; }
+.gallery-location { color: #8fa6ba; font-size: 12px; margin: 0; }
+.gallery-item h3 { margin: 4px 0 12px; font-size: 18px; }
+.slides-all .slides-stage { padding: 10px; }
+.slides-all .marpit { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.slides-all .marpit > svg { width: 100%; height: auto; display: block; max-height: none; margin: 0; cursor: zoom-in; border-radius: 6px; }
+.slides-all .marpit > svg:fullscreen { background: #000; cursor: default; }
