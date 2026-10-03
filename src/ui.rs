@@ -275,10 +275,10 @@ fn UnitWorkspace(course_id: String, unit: Unit, oncompleted: EventHandler<bool>)
             button {class:"prompt-copy",onclick:{let unit=unit.clone();move |_|{
                 let prompt=molip_quest::curriculum::answer_prompt(&unit,&code());
                 match arboard::Clipboard::new().and_then(|mut clipboard|clipboard.set_text(prompt)) {
-                    Ok(())=>message.set("정답 요청 프롬프트를 복사했습니다. 원하는 AI에 붙여넣고, 받은 main.py 코드를 편집기에 넣으세요.".into()),
+                    Ok(())=>message.set("정답 구하는 프롬프트를 복사했습니다. 원하는 AI에 붙여넣고, 받은 main.py 코드를 편집기에 넣으세요.".into()),
                     Err(e)=>message.set(format!("클립보드 복사에 실패했습니다: {e}"))
                 }
-            }},"정답 프롬프트 복사"}
+            }},"정답 구하는 프롬프트 복사"}
 
             if !unit.blanks.is_empty(){p{class:"blank-note","코드의 빈칸만 채워보세요. 나머지 코드는 수정하지 않습니다."}}
         }
