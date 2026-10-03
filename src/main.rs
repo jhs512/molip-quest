@@ -68,6 +68,7 @@ fn App() -> Element {
             include_str!("../assets/comics/comics.js")
         ));
         document::eval(include_str!("../assets/speech/speech.js"));
+        document::eval(include_str!("../assets/layout/split.js"));
     });
     rsx! {
         if cfg!(debug_assertions) && std::env::var_os("MOLIP_DEV_LIVE").is_some() {

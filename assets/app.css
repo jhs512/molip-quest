@@ -71,15 +71,15 @@ progress { width: 100%; height: 14px; accent-color: #2c7662; margin: 12px 0 32px
 .curriculum-menu .unit-title { flex: 1; }
 .curriculum-menu .unit.selected { background: #16476b; color: #f1f9ff; border-color: #4d9bca; border-left-color: #79dcff; font-weight: 700; box-shadow: inset 0 0 0 1px #4d9bca44; }
 .unit-current { flex-shrink: 0; font-size: 11px; padding: 3px 6px; border-radius: 4px; background: #b5eaff; color: #11334c; }
-.lesson { display: grid; grid-template-columns: minmax(300px, 39%) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) 65px; height: calc(100vh - 62px); }
-.problem-pane { overflow: auto; padding: 24px; border-right: 1px solid #182a38; }
+.lesson { display: grid; grid-template-columns: var(--problem-width, minmax(300px, 39%)) 8px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) 65px; height: calc(100vh - 62px); }
+.problem-pane { overflow: auto; padding: 24px; }
 .problem-pane h2 { font-size: 19px; margin: 0 0 28px; }
 .problem-pane h3, .result-pane h3 { font-size: 14px; margin: 0 0 18px; }
 .problem-pane .content { color: #c1d4e3; font-size: 15px; line-height: 1.9; }
-.coding-pane { min-width: 0; min-height: 0; display: grid; grid-template-rows: 54px minmax(180px, 55%) minmax(120px, 1fr); }
+.coding-pane { min-width: 0; min-height: 0; display: grid; grid-template-rows: 54px var(--editor-height, minmax(180px, 55%)) 8px minmax(120px, 1fr); }
 .pane-heading { padding: 18px 22px; border-bottom: 1px solid #182a38; font-size: 14px; }
 .pane-heading span { float: right; margin-right: 145px; color: #91b6d2; }
-.editor-pane { min-height: 0; overflow: auto; padding: 16px; resize: vertical; border-bottom: 5px solid #182a38; }
+.editor-pane { min-height: 0; overflow: auto; padding: 16px; }
 .practice-shell .code-editor { background: #202d3e; color: #dce8f4; border: 0; border-radius: 3px; margin: 0; min-height: 100%; height: 100%; resize: none; padding: 18px 20px; font: 15px/1.8 Consolas, monospace; }
 .inline-code { background: #202d3e; padding: 16px 0; min-height: 100%; font: 15px/1.8 Consolas, monospace; }
 .code-line { display: flex; min-height: 30px; }
@@ -95,7 +95,7 @@ progress { width: 100%; height: 14px; accent-color: #2c7662; margin: 12px 0 32px
 .practice-actions { grid-column: 1 / -1; margin: 0; padding: 12px 20px; justify-content: flex-end; align-items: center; border-top: 1px solid #142633; background: #263747; }
 .practice-shell .primary { background: #087cf0; }
 .blank-note { color: #9cb5ca; background: #202d3e; padding: 16px; font-size: 14px; line-height: 1.8; }
-@media (max-width: 760px) { .practice-header { padding-left: 140px; } .practice-header span, .practice-header button { display: none; } .lesson { height: auto; min-height: calc(100vh - 62px); grid-template-columns: 1fr; grid-template-rows: auto auto 65px; } .problem-pane { padding-top: 64px; } .coding-pane { height: 640px; } .practice-actions { position: sticky; bottom: 0; } .curriculum-toggle { left: 20px; right: auto; } }
+@media (max-width: 760px) { .practice-header { padding-left: 140px; } .practice-header span, .practice-header button { display: none; } .lesson { height: auto; min-height: calc(100vh - 62px); grid-template-columns: 1fr; grid-template-rows: auto auto 65px; } .problem-pane { padding-top: 64px; } .coding-pane { height: 640px; grid-template-rows: 54px minmax(180px, 55%) 0 minmax(120px, 1fr); } .split-handle { display: none; } .practice-actions { position: sticky; bottom: 0; } .curriculum-toggle { left: 20px; right: auto; } }
 .python-editor-host { height: 100%; min-height: 180px; }
 .python-editor-host .cm-editor { border-radius: 4px; }
 .python-editor-host .cm-editor.cm-focused { outline: 1px solid #679bc5; }
@@ -202,3 +202,36 @@ textarea[data-code-editor][hidden] { display: none; }
 .comic-strip { margin: 20px 0; padding: 0; }
 .comic-strip svg { display: block; width: 100%; max-width: 720px; height: auto; margin: 0 auto; border-radius: 8px; background: white; }
 .comic-strip.comic-error { padding: 12px 16px; border: 1px dashed #c98282; border-radius: 8px; color: #ffc3ae; font-size: 13px; white-space: pre-wrap; }
+
+/* Prompt guide: a full-screen layer explaining the answer prompt, with the real prompt beside it. */
+.prompt-guide-open { border: 1px solid #669abc; width: 100%; margin-top: 8px; background: transparent !important; color: #bcd7ee !important; }
+.prompt-guide-layer { position: fixed; inset: 0; z-index: 1000; display: flex; flex-direction: column; background: #0f1d28; color: #dce7f1; padding-top: var(--inset-top, 0px); padding-bottom: var(--inset-bottom, 0px); }
+.prompt-guide-header { display: flex; align-items: center; gap: 16px; padding: 14px 24px; background: #101c25; border-bottom: 1px solid #2d4457; }
+.prompt-guide-header h2 { margin: 0; font-size: 18px; }
+.prompt-guide-unit { flex: 1; color: #99aec1; font-size: 13px; }
+.prompt-guide-close { font-size: 13px; padding: 8px 12px; }
+.prompt-guide-body { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 0; }
+.prompt-guide-text, .prompt-guide-prompt { min-height: 0; overflow: auto; padding: 24px 32px 48px; }
+.prompt-guide-text { border-right: 1px solid #2d4457; }
+.prompt-guide-text .markdown { max-width: 760px; font-size: 16px; }
+.prompt-guide-text .markdown h2 { font-size: 17px; margin-top: 1.6em; }
+.prompt-guide-prompt h3 { margin: 0 0 10px; color: #a9d9ff; }
+.prompt-guide-prompt .prompt-copy { width: auto; margin-bottom: 12px; }
+.prompt-guide-source { font-size: 13px; line-height: 1.7; background: #101e2b; border: 1px solid #405970; border-radius: 8px; padding: 18px; white-space: pre-wrap; }
+@media (max-width: 900px) { .prompt-guide-body { grid-template-columns: 1fr; overflow: auto; } .prompt-guide-text { border-right: 0; border-bottom: 1px solid #2d4457; } .prompt-guide-text, .prompt-guide-prompt { overflow: visible; padding: 20px; } }
+
+/* Split handles between the problem and code panes, and between the editor and the results. */
+.split-handle { position: relative; background: #182a38; user-select: none; touch-action: none; }
+.split-col { cursor: col-resize; }
+.split-row { cursor: row-resize; }
+.split-handle::after { content: ""; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); border-radius: 3px; background: #4f6b84; }
+.split-col::after { width: 3px; height: 40px; }
+.split-row::after { width: 40px; height: 3px; }
+.split-handle:hover, .split-handle.dragging { background: #24405a; }
+.split-handle:hover::after, .split-handle.dragging::after { background: #8fb6d6; }
+.split-handle:focus-visible { outline: 2px solid #79b5a6; outline-offset: -2px; }
+body.splitting { cursor: inherit; user-select: none; }
+body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { pointer-events: none; }
+
+/* Thin scrollbars that match the dark practice theme instead of the default light rails. */
+.practice-shell, .practice-shell *, .prompt-guide-layer, .prompt-guide-layer *, .curriculum-menu, .speech-controls { scrollbar-width: thin; scrollbar-color: #4a6479 #1b2c3a; }

@@ -199,8 +199,56 @@ fn progress_unlocks_only_the_next_mission_and_prompt_requests_one_python_file() 
         "price = 10000",
         "50000",
         "수량과 가격",
+        "# 역할",
+        "random_state=42",
+        "data/",
     ] {
         assert!(prompt.contains(required), "missing {required}");
+    }
+    assert!(
+        molip_quest::curriculum::prompt_guide(&problem).contains("## 7. 입출력 예시와 검사 조건")
+    );
+}
+
+#[test]
+fn every_kpc_coding_prompt_carries_its_chapter_expertise() {
+    use molip_quest::curriculum::{answer_prompt, prompt_guide, ActivityKind};
+    let course = Course::parse(include_str!("../courses/kpc-finance.json")).unwrap();
+    for chapter in &course.chapters {
+        for unit in &chapter.units {
+            for activity in &unit.activities {
+                if let ActivityKind::Coding { problem } = &activity.kind {
+                    let expertise = problem.expertise.as_ref().expect("chapter expertise");
+                    let prompt = answer_prompt(problem, &problem.starter_code);
+                    for principle in &expertise.principles {
+                        assert!(
+                            prompt.contains(principle.as_str()),
+                            "{}: prompt lacks principle",
+                            problem.id
+                        );
+                    }
+                    assert!(
+                        prompt_guide(problem).contains(expertise.why.trim()),
+                        "{}: guide lacks why",
+                        problem.id
+                    );
+                }
+            }
+        }
+    }
+    // The vocabulary a working analyst uses must reach the student through the prompt.
+    let stock = course.chapters.last().unwrap().units.last().unwrap();
+    let problem = stock
+        .activities
+        .iter()
+        .find_map(|a| match &a.kind {
+            ActivityKind::Coding { problem } => Some(problem),
+            _ => None,
+        })
+        .unwrap();
+    let prompt = answer_prompt(problem, "");
+    for term in ["temporal split", "naive forecast", "MAE·RMSE·R²", "누수"] {
+        assert!(prompt.contains(term), "missing {term}");
     }
 }
 

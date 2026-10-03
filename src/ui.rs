@@ -369,7 +369,9 @@ fn UnitWorkspace(course_id: String, unit: Unit, oncompleted: EventHandler<bool>)
             parts
         })
         .collect();
+    let mut guide_open = use_signal(|| false);
     rsx! {article{class:"lesson",
+        if guide_open() {PromptGuide {unit:unit.clone(),code:code(),onclose:move |_|guide_open.set(false)}}
         section{class:"problem-pane",h2{"{unit.title}"}h3{"문제 설명"}Markdown {text:unit.content.clone()}
             button {class:"prompt-copy",onclick:{let unit=unit.clone();move |_|{
                 let prompt=molip_quest::curriculum::answer_prompt(&unit,&code());
@@ -378,14 +380,17 @@ fn UnitWorkspace(course_id: String, unit: Unit, oncompleted: EventHandler<bool>)
                     Err(e)=>message.set(format!("클립보드 복사에 실패했습니다: {e}"))
                 }
             }},"정답 구하는 프롬프트 복사"}
+            button {class:"prompt-guide-open",onclick:move |_|guide_open.set(true),"정답 구하는 프롬프트 해설"}
 
             if !unit.blanks.is_empty(){p{class:"blank-note","코드의 빈칸만 채워보세요. 나머지 코드는 수정하지 않습니다."}}
         }
+        div{class:"split-handle split-col",role:"separator",aria_orientation:"vertical",aria_label:"문제와 코드 영역 너비 조절",tabindex:"0",title:"드래그로 너비 조절, 더블 클릭으로 되돌리기"}
         section{class:"coding-pane",div{class:"pane-heading",strong{"main.py"}span{"Python"}}
         div{class:"editor-pane",
         if unit.blanks.is_empty(){textarea{class:"code-editor", "data-code-editor":"python", "data-editor-value":code(),"data-editor-reset":editor_reset().to_string(),aria_label:"Python 코드",spellcheck:false,initial_value:initial.code.clone(),oninput:{let key=key.clone();move|e|{code.set(e.value());if let Err(error)=drafts::save(&key,&code(),&answers()){message.set(error)}}}}}
         else{div{class:"inline-code",for (number,parts) in lines.iter().enumerate(){div{class:"code-line",span{class:"line-number","{number+1}"}div{class:"line-source",for (text,blank) in parts {if let Some(blank)=blank {input{class:"code-blank",aria_label:"빈칸 {blank}",spellcheck:false,value:answers.read().get(blank).cloned().unwrap_or_default(),oninput:{let blank=blank.clone();let unit=unit.clone();let key=key.clone();move|e|{answers.write().insert(blank.clone(),e.value());if let Ok(assembled)=assemble(&unit,&answers()){code.set(assembled);if let Err(error)=drafts::save(&key,&code(),&answers()){message.set(error)}}}}}}else{span{"{text}"}}}}}}}}
         }
+        div{class:"split-handle split-row",role:"separator",aria_orientation:"horizontal",aria_label:"편집기와 실행 결과 높이 조절",tabindex:"0",title:"드래그로 높이 조절, 더블 클릭으로 되돌리기"}
         section{class:"result-pane",h3{"실행 결과"}details{open:!unit.tests.is_empty(),summary{"실행 입력"}p{"아래 입력값으로 실행합니다. 예제 입력을 바꾸며 연습할 수 있어요."}textarea{aria_label:"실행 입력",initial_value:sample_input.clone(),oninput:move|e|input.set(e.value())}}
             p{class:"execution-status",role:"status","{message}"}
             pre{class:"output",if output().is_empty(){"실행 결과가 여기에 표시됩니다."}else{"{output}"}}
@@ -446,6 +451,37 @@ fn RichResults(artifacts: Vec<Artifact>) -> Element {
 }
 
 /// "Start over" button with a confirmation step; wipes completions, attempts and drafts for the course.
+/// Full-screen explanation of the answer prompt: why each section exists, with the actual
+/// prompt for this problem underneath so students can read the two side by side.
+#[component]
+fn PromptGuide(unit: Unit, code: String, onclose: EventHandler<()>) -> Element {
+    let guide = molip_quest::curriculum::prompt_guide(&unit);
+    let prompt = molip_quest::curriculum::answer_prompt(&unit, &code);
+    let mut message = use_signal(String::new);
+    rsx! { div { class:"prompt-guide-layer", role:"dialog", aria_modal:"true", aria_label:"정답 구하는 프롬프트 해설",
+        onkeydown: move |e| { if e.key() == Key::Escape { onclose.call(()); } },
+        header { class:"prompt-guide-header",
+            h2 { "정답 구하는 프롬프트 해설" }
+            span { class:"prompt-guide-unit", "{unit.title}" }
+            button { class:"prompt-guide-close", autofocus:true, onclick: move |_| onclose.call(()), "닫기 ×" }
+        }
+        div { class:"prompt-guide-body",
+            section { class:"prompt-guide-text", Markdown { text: guide } }
+            section { class:"prompt-guide-prompt",
+                h3 { "이 문제의 실제 프롬프트" }
+                p { class:"execution-status", role:"status", "{message}" }
+                button { class:"prompt-copy", onclick: {let prompt=prompt.clone(); move |_| {
+                    match copy_to_clipboard(prompt.clone()) {
+                        Ok(()) => message.set("프롬프트를 복사했습니다.".into()),
+                        Err(e) => message.set(format!("클립보드 복사에 실패했습니다: {e}")),
+                    }
+                }}, "이 프롬프트 복사" }
+                pre { class:"prompt-guide-source", "{prompt}" }
+            }
+        }
+    } }
+}
+
 #[component]
 pub fn ResetProgress(course_id: String, onreset: EventHandler<()>) -> Element {
     let mut confirming = use_signal(|| false);
