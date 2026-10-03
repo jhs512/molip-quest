@@ -156,43 +156,15 @@ pub fn machine_prompt(unit: &Unit, code: &str) -> String {
     )
 }
 
-/// Markdown for the prompt guide: the human prompt, which of its words carry the expertise,
-/// what this chapter always needs said, and how the machine version differs.
+/// Markdown for the prompt guide: the human prompt and, for each word that matters, why.
 pub fn prompt_guide(unit: &Unit) -> String {
     let human = answer_prompt(unit, "");
     let why = unit
         .prompt_why
         .as_deref()
         .map(str::trim)
-        .unwrap_or("이 문제에는 별도 해설이 없습니다. 입출력 조건이 곧 명세입니다.");
-    let chapter = unit
-        .expertise
-        .as_ref()
-        .map(|e| {
-            format!(
-                "## 이 단원에서 AI에게 꼭 말해야 하는 것\n\n{}\n\n{}",
-                e.principles
-                    .iter()
-                    .map(|p| format!("- {p}"))
-                    .collect::<Vec<_>>()
-                    .join("\n"),
-                e.why.trim()
-            )
-        })
-        .unwrap_or_default();
-    format!(
-        "## 인간 버전 프롬프트\n\n```text\n{human}\n```\n\n\
-## 이 프롬프트의 단어들\n\n{why}\n\n\
-{chapter}\n\n\
-## 짧게 쓰는 요령\n\n\
-- **도구 이름**을 먼저 부릅니다. \"파이썬\", \"pandas\", \"scikit-learn\"이 한 단어로 어휘와 기본값을 정합니다.\n\
-- **들어오는 것과 나가는 것**을 적습니다. 입력 형식, 결과 변수 이름, 출력 형식. 검사기는 이름과 글자로 읽습니다.\n\
-- **방법을 알면 이름으로** 지정합니다. `groupby`, `stratify`, `temporal split`처럼 한 단어가 긴 설명을 대신하고 흔한 실수를 막습니다.\n\
-- **하지 말 것**도 적습니다. \"sum() 쓰지 말고\", \"원본은 바꾸지 마\", \"False여도 그대로 둬\".\n\
-- 마지막은 **\"코드만 줘\"**. 설명이 섞이면 붙여 넣을 때 깨집니다. 막혔으면 지금 코드를 그 아래에 붙여 넣으세요.\n\n\
-## 기계 버전은 무엇이 다른가\n\n\
-오른쪽의 기계 버전은 같은 요청을 **명세서 형식**으로 쓴 것입니다. 역할, 산출물 형식, 실행 환경, 단원 원칙, 기본·현재 코드, 입출력 예시, 검사 코드가 빠짐없이 들어가 있어 AI가 환경을 모를 때도 그대로 돌아가는 코드를 돌려줍니다. 사람이 손으로 치는 글은 아니지만, 도구가 도구에게 일을 넘길 때(자동화, 에이전트, 재현 가능한 실험)는 이 형식이 표준입니다. 인간 버전으로 원하는 답이 안 나올 때 기계 버전을 붙여 넣어 보고, 두 결과를 비교해 보세요.",
-    )
+        .unwrap_or("- 입출력 조건이 곧 명세. 그대로 적는다.");
+    format!("```text\n{human}\n```\n\n## 왜 이 단어들인가\n\n{why}")
 }
 
 pub fn grade_quiz(questions: &[Question], answers: &HashMap<String, String>) -> TestReport {

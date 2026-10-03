@@ -210,9 +210,7 @@ fn progress_unlocks_only_the_next_mission_and_prompt_requests_one_python_file() 
     ] {
         assert!(prompt.contains(required), "missing {required}");
     }
-    assert!(
-        molip_quest::curriculum::prompt_guide(&problem).contains("## 기계 버전은 무엇이 다른가")
-    );
+    assert!(molip_quest::curriculum::prompt_guide(&problem).contains("## 왜 이 단어들인가"));
 }
 
 #[test]

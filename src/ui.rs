@@ -470,14 +470,15 @@ fn PromptGuide(unit: Unit, code: String, onclose: EventHandler<()>) -> Element {
     rsx! { div { class:"prompt-guide-layer", role:"dialog", aria_modal:"true", aria_label:"정답 구하는 프롬프트 해설",
         onkeydown: move |e| { if e.key() == Key::Escape { onclose.call(()); } },
         header { class:"prompt-guide-header",
-            h2 { "프롬프트 해설" }
+            h2 { "프롬프트 해설 · 인간 버전" }
             span { class:"prompt-guide-unit", "{unit.title}" }
             button { class:"prompt-guide-close", autofocus:true, onclick: move |_| onclose.call(()), "닫기 ×" }
         }
         div { class:"prompt-guide-body",
             section { class:"prompt-guide-text", Markdown { text: guide } }
             section { class:"prompt-guide-prompt",
-                h3 { "기계 버전 프롬프트" }
+                h3 { "기계 버전" }
+                p { class:"prompt-guide-note", "같은 요청을 명세서로 쓴 것. 자동화할 때 쓴다." }
                 p { class:"execution-status", role:"status", "{message}" }
                 button { class:"prompt-copy", onclick: {let prompt=prompt.clone(); move |_| {
                     match copy_to_clipboard(prompt.clone()) {

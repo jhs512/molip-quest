@@ -240,3 +240,6 @@ body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { poi
 .prompt-buttons .prompt-copy { width: auto; }
 .prompt-buttons .prompt-guide-open { grid-column: 1 / -1; margin-top: 0; }
 .prompt-guide-text pre { white-space: pre-wrap; }
+
+.prompt-guide-note { margin: 0 0 10px; font-size: 13px; color: #9ab0c2; }
+.prompt-guide-text .markdown pre { background: #16283a; border-color: #4f6b84; font-size: 15px; }
