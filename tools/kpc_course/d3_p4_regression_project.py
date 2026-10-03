@@ -111,16 +111,16 @@ UNIT = unit('regression-project', '3일차 · 4교시 — 회귀 비교와 최�
         check="import numpy as np\nassert abs(s['baseline_mae']-float(np.abs(s['y_test'].to_numpy()-s['X_test']['close'].to_numpy()).mean()))<1e-8\nassert np.isfinite(s['ridge_mae'])\nassert s['improved']==(s['ridge_mae']<s['baseline_mae'])"),
     coding('forecast-plot', '정답 날짜 위에 실제와 예측을 겹쳐 그리기',
         goal="""
-        마지막 그림입니다. 릿지 파이프라인을 학습해 `prediction`을 구하고, `target_date`를 인덱스로 `actual`(실제 다음 종가)과 `prediction` 두 열을 가진 `comparison` 표를 만드세요. `fig, ax`에 두 선을 같은 날짜 축에 그리고 x축 이름 `Target date`, 범례를 표시하세요.
+        마지막 그림입니다. 릿지 파이프라인을 학습해 `prediction`을 구하고, `target_date`를 인덱스로 `actual`(실제 다음 종가)과 `prediction` 두 열을 가진 `comparison` 표를 만드세요. `fig, ax`에 두 선을 같은 날짜 축에 그리고 x축 이름 `정답 날짜`, 범례를 표시하세요.
 
         x축이 입력 날짜가 아니라 **정답 날짜**인 이유를 생각해 보세요. 예측이 실제를 얼마나 따라가는지, 어느 구간에서 벌어지는지 보세요.
         """,
         hint="""
-        `comparison = pd.DataFrame({'actual': y_test.to_numpy(), 'prediction': prediction}, index=pd.DatetimeIndex(frame.loc[test_mask, 'target_date']))`. 그다음 `ax.plot(comparison.index, comparison['actual'], label='Actual next close')`와 예측 선을 하나 더 그리고 `ax.set(xlabel='Target date', ...)`, `ax.legend()`, `plt.show()`.
+        `comparison = pd.DataFrame({'actual': y_test.to_numpy(), 'prediction': prediction}, index=pd.DatetimeIndex(frame.loc[test_mask, 'target_date']))`. 그다음 `ax.plot(comparison.index, comparison['actual'], label='Actual next close')`와 예측 선을 하나 더 그리고 `ax.set(xlabel='정답 날짜', ...)`, `ax.legend()`, `plt.show()`.
         """,
         starter=STOCK_MODEL + PLOT + "# model, prediction, comparison, fig, ax를 만드세요\n",
-        solution=STOCK_MODEL + PLOT + "model=Pipeline([('scale',StandardScaler()),('model',Ridge(alpha=1))])\nmodel.fit(X_train,y_train)\nprediction=model.predict(X_test)\ncomparison=pd.DataFrame({'actual':y_test.to_numpy(),'prediction':prediction},index=pd.DatetimeIndex(frame.loc[test_mask,'target_date']))\nfig,ax=plt.subplots()\nax.plot(comparison.index,comparison['actual'],label='Actual next close')\nax.plot(comparison.index,comparison['prediction'],label='Ridge')\nax.set(xlabel='Target date',ylabel='Price',title='Held-out next trading day')\nax.legend()\nplt.show()\ncomparison.head()\n",
-        check="assert s['comparison'].shape==(80,2) and list(s['comparison'].columns)==['actual','prediction']\nassert list(s['comparison'].index)==list(s['frame'].loc[s['test_mask'],'target_date'])\nassert len(s['ax'].lines)==2 and s['ax'].get_xlabel()=='Target date'\nassert s['ax'].get_legend() is not None"),
+        solution=STOCK_MODEL + PLOT + "model=Pipeline([('scale',StandardScaler()),('model',Ridge(alpha=1))])\nmodel.fit(X_train,y_train)\nprediction=model.predict(X_test)\ncomparison=pd.DataFrame({'actual':y_test.to_numpy(),'prediction':prediction},index=pd.DatetimeIndex(frame.loc[test_mask,'target_date']))\nfig,ax=plt.subplots()\nax.plot(comparison.index,comparison['actual'],label='Actual next close')\nax.plot(comparison.index,comparison['prediction'],label='Ridge')\nax.set(xlabel='정답 날짜',ylabel='Price',title='Held-out next trading day')\nax.legend()\nplt.show()\ncomparison.head()\n",
+        check="assert s['comparison'].shape==(80,2) and list(s['comparison'].columns)==['actual','prediction']\nassert list(s['comparison'].index)==list(s['frame'].loc[s['test_mask'],'target_date'])\nassert len(s['ax'].lines)==2 and s['ax'].get_xlabel()=='정답 날짜'\nassert s['ax'].get_legend() is not None"),
     coding('final-report', '최종 보고: 숫자 다섯 개와 결론 세 줄',
         goal="""
         3일의 결론을 코드로 적습니다. 준비된 `models`(`Linear`, `Ridge`)를 각각 학습해 테스트 MAE를 `maes` 딕셔너리에 모으고, 기준 MAE와 비교해 `report` 딕셔너리를 만드세요. 키는 `test_days`(테스트 거래일 수), `baseline_mae`, `best_model`(MAE가 가장 작은 모델 이름), `best_mae`, `improved`(최선 모델이 기준보다 나은지) 다섯 개입니다. 그리고 결론 세 줄을 출력하세요. ① 무엇을 언제 예측했고 어떻게 나눴는지 ② 기준 MAE와 최선 모델 MAE ③ 개선했는지 못 했는지.
@@ -151,7 +151,7 @@ UNIT = unit('regression-project', '3일차 · 4교시 — 회귀 비교와 최�
               '`coef_`에 입력 열마다 가중치가 하나씩 들어 있습니다. 표준화된 입력 기준이라 크기를 서로 비교할 수 있습니다.'),
     ),
     quiz('course-wrap', '3일을 한 줄로 잇기',
-        choice('타이타닉의 `boat` 열과 주가의 `target_next_close` 열의 공통점은 무엇인가요?',
+        choice('타이타닉의 `구명보트` 열과 주가의 `target_next_close` 열의 공통점은 무엇인가요?',
                ['맞히려는 시점에 알 수 없는 정보라 입력에 넣으면 누수다', '둘 다 글자 열이다', '둘 다 빈칸이 많다'], 0,
                '하나는 사고 뒤에 적힌 정보, 하나는 내일의 값입니다. 자료가 달라도 "맞히는 시점에 아는 것만 입력"이라는 원칙은 같습니다.'),
         choice('타이타닉의 "전원 사망" 예측과 주가의 "오늘 종가 그대로" 예측은 어떤 역할을 했나요?',

@@ -259,19 +259,19 @@ pandas. titanic = pd.read_csv('data/titanic.csv'). 행 수 n_rows, 열 수 n_col
 - `titanic = pd.read_csv(...)` → 준비 코드를 그대로 보여 주면 경로·이름을 안 틀린다.
 """),
     "survived-counts": p("""
-pandas. titanic DataFrame. survived 열을 value_counts()해서 counts에 담고, 0(사망) 인원을 n_dead, 1(생존) 인원을 n_alive에 int로 담아 출력.
+pandas. titanic DataFrame. 생존 열을 value_counts()해서 counts에 담고, 0(사망) 인원을 n_dead, 1(생존) 인원을 n_alive에 int로 담아 출력.
 """, """
 - `value_counts()` → 범주를 세는 표준 메서드.
 - `0(사망)`, `1(생존)` → 값의 뜻을 적어야 두 변수가 안 바뀐다.
 """),
     "missing-per-column": p("""
-pandas. titanic DataFrame. isna().sum()을 missing에 담고, age와 fare의 결측 수를 int로 age_missing, fare_missing에 담아 출력.
+pandas. titanic DataFrame. isna().sum()을 missing에 담고, 나이와 요금의 결측 수를 int로 age_missing, fare_missing에 담아 출력.
 """, """
 - `isna().sum()` → 열별 결측. 자료를 받으면 제일 먼저.
 - `int로` → 검사기 자료형.
 """),
     "titanic-counts": p("""
-pandas. titanic DataFrame. 전체 인원 n_total, age가 기록된 인원 n_known, age가 결측인 인원 n_unknown을 int로, survived의 평균을 survival_rate에 담아 전부 출력.
+pandas. titanic DataFrame. 전체 인원 n_total, 나이가 기록된 인원 n_known, 나이가 결측인 인원 n_unknown을 int로, 생존의 평균을 survival_rate에 담아 전부 출력.
 n_known + n_unknown == n_total 이어야 해.
 """, """
 - `survived의 평균` → 0/1 열의 평균이 곧 비율.
@@ -279,64 +279,64 @@ n_known + n_unknown == n_total 이어야 해.
 """),
     # ---- 1일차 8교시 ----
     "sex-counts": p("""
-pandas. titanic DataFrame. gender 열 value_counts()를 gender_counts에 담고 출력.
+pandas. titanic DataFrame. 성별 열 value_counts()를 gender_counts에 담고 출력.
 """, """
 - `value_counts()` → 비율 전에 분모(인원)부터.
 """),
     "sex-mean": p("""
-pandas. titanic DataFrame. groupby('gender')['survived'].mean()을 rates에 담고 출력.
+pandas. titanic DataFrame. groupby('성별')['생존'].mean()을 rates에 담고 출력.
 """, """
-- `groupby('gender')['survived'].mean()` → 그룹별 비율 공식을 코드로. 코드로 쓸 수 있으면 그게 제일 정확하다.
+- `groupby('성별')['생존'].mean()` → 그룹별 비율 공식을 코드로. 코드로 쓸 수 있으면 그게 제일 정확하다.
 """),
     "sex-summary": p("""
-pandas. titanic DataFrame. gender로 groupby한 survived에 agg(['count','sum','mean'])을 적용한 표를 gender_summary에 담고 마지막 줄에 gender_summary.
+pandas. titanic DataFrame. 성별로 groupby한 생존에 agg(['count','sum','mean'])을 적용한 표를 gender_summary에 담고 마지막 줄에 gender_summary.
 """, """
 - `agg(['count','sum','mean'])` → 인원·생존자·생존율을 한 표에. "몇 명 중"을 늘 같이 본다.
 """),
     "pclass-summary": p("""
-pandas. titanic DataFrame. pclass로 groupby한 survived에 agg(['count','sum','mean'])을 적용해 pclass_summary에.
+pandas. titanic DataFrame. 객실등급로 groupby한 생존에 agg(['count','sum','mean'])을 적용해 pclass_summary에.
 """, """
-- 앞 프롬프트에서 `gender`를 `pclass`로만 바꿈. 같은 집계는 프롬프트도 복사해서 쓴다.
+- 앞 프롬프트에서 `성별`을 `객실등급`로만 바꿈. 같은 집계는 프롬프트도 복사해서 쓴다.
 """),
     "age-groups": p("""
-pandas. titanic DataFrame. pd.cut으로 age를 bins=[0, 20, 40, 60, float('inf')], labels=['0~19','20~39','40~59','60+'], right=False 로 나눈 열 age_group을 titanic에 추가하고, age_group으로 groupby한 survived의 agg(['count','sum','mean'])을 age_summary에.
+pandas. titanic DataFrame. pd.cut으로 나이를 bins=[0, 20, 40, 60, float('inf')], labels=['0~19','20~39','40~59','60+'], right=False 로 나눈 열 age_group을 titanic에 추가하고, age_group으로 groupby한 생존의 agg(['count','sum','mean'])을 age_summary에.
 """, """
 - `bins=…, labels=…` → "20대, 30대"라고 하면 경계가 AI마다 다르다. 숫자로.
 - `right=False` → 20살이 `20~39`에 들어가게. 구간 문제의 단골 실수.
 """),
     # ---- 2일차 1교시 ----
     "simple-bar": p("""
-matplotlib. names = ['A','B','C'], amounts = [30000,40000,60000]. fig, ax = plt.subplots()로 만들고 ax.bar로 막대그래프. ax.set(title='Amount by stock', ylabel='Amount'). plt.show().
+matplotlib. names = ['A','B','C'], amounts = [30000,40000,60000]. fig, ax = plt.subplots()로 만들고 ax.bar로 막대그래프. ax.set(title='종목별 금액', ylabel='금액'). plt.show().
 """, """
 - `fig, ax = plt.subplots()`, `ax.bar` → 검사기는 `ax` 객체를 읽는다. `plt.bar()`는 못 읽는다.
 - 제목·축 이름 문자열 → 그대로 채점.
 """),
     "sex-bar": p("""
-pandas + matplotlib. titanic DataFrame. groupby('gender')['survived'].mean()을 rates에 담고, rates*100을 ax.bar로 그려. ylim=(0,100), xlabel 'Sex', ylabel 'Survival rate (%)'. fig, ax = plt.subplots() 방식, plt.show().
+pandas + matplotlib. titanic DataFrame. groupby('성별')['생존'].mean()을 rates에 담고, rates*100을 ax.bar로 그려. ylim=(0,100), xlabel '성별', ylabel '생존율 (%)'. fig, ax = plt.subplots() 방식, plt.show().
 """, """
 - `rates*100` + `ylim=(0,100)` → 퍼센트 축은 둘이 한 세트. 하나만 적으면 축과 값이 안 맞는다.
 """),
     "pclass-bar": p("""
-pandas + matplotlib. titanic DataFrame. groupby('pclass')['survived'].mean()을 rates에 담고 rates*100을 ax.bar로. ylim=(0,100), xlabel 'Pclass', ylabel 'Survival rate (%)'. fig, ax 방식, plt.show().
+pandas + matplotlib. titanic DataFrame. groupby('객실등급')['생존'].mean()을 rates에 담고 rates*100을 ax.bar로. ylim=(0,100), xlabel '객실등급', ylabel '생존율 (%)'. fig, ax 방식, plt.show().
 """, """
 - 앞 프롬프트에서 열 이름과 축 이름만 바꿈.
 """),
     # ---- 2일차 2교시 ----
     "age-hist": p("""
-pandas + seaborn. titanic DataFrame. age가 결측이 아닌 행만 known_age에 담고, fig, ax = plt.subplots() 뒤 sns.histplot(data=known_age, x='age', bins=20, ax=ax). 축 이름과 제목은 영어로. plt.show().
+pandas + seaborn. titanic DataFrame. 나이가 결측이 아닌 행만 known_age에 담고, fig, ax = plt.subplots() 뒤 sns.histplot(data=known_age, x='나이', bins=20, ax=ax). 축 이름과 제목 붙이고 plt.show().
 """, """
 - `결측이 아닌 행만` → 그림 전에 자료부터 거른다.
 - `bins=20` → 검사 조건.
 - `ax=ax` → seaborn을 우리 Axes에 그리게. 빠지면 검사기가 그림을 못 찾는다.
 """),
     "fare-scatter": p("""
-pandas + matplotlib. titanic DataFrame. age와 fare 둘 다 결측이 아닌 행만 known에 담고, fig, ax 만든 뒤 ax.scatter(known['age'], known['fare']). xlabel 'Age', ylabel 'Fare'. plt.show().
+pandas + matplotlib. titanic DataFrame. 나이와 요금 둘 다 결측이 아닌 행만 known에 담고, fig, ax 만든 뒤 ax.scatter(known['나이'], known['요금']). xlabel '나이', ylabel '요금'. plt.show().
 """, """
 - `둘 다 결측이 아닌 행만` → 산점도의 전제.
-- `scatter(known['age'], known['fare'])` → x, y 순서 고정.
+- `scatter(known['나이'], known['요금'])` → x, y 순서 고정.
 """),
     "correlation": p("""
-pandas + seaborn. titanic DataFrame. columns=['pclass','age','sibsp','parch','fare','survived'] 열의 상관계수 표를 corr에 담고(titanic[columns].corr()), sns.heatmap(corr, annot=True, vmin=-1, vmax=1, ax=ax)로 그려. fig, ax 방식, plt.show().
+pandas + seaborn. titanic DataFrame. columns=['객실등급','나이','형제배우자','부모자녀','요금','생존'] 열의 상관계수 표를 corr에 담고(titanic[columns].corr()), sns.heatmap(corr, annot=True, vmin=-1, vmax=1, ax=ax)로 그려. fig, ax 방식, plt.show().
 """, """
 - `.corr()` → 상관계수 표.
 - `vmin=-1, vmax=1` → 색 범위를 고정해야 다른 자료와 비교된다.
@@ -344,45 +344,45 @@ pandas + seaborn. titanic DataFrame. columns=['pclass','age','sibsp','parch','fa
 """),
     # ---- 2일차 3교시 ----
     "embarked-rate": p("""
-pandas. titanic DataFrame. embarked로 groupby한 survived의 agg(['count','mean'])을 by_port에 담고 마지막 줄에 by_port.
+pandas. titanic DataFrame. 탑승항구로 groupby한 생존의 agg(['count','mean'])을 by_port에 담고 마지막 줄에 by_port.
 """, """
 - `count`를 같이 → 항구별 인원이 다르면 비율의 신뢰도도 다르다.
 """),
     "sex-pclass-table": p("""
-pandas. titanic DataFrame. ['gender','pclass']로 groupby한 survived의 agg(['count','mean'])을 grouped에, grouped['mean'].unstack('pclass')를 wide에 담고 마지막 줄에 wide.
+pandas. titanic DataFrame. ['성별','객실등급']로 groupby한 생존의 agg(['count','mean'])을 grouped에, grouped['mean'].unstack('객실등급')를 wide에 담고 마지막 줄에 wide.
 """, """
-- `['gender','pclass']로 groupby` → 두 조건으로 묶기.
-- `unstack('pclass')` → 긴 표를 행×열 교차표로 펼치는 메서드.
+- `['성별','객실등급']로 groupby` → 두 조건으로 묶기.
+- `unstack('객실등급')` → 긴 표를 행×열 교차표로 펼치는 메서드.
 """),
     "combined-groups": p("""
-pandas + matplotlib. titanic DataFrame. ['gender','pclass'] groupby survived agg(['count','mean'])을 grouped에, grouped['mean'].unstack('pclass')*100을 wide에. ax = wide.plot.bar(ylim=(0,100), rot=0)로 그리고 ylabel과 title 붙여 plt.show().
+pandas + matplotlib. titanic DataFrame. ['성별','객실등급'] groupby 생존 agg(['count','mean'])을 grouped에, grouped['mean'].unstack('객실등급')*100을 wide에. ax = wide.plot.bar(ylim=(0,100), rot=0)로 그리고 ylabel과 title 붙여 plt.show().
 """, """
 - `wide.plot.bar(...)` → 표에서 바로 묶음 막대. 반환값을 `ax`에 담아야 검사기가 읽는다.
 - `rot=0` → x축 글자 안 눕히기.
 """),
     # ---- 2일차 4교시 ----
     "drop-columns": p("""
-pandas. titanic DataFrame. drop(columns=[...])으로 survived, name, ticket, cabin, boat, body, home.dest 를 빼서 candidates에 담고 열 이름 출력. 7열 남아야 해.
+pandas. titanic DataFrame. drop(columns=[...])으로 생존, 이름, 티켓, 선실, 구명보트, 시신번호, 출신목적지 를 빼서 candidates에 담고 열 이름 출력. 7열 남아야 해.
 """, """
 - `boat, body` 빼기 → 사고 뒤에 적히는 열. 넣으면 누수. 이 판단은 자료를 아는 사람이 한다.
 - `7열 남아야 해` → 검산.
 """),
     "xy-separation": p("""
-pandas. titanic DataFrame. features = ['pclass','gender','age','sibsp','parch','fare','embarked'] 리스트를 만들고, X = titanic[features].copy(), y = titanic['survived'].astype(int).
+pandas. titanic DataFrame. features = ['객실등급','성별','나이','형제배우자','부모자녀','요금','탑승항구'] 리스트를 만들고, X = titanic[features].copy(), y = titanic['생존'].astype(int).
 """, """
 - `X`, `y` → 입력과 정답. 머신러닝의 첫 줄.
 - `.copy()`, `.astype(int)` → 뒤에서 나는 경고·자료형 문제를 미리 막는다.
 """),
     "column-types": p("""
-pandas. X DataFrame(열 pclass, gender, age, sibsp, parch, fare, embarked). 숫자형 열 이름 리스트를 numeric_columns, 문자(범주형) 열 이름 리스트를 category_columns에 담고 출력. select_dtypes 써.
+pandas. X DataFrame(열 객실등급, 성별, 나이, 형제배우자, 부모자녀, 요금, 탑승항구). 숫자형 열 이름 리스트를 numeric_columns, 문자(범주형) 열 이름 리스트를 category_columns에 담고 출력. select_dtypes 써.
 """, """
 - `숫자형` / `범주형` → 다음 시간에 다르게 손질할 두 종류.
 - `select_dtypes` → 자료형으로 열을 가르는 메서드.
 """),
     "get-dummies": p("""
-pandas. titanic DataFrame. pd.get_dummies(titanic[['gender']])로 gender 열을 One-hot 인코딩해 encoded에 담고 마지막 줄에 encoded.head(). gender_female, gender_male 두 열이 나와야 해.
+pandas. titanic DataFrame. pd.get_dummies(titanic[['성별']])로 성별 열을 One-hot 인코딩해 encoded에 담고 마지막 줄에 encoded.head(). 성별_여성, 성별_남성 두 열이 나와야 해.
 """, """
-- `One-hot 인코딩` → 글자 열을 0/1 열로 바꾸는 표준 용어. `map({'male':0})` 같은 임의 코드를 막는다.
+- `One-hot 인코딩` → 글자 열을 0/1 열로 바꾸는 표준 용어. `map({'남성':0})` 같은 임의 코드를 막는다.
 """),
     # ---- 2일차 5교시 ----
     "stratified-split": p("""
@@ -392,24 +392,24 @@ scikit-learn. X, y가 있어. train_test_split(X, y, test_size=0.2, stratify=y, 
 - `random_state=42` → 누가 돌려도 같은 분할(재현성). 둘 다 AI가 잘 빼먹는다.
 """),
     "first-model": p("""
-scikit-learn. X_train, X_test, y_train, y_test가 있어. simple = ['pclass','sibsp','parch'] 세 열만 써서 LogisticRegression(max_iter=1000)을 model에 만들고 fit. X_test[simple] 예측의 accuracy_score를 accuracy에 담고 출력.
+scikit-learn. X_train, X_test, y_train, y_test가 있어. simple = ['객실등급','형제배우자','부모자녀'] 세 열만 써서 LogisticRegression(max_iter=1000)을 model에 만들고 fit. X_test[simple] 예측의 accuracy_score를 accuracy에 담고 출력.
 """, """
 - `세 열만` → 빈칸 없는 숫자 열만 골라 손질 없이 돌리는 의도.
 - `fit → predict → accuracy_score` → 모델 프롬프트의 기본 골격.
 """),
     "train-imputer": p("""
-scikit-learn. X_train, X_test가 있어. SimpleImputer(strategy='median')를 imputer에 만들고, X_train[['age','fare']]에 fit_transform한 결과를 train_values, X_test[['age','fare']]에 transform한 결과를 test_values에. 둘의 shape 출력.
+scikit-learn. X_train, X_test가 있어. SimpleImputer(strategy='median')를 imputer에 만들고, X_train[['나이','요금']]에 fit_transform한 결과를 train_values, X_test[['나이','요금']]에 transform한 결과를 test_values에. 둘의 shape 출력.
 """, """
 - 훈련은 `fit_transform`, 테스트는 `transform` → 중앙값은 훈련 자료에서만 정한다. 둘 다 fit하면 누수.
 """),
     "onehot-fit": p("""
-scikit-learn. X_train, X_test가 있어. OneHotEncoder(handle_unknown='ignore', sparse_output=False)를 encoder에 만들고 X_train[['gender']]에 fit_transform → train_encoded, X_test[['gender']]에 transform → test_encoded. shape 출력.
+scikit-learn. X_train, X_test가 있어. OneHotEncoder(handle_unknown='ignore', sparse_output=False)를 encoder에 만들고 X_train[['성별']]에 fit_transform → train_encoded, X_test[['성별']]에 transform → test_encoded. shape 출력.
 """, """
 - `handle_unknown='ignore'` → 테스트에 처음 보는 값이 와도 오류 대신 0.
 - `sparse_output=False` → 일반 배열로 받기.
 """),
     "pipeline-build": p("""
-scikit-learn. X_train, X_test가 있고 numeric = ['pclass','age','sibsp','parch','fare']. Pipeline([('fill', SimpleImputer(strategy='median')), ('scale', StandardScaler())])를 numeric_pipeline에 만들고, X_train[numeric]에 fit_transform → train_values, X_test[numeric]에 transform → test_values. shape 출력.
+scikit-learn. X_train, X_test가 있고 numeric = ['객실등급','나이','형제배우자','부모자녀','요금']. Pipeline([('fill', SimpleImputer(strategy='median')), ('scale', StandardScaler())])를 numeric_pipeline에 만들고, X_train[numeric]에 fit_transform → train_values, X_test[numeric]에 transform → test_values. shape 출력.
 """, """
 - `Pipeline([...])` → 채우기와 표준화를 한 객체로. 단계가 늘면 순서가 꼬이니 묶는다.
 - `'fill'`, `'scale'` → 단계 이름. 나중에 이 이름으로 꺼낸다.
@@ -435,28 +435,28 @@ scikit-learn. X_train, X_test, y_train, y_test, make_preprocessor()가 있어. P
 """),
     # ---- 2일차 7교시 ----
     "credit-shape": p("""
-pandas. credit = pd.read_csv('data/credit.csv'), target = 'default payment next month'. 행 수 n_rows, 열 수 n_columns에 담고, credit[target].value_counts()를 target_counts에 담아 출력.
+pandas. credit = pd.read_csv('data/credit.csv'), target = '다음달 부도'. 행 수 n_rows, 열 수 n_columns에 담고, credit[target].value_counts()를 target_counts에 담아 출력.
 """, """
 - `target = '...'` → 열 이름에 공백이 있어 변수에 담아 둠. 말로 풀면 AI가 밑줄로 바꾼다.
 """),
     "default-summary": p("""
-pandas. credit DataFrame, target = 'default payment next month'. 부도(1) 인원을 default_count, 부도율(타깃 평균)을 default_rate에 담고, ID와 target 열을 drop한 입력 표를 X에 만들어. 셋 다 출력.
+pandas. credit DataFrame, target = '다음달 부도'. 부도(1) 인원을 default_count, 부도율(타깃 평균)을 default_rate에 담고, ID와 target 열을 drop한 입력 표를 X에 만들어. 셋 다 출력.
 """, """
 - `ID … drop` → 고객 번호는 식별자. 넣으면 모델이 번호를 외운다.
 - `부도율(타깃 평균)` → 0/1 평균 = 비율.
 """),
     "limit-by-default": p("""
-pandas. credit DataFrame, target 변수에 타깃 열 이름. target으로 groupby한 LIMIT_BAL의 mean을 limit_by_default에 담고 출력.
+pandas. credit DataFrame, target 변수에 타깃 열 이름. target으로 groupby한 신용한도의 mean을 limit_by_default에 담고 출력.
 """, """
-- `target으로 groupby한 LIMIT_BAL의 mean` → 타깃으로 묶어 입력 열 평균 비교. 열의 관련성을 보는 가장 빠른 길.
+- `target으로 groupby한 신용한도의 mean` → 타깃으로 묶어 입력 열 평균 비교. 열의 관련성을 보는 가장 빠른 길.
 """),
     "delay-groups": p("""
-pandas. credit DataFrame, target, pay_columns = ['PAY_0','PAY_2','PAY_3','PAY_4','PAY_5','PAY_6']. (credit[pay_columns] >= 1).any(axis=1)을 credit['has_delay']에 넣고, has_delay로 groupby한 target의 agg(['count','sum','mean'])을 summary에.
+pandas. credit DataFrame, target, pay_columns = ['상환_9월','상환_8월','상환_7월','상환_6월','상환_5월','상환_4월']. (credit[pay_columns] >= 1).any(axis=1)을 credit['has_delay']에 넣고, has_delay로 groupby한 target의 agg(['count','sum','mean'])을 summary에.
 """, """
 - `(… >= 1).any(axis=1)` → "여섯 열 중 하나라도"를 한 줄로. 말로 풀면 반복문이 나온다.
 """),
     "pay0-rate": p("""
-pandas. credit DataFrame, target. PAY_0로 groupby한 target의 agg(['count','mean'])을 pay0_summary에 담고, 상태 0의 부도율을 rate_0, 상태 2의 부도율을 rate_2에 담아 출력.
+pandas. credit DataFrame, target. 상환_9월로 groupby한 target의 agg(['count','mean'])을 pay0_summary에 담고, 상태 0의 부도율을 rate_0, 상태 2의 부도율을 rate_2에 담아 출력.
 """, """
 - `count`도 같이 → 인원 적은 상태의 비율은 못 믿는다.
 - `상태 0의 부도율` → 집계표에서 특정 행 꺼내기(`.loc[0, 'mean']`).
@@ -475,7 +475,7 @@ scikit-learn. y_true=[0,0,1,1,1,0], y_pred=[0,1,1,0,1,0]. accuracy_score, precis
 - `labels=[0,1]` → 혼동 행렬 칸 위치 고정.
 """),
     "credit-model": p("""
-scikit-learn. X_train, X_test, y_train, y_test가 있어(입력 PAY_0, LIMIT_BAL, AGE). models = {'Dummy': DummyClassifier(strategy='most_frequent'), 'Logistic': LogisticRegression(max_iter=1000)}. 각각 Pipeline([('scale', StandardScaler()), ('model', m)])로 fit/predict해서 accuracy, precision, recall, f1 네 지표를 구하고 모델 이름을 인덱스로 한 DataFrame results를 만들어. precision은 zero_division=0.
+scikit-learn. X_train, X_test, y_train, y_test가 있어(입력 상환_9월, 신용한도, AGE). models = {'Dummy': DummyClassifier(strategy='most_frequent'), 'Logistic': LogisticRegression(max_iter=1000)}. 각각 Pipeline([('scale', StandardScaler()), ('model', m)])로 fit/predict해서 accuracy, precision, recall, f1 네 지표를 구하고 모델 이름을 인덱스로 한 DataFrame results를 만들어. precision은 zero_division=0.
 """, """
 - 네 지표 함께 → 불균형 자료에서 accuracy만 보면 속는다.
 - `zero_division=0` → Dummy는 부도를 안 찍어 0으로 나누기가 난다. 미리 처리.
@@ -493,39 +493,39 @@ numpy. probabilities = np.array([0.1,0.35,0.49,0.51,0.8]). 0.5 이상이면 1 �
 """),
     # ---- 3일차 1교시 ----
     "stock-load": p("""
-pandas. data/stock.csv를 parse_dates=['Date']로 읽고 set_index('Date').sort_index()해서 prices에. 행·열 수를 n_rows, n_columns에 담고, 첫 날짜와 마지막 날짜 출력.
+pandas. data/stock.csv를 parse_dates=['날짜']로 읽고 set_index('날짜').sort_index()해서 prices에. 행·열 수를 n_rows, n_columns에 담고, 첫 날짜와 마지막 날짜 출력.
 """, """
 - `parse_dates` → 글자를 날짜로.
-- `set_index('Date').sort_index()` → 날짜 인덱스 + 정렬. 빠지면 뒤의 shift/rolling이 엉킨다.
+- `set_index('날짜').sort_index()` → 날짜 인덱스 + 정렬. 빠지면 뒤의 shift/rolling이 엉킨다.
 """),
     "close-plot": p("""
-pandas + matplotlib. prices(Date 인덱스, Close 열)가 있어. fig, ax = plt.subplots() 뒤 ax.plot(prices.index, prices['Close']). xlabel 'Date', ylabel 'Close'. plt.show().
+pandas + matplotlib. prices(Date 인덱스, 종가 열)가 있어. fig, ax = plt.subplots() 뒤 ax.plot(prices.index, prices['종가']). xlabel '날짜', ylabel '종가'. plt.show().
 """, """
 - `ax.plot` → 시간 자료는 선그래프. x축은 날짜 인덱스.
 """),
     "price-range": p("""
-pandas. prices(Date 인덱스, Close 열). 첫 날짜 first_date, 마지막 날짜 last_date, 최고 종가 max_close, 그 날짜 max_date에 담고 전부 출력. 날짜는 index.min()/max(), 최고 종가 날짜는 idxmax().
+pandas. prices(Date 인덱스, 종가 열). 첫 날짜 first_date, 마지막 날짜 last_date, 최고 종가 max_close, 그 날짜 max_date에 담고 전부 출력. 날짜는 index.min()/max(), 최고 종가 날짜는 idxmax().
 """, """
 - `idxmax()` → 최댓값이 "언제"인지. 모르면 정렬해서 첫 행 꺼내는 긴 코드가 온다.
 """),
     # ---- 3일차 2교시 ----
     "daily-return": p("""
-pandas. prices(Date 인덱스, Close 열). prices['Close'].pct_change()를 return_1 열로 추가하고 prices.head() 출력.
+pandas. prices(Date 인덱스, 종가 열). prices['종가'].pct_change()를 return_1 열로 추가하고 prices.head() 출력.
 """, """
 - `pct_change()` → 일별 수익률 한 줄. 말로 풀면 `diff()/shift()`가 나온다.
 """),
     "moving-average": p("""
-pandas. prices(Date 인덱스, Close 열). prices['Close'].rolling(5).mean()을 ma5 열로 추가하고 prices.head(6) 출력.
+pandas. prices(Date 인덱스, 종가 열). prices['종가'].rolling(5).mean()을 ma5 열로 추가하고 prices.head(6) 출력.
 """, """
 - `rolling(5).mean()` → 5거래일 이동평균. 창 크기는 숫자로.
 """),
     "lag-next": p("""
-pandas. prices(Date 인덱스, Close 열). prices['Close'].shift(1)을 lag_close_1 열로, shift(-1)을 target_next_close 열로 추가.
+pandas. prices(Date 인덱스, 종가 열). prices['종가'].shift(1)을 lag_close_1 열로, shift(-1)을 target_next_close 열로 추가.
 """, """
 - `shift(1)` 어제, `shift(-1)` 내일 → 부호를 틀리면 과거·미래가 바뀌어 누수.
 """),
     "stock-frame": p("""
-pandas. prices(Date 인덱스, Close 열)와 빈 frame=pd.DataFrame(index=prices.index)가 있어. frame에 close(Close), return_1(pct_change), ma5(rolling(5).mean()), lag_close_1(shift(1)), target_next_close(shift(-1)), target_date(pd.Series(prices.index, index=prices.index).shift(-1)) 여섯 열을 만들고 frame = frame.dropna().copy(). 396행이어야 해.
+pandas. prices(Date 인덱스, 종가 열)와 빈 frame=pd.DataFrame(index=prices.index)가 있어. frame에 close(종가), return_1(pct_change), ma5(rolling(5).mean()), lag_close_1(shift(1)), target_next_close(shift(-1)), target_date(pd.Series(prices.index, index=prices.index).shift(-1)) 여섯 열을 만들고 frame = frame.dropna().copy(). 396행이어야 해.
 """, """
 - `target_date` → 정답 날짜를 남겨 둔다. 다음 교시의 경계 누수를 막기 위해.
 - `dropna()` → 불완전한 행 제거. `396행` → 검산.
@@ -580,7 +580,7 @@ scikit-learn. X_train, X_test, y_train, y_test(temporal split). 기준 예측 X_
 - `False여도 그대로 둬` → "개선"을 요구하면 AI는 기간이나 매개변수를 바꿔 이기는 결과를 만든다. 정직한 비교.
 """),
     "forecast-plot": p("""
-scikit-learn + matplotlib. frame, X_train, X_test, y_train, y_test, test_mask(temporal split). Pipeline(StandardScaler, Ridge(alpha=1))을 fit해 prediction을 구하고, frame.loc[test_mask, 'target_date']를 인덱스로 actual(y_test 값)과 prediction 두 열인 comparison DataFrame을 만들어. fig, ax에 두 선을 그리고 xlabel 'Target date', 범례 표시, plt.show().
+scikit-learn + matplotlib. frame, X_train, X_test, y_train, y_test, test_mask(temporal split). Pipeline(StandardScaler, Ridge(alpha=1))을 fit해 prediction을 구하고, frame.loc[test_mask, 'target_date']를 인덱스로 actual(y_test 값)과 prediction 두 열인 comparison DataFrame을 만들어. fig, ax에 두 선을 그리고 xlabel '정답 날짜', 범례 표시, plt.show().
 """, """
 - `target_date를 인덱스로` → x축은 정답 날짜. 입력 날짜로 그리면 예측이 하루 앞당겨 보인다.
 """),

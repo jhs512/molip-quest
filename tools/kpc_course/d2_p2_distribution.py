@@ -14,10 +14,10 @@ UNIT = unit('distribution', '2일차 · 2교시 — 분포와 관계 시각화',
 
         ```python
         import seaborn as sns
-        known_age = titanic.dropna(subset=['age'])
+        known_age = titanic.dropna(subset=['나이'])
         fig, ax = plt.subplots()
-        sns.histplot(data=known_age, x='age', bins=20, ax=ax)   # 히스토그램
-        ax.scatter(known['age'], known['fare'])                 # 산점도
+        sns.histplot(data=known_age, x='나이', bins=20, ax=ax)   # 히스토그램
+        ax.scatter(known['나이'], known['요금'])                 # 산점도
         sns.heatmap(corr, annot=True, vmin=-1, vmax=1, ax=ax)   # 히트맵
         ```
 
@@ -27,39 +27,39 @@ UNIT = unit('distribution', '2일차 · 2교시 — 분포와 관계 시각화',
                     '히스토그램은 구간(`bins`)마다 개수를 셉니다. 구간 수를 바꾸면 같은 자료도 다르게 보이므로 구간 수를 함께 적습니다.')),
     coding('age-hist', '나이는 어떻게 퍼져 있을까',
         goal="""
-        나이가 기록된 승객만 `known_age`에 담고, `sns.histplot`으로 `age`를 구간 20개짜리 히스토그램으로 그리세요. 축 이름과 제목을 영어로 붙이고 `plt.show()`로 띄웁니다.
+        나이가 기록된 승객만 `known_age`에 담고, `sns.histplot`으로 `나이`를 구간 20개짜리 히스토그램으로 그리세요. 축 이름과 제목을 붙이고 `plt.show()`로 띄웁니다.
 
         막대 20개의 높이를 전부 더하면 나이를 아는 인원 1046이 됩니다. 어느 나이대에 사람이 몰려 있는지 보세요.
         """,
         hint="""
-        `known_age = titanic.dropna(subset=['age'])`로 빈 나이를 뺀 뒤 `fig, ax = plt.subplots()`를 만들고 `sns.histplot(data=known_age, x='age', bins=20, ax=ax)`로 그립니다. `ax.set(xlabel='Age', ylabel='Passenger count', title='Known ages only')`로 꾸미세요.
+        `known_age = titanic.dropna(subset=['나이'])`로 빈 나이를 뺀 뒤 `fig, ax = plt.subplots()`를 만들고 `sns.histplot(data=known_age, x='나이', bins=20, ax=ax)`로 그립니다. `ax.set(xlabel='나이', ylabel='Passenger count', title='Known ages only')`로 꾸미세요.
         """,
         starter=TI + PLOT + "# known_age, fig, ax를 준비하세요\n",
-        solution=TI + PLOT + "known_age=titanic.dropna(subset=['age'])\nfig,ax=plt.subplots()\nsns.histplot(data=known_age,x='age',bins=20,ax=ax)\nax.set(xlabel='Age',ylabel='Passenger count',title='Known ages only')\nplt.show()\n",
+        solution=TI + PLOT + "known_age=titanic.dropna(subset=['나이'])\nfig,ax=plt.subplots()\nsns.histplot(data=known_age,x='나이',bins=20,ax=ax)\nax.set(xlabel='나이',ylabel='Passenger count',title='Known ages only')\nplt.show()\n",
         check="assert len(s['known_age'])==1046\nassert len(s['ax'].patches)==20\nassert round(sum(p.get_height() for p in s['ax'].patches))==1046"),
     coding('fare-scatter', '나이와 요금은 같이 움직일까',
         goal="""
-        승객 한 명을 점 하나로 찍어 봅니다. 나이와 요금이 모두 기록된 승객만 `known`에 담고, `ax.scatter(known['age'], known['fare'])`로 산점도를 그린 뒤 x축 이름 `Age`, y축 이름 `Fare`를 붙이고 띄우세요.
+        승객 한 명을 점 하나로 찍어 봅니다. 나이와 요금이 모두 기록된 승객만 `known`에 담고, `ax.scatter(known['나이'], known['요금'])`로 산점도를 그린 뒤 x축 이름 `나이`, y축 이름 `요금`을 붙이고 띄우세요.
 
         1045명이 점으로 찍힙니다. 점들이 어떤 모양을 이루는지, 아니면 아무 모양도 없는지 보세요.
         """,
         hint="""
-        `known = titanic.dropna(subset=['age', 'fare'])`처럼 `subset`에 열 두 개를 넣으면 둘 다 값이 있는 행만 남습니다. 점이 많이 겹치면 `ax.scatter(..., alpha=0.4)`로 반투명하게 그리면 밀도가 보입니다.
+        `known = titanic.dropna(subset=['나이', '요금'])`처럼 `subset`에 열 두 개를 넣으면 둘 다 값이 있는 행만 남습니다. 점이 많이 겹치면 `ax.scatter(..., alpha=0.4)`로 반투명하게 그리면 밀도가 보입니다.
         """,
         starter=TI + PLOT + "# known, fig, ax를 준비하세요\n",
-        solution=TI + PLOT + "known = titanic.dropna(subset=['age', 'fare'])\nfig, ax = plt.subplots()\nax.scatter(known['age'], known['fare'], alpha=0.4)\nax.set(xlabel='Age', ylabel='Fare', title='Age vs fare')\nplt.show()\n",
-        check="assert len(s['known'])==1045\nassert len(s['ax'].collections)>=1 and len(s['ax'].collections[0].get_offsets())==1045\nassert s['ax'].get_xlabel()=='Age' and s['ax'].get_ylabel()=='Fare'"),
+        solution=TI + PLOT + "known = titanic.dropna(subset=['나이', '요금'])\nfig, ax = plt.subplots()\nax.scatter(known['나이'], known['요금'], alpha=0.4)\nax.set(xlabel='나이', ylabel='요금', title='Age vs fare')\nplt.show()\n",
+        check="assert len(s['known'])==1045\nassert len(s['ax'].collections)>=1 and len(s['ax'].collections[0].get_offsets())==1045\nassert s['ax'].get_xlabel()=='나이' and s['ax'].get_ylabel()=='요금'"),
     coding('correlation', '여섯 열의 상관계수를 색으로',
         goal="""
         준비된 `columns`의 숫자 열 여섯 개로 상관계수 표를 만들어 `corr`에 저장하고, `sns.heatmap`으로 `annot=True`(칸에 숫자 표시), `vmin=-1`, `vmax=1`인 히트맵을 그려 띄우세요.
 
-        6×6 표의 대각선이 전부 1이면 맞게 만든 것입니다. `survived` 행을 따라가며 어느 열이 생존과 가장 같이 움직이는지 찾아보세요.
+        6×6 표의 대각선이 전부 1이면 맞게 만든 것입니다. `생존` 행을 따라가며 어느 열이 생존과 가장 같이 움직이는지 찾아보세요.
         """,
         hint="""
         `corr = titanic[columns].corr()`가 상관계수 표입니다. `sns.heatmap(corr, annot=True, vmin=-1, vmax=1, center=0, cmap='coolwarm', ax=ax)`처럼 그리면 양수는 붉게, 음수는 푸르게 칠해져 방향이 바로 보입니다.
         """,
-        starter=TI + PLOT + "columns=['pclass','age','sibsp','parch','fare','survived']\n# corr, fig, ax를 만드세요\n",
-        solution=TI + PLOT + "columns=['pclass','age','sibsp','parch','fare','survived']\ncorr=titanic[columns].corr()\nfig,ax=plt.subplots()\nsns.heatmap(corr,annot=True,vmin=-1,vmax=1,center=0,cmap='coolwarm',ax=ax)\nplt.show()\n",
+        starter=TI + PLOT + "columns=['객실등급','나이','형제배우자','부모자녀','요금','생존']\n# corr, fig, ax를 만드세요\n",
+        solution=TI + PLOT + "columns=['객실등급','나이','형제배우자','부모자녀','요금','생존']\ncorr=titanic[columns].corr()\nfig,ax=plt.subplots()\nsns.heatmap(corr,annot=True,vmin=-1,vmax=1,center=0,cmap='coolwarm',ax=ax)\nplt.show()\n",
         check="assert s['corr'].shape==(6,6)\nassert all(abs(s['corr'].iloc[i,i]-1)<1e-9 for i in range(6))\nassert len(s['ax'].collections)>0 and s['ax'].collections[0].get_clim()==(-1,1)"),
     quiz('distribution-check', '2일차 2교시 점검',
         choice('"요금이 비싼 사람이 나이도 많을까?"에 답하려면 어떤 그래프가 맞나요?',
@@ -73,7 +73,7 @@ UNIT = unit('distribution', '2일차 · 2교시 — 분포와 관계 시각화',
         choice('`bins=20`을 `bins=5`로 바꾸면 무엇이 달라지나요?',
                ['같은 자료가 더 거친 다섯 막대로 보인다', '자료 자체가 줄어든다', '그래프가 산점도가 된다'], 0,
                '구간 수는 보는 방식일 뿐 자료는 그대로입니다. 그래서 히스토그램을 보고할 때 구간 수를 적습니다.'),
-        choice('`fare`와 `survived`의 상관계수가 양수입니다. 올바른 해석은 무엇인가요?',
+        choice('`요금`과 `생존`의 상관계수가 양수입니다. 올바른 해석은 무엇인가요?',
                ['이 자료에서 요금이 비쌀수록 생존자 비율이 높은 경향이 관찰된다', '요금을 더 내면 살아남는다', '요금과 생존은 무관하다'], 0,
                '상관은 함께 변하는 경향입니다. 요금이 비싼 사람은 1등실 승객이었을 가능성이 높고, 구조 순서 같은 다른 요인이 있을 수 있습니다.'),
         short('표의 값을 색으로 칠해 한눈에 보는 그래프를 무엇이라고 하나요?', ['히트맵', 'heatmap', 'heat map'],

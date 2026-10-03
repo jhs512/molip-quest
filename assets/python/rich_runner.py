@@ -69,8 +69,8 @@ try:
         import matplotlib.pyplot as plt
         plt.ioff()
         plt.show = capture_plots
-        if sys.platform == 'win32':
-            plt.rcParams['font.family'] = 'Malgun Gothic'
+        # Data columns and category values are Korean; fall back through the common system fonts.
+        plt.rcParams['font.family'] = ['Malgun Gothic', 'Apple SD Gothic Neo', 'AppleGothic', 'NanumGothic', 'Noto Sans KR', 'Noto Sans CJK KR', 'DejaVu Sans']
         plt.rcParams['axes.unicode_minus'] = False
     tree = ast.parse(source, filename='main.py')
     # Like a notebook, a final expression may produce a table.

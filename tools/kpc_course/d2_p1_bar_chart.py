@@ -12,7 +12,7 @@ UNIT = unit('bar-chart', '2일차 · 1교시 — Figure·Axes와 막대그래프
         import matplotlib.pyplot as plt
         fig, ax = plt.subplots()          # 종이(fig) 한 장, 그래프 영역(ax) 하나
         ax.bar(['A', 'B', 'C'], [30000, 40000, 60000])   # 막대 그리기
-        ax.set(title='Amount by stock', ylabel='Amount')  # 제목과 축 이름
+        ax.set(title='종목별 금액', ylabel='금액')  # 제목과 축 이름
         plt.show()                        # 앱 화면에 표시
         ```
 
@@ -20,13 +20,13 @@ UNIT = unit('bar-chart', '2일차 · 1교시 — Figure·Axes와 막대그래프
 
         그래프를 그리기 전에 두 가지를 정해 두면 그림이 흔들리지 않습니다. 첫째, **y축이 무엇인가.** 인원인지 비율인지 퍼센트인지에 따라 같은 그림이 다른 말을 합니다. 생존율처럼 0~1 사이의 비율은 100을 곱해 퍼센트로 그리고 y축 범위를 `ylim=(0, 100)`으로 고정하는 것이 읽기 쉽습니다. 둘째, **축을 어디서 시작하는가.** y축을 0이 아니라 60부터 시작하게 자르면 62%와 70%의 차이가 두 배처럼 보입니다. 과장하려는 뜻이 없어도 그렇게 읽힙니다. 비율 막대는 0부터 그리세요.
 
-        축 이름과 제목은 영어로 적습니다. 한글 글꼴이 없는 컴퓨터에서는 한글이 네모로 깨지기 때문입니다.
+        축 이름과 제목은 한글로 적어도 됩니다. 이 앱의 실행 환경이 한글 글꼴을 미리 골라 둡니다.
         """,
         check=short('`matplotlib`에서 종이 한 장에 해당하는 전체 그림 객체의 이름은 무엇인가요? (`fig, ax = plt.subplots()`의 `fig`)', ['Figure', 'figure', '피겨'],
                     '`Figure`가 종이 한 장, `Axes`가 그 위의 그래프 영역입니다. 막대나 선은 `ax`에 그립니다.')),
     coding('simple-bar', '리스트로 첫 막대그래프',
         goal="""
-        어제 종목 세 개의 금액으로 첫 막대그래프를 그립니다. `fig, ax = plt.subplots()`로 종이와 그래프 영역을 만들고, `ax.bar(names, amounts)`로 막대를 그린 뒤, `ax.set(title='Amount by stock', ylabel='Amount')`로 제목과 y축 이름을 붙이고 `plt.show()`로 띄우세요.
+        어제 종목 세 개의 금액으로 첫 막대그래프를 그립니다. `fig, ax = plt.subplots()`로 종이와 그래프 영역을 만들고, `ax.bar(names, amounts)`로 막대를 그린 뒤, `ax.set(title='종목별 금액', ylabel='금액')`로 제목과 y축 이름을 붙이고 `plt.show()`로 띄우세요.
 
         막대 세 개가 30000, 40000, 60000 높이로 보이면 맞게 한 것입니다.
         """,
@@ -34,32 +34,32 @@ UNIT = unit('bar-chart', '2일차 · 1교시 — Figure·Axes와 막대그래프
         개념의 네 줄 그대로입니다. 순서는 `subplots` → `bar` → `set` → `show`. `ax.set()`의 괄호 안에 `title=`, `ylabel=`을 쉼표로 나란히 적습니다.
         """,
         starter="import matplotlib.pyplot as plt\nnames = ['A', 'B', 'C']\namounts = [30000, 40000, 60000]\n# fig, ax를 만들고 막대그래프를 그리세요\n",
-        solution="import matplotlib.pyplot as plt\nnames = ['A', 'B', 'C']\namounts = [30000, 40000, 60000]\nfig, ax = plt.subplots()\nax.bar(names, amounts)\nax.set(title='Amount by stock', ylabel='Amount')\nplt.show()\n",
-        check="assert len(s['ax'].patches)==3\nassert [p.get_height() for p in s['ax'].patches]==[30000,40000,60000]\nassert s['ax'].get_ylabel()=='Amount'"),
+        solution="import matplotlib.pyplot as plt\nnames = ['A', 'B', 'C']\namounts = [30000, 40000, 60000]\nfig, ax = plt.subplots()\nax.bar(names, amounts)\nax.set(title='종목별 금액', ylabel='금액')\nplt.show()\n",
+        check="assert len(s['ax'].patches)==3\nassert [p.get_height() for p in s['ax'].patches]==[30000,40000,60000]\nassert s['ax'].get_ylabel()=='금액'"),
     coding('sex-bar', '성별 생존율을 퍼센트로 그리기',
         goal="""
-        어제의 성별 생존율 표를 그림으로 바꿉니다. `rates`에 성별 `survived` 평균을 저장하고, `rates * 100`을 막대로 그리세요. y축 범위는 `ylim=(0, 100)`, x축 이름은 `Sex`, y축 이름은 `Survival rate (%)`로 지정하고 `plt.show()`로 띄웁니다.
+        어제의 성별 생존율 표를 그림으로 바꿉니다. `rates`에 성별 `생존` 평균을 저장하고, `rates * 100`을 막대로 그리세요. y축 범위는 `ylim=(0, 100)`, x축 이름은 `성별`, y축 이름은 `생존율 (%)`로 지정하고 `plt.show()`로 띄웁니다.
 
         막대 두 개가 각각 여성·남성 생존율 퍼센트 높이로 보이면 맞게 한 것입니다.
         """,
         hint="""
-        `rates = titanic.groupby('gender')['survived'].mean()`은 어제와 같습니다. `ax.bar(rates.index, rates * 100)`로 그리고 `ax.set(xlabel='Sex', ylabel='Survival rate (%)', ylim=(0, 100), title='Survival by gender')`로 꾸미세요.
+        `rates = titanic.groupby('성별')['생존'].mean()`은 어제와 같습니다. `ax.bar(rates.index, rates * 100)`로 그리고 `ax.set(xlabel='성별', ylabel='생존율 (%)', ylim=(0, 100), title='Survival by gender')`로 꾸미세요.
         """,
         starter=TI + PLOT + "# rates, fig, ax를 만들고 막대그래프를 그리세요\n",
-        solution=TI + PLOT + "rates=titanic.groupby('gender')['survived'].mean()\nfig,ax=plt.subplots()\nax.bar(rates.index,rates*100)\nax.set(xlabel='Sex',ylabel='Survival rate (%)',ylim=(0,100),title='Survival by gender')\nplt.show()\n",
-        check="assert len(s['ax'].patches)==2\nassert s['ax'].get_ylim()==(0.0,100.0)\nassert s['ax'].get_ylabel()=='Survival rate (%)'\nassert s['ax'].get_xlabel()=='Sex'\nheights = {label.get_text(): bar.get_height() for label,bar in zip(s['ax'].get_xticklabels(),s['ax'].patches)}\nassert set(heights)=={'female','male'}\nassert abs(heights['female']-339/466*100)<1e-8\nassert abs(heights['male']-161/843*100)<1e-8"),
+        solution=TI + PLOT + "rates=titanic.groupby('성별')['생존'].mean()\nfig,ax=plt.subplots()\nax.bar(rates.index,rates*100)\nax.set(xlabel='성별',ylabel='생존율 (%)',ylim=(0,100),title='Survival by gender')\nplt.show()\n",
+        check="assert len(s['ax'].patches)==2\nassert s['ax'].get_ylim()==(0.0,100.0)\nassert s['ax'].get_ylabel()=='생존율 (%)'\nassert s['ax'].get_xlabel()=='성별'\nheights = {label.get_text(): bar.get_height() for label,bar in zip(s['ax'].get_xticklabels(),s['ax'].patches)}\nassert set(heights)=={'여성','남성'}\nassert abs(heights['여성']-339/466*100)<1e-8\nassert abs(heights['남성']-161/843*100)<1e-8"),
     coding('pclass-bar', '등급별 생존율 막대그래프',
         goal="""
-        같은 그림을 객실 등급으로 그립니다. `rates`에 등급별 `survived` 평균을 저장하고 `rates * 100`을 막대로 그리세요. y축 범위 0~100, x축 이름 `Pclass`, y축 이름 `Survival rate (%)`입니다.
+        같은 그림을 객실 등급으로 그립니다. `rates`에 등급별 `생존` 평균을 저장하고 `rates * 100`을 막대로 그리세요. y축 범위 0~100, x축 이름 `객실등급`, y축 이름 `생존율 (%)`입니다.
 
         막대 세 개가 1등급에서 3등급으로 갈수록 낮아지는지 보세요.
         """,
         hint="""
-        성별 그래프에서 `groupby('gender')`를 `groupby('pclass')`로 바꾸면 됩니다. 등급 1·2·3이 숫자라 x축 간격이 어색하면 `ax.bar(rates.index.astype(str), rates * 100)`처럼 글자로 바꿔 넘기세요.
+        성별 그래프에서 `groupby('성별')`를 `groupby('객실등급')`로 바꾸면 됩니다. 등급 1·2·3이 숫자라 x축 간격이 어색하면 `ax.bar(rates.index.astype(str), rates * 100)`처럼 글자로 바꿔 넘기세요.
         """,
         starter=TI + PLOT + "# rates, fig, ax를 만들고 막대그래프를 그리세요\n",
-        solution=TI + PLOT + "rates = titanic.groupby('pclass')['survived'].mean()\nfig, ax = plt.subplots()\nax.bar(rates.index.astype(str), rates * 100)\nax.set(xlabel='Pclass', ylabel='Survival rate (%)', ylim=(0, 100), title='Survival by class')\nplt.show()\n",
-        check="assert len(s['ax'].patches)==3\nassert s['ax'].get_ylim()==(0.0,100.0) and s['ax'].get_xlabel()=='Pclass'\nheights=sorted(p.get_height() for p in s['ax'].patches)\nassert abs(heights[0]-181/709*100)<1e-8 and abs(heights[2]-200/323*100)<1e-8"),
+        solution=TI + PLOT + "rates = titanic.groupby('객실등급')['생존'].mean()\nfig, ax = plt.subplots()\nax.bar(rates.index.astype(str), rates * 100)\nax.set(xlabel='객실등급', ylabel='생존율 (%)', ylim=(0, 100), title='Survival by class')\nplt.show()\n",
+        check="assert len(s['ax'].patches)==3\nassert s['ax'].get_ylim()==(0.0,100.0) and s['ax'].get_xlabel()=='객실등급'\nheights=sorted(p.get_height() for p in s['ax'].patches)\nassert abs(heights[0]-181/709*100)<1e-8 and abs(heights[2]-200/323*100)<1e-8"),
     quiz('bar-check', '2일차 1교시 점검',
         short('종이 위에서 실제로 그래프가 그려지는 영역, `fig, ax = plt.subplots()`의 `ax`를 부르는 이름은 무엇인가요?', ['Axes', 'axes', '축 영역'],
               '`Axes`가 그래프 영역입니다. 막대·선·축 이름은 전부 `ax`에 붙입니다.'),
