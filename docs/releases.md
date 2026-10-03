@@ -1,19 +1,27 @@
 # 릴리즈 설치 파일
 
-릴리즈에는 다음 세 파일을 함께 첨부합니다. 하나라도 없으면 릴리즈 준비 워크플로가 중단됩니다.
+`Release installers` 워크플로가 main의 모든 커밋(및 수동 실행)마다 두 플랫폼 설치 파일을 빌드하고, 둘 다 준비됐을 때만 `v<Cargo 버전>-build.<실행 번호>` 태그의 GitHub Release를 최신(latest)으로 발행합니다. 하나라도 빌드나 형식 검사에 실패하면 릴리즈를 만들지 않습니다.
 
-| 플랫폼 | 필수 파일 | 현재 상태 |
-| --- | --- | --- |
-| Windows x64 | molip-quest-windows-x64-setup.exe | Inno Setup 설치·제거 검증과 빌드 워크플로 추가. CI 실행 결과 확인 필요 |
-| Android | molip-quest-android.apk | 모바일 앱 및 내장 Python 실행 환경 구현 필요 |
-| iOS | molip-quest-ios.ipa | 모바일 앱·내장 Python 실행 환경 구현, Apple 서명·프로비저닝 필요 |
+| 플랫폼 | 파일 | 빌드 방식 | 현재 상태 |
+| --- | --- | --- | --- |
+| Windows x64 | molip-quest-windows-x64-setup.exe | Inno Setup. CI에서 무인 설치·제거까지 검증 | 자동 발행. 인증서 서명 없음 (SmartScreen 경고 가능) |
+| macOS Apple Silicon | molip-quest-macos-arm64.dmg | `packaging/macos/bundle.sh`가 .app 번들을 만들고 ad-hoc 서명 후 DMG로 묶음. CI에서 DMG 마운트·arm64·서명 검증 | 자동 발행. Apple 공증 없음 (아래 첫 실행 안내 필요). 실기기 수동 검증은 아직 없음 |
+| Android | molip-quest-android.apk | 미구현 | 코딩 실행 없이 개념·퀴즈만 진행하는 열람 모드 APK를 검토 중 |
 
-현재 Cargo 설정, 윈도 메뉴, 클립보드, Python subprocess 실행 방식은 데스크톱용입니다. 확장자를 바꾸거나 빈 모바일 앱을 만드는 것으로 코딩 학습 기능을 제공할 수 없습니다.
+형식 검사(`tools/verify-release-assets.py`)는 EXE 헤더와 DMG 트레일러만 확인하며 앱 동작·서명을 보증하지 않습니다. Python·수업 패키지는 두 플랫폼 모두 README에 따라 사전 설치하며 설치 파일에 포함하지 않습니다.
 
-모바일에서는 앱 내부에 Python과 pandas, matplotlib, scikit-learn 등 수업 패키지를 포함하고, 임베디드 인터프리터를 통해 실행·채점·표·그래프 출력을 지원해야 합니다. 서버나 AI를 추가하지 않으며 오프라인 학습 요구사항을 유지합니다. Android SDK/NDK 및 macOS/Xcode 빌드 환경과 실제 기기 검증이 필요합니다. iOS는 배포 방식에 맞는 Apple 인증서와 프로비저닝 프로파일이 필요하며 IPA 파일만 내려받아 모든 iPhone에 바로 설치할 수 있는 것은 아닙니다.
+## macOS 첫 실행
 
-공식 참고: [Dioxus 배포](https://dioxuslabs.com/learn/0.7/tutorial/bundle/), [Python iOS 임베딩](https://docs.python.org/3/using/ios.html), [Python Android 임베딩](https://docs.python.org/3/using/android.html).
+DMG를 열어 `몰입 퀘스트.app`을 Applications로 끌어 넣습니다. 공증되지 않은 앱이므로 처음에는 더블클릭 대신 **우클릭 → 열기**를 선택하거나, 터미널에서 다음을 실행합니다.
 
-`Windows installer` 워크플로는 main 변경 또는 수동 실행으로 설치 파일을 `release-windows-x64` 아티팩트에 보관합니다. Python·수업 패키지와 WebView2는 README에 따라 사전 설치하며 이 설치 파일에는 포함하지 않습니다. Windows 인증서 서명은 아직 구성하지 않았습니다.
+```bash
+xattr -cr "/Applications/몰입 퀘스트.app"
+```
 
-모바일 구현과 서명·기기 검증 완료 후 모바일 빌드가 각각 `release-android`, `release-ios` 아티팩트를 생성하도록 연결합니다. `Prepare three-platform release`에 기존 버전 태그와 세 빌드의 실행 ID를 넣으면 파일 존재·형식 검사 후 세 설치 파일이 첨부된 초안 릴리즈를 만듭니다. 형식 검사는 실제 앱 동작이나 서명 검증을 대체하지 않습니다. 모바일 빌드가 아직 없으므로 현재는 세 플랫폼 릴리즈를 만들 수 없습니다.
+학습용 Python은 `MOLIP_PYTHON` 환경 변수로 지정하거나, 지정하지 않으면 PATH의 `python3`를 사용합니다.
+
+## 모바일에 대한 판단
+
+현재 앱은 로컬 Python 프로세스를 띄워 pandas·scikit-learn을 실행하는 데스크톱 구조입니다. 모바일에서 같은 학습 기능을 제공하려면 Python과 수업 패키지를 앱 안에 임베딩해야 하며 이는 별도의 대형 작업입니다. iOS는 Apple 인증서·프로비저닝이 필요해 범위에서 제외했습니다. Android는 Python 실행 없이 개념·퀴즈를 진행하고 코딩 미션은 열람만 하는 모드로 제한적 APK를 제공하는 방안을 검토합니다.
+
+공식 참고: [Dioxus 배포](https://dioxuslabs.com/learn/0.7/tutorial/bundle/), [Python Android 임베딩](https://docs.python.org/3/using/android.html).

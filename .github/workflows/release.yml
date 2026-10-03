@@ -1,51 +1,107 @@
-name: Prepare three-platform release
+name: Release installers
+
+# Every push to main publishes a GitHub Release carrying the Windows x64 installer
+# and the macOS Apple Silicon disk image. The release job refuses to publish
+# unless both installers were built and pass the container checks.
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
-    inputs:
-      tag:
-        description: Existing version tag, for example v0.1.0
-        required: true
-      windows_run:
-        description: Successful workflow run with release-windows-x64 artifact
-        required: true
-      android_run:
-        description: Successful workflow run with release-android artifact
-        required: true
-      ios_run:
-        description: Successful workflow run with release-ios artifact
-        required: true
 
 permissions:
-  actions: read
   contents: write
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Build release executable
+        run: cargo build --release --locked --bin molip-quest
+      - name: Prepare Inno Setup
+        shell: pwsh
+        run: |
+          if (!(Test-Path 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe')) {
+            choco install innosetup --yes --no-progress
+            if ($LASTEXITCODE -ne 0) { throw 'Inno Setup installation failed.' }
+          }
+      - name: Build installer
+        shell: pwsh
+        run: |
+          $version = (Select-String '^version = "([^"]+)"' Cargo.toml | Select-Object -First 1).Matches.Groups[1].Value
+          & 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' "/DAppVersion=$version" packaging/windows/setup.iss
+          if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed.' }
+      - name: Verify installation and uninstallation
+        shell: pwsh
+        run: |
+          $installPath = Join-Path $env:RUNNER_TEMP 'molip-install-check'
+          $installer = Start-Process target/installers/molip-quest-windows-x64-setup.exe -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', "/DIR=$installPath") -Wait -PassThru
+          if ($installer.ExitCode -ne 0 -or !(Test-Path "$installPath/molip-quest.exe")) { throw 'Installation failed.' }
+          $uninstaller = Start-Process "$installPath/unins000.exe" -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART') -Wait -PassThru
+          if ($uninstaller.ExitCode -ne 0) { throw 'Uninstallation failed.' }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-windows-x64
+          path: target/installers/molip-quest-windows-x64-setup.exe
+          if-no-files-found: error
+
+  macos:
+    # macos-latest is an Apple Silicon runner, so this produces an arm64 build.
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Build release executable
+        run: cargo build --release --locked --bin molip-quest
+      - name: Assemble app bundle and disk image
+        run: bash packaging/macos/bundle.sh
+      - name: Verify the bundle launches from the disk image
+        run: |
+          set -euo pipefail
+          hdiutil attach target/installers/molip-quest-macos-arm64.dmg -mountpoint /Volumes/molip-check -nobrowse
+          test -x "/Volumes/molip-check/몰입 퀘스트.app/Contents/MacOS/molip-quest"
+          file "/Volumes/molip-check/몰입 퀘스트.app/Contents/MacOS/molip-quest" | grep -q arm64
+          codesign --verify --deep --strict "/Volumes/molip-check/몰입 퀘스트.app"
+          hdiutil detach /Volumes/molip-check
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-macos-arm64
+          path: target/installers/molip-quest-macos-arm64.dmg
+          if-no-files-found: error
+
   release:
+    needs: [windows, macos]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Download all required platform artifacts
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          merge-multiple: true
+          path: target/release-assets
+      - name: Require real installer containers for both platforms
+        run: python3 tools/verify-release-assets.py target/release-assets
+      - name: Publish release for this commit
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
-          WINDOWS_RUN: ${{ inputs.windows_run }}
-          ANDROID_RUN: ${{ inputs.android_run }}
-          IOS_RUN: ${{ inputs.ios_run }}
+          RUN_NUMBER: ${{ github.run_number }}
+          COMMIT_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
-          gh run download "$WINDOWS_RUN" --name release-windows-x64 --dir target/release-assets
-          gh run download "$ANDROID_RUN" --name release-android --dir target/release-assets
-          gh run download "$IOS_RUN" --name release-ios --dir target/release-assets
-      - name: Require real installer containers for all three platforms
-        run: python3 tools/verify-release-assets.py target/release-assets
-      - name: Create draft with all three installers
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-          RELEASE_TAG: ${{ inputs.tag }}
-        run: |
-          gh release create "$RELEASE_TAG" --verify-tag --draft --title "$RELEASE_TAG" --generate-notes \
+          version=$(sed -n 's/^version = "\([^"]*\)"/\1/p' Cargo.toml | head -n 1)
+          tag="v${version}-build.${RUN_NUMBER}"
+          subject=$(git log -1 --format=%s "$COMMIT_SHA")
+          gh release create "$tag" --target "$COMMIT_SHA" --latest --title "$tag — $subject" --generate-notes \
             target/release-assets/molip-quest-windows-x64-setup.exe \
-            target/release-assets/molip-quest-android.apk \
-            target/release-assets/molip-quest-ios.ipa
+            target/release-assets/molip-quest-macos-arm64.dmg
