@@ -44,6 +44,7 @@ pub fn Learning(course: Course) -> Element {
         .filter(|u| unlocked.contains(&u.id))
         .map(|u| u.id.clone());
     let active_id = active.id.clone();
+    let following_id = units.get(position + 1).map(|u| u.id.clone());
     rsx! {header {class:"practice-header", h1 {"{course.title}"} span {{format!("완료 {} / {} 단원",completed.len(),course.total_units())}} DoctorPanel {}}
         div {class:"learning", details {class:"curriculum-menu", summary {"수업 목차 ▾"} nav {class:"curriculum", h2 {"수업 목차"}
             for chapter in &course.chapters {h3 {{format!("{} · {}/{}",chapter.title,chapter.units.iter().filter(|u|completed.contains(&u.id)).count(),chapter.units.len())}}
@@ -53,10 +54,13 @@ pub fn Learning(course: Course) -> Element {
         for active in [active] {UnitFlow {key:"{active.id}-{active.revision}", course_id:course.id.clone(), unit:active, has_previous_unit:previous.is_some(),has_next_unit:next.is_some(),
             onpreviousunit:{let previous=previous.clone();move |_|{if let Some(id)=&previous {selected.set(id.clone());}}},
             onnextunit:{let next=next.clone();move |_|{if let Some(id)=&next {selected.set(id.clone());}}},
-            oncompleted:{let active_id=active_id.clone();move |passed|{selected.set(active_id.clone());refresh+=1;if passed {clear_popup.set(true);}}}}}
+            oncompleted:{let active_id=active_id.clone();let following_id=following_id.clone();let course=course.clone();move |passed|{
+                let unit_finished=passed&&molip_quest::learning_store::LearningStore::user_store().and_then(|store|store.completed(&course)).is_ok_and(|done|done.contains(&active_id));
+                selected.set(if unit_finished {following_id.clone().unwrap_or_else(||active_id.clone())}else{active_id.clone()});refresh+=1;if passed {clear_popup.set(true);}
+            }}}}
         }
         if clear_popup() {div {class:"doctor-backdrop",section {class:"doctor-panel",role:"dialog",aria_label:"정답 확인",aria_modal:"true",
-            h2 {"정답입니다!"} p {"미션을 클리어했습니다. 다음 버튼으로 계속 학습하세요."}
+            h2 {"정답입니다!"} p {"제출한 답안이 정답입니다. 진도를 저장하고 다음 미션을 준비했습니다."}
             button {class:"primary",autofocus:true,onclick:move |_|clear_popup.set(false),"확인"}
         }}}
     }
@@ -128,7 +132,7 @@ fn UnitFlow(
                 button {disabled:active_index+1>=unlocked_count&&!(active_index+1==total&&has_next_unit),onclick:move |_|{if active_index+1<unlocked_count {index.set(active_index+1);}else if active_index+1==total&&has_next_unit {onnextunit.call(());}},"다음 →"}
             }
         }
-        for active in [active] {ActivityView {key:"{progress.id}-{progress.revision}",course_id:course_id.clone(),activity:active,progress:progress.clone(),oncompleted:move |passed|{index.set(active_index);refresh+=1;oncompleted.call(passed);}}}
+        for active in [active] {ActivityView {key:"{progress.id}-{progress.revision}",course_id:course_id.clone(),activity:active,progress:progress.clone(),oncompleted:move |passed|{index.set(if passed {(active_index+1).min(total-1)}else{active_index});refresh+=1;oncompleted.call(passed);}}}
     }
 }
 
@@ -213,7 +217,7 @@ fn QuizView(
             match result {
                 Ok((graded,completed))=>{message.set(format!("{} / {} 정답 · {}",completed.len(),questions.len(),if graded.passed {"미션 클리어!"}else{"오답 문항만 다시 풀어보세요."}));let cleared=graded.passed;passed.set(completed);report.set(Some(graded));oncompleted.call(cleared);},Err(e)=>message.set(e)
             }
-        },"채점 · 클리어 확인"}
+        },"제출"}
     }}
 }
 
@@ -232,7 +236,13 @@ fn UnitWorkspace(course_id: String, unit: Unit, oncompleted: EventHandler<bool>)
     let mut code = use_signal(|| initial.code.clone());
     let mut editor_reset = use_signal(|| 0u64);
     let mut answers = use_signal(|| initial.answers.clone());
-    let mut input = use_signal(String::new);
+    let sample_input = use_hook(|| {
+        unit.tests
+            .first()
+            .map(|test| test.input.clone())
+            .unwrap_or_default()
+    });
+    let mut input = use_signal(|| sample_input.clone());
     let mut output = use_signal(String::new);
     let mut artifacts = use_signal(Vec::<Artifact>::new);
     let mut message = use_signal(String::new);
@@ -277,13 +287,13 @@ fn UnitWorkspace(course_id: String, unit: Unit, oncompleted: EventHandler<bool>)
         if unit.blanks.is_empty(){textarea{class:"code-editor", "data-code-editor":"python", "data-editor-value":code(),"data-editor-reset":editor_reset().to_string(),aria_label:"Python 코드",spellcheck:false,initial_value:initial.code.clone(),oninput:{let key=key.clone();move|e|{code.set(e.value());if let Err(error)=drafts::save(&key,&code(),&answers()){message.set(error)}}}}}
         else{div{class:"inline-code",for (number,parts) in lines.iter().enumerate(){div{class:"code-line",span{class:"line-number","{number+1}"}div{class:"line-source",for (text,blank) in parts {if let Some(blank)=blank {input{class:"code-blank",aria_label:"빈칸 {blank}",spellcheck:false,value:answers.read().get(blank).cloned().unwrap_or_default(),oninput:{let blank=blank.clone();let unit=unit.clone();let key=key.clone();move|e|{answers.write().insert(blank.clone(),e.value());if let Ok(assembled)=assemble(&unit,&answers()){code.set(assembled);if let Err(error)=drafts::save(&key,&code(),&answers()){message.set(error)}}}}}}else{span{"{text}"}}}}}}}}
         }
-        section{class:"result-pane",h3{"실행 결과"}details{summary{"실행 입력"}textarea{aria_label:"실행 입력",initial_value:"",oninput:move|e|input.set(e.value())}}
+        section{class:"result-pane",h3{"실행 결과"}details{open:!unit.tests.is_empty(),summary{"실행 입력"}p{"아래 입력값으로 실행합니다. 예제 입력을 바꾸며 연습할 수 있어요."}textarea{aria_label:"실행 입력",initial_value:sample_input.clone(),oninput:move|e|input.set(e.value())}}
             p{class:"execution-status",role:"status","{message}"}
             pre{class:"output",if output().is_empty(){"실행 결과가 여기에 표시됩니다."}else{"{output}"}}
             RichResults { artifacts: artifacts() }
         }}
         footer{class:"actions practice-actions",button{disabled:busy(),onclick:{let unit=unit.clone();let key=key.clone();move |_|{code.set(unit.starter_code.clone());editor_reset+=1;answers.set(HashMap::new());output.set(String::new());artifacts.set(vec![]);message.set(String::new());let _=drafts::save(&key,&code(),&answers());}},"초기화"}
-        button{disabled:busy(),onclick:move |_|async move{busy.set(true);message.set(String::new());artifacts.set(vec![]);match run_python(&code(),&input()).await{Ok(result)=>{artifacts.set(result.artifacts);output.set(format!("{}\n{}\n{}",result.stdout,result.stderr,if result.success {"실행 완료"} else {"실행 실패"}));},Err(e)=>message.set(e)}busy.set(false);},"코드 실행"}
+        button{disabled:busy(),onclick:move |_|async move{busy.set(true);message.set(String::new());artifacts.set(vec![]);match run_python(&code(),&input()).await{Ok(result)=>{artifacts.set(result.artifacts);if result.stderr.contains("EOFError: EOF when reading a line") {message.set("실행 입력이 부족합니다. 실행 입력 칸에 문제에서 요구한 값을 넣어주세요.".into());}else if result.success {message.set("실행 완료. 제출하면 전체 테스트로 정답을 확인합니다.".into());}output.set(format!("{}\n{}\n{}",result.stdout,result.stderr,if result.success {"실행 완료"} else {"실행 실패"}));},Err(e)=>message.set(e)}busy.set(false);},"코드 실행"}
             button{class:"primary",disabled:busy(),onclick:{let unit=unit.clone();let course_id=course_id.clone();move |_|{let unit=unit.clone();let course_id=course_id.clone();async move{
                 busy.set(true);message.set(String::new());artifacts.set(vec![]);let source=code();let blank_answers=answers();
                 if !unit.blanks.is_empty()&&assemble(&unit,&blank_answers).as_deref()!=Ok(source.as_str()){message.set("지정된 빈칸을 모두 채워주세요.".into());busy.set(false);return;}
@@ -293,7 +303,7 @@ fn UnitWorkspace(course_id: String, unit: Unit, oncompleted: EventHandler<bool>)
                         Err(e)=>message.set(e)
                     }
                 }}busy.set(false);
-            }}},"테스트 · 완료"}
+            }}},"제출"}
         }
     }}
 }

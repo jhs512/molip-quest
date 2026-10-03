@@ -22,7 +22,7 @@ def concept(id,title,body,question):
 def quiz(id,title,*questions):
     return dict(id=id,title=title,kind="quiz",questions=[dict(q,id=f"q{i+1}") for i,q in enumerate(questions)])
 def coding(id,title,description,starter,solution,assertions=None,tests=None):
-    problem=dict(id=id,title=title,content="### 목표\n\n"+prose(description)+"\n\n### 실행 안내\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 `main.py`에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 `data/`에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 **테스트 · 완료**를 누르세요.",starter_code=starter)
+    problem=dict(id=id,title=title,content="### 목표\n\n"+prose(description)+"\n\n### 실행 안내\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 `main.py`에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 `data/`에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 **제출**를 누르세요.",starter_code=starter)
     if assertions:
         required=sorted(set(re.findall(r"\bs\[['\"]([A-Za-z_][A-Za-z_0-9]*)['\"]\]",assertions)))
         checked="\n".join("    "+line for line in assertions.splitlines())

@@ -51,12 +51,10 @@ async def main():
         await js("Array.from(document.querySelectorAll('button')).find(b=>b.textContent.includes('학습 시작')).click()")
         await asyncio.sleep(.2)
         assert await js("document.querySelector('input[placeholder=\"답을 입력하세요\"]').value")=='파이썬', 'Answer was not restored from drafts'
-        await js("Array.from(document.querySelectorAll('button')).find(b=>b.textContent.includes('채점 · 클리어 확인')).click()")
+        await js("Array.from(document.querySelectorAll('button')).find(b=>b.textContent.trim()==='제출').click()")
         await asyncio.sleep(.3)
         assert await js("!!document.querySelector('[aria-label=\"정답 확인\"]')"), 'Correct-answer popup missing'
         await js("Array.from(document.querySelectorAll('button')).find(b=>b.textContent.trim()==='확인').click()")
-        await asyncio.sleep(.2)
-        await js("Array.from(document.querySelectorAll('button')).find(b=>b.textContent.trim()==='다음 →').click()")
         await asyncio.sleep(.2)
         assert await js("!!document.querySelector('textarea[data-code-editor]')"), 'Saved answer did not unlock next mission'
         print('PASS: composition preserved, draft restored, Korean answer graded')
