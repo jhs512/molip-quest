@@ -43,10 +43,10 @@ UNIT = unit('bar-chart', '2일차 · 1교시 — Figure·Axes와 막대그래프
         막대 두 개가 각각 여성·남성 생존율 퍼센트 높이로 보이면 맞게 한 것입니다.
         """,
         hint="""
-        `rates = titanic.groupby('sex')['survived'].mean()`은 어제와 같습니다. `ax.bar(rates.index, rates * 100)`로 그리고 `ax.set(xlabel='Sex', ylabel='Survival rate (%)', ylim=(0, 100), title='Survival by sex')`로 꾸미세요.
+        `rates = titanic.groupby('gender')['survived'].mean()`은 어제와 같습니다. `ax.bar(rates.index, rates * 100)`로 그리고 `ax.set(xlabel='Sex', ylabel='Survival rate (%)', ylim=(0, 100), title='Survival by gender')`로 꾸미세요.
         """,
         starter=TI + PLOT + "# rates, fig, ax를 만들고 막대그래프를 그리세요\n",
-        solution=TI + PLOT + "rates=titanic.groupby('sex')['survived'].mean()\nfig,ax=plt.subplots()\nax.bar(rates.index,rates*100)\nax.set(xlabel='Sex',ylabel='Survival rate (%)',ylim=(0,100),title='Survival by sex')\nplt.show()\n",
+        solution=TI + PLOT + "rates=titanic.groupby('gender')['survived'].mean()\nfig,ax=plt.subplots()\nax.bar(rates.index,rates*100)\nax.set(xlabel='Sex',ylabel='Survival rate (%)',ylim=(0,100),title='Survival by gender')\nplt.show()\n",
         check="assert len(s['ax'].patches)==2\nassert s['ax'].get_ylim()==(0.0,100.0)\nassert s['ax'].get_ylabel()=='Survival rate (%)'\nassert s['ax'].get_xlabel()=='Sex'\nheights = {label.get_text(): bar.get_height() for label,bar in zip(s['ax'].get_xticklabels(),s['ax'].patches)}\nassert set(heights)=={'female','male'}\nassert abs(heights['female']-339/466*100)<1e-8\nassert abs(heights['male']-161/843*100)<1e-8"),
     coding('pclass-bar', '등급별 생존율 막대그래프',
         goal="""
@@ -55,7 +55,7 @@ UNIT = unit('bar-chart', '2일차 · 1교시 — Figure·Axes와 막대그래프
         막대 세 개가 1등급에서 3등급으로 갈수록 낮아지는지 보세요.
         """,
         hint="""
-        성별 그래프에서 `groupby('sex')`를 `groupby('pclass')`로 바꾸면 됩니다. 등급 1·2·3이 숫자라 x축 간격이 어색하면 `ax.bar(rates.index.astype(str), rates * 100)`처럼 글자로 바꿔 넘기세요.
+        성별 그래프에서 `groupby('gender')`를 `groupby('pclass')`로 바꾸면 됩니다. 등급 1·2·3이 숫자라 x축 간격이 어색하면 `ax.bar(rates.index.astype(str), rates * 100)`처럼 글자로 바꿔 넘기세요.
         """,
         starter=TI + PLOT + "# rates, fig, ax를 만들고 막대그래프를 그리세요\n",
         solution=TI + PLOT + "rates = titanic.groupby('pclass')['survived'].mean()\nfig, ax = plt.subplots()\nax.bar(rates.index.astype(str), rates * 100)\nax.set(xlabel='Pclass', ylabel='Survival rate (%)', ylim=(0, 100), title='Survival by class')\nplt.show()\n",

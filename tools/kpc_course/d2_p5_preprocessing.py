@@ -11,7 +11,7 @@ UNIT = unit('preprocessing', '2일차 · 5교시 — 분리와 전처리 Pipelin
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
         ```
 
-        나눈 다음에 손질을 시작합니다. 나이의 빈칸을 중앙값으로 채우려면 "중앙값이 얼마인가"를 먼저 알아야 하고, `sex`를 One-hot으로 바꾸려면 "어떤 값들이 있는가"를 알아야 합니다. 이렇게 손질의 **기준을 정하는 일** 자체가 자료를 들여다보는 학습입니다. 그래서 기준은 **훈련 자료에서만** 정하고, 테스트 자료에는 정해진 기준을 **적용만** 합니다. 테스트의 나이까지 넣어 중앙값을 구하면 모의고사 문제를 미리 본 셈이 됩니다. 작은 누수입니다.
+        나눈 다음에 손질을 시작합니다. 나이의 빈칸을 중앙값으로 채우려면 "중앙값이 얼마인가"를 먼저 알아야 하고, `gender`를 One-hot으로 바꾸려면 "어떤 값들이 있는가"를 알아야 합니다. 이렇게 손질의 **기준을 정하는 일** 자체가 자료를 들여다보는 학습입니다. 그래서 기준은 **훈련 자료에서만** 정하고, 테스트 자료에는 정해진 기준을 **적용만** 합니다. 테스트의 나이까지 넣어 중앙값을 구하면 모의고사 문제를 미리 본 셈이 됩니다. 작은 누수입니다.
 
         `scikit-learn`의 손질 도구들은 이 구분을 메서드 이름으로 드러냅니다. `fit`은 기준 정하기, `transform`은 적용하기, `fit_transform`은 둘을 한 번에. 그러니 훈련에는 `fit_transform`, 테스트에는 `transform`입니다.
 
@@ -64,7 +64,7 @@ UNIT = unit('preprocessing', '2일차 · 5교시 — 분리와 전처리 Pipelin
         check="import numpy as np\nassert s['train_values'].shape==(1047,2) and s['test_values'].shape==(262,2)\nassert np.isfinite(s['train_values']).all() and np.isfinite(s['test_values']).all()\nassert np.allclose(s['imputer'].statistics_,s['X_train'][['age','fare']].median().to_numpy())"),
     coding('onehot-fit', '글자 열을 훈련 기준으로 One-hot',
         goal="""
-        4교시의 `get_dummies`를 모델 흐름에 맞는 도구로 바꿉니다. `OneHotEncoder(handle_unknown='ignore', sparse_output=False)`를 `encoder`에 만들고, `X_train[['sex']]`에 `fit_transform`한 결과를 `train_encoded`, `X_test[['sex']]`에 `transform`한 결과를 `test_encoded`에 저장해 `shape`를 출력하세요.
+        4교시의 `get_dummies`를 모델 흐름에 맞는 도구로 바꿉니다. `OneHotEncoder(handle_unknown='ignore', sparse_output=False)`를 `encoder`에 만들고, `X_train[['gender']]`에 `fit_transform`한 결과를 `train_encoded`, `X_test[['gender']]`에 `transform`한 결과를 `test_encoded`에 저장해 `shape`를 출력하세요.
 
         두 결과 모두 열이 2개(female, male)이면 맞게 한 것입니다.
         """,
@@ -72,7 +72,7 @@ UNIT = unit('preprocessing', '2일차 · 5교시 — 분리와 전처리 Pipelin
         빈칸 채우기와 똑같은 모양입니다. 훈련에는 `fit_transform`, 테스트에는 `transform`. `handle_unknown='ignore'`는 테스트에 처음 보는 값이 나와도 오류 대신 0으로 두라는 뜻이고, `sparse_output=False`는 결과를 보통 배열로 달라는 뜻입니다.
         """,
         starter=TI + FEATURES + SPLIT + "from sklearn.preprocessing import OneHotEncoder\n# encoder, train_encoded, test_encoded를 만드세요\n",
-        solution=TI + FEATURES + SPLIT + "from sklearn.preprocessing import OneHotEncoder\nencoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)\ntrain_encoded = encoder.fit_transform(X_train[['sex']])\ntest_encoded = encoder.transform(X_test[['sex']])\nprint(train_encoded.shape, test_encoded.shape)\n",
+        solution=TI + FEATURES + SPLIT + "from sklearn.preprocessing import OneHotEncoder\nencoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)\ntrain_encoded = encoder.fit_transform(X_train[['gender']])\ntest_encoded = encoder.transform(X_test[['gender']])\nprint(train_encoded.shape, test_encoded.shape)\n",
         check="assert s['train_encoded'].shape==(1047,2) and s['test_encoded'].shape==(262,2)\nassert list(s['encoder'].categories_[0])==['female','male']\nassert (s['train_encoded'].sum(axis=1)==1).all()"),
     concept('why-pipeline', '손질이 늘어나면 순서가 꼬인다, 그래서 한 줄로 묶는다',
         body="""
@@ -117,7 +117,7 @@ UNIT = unit('preprocessing', '2일차 · 5교시 — 분리와 전처리 Pipelin
         choice('`stratify=y`는 무엇을 맞추려는 것인가요?',
                ['훈련과 테스트의 생존 비율이 비슷하도록', '행 수가 같도록', '나이 순서대로 나뉘도록'], 0,
                '무작위로 나누다 보면 한쪽에 생존자가 몰릴 수 있습니다. `stratify`는 정답 비율을 양쪽에 비슷하게 유지합니다.'),
-        choice("`encoder.fit_transform(X_test[['sex']])`처럼 테스트에 `fit`을 하면 무슨 문제가 생기나요?",
+        choice("`encoder.fit_transform(X_test[['gender']])`처럼 테스트에 `fit`을 하면 무슨 문제가 생기나요?",
                ['테스트 자료로 기준을 정하는 누수가 된다', '더 정확해진다', '열 수가 바뀐다'], 0,
                '값 목록·중앙값·평균 같은 기준은 훈련에서만 정합니다. 테스트에는 정해진 기준을 적용만 해야 합니다.'),
         choice('`Pipeline`을 쓰는 가장 큰 이유는 무엇인가요?',

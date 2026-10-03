@@ -34,8 +34,8 @@ UNIT = unit('titanic-groups', '1일차 · 8교시 — 그룹별 생존율', [
         ```
 
         ```python
-        titanic.groupby('sex')['survived'].mean()
-        titanic.groupby('sex')['survived'].agg(['count', 'sum', 'mean'])
+        titanic.groupby('gender')['survived'].mean()
+        titanic.groupby('gender')['survived'].agg(['count', 'sum', 'mean'])
         ```
 
         첫 줄은 "성별로 묶은 뒤, `survived` 열의 평균을 그룹마다 구해라"입니다. 두 번째 줄의 `agg`는 집계를 여러 개 한 번에 달라는 뜻으로, `count`는 그룹 인원, `sum`은 생존자 수(1의 합), `mean`은 생존율입니다. 이 셋을 같이 보는 습관이 중요합니다.
@@ -48,40 +48,40 @@ UNIT = unit('titanic-groups', '1일차 · 8교시 — 그룹별 생존율', [
                     '분모(그룹 인원)가 있어야 "100%"가 100명 중 100명인지 1명 중 1명인지 알 수 있습니다. `agg`의 `count`가 그 역할입니다.')),
     coding('sex-counts', '성별 인원 세기',
         goal="""
-        비율을 구하기 전에 분모부터 셉니다. `titanic['sex'].value_counts()`를 `sex_counts`에 저장하고 출력하세요.
+        비율을 구하기 전에 분모부터 셉니다. `titanic['gender'].value_counts()`를 `gender_counts`에 저장하고 출력하세요.
 
         여성과 남성의 인원이 꽤 다르다는 것을 눈으로 확인해 두세요. 이 숫자가 다음 미션의 분모입니다.
         """,
         hint="""
-        7교시의 `value_counts()`와 같습니다. 열만 `sex`로 바꾸세요.
+        7교시의 `value_counts()`와 같습니다. 열만 `gender`로 바꾸세요.
         """,
-        starter=TI + "# sex_counts를 만들고 출력하세요\n",
-        solution=TI + "sex_counts = titanic['sex'].value_counts()\nprint(sex_counts)\n",
-        check="assert s['sex_counts']['female']==466 and s['sex_counts']['male']==843"),
+        starter=TI + "# gender_counts를 만들고 출력하세요\n",
+        solution=TI + "gender_counts = titanic['gender'].value_counts()\nprint(gender_counts)\n",
+        check="assert s['gender_counts']['female']==466 and s['gender_counts']['male']==843"),
     coding('sex-mean', '성별 생존율 구하기',
         goal="""
-        첫 `groupby`입니다. `titanic.groupby('sex')['survived'].mean()`으로 성별 생존율을 `rates`에 저장하고 출력하세요.
+        첫 `groupby`입니다. `titanic.groupby('gender')['survived'].mean()`으로 성별 생존율을 `rates`에 저장하고 출력하세요.
 
         두 숫자가 상당히 다를 것입니다. 바로 앞에서 센 인원과 함께 읽어 보세요.
         """,
         hint="""
-        `groupby('sex')`로 묶고, `['survived']`로 열을 고르고, `.mean()`을 붙입니다. 0과 1의 평균이 생존율입니다.
+        `groupby('gender')`로 묶고, `['survived']`로 열을 고르고, `.mean()`을 붙입니다. 0과 1의 평균이 생존율입니다.
         """,
         starter=TI + "# rates를 만들고 출력하세요\n",
-        solution=TI + "rates = titanic.groupby('sex')['survived'].mean()\nprint(rates)\n",
+        solution=TI + "rates = titanic.groupby('gender')['survived'].mean()\nprint(rates)\n",
         check="assert abs(s['rates']['female']-339/466)<1e-9 and abs(s['rates']['male']-161/843)<1e-9"),
     coding('sex-summary', '인원·생존자·생존율을 한 표에',
         goal="""
-        인원과 비율을 따로 구하지 말고 한 표로 봅니다. 성별로 묶은 `survived`에 `agg(['count', 'sum', 'mean'])`을 적용한 표를 `sex_summary`에 저장하고 마지막 줄에 적어 확인하세요.
+        인원과 비율을 따로 구하지 말고 한 표로 봅니다. 성별로 묶은 `survived`에 `agg(['count', 'sum', 'mean'])`을 적용한 표를 `gender_summary`에 저장하고 마지막 줄에 적어 확인하세요.
 
         `count` 열의 합이 1309이고 `sum` 열의 합이 500이면 맞게 한 것입니다.
         """,
         hint="""
-        `titanic.groupby('sex')['survived'].agg(['count', 'sum', 'mean'])` 한 줄입니다. 열 이름은 각각 인원, 생존자 수, 생존율입니다.
+        `titanic.groupby('gender')['survived'].agg(['count', 'sum', 'mean'])` 한 줄입니다. 열 이름은 각각 인원, 생존자 수, 생존율입니다.
         """,
-        starter=TI + "# sex_summary를 만드세요\n",
-        solution=TI + "sex_summary=titanic.groupby('sex')['survived'].agg(['count','sum','mean'])\nsex_summary\n",
-        check="assert list(s['sex_summary'].columns)==['count','sum','mean']\nassert s['sex_summary'].loc['female','count']==466 and s['sex_summary'].loc['male','count']==843\nassert s['sex_summary']['sum'].sum()==500"),
+        starter=TI + "# gender_summary를 만드세요\n",
+        solution=TI + "gender_summary=titanic.groupby('gender')['survived'].agg(['count','sum','mean'])\ngender_summary\n",
+        check="assert list(s['gender_summary'].columns)==['count','sum','mean']\nassert s['gender_summary'].loc['female','count']==466 and s['gender_summary'].loc['male','count']==843\nassert s['gender_summary']['sum'].sum()==500"),
     coding('pclass-summary', '객실 등급별로 같은 표 만들기',
         goal="""
         같은 질문을 객실 등급에 던집니다. `pclass`로 묶어 `count`, `sum`, `mean`을 구한 표를 `pclass_summary`에 저장하세요.
@@ -89,7 +89,7 @@ UNIT = unit('titanic-groups', '1일차 · 8교시 — 그룹별 생존율', [
         등급은 1, 2, 3 세 개이고 `count`의 합은 역시 1309입니다. 등급이 내려갈수록 생존율이 어떻게 변하는지 보세요.
         """,
         hint="""
-        앞 미션에서 `groupby('sex')`를 `groupby('pclass')`로 바꾸기만 하면 됩니다.
+        앞 미션에서 `groupby('gender')`를 `groupby('pclass')`로 바꾸기만 하면 됩니다.
         """,
         starter=TI + "# pclass_summary를 만드세요\n",
         solution=TI + "pclass_summary = titanic.groupby('pclass')['survived'].agg(['count','sum','mean'])\npclass_summary\n",
@@ -112,7 +112,7 @@ UNIT = unit('titanic-groups', '1일차 · 8교시 — 그룹별 생존율', [
                '한 표는 관찰입니다. 원인을 말하려면 등급·나이 같은 다른 조건을 함께 나눠 봐야 합니다.'),
         short('나이 구간별 표에서 `count`의 합은 1309가 아니라 몇인가요?', ['1046', '1,046'],
               '나이가 비어 있는 263명은 어느 구간에도 들어가지 않습니다. 1309에서 263을 빼면 1046입니다.'),
-        choice("`titanic.groupby('sex')['age'].count()`가 세는 것은 무엇인가요?",
+        choice("`titanic.groupby('gender')['age'].count()`가 세는 것은 무엇인가요?",
                ['성별로 나이가 기록된 사람 수', '성별 전체 인원', '성별 평균 나이'], 0,
                '`count`는 빈 칸을 빼고 셉니다. 전체 인원이 필요하면 빈 칸이 없는 `survived` 열로 세세요.'),
         choice('`pd.cut(..., right=False)`일 때 정확히 20살인 사람은 어느 구간에 들어가나요?',
@@ -121,7 +121,7 @@ UNIT = unit('titanic-groups', '1일차 · 8교시 — 그룹별 생존율', [
         choice('"A 그룹 생존율 100%"라는 숫자를 보고 가장 먼저 확인할 것은 무엇인가요?',
                ['그 그룹이 몇 명인지', '다른 그룹의 생존율', '그래프 색'], 0,
                '1명 중 1명도 100%입니다. 분모가 작은 비율은 우연에 크게 흔들리므로 `count`부터 봅니다.'),
-        short("성별과 생존율을 한 표로 보려고 `titanic.groupby('sex')['survived'].____(['count', 'sum', 'mean'])`을 썼습니다. 빈칸은?", ['agg', 'agg()'],
+        short("성별과 생존율을 한 표로 보려고 `titanic.groupby('gender')['survived'].____(['count', 'sum', 'mean'])`을 썼습니다. 빈칸은?", ['agg', 'agg()'],
               '`agg`는 여러 집계를 한 번에 열로 만들어 줍니다. 인원·생존자·생존율을 나란히 읽을 수 있습니다.'),
     ),
 ])

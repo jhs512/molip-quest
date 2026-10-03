@@ -279,24 +279,24 @@ n_known + n_unknown == n_total 이어야 해.
 """),
     # ---- 1일차 8교시 ----
     "sex-counts": p("""
-pandas. titanic DataFrame. sex 열 value_counts()를 sex_counts에 담고 출력.
+pandas. titanic DataFrame. gender 열 value_counts()를 gender_counts에 담고 출력.
 """, """
 - `value_counts()` → 비율 전에 분모(인원)부터.
 """),
     "sex-mean": p("""
-pandas. titanic DataFrame. groupby('sex')['survived'].mean()을 rates에 담고 출력.
+pandas. titanic DataFrame. groupby('gender')['survived'].mean()을 rates에 담고 출력.
 """, """
-- `groupby('sex')['survived'].mean()` → 그룹별 비율 공식을 코드로. 코드로 쓸 수 있으면 그게 제일 정확하다.
+- `groupby('gender')['survived'].mean()` → 그룹별 비율 공식을 코드로. 코드로 쓸 수 있으면 그게 제일 정확하다.
 """),
     "sex-summary": p("""
-pandas. titanic DataFrame. sex로 groupby한 survived에 agg(['count','sum','mean'])을 적용한 표를 sex_summary에 담고 마지막 줄에 sex_summary.
+pandas. titanic DataFrame. gender로 groupby한 survived에 agg(['count','sum','mean'])을 적용한 표를 gender_summary에 담고 마지막 줄에 gender_summary.
 """, """
 - `agg(['count','sum','mean'])` → 인원·생존자·생존율을 한 표에. "몇 명 중"을 늘 같이 본다.
 """),
     "pclass-summary": p("""
 pandas. titanic DataFrame. pclass로 groupby한 survived에 agg(['count','sum','mean'])을 적용해 pclass_summary에.
 """, """
-- 앞 프롬프트에서 `sex`를 `pclass`로만 바꿈. 같은 집계는 프롬프트도 복사해서 쓴다.
+- 앞 프롬프트에서 `gender`를 `pclass`로만 바꿈. 같은 집계는 프롬프트도 복사해서 쓴다.
 """),
     "age-groups": p("""
 pandas. titanic DataFrame. pd.cut으로 age를 bins=[0, 20, 40, 60, float('inf')], labels=['0~19','20~39','40~59','60+'], right=False 로 나눈 열 age_group을 titanic에 추가하고, age_group으로 groupby한 survived의 agg(['count','sum','mean'])을 age_summary에.
@@ -312,7 +312,7 @@ matplotlib. names = ['A','B','C'], amounts = [30000,40000,60000]. fig, ax = plt.
 - 제목·축 이름 문자열 → 그대로 채점.
 """),
     "sex-bar": p("""
-pandas + matplotlib. titanic DataFrame. groupby('sex')['survived'].mean()을 rates에 담고, rates*100을 ax.bar로 그려. ylim=(0,100), xlabel 'Sex', ylabel 'Survival rate (%)'. fig, ax = plt.subplots() 방식, plt.show().
+pandas + matplotlib. titanic DataFrame. groupby('gender')['survived'].mean()을 rates에 담고, rates*100을 ax.bar로 그려. ylim=(0,100), xlabel 'Sex', ylabel 'Survival rate (%)'. fig, ax = plt.subplots() 방식, plt.show().
 """, """
 - `rates*100` + `ylim=(0,100)` → 퍼센트 축은 둘이 한 세트. 하나만 적으면 축과 값이 안 맞는다.
 """),
@@ -349,13 +349,13 @@ pandas. titanic DataFrame. embarked로 groupby한 survived의 agg(['count','mean
 - `count`를 같이 → 항구별 인원이 다르면 비율의 신뢰도도 다르다.
 """),
     "sex-pclass-table": p("""
-pandas. titanic DataFrame. ['sex','pclass']로 groupby한 survived의 agg(['count','mean'])을 grouped에, grouped['mean'].unstack('pclass')를 wide에 담고 마지막 줄에 wide.
+pandas. titanic DataFrame. ['gender','pclass']로 groupby한 survived의 agg(['count','mean'])을 grouped에, grouped['mean'].unstack('pclass')를 wide에 담고 마지막 줄에 wide.
 """, """
-- `['sex','pclass']로 groupby` → 두 조건으로 묶기.
+- `['gender','pclass']로 groupby` → 두 조건으로 묶기.
 - `unstack('pclass')` → 긴 표를 행×열 교차표로 펼치는 메서드.
 """),
     "combined-groups": p("""
-pandas + matplotlib. titanic DataFrame. ['sex','pclass'] groupby survived agg(['count','mean'])을 grouped에, grouped['mean'].unstack('pclass')*100을 wide에. ax = wide.plot.bar(ylim=(0,100), rot=0)로 그리고 ylabel과 title 붙여 plt.show().
+pandas + matplotlib. titanic DataFrame. ['gender','pclass'] groupby survived agg(['count','mean'])을 grouped에, grouped['mean'].unstack('pclass')*100을 wide에. ax = wide.plot.bar(ylim=(0,100), rot=0)로 그리고 ylabel과 title 붙여 plt.show().
 """, """
 - `wide.plot.bar(...)` → 표에서 바로 묶음 막대. 반환값을 `ax`에 담아야 검사기가 읽는다.
 - `rot=0` → x축 글자 안 눕히기.
@@ -368,19 +368,19 @@ pandas. titanic DataFrame. drop(columns=[...])으로 survived, name, ticket, cab
 - `7열 남아야 해` → 검산.
 """),
     "xy-separation": p("""
-pandas. titanic DataFrame. features = ['pclass','sex','age','sibsp','parch','fare','embarked'] 리스트를 만들고, X = titanic[features].copy(), y = titanic['survived'].astype(int).
+pandas. titanic DataFrame. features = ['pclass','gender','age','sibsp','parch','fare','embarked'] 리스트를 만들고, X = titanic[features].copy(), y = titanic['survived'].astype(int).
 """, """
 - `X`, `y` → 입력과 정답. 머신러닝의 첫 줄.
 - `.copy()`, `.astype(int)` → 뒤에서 나는 경고·자료형 문제를 미리 막는다.
 """),
     "column-types": p("""
-pandas. X DataFrame(열 pclass, sex, age, sibsp, parch, fare, embarked). 숫자형 열 이름 리스트를 numeric_columns, 문자(범주형) 열 이름 리스트를 category_columns에 담고 출력. select_dtypes 써.
+pandas. X DataFrame(열 pclass, gender, age, sibsp, parch, fare, embarked). 숫자형 열 이름 리스트를 numeric_columns, 문자(범주형) 열 이름 리스트를 category_columns에 담고 출력. select_dtypes 써.
 """, """
 - `숫자형` / `범주형` → 다음 시간에 다르게 손질할 두 종류.
 - `select_dtypes` → 자료형으로 열을 가르는 메서드.
 """),
     "get-dummies": p("""
-pandas. titanic DataFrame. pd.get_dummies(titanic[['sex']])로 sex 열을 One-hot 인코딩해 encoded에 담고 마지막 줄에 encoded.head(). sex_female, sex_male 두 열이 나와야 해.
+pandas. titanic DataFrame. pd.get_dummies(titanic[['gender']])로 gender 열을 One-hot 인코딩해 encoded에 담고 마지막 줄에 encoded.head(). gender_female, gender_male 두 열이 나와야 해.
 """, """
 - `One-hot 인코딩` → 글자 열을 0/1 열로 바꾸는 표준 용어. `map({'male':0})` 같은 임의 코드를 막는다.
 """),
@@ -403,7 +403,7 @@ scikit-learn. X_train, X_test가 있어. SimpleImputer(strategy='median')를 imp
 - 훈련은 `fit_transform`, 테스트는 `transform` → 중앙값은 훈련 자료에서만 정한다. 둘 다 fit하면 누수.
 """),
     "onehot-fit": p("""
-scikit-learn. X_train, X_test가 있어. OneHotEncoder(handle_unknown='ignore', sparse_output=False)를 encoder에 만들고 X_train[['sex']]에 fit_transform → train_encoded, X_test[['sex']]에 transform → test_encoded. shape 출력.
+scikit-learn. X_train, X_test가 있어. OneHotEncoder(handle_unknown='ignore', sparse_output=False)를 encoder에 만들고 X_train[['gender']]에 fit_transform → train_encoded, X_test[['gender']]에 transform → test_encoded. shape 출력.
 """, """
 - `handle_unknown='ignore'` → 테스트에 처음 보는 값이 와도 오류 대신 0.
 - `sparse_output=False` → 일반 배열로 받기.

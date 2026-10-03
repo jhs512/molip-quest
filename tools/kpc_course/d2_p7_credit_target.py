@@ -61,7 +61,7 @@ UNIT = unit('credit-target', '2일차 · 7교시 — 부도 정의와 연체 이
         부도 그룹과 정상 그룹의 평균 한도가 어느 쪽이 높은지 보세요.
         """,
         hint="""
-        `credit.groupby(target)['LIMIT_BAL'].mean()`입니다. 타이타닉에서 `groupby('sex')['survived'].mean()`을 한 것과 같은 모양이고, 묶는 열과 평균 낼 열만 다릅니다.
+        `credit.groupby(target)['LIMIT_BAL'].mean()`입니다. 타이타닉에서 `groupby('gender')['survived'].mean()`을 한 것과 같은 모양이고, 묶는 열과 평균 낼 열만 다릅니다.
         """,
         starter=CR + "# limit_by_default를 만들고 출력하세요\n",
         solution=CR + "limit_by_default = credit.groupby(target)['LIMIT_BAL'].mean()\nprint(limit_by_default)\n",

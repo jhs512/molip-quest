@@ -11,14 +11,14 @@ UNIT = unit('insight', '2일차 · 3교시 — 그림에서 근거 읽기', [
         두 번째 질문에 답하려면 그룹을 **두 조건으로** 나눠야 합니다. `groupby`에 열 이름을 리스트로 넣으면 성별 × 등급, 여섯 그룹이 됩니다. 결과는 두 단계 인덱스를 가진 긴 표인데, 비교하기에는 성별이 행, 등급이 열인 넓은 표가 편합니다. 그 변환이 `unstack`입니다.
 
         ```python
-        grouped = titanic.groupby(['sex', 'pclass'])['survived'].agg(['count', 'mean'])
+        grouped = titanic.groupby(['gender', 'pclass'])['survived'].agg(['count', 'mean'])
         wide = grouped['mean'].unstack('pclass')   # 행: 성별, 열: 등급
         ax = (wide * 100).plot.bar(ylim=(0, 100))  # 성별마다 등급 막대 세 개
         ```
 
         넓은 표를 `.plot.bar()`에 넘기면 행마다 막대 묶음을 그려 주므로 1교시처럼 `ax.bar`를 직접 쓰지 않아도 됩니다. 여섯 그룹의 분모(`count`)는 넓은 표에 없으니 긴 표에서 함께 읽어야 합니다. 어떤 그룹은 수십 명뿐이라 비율이 크게 흔들립니다.
 
-        마지막으로 제목 이야기입니다. 그림 제목에는 예쁜 말 대신 **무엇을 계산했는지**를 적습니다. "Survival rate (%) by sex and class"처럼요. 남이 그 그림만 보고도 무엇을 비교한 것인지 알 수 있어야 분석이 전달됩니다.
+        마지막으로 제목 이야기입니다. 그림 제목에는 예쁜 말 대신 **무엇을 계산했는지**를 적습니다. "Survival rate (%) by gender and class"처럼요. 남이 그 그림만 보고도 무엇을 비교한 것인지 알 수 있어야 분석이 전달됩니다.
         """,
         check=short('"여성 생존율이 높다"는 관찰 뒤에 "등급을 나눠도 차이가 남을까?"처럼 다른 조건을 묻는 문장은 관찰·질문·한계 중 무엇인가요?', ['질문', '다음 질문', '다음질문'],
                     '관찰은 보이는 차이, 질문은 다른 조건을 더 나눠 볼 제안, 한계는 자료에 없어서 답할 수 없는 부분입니다.')),
@@ -36,15 +36,15 @@ UNIT = unit('insight', '2일차 · 3교시 — 그림에서 근거 읽기', [
         check="assert set(s['by_port'].index)=={'C','Q','S'}\nassert s['by_port']['count'].sum()==1307\nassert s['by_port'].loc['S','count']==914"),
     coding('sex-pclass-table', '성별 × 등급 교차표 만들기',
         goal="""
-        두 조건으로 나눕니다. `sex`와 `pclass`로 묶은 `survived`의 `count`와 `mean`을 `grouped`에 저장하고, `grouped['mean']`을 `unstack('pclass')`로 펼친 2행 3열 표를 `wide`에 저장해 마지막 줄에 적으세요.
+        두 조건으로 나눕니다. `gender`와 `pclass`로 묶은 `survived`의 `count`와 `mean`을 `grouped`에 저장하고, `grouped['mean']`을 `unstack('pclass')`로 펼친 2행 3열 표를 `wide`에 저장해 마지막 줄에 적으세요.
 
         `grouped`는 6행, `wide`는 성별 2행 × 등급 3열이면 맞게 한 것입니다. 그래프는 다음 미션에서 그립니다.
         """,
         hint="""
-        `titanic.groupby(['sex', 'pclass'])['survived'].agg(['count', 'mean'])`처럼 묶을 열을 리스트로 넣습니다. 그 결과의 `['mean']` 열에 `.unstack('pclass')`를 붙이면 등급이 열로 펼쳐집니다.
+        `titanic.groupby(['gender', 'pclass'])['survived'].agg(['count', 'mean'])`처럼 묶을 열을 리스트로 넣습니다. 그 결과의 `['mean']` 열에 `.unstack('pclass')`를 붙이면 등급이 열로 펼쳐집니다.
         """,
         starter=TI + "# grouped, wide를 만드세요\n",
-        solution=TI + "grouped = titanic.groupby(['sex','pclass'])['survived'].agg(['count','mean'])\nwide = grouped['mean'].unstack('pclass')\nwide\n",
+        solution=TI + "grouped = titanic.groupby(['gender','pclass'])['survived'].agg(['count','mean'])\nwide = grouped['mean'].unstack('pclass')\nwide\n",
         check="assert s['grouped'].shape==(6,2) and s['grouped']['count'].sum()==1309\nassert s['wide'].shape==(2,3) and list(s['wide'].index)==['female','male']\nassert abs(s['wide'].loc['female',1]-s['grouped'].loc[('female',1),'mean'])<1e-12"),
     coding('combined-groups', '성별과 등급을 한 그림에',
         goal="""
@@ -56,7 +56,7 @@ UNIT = unit('insight', '2일차 · 3교시 — 그림에서 근거 읽기', [
         `wide = grouped['mean'].unstack('pclass') * 100`까지는 앞 미션과 같습니다. `ax = wide.plot.bar(ylim=(0, 100), rot=0)`이 그래프 영역을 돌려주므로 `ax.set(ylabel='Survival rate (%)', title='Sex and class')`를 붙이고 `plt.show()`.
         """,
         starter=TI + PLOT + "# grouped, wide, ax를 만드세요\n",
-        solution=TI + PLOT + "grouped=titanic.groupby(['sex','pclass'])['survived'].agg(['count','mean'])\nwide=grouped['mean'].unstack('pclass')*100\nax=wide.plot.bar(ylim=(0,100),rot=0)\nax.set(ylabel='Survival rate (%)',title='Sex and class')\nplt.show()\n",
+        solution=TI + PLOT + "grouped=titanic.groupby(['gender','pclass'])['survived'].agg(['count','mean'])\nwide=grouped['mean'].unstack('pclass')*100\nax=wide.plot.bar(ylim=(0,100),rot=0)\nax.set(ylabel='Survival rate (%)',title='Sex and class')\nplt.show()\n",
         check="assert s['grouped'].shape==(6,2) and s['grouped']['count'].sum()==1309\nassert s['wide'].shape==(2,3)\nassert len(s['ax'].patches)==6 and s['ax'].get_ylim()==(0.0,100.0)"),
     quiz('insight-check', '2일차 3교시 점검',
         choice('다음 중 "관찰"로만 이루어진 문장은 어느 것인가요?',
@@ -72,9 +72,9 @@ UNIT = unit('insight', '2일차 · 3교시 — 그림에서 근거 읽기', [
                ['다음 질문', '관찰', '한계'], 0,
                '다른 조건으로 더 나눠 보자는 제안이므로 다음 질문입니다. 실제로 나눠 보면 관찰이 됩니다.'),
         choice('두 조건으로 묶으려면 `groupby`에 무엇을 넣나요?',
-               ["열 이름 리스트 `['sex', 'pclass']`", "`'sex' + 'pclass'`", '`groupby`를 두 번 쓴다'], 0,
-               '`groupby(["sex", "pclass"])`처럼 리스트로 넣으면 두 열의 조합마다 그룹이 만들어집니다.'),
-        choice('그림 제목에 "Survival rate (%) by sex and class"처럼 계산 내용을 적는 이유는 무엇인가요?',
+               ["열 이름 리스트 `['gender', 'pclass']`", "`'gender' + 'pclass'`", '`groupby`를 두 번 쓴다'], 0,
+               '`groupby(["gender", "pclass"])`처럼 리스트로 넣으면 두 열의 조합마다 그룹이 만들어집니다.'),
+        choice('그림 제목에 "Survival rate (%) by gender and class"처럼 계산 내용을 적는 이유는 무엇인가요?',
                ['그림만 보고도 무엇을 비교한 것인지 알 수 있게 하려고', '제목이 길수록 점수가 높아서', '영어 연습을 위해'], 0,
                '그림은 혼자 돌아다닙니다. 제목에 집계와 단위가 없으면 보는 사람이 다른 뜻으로 읽습니다.'),
     ),

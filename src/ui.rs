@@ -359,6 +359,65 @@ fn QuizView(
     }}
 }
 
+/// `data/...csv|xlsx|html` paths mentioned by a problem's starter code or text, in order, once each.
+fn data_files(text: &str) -> Vec<String> {
+    let mut files = Vec::new();
+    for (start, _) in text.match_indices("data/") {
+        let end = text[start..]
+            .find(|c: char| !(c.is_ascii_alphanumeric() || matches!(c, '/' | '.' | '_' | '-')))
+            .map(|n| start + n)
+            .unwrap_or(text.len());
+        let path = text[start..end].trim_end_matches('.');
+        if (path.ends_with(".csv") || path.ends_with(".xlsx") || path.ends_with(".html"))
+            && !files.iter().any(|f| f == path)
+        {
+            files.push(path.to_string());
+        }
+    }
+    files
+}
+
+/// Full-screen preview of a data file: tables through pandas (first 100 rows), HTML as source text.
+#[component]
+fn DataViewer(path: String, onclose: EventHandler<()>) -> Element {
+    let code = if path.ends_with(".html") {
+        format!("from pathlib import Path\nprint(Path({path:?}).read_text(encoding='utf-8'))")
+    } else {
+        let reader = if path.ends_with(".xlsx") {
+            "read_excel"
+        } else {
+            "read_csv"
+        };
+        format!("import pandas as pd\ndf = pd.{reader}({path:?})\nprint(f'{{len(df)}}행 × {{len(df.columns)}}열')\ndf")
+    };
+    let result = use_resource(move || {
+        let code = code.clone();
+        async move { run_python(&code, "").await }
+    });
+    rsx! { div { class:"prompt-guide-layer data-viewer", role:"dialog", aria_modal:"true", aria_label:"자료 보기",
+        onkeydown: move |e| { if e.key() == Key::Escape { onclose.call(()); } },
+        header { class:"prompt-guide-header",
+            h2 { "자료 보기" }
+            span { class:"prompt-guide-unit", "{path}" }
+            button { class:"prompt-guide-close", autofocus:true, onclick: move |_| onclose.call(()), "닫기 ×" }
+        }
+        div { class:"data-viewer-body",
+            match &*result.read() {
+                None => rsx! { p { class:"data-viewer-note", "읽는 중…" } },
+                Some(Err(error)) => rsx! { p { class:"error", "{error}" } },
+                Some(Ok(run)) => rsx! {
+                    if !run.success { p { class:"error", "{run.stderr}" } }
+                    if path.ends_with(".html") { pre { class:"data-viewer-source", "{run.stdout}" } }
+                    else {
+                        p { class:"data-viewer-note", "{run.stdout.trim()} · 앞 100행만 보여 줍니다." }
+                        RichResults { artifacts: run.artifacts.clone() }
+                    }
+                },
+            }
+        }
+    } }
+}
+
 /// Previous/next mission buttons for the bottom of a concept or quiz card.
 #[component]
 fn MissionNav(nav_prev: bool, nav_next: bool, onnavigate: EventHandler<i32>) -> Element {
@@ -418,9 +477,15 @@ fn UnitWorkspace(course_id: String, unit: Unit, oncompleted: EventHandler<bool>)
         })
         .collect();
     let mut guide_open = use_signal(|| false);
+    let mut viewer = use_signal(|| None::<String>);
+    let data_files = data_files(&format!("{}\n{}", unit.starter_code, unit.content));
     rsx! {article{class:"lesson",
         if guide_open() {PromptGuide {unit:unit.clone(),code:code(),onclose:move |_|guide_open.set(false)}}
+        if let Some(path)=viewer() {DataViewer {path,onclose:move |_|viewer.set(None)}}
         section{class:"problem-pane",h2{"{unit.title}"}h3{"문제 설명"}Markdown {text:unit.content.clone()}
+            if !VIEW_ONLY && !data_files.is_empty() {div {class:"data-files",
+                for file in data_files.iter().cloned() {button {class:"data-file-open",onclick:move |_|viewer.set(Some(file.clone())),"자료 보기 · {file}"}}
+            }}
             div {class:"prompt-buttons",
                 button {class:"prompt-copy",onclick:{let unit=unit.clone();move |_|{
                     let prompt=molip_quest::curriculum::answer_prompt(&unit,&code());

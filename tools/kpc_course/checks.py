@@ -9,7 +9,7 @@ INLINE_CODE = re.compile(r"`[^`\n]+`")
 
 
 def broken_backtick(value):
-    """Code split across backticks, e.g. `groupby`('`sex`') or `index`=`False` or ['`price`']."""
+    """Code split across backticks, e.g. `groupby`('`gender`') or `index`=`False` or ['`price`']."""
     prose = FENCED.sub("", value)
     for match in INLINE_CODE.finditer(prose):
         before = prose[match.start() - 1] if match.start() > 0 else ""
