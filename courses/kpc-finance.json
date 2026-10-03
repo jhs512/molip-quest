@@ -1,0 +1,1767 @@
+{
+  "id": "kpc-finance-2026",
+  "title": "KPC · 머신러닝을 활용한 금융데이터 분석",
+  "description": "3일 · 20시간 · 7챕터. 개념을 확인하고 독립된 main.py 미션과 퀴즈를 클리어하세요.",
+  "chapters": [
+    {
+      "id": "python",
+      "title": "1. 파이썬 개발 환경과 기본 문법 이해",
+      "units": [
+        {
+          "id": "environment",
+          "title": "1일차 · 1교시 — 내 코드의 첫 실행",
+          "content": "",
+          "revision": 1,
+          "activities": [
+            {
+              "id": "runtime",
+              "title": "앱과 Python은 어떤 관계일까?",
+              "kind": "concept",
+              "body": "이 과정은 코드로 질문에 답하는 20시간의 금융 데이터 분석 수업입니다. 오늘은 Python과 표를 익히고, 내일은 그래프와 모델, 마지막 날은 다음 거래일 종가 예측까지 완성합니다.\n\n앱은 문제·편집기·실행 결과를 보여주고 Python은 main.py의 코드를 실행합니다. uv는 수업용 Python과 패키지를 함께 준비하는 도구입니다. Anaconda도 환경 관리 도구지만 이 수업에서는 사전에 준비한 uv 환경을 사용합니다. Jupyter나 여러 파일을 만들 필요가 없습니다.\n\nprint('Hello, KPC!')는 화면에 글자를 출력합니다. 따옴표는 문자열의 시작과 끝입니다. 실행은 연습이고 테스트 통과는 미션 완료입니다. 오류가 나면 마지막 줄의 메시지를 읽고 다시 도전하세요. 매 실행은 새 상태이므로 입력·계산·출력을 main.py 안에 모두 써야 합니다.",
+              "check": {
+                "id": "check",
+                "prompt": "이 앱의 코드를 실제로 실행하는 언어는?",
+                "type": "short_answer",
+                "accepted": [
+                  "Python",
+                  "파이썬"
+                ],
+                "explanation": "Python이 main.py를 실행합니다. uv는 환경 준비 도구입니다."
+              }
+            },
+            {
+              "id": "hello",
+              "title": "첫 실행 미션",
+              "kind": "coding",
+              "problem": {
+                "id": "hello",
+                "title": "첫 실행 미션",
+                "content": "한 줄에 Hello, KPC!를 정확히 출력하세요. print 함수와 따옴표를 사용하세요.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "# 첫 문장을 출력하세요\n",
+                "tests": [
+                  {
+                    "input": "",
+                    "expected": "Hello, KPC!\n"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "amount-input",
+              "title": "금액 계산 첫 미션",
+              "kind": "coding",
+              "problem": {
+                "id": "amount-input",
+                "title": "금액 계산 첫 미션",
+                "content": "입력 한 줄에 가격과 수량이 주어집니다. 두 정수를 읽고 가격 × 수량을 출력하세요. 힌트: input().split()으로 나눈 값을 int로 바꿉니다.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "price, quantity = map(int, input().split())\n# 계산한 금액을 출력하세요\n",
+                "tests": [
+                  {
+                    "input": "10000 3\n",
+                    "expected": "30000\n"
+                  },
+                  {
+                    "input": "12000 4\n",
+                    "expected": "48000\n"
+                  },
+                  {
+                    "input": "700 0\n",
+                    "expected": "0\n"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "tools",
+              "title": "도구와 실행 점검",
+              "kind": "quiz",
+              "questions": [
+                {
+                  "id": "q1",
+                  "prompt": "Python 패키지를 준비하는 도구는?",
+                  "type": "choice",
+                  "options": [
+                    "uv",
+                    "print",
+                    "CSV"
+                  ],
+                  "correct": 0,
+                  "explanation": "uv는 Python 환경과 패키지를 관리합니다."
+                },
+                {
+                  "id": "q2",
+                  "prompt": "현재 코드 파일 이름은?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "main.py"
+                  ],
+                  "explanation": "이 수업에서는 main.py 하나를 편집합니다."
+                },
+                {
+                  "id": "q3",
+                  "prompt": "앞 문제의 변수는 이번 문제에서도 자동으로 남을까?",
+                  "type": "choice",
+                  "options": [
+                    "아니요",
+                    "네"
+                  ],
+                  "correct": 0,
+                  "explanation": "문제와 매 실행은 새 프로세스로 시작합니다."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "structures",
+          "title": "1일차 · 2교시 — 변수와 자료구조",
+          "content": "",
+          "revision": 1,
+          "activities": [
+            {
+              "id": "values",
+              "title": "값에 이름과 구조를 붙이기",
+              "kind": "concept",
+              "body": "price = 10000은 오른쪽 값을 price라는 이름에 저장합니다. amount = price * quantity를 실행하면 그 순간의 계산 결과가 저장됩니다. 이후 quantity를 바꾸면 amount도 다시 계산해야 합니다.\n\n리스트 [10000, 10200, 10100]은 순서가 있는 값입니다. 첫 값은 prices[0], 마지막 값은 prices[-1]입니다. len은 개수, sum은 합계를 구합니다. 딕셔너리 {'price':10000, 'quantity':3}는 키로 값을 찾습니다. holding['price']처럼 이름을 정확히 씁니다.\n\n가격과 수량은 따옴표 없는 숫자로 두세요. '10000'은 문자열입니다. IndexError는 범위를 벗어난 위치, KeyError는 없는 키를 뜻합니다. 실제 시세가 아닌 가상 자료로 계산을 연습합니다.",
+              "check": {
+                "id": "check",
+                "prompt": "이름으로 값을 찾는 자료구조는?",
+                "type": "short_answer",
+                "accepted": [
+                  "dict",
+                  "dictionary",
+                  "딕셔너리",
+                  "사전"
+                ],
+                "explanation": "리스트는 위치로, 딕셔너리는 키로 값을 찾습니다."
+              }
+            },
+            {
+              "id": "holding",
+              "title": "한 종목의 금액",
+              "kind": "coding",
+              "problem": {
+                "id": "holding",
+                "title": "한 종목의 금액",
+                "content": "holding 딕셔너리에서 quantity를 5로 바꾸고 amount 키에 price × quantity를 다시 저장하세요. amount가 50000이어야 합니다.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "holding = {'name':'연습A', 'price':10000, 'quantity':3}\n# 수량을 수정하고 금액을 계산하세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['holding']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['holding']['quantity']==5 and s['holding']['amount']==50000\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "price-average",
+              "title": "리스트 평균",
+              "kind": "coding",
+              "problem": {
+                "id": "price-average",
+                "title": "리스트 평균",
+                "content": "prices의 마지막에 10300을 추가하세요. count에는 개수, average에는 평균을 저장하고 둘 다 출력하세요.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "prices = [10000, 10200, 10100]\n# 값을 추가하고 count, average를 계산하세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['average', 'count', 'prices']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['prices']==[10000,10200,10100,10300] and s['count']==4 and s['average']==10150\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "structure-check",
+              "title": "자료구조 이해 점검",
+              "kind": "quiz",
+              "questions": [
+                {
+                  "id": "q1",
+                  "prompt": "리스트 첫 값의 인덱스는?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "0"
+                  ],
+                  "explanation": "Python 인덱스는 0부터 시작합니다."
+                },
+                {
+                  "id": "q2",
+                  "prompt": "수량만 바꾸면 이전 amount는?",
+                  "type": "choice",
+                  "options": [
+                    "이전 값 유지",
+                    "자동 갱신"
+                  ],
+                  "correct": 0,
+                  "explanation": "계산문을 다시 실행해야 합니다."
+                },
+                {
+                  "id": "q3",
+                  "prompt": "같은지 비교하는 연산자는?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "=="
+                  ],
+                  "explanation": "=는 저장, ==는 비교입니다."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "control",
+          "title": "1일차 · 3교시 — 조건·반복과 DataFrame",
+          "content": "",
+          "revision": 1,
+          "activities": [
+            {
+              "id": "flow",
+              "title": "같은 계산을 여러 행에 적용하기",
+              "kind": "concept",
+              "body": "if는 조건에 따라 실행을 고릅니다. if price > 10000: 아래 코드를 공백 네 칸 들여쓰세요. >는 초과, >=는 이상입니다. for는 값을 하나씩 처리합니다. 합계 total = 0은 반복문 전에 만들고 반복 안에서는 누적합니다.\n\n딕셔너리 하나를 한 행으로, 딕셔너리 여러 개를 표 전체로 보면 DataFrame과 연결됩니다. pd.DataFrame(holdings)는 행과 열이 있는 표를 만듭니다. df.shape은 (행 수, 열 수)입니다. 행의 이름인 인덱스는 데이터 열 개수에 포함되지 않습니다.\n\n한 행의 amount를 가격 × 수량으로 계산하고 모든 행의 금액을 더하면 전체 거래 금액입니다. 표를 화면에서 확인할 때는 코드 마지막 줄에 df를 적습니다.",
+              "check": {
+                "id": "check",
+                "prompt": "pandas의 행·열 표 이름은?",
+                "type": "short_answer",
+                "accepted": [
+                  "DataFrame",
+                  "데이터프레임"
+                ],
+                "explanation": "DataFrame은 2차원 표입니다."
+              }
+            },
+            {
+              "id": "above-count",
+              "title": "조건과 반복으로 개수 구하기",
+              "kind": "coding",
+              "problem": {
+                "id": "above-count",
+                "title": "조건과 반복으로 개수 구하기",
+                "content": "prices 중 기준 10000 이상인 값의 개수를 above_count에 저장하세요. 합계는 total에 저장하세요. 힌트: for와 if를 함께 사용합니다.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "prices = [10000,10200,9900,10100]\ntotal = 0\nabove_count = 0\n# 반복문을 작성하세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['above_count', 'total']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['total']==40200 and s['above_count']==3\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "holdings-frame",
+              "title": "세 종목을 표로 완성하기",
+              "kind": "coding",
+              "problem": {
+                "id": "holdings-frame",
+                "title": "세 종목을 표로 완성하기",
+                "content": "각 holding에 amount를 추가하고 total_amount에 전체 금액을 저장하세요. df는 holdings로 만든 DataFrame이어야 합니다. 마지막 줄에 df를 써서 결과를 확인하세요.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\nholdings = [{'name':'A','price':10000,'quantity':3},{'name':'B','price':20000,'quantity':2},{'name':'C','price':15000,'quantity':4}]\n# 금액과 합계를 계산하고 df를 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['df', 'total_amount']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['total_amount']==130000 and s['df'].shape==(3,4)\n    assert s['df']['amount'].tolist()==[30000,40000,60000]\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "control-check",
+              "title": "문법에서 표까지",
+              "kind": "quiz",
+              "questions": [
+                {
+                  "id": "q1",
+                  "prompt": ">=가 포함하는 값은?",
+                  "type": "choice",
+                  "options": [
+                    "기준과 같은 값도 포함",
+                    "기준과 같은 값 제외"
+                  ],
+                  "correct": 0,
+                  "explanation": "이상은 경계 값을 포함합니다."
+                },
+                {
+                  "id": "q2",
+                  "prompt": "3행 4열 표의 shape은?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "(3,4)",
+                    "3,4"
+                  ],
+                  "explanation": "shape은 행 수, 열 수 순서입니다."
+                },
+                {
+                  "id": "q3",
+                  "prompt": "합계 초기화 위치는?",
+                  "type": "choice",
+                  "options": [
+                    "반복문 전",
+                    "반복문 안 매번"
+                  ],
+                  "correct": 0,
+                  "explanation": "반복마다 초기화하면 누적 결과가 사라집니다."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pandas",
+      "title": "2. 데이터 수집 기초 및 pandas 활용",
+      "units": [
+        {
+          "id": "files",
+          "title": "1일차 · 4교시 — CSV·Excel과 행·열 선택",
+          "content": "",
+          "revision": 1,
+          "activities": [
+            {
+              "id": "file-table",
+              "title": "파일도 표로 읽기",
+              "kind": "concept",
+              "body": "CSV는 구분자로 열을 나눈 텍스트이고 Excel은 시트가 있는 통합 문서입니다. pandas의 read_csv, read_excel로 읽으면 같은 DataFrame으로 다룰 수 있습니다. 저장할 때 index=False를 쓰면 행 인덱스를 별도 데이터 열로 넣지 않습니다. Excel에는 openpyxl이 필요하며 수업 환경에 함께 준비합니다.\n\ndf.head()는 앞부분, df.shape은 크기, df.dtypes는 열별 자료형을 보여줍니다. df['price']는 Series, df[['price']]는 한 열의 DataFrame입니다. iloc은 위치로, loc는 행 이름이나 조건으로 고릅니다. iloc[:2]는 위치 0과 1입니다. 필요한 파일은 이번 main.py가 스스로 생성하므로 앞 문제에서 만든 파일이 필요하지 않습니다.",
+              "check": {
+                "id": "check",
+                "prompt": "pandas에서 위치로 행을 고르는 기능은?",
+                "type": "short_answer",
+                "accepted": [
+                  "iloc"
+                ],
+                "explanation": "iloc은 위치, loc는 이름이나 조건을 사용합니다."
+              }
+            },
+            {
+              "id": "csv-excel",
+              "title": "두 파일 형식으로 같은 표 읽기",
+              "kind": "coding",
+              "problem": {
+                "id": "csv-excel",
+                "title": "두 파일 형식으로 같은 표 읽기",
+                "content": "orders를 orders.csv와 orders.xlsx로 저장하세요(index=False). 다시 읽은 표를 csv_df, excel_df에 저장하세요. 두 표의 크기와 product 값이 같아야 합니다.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\norders = pd.DataFrame({'product':['A','B','A','C'], 'price':[10000,20000,12000,None], 'quantity':[3,2,4,1]})\n# 저장하고 다시 읽어 csv_df, excel_df를 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['csv_df', 'excel_df']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['csv_df'].shape==(4,3) and s['excel_df'].shape==(4,3)\n    assert s['csv_df']['product'].tolist()==['A','B','A','C']\n    assert list(s['csv_df'].columns)==list(s['excel_df'].columns)\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "selection",
+              "title": "원하는 열과 첫 두 행",
+              "kind": "coding",
+              "problem": {
+                "id": "selection",
+                "title": "원하는 열과 첫 두 행",
+                "content": "orders에서 product와 price 두 열만 골라 selected에 저장하세요. 첫 두 행은 first_two에 저장하세요. 힌트: 열 이름 리스트와 iloc[:2]를 사용하세요.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\norders = pd.DataFrame({'product':['A','B','A','C'], 'price':[10000,20000,12000,None], 'quantity':[3,2,4,1]})\n# selected, first_two를 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['first_two', 'selected']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert list(s['selected'].columns)==['product','price'] and s['selected'].shape==(4,2)\n    assert s['first_two']['product'].tolist()==['A','B']\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "files-check",
+              "title": "파일과 표 읽기",
+              "kind": "quiz",
+              "questions": [
+                {
+                  "id": "q1",
+                  "prompt": "CSV 저장 시 인덱스를 제외하는 값은?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "index=False"
+                  ],
+                  "explanation": "index=False는 행 인덱스를 데이터 열로 저장하지 않습니다."
+                },
+                {
+                  "id": "q2",
+                  "prompt": "orders[[\"price\"]]의 자료구조는?",
+                  "type": "choice",
+                  "options": [
+                    "DataFrame",
+                    "Series"
+                  ],
+                  "correct": 0,
+                  "explanation": "리스트로 열을 선택하면 2차원 표입니다."
+                },
+                {
+                  "id": "q3",
+                  "prompt": "iloc[:2]에 포함되는 위치는?",
+                  "type": "choice",
+                  "options": [
+                    "0과 1",
+                    "0과 1과 2"
+                  ],
+                  "correct": 0,
+                  "explanation": "위치 슬라이스의 끝은 제외됩니다."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "missing",
+          "title": "1일차 · 5교시 — 조건 필터와 결측치",
+          "content": "",
+          "revision": 1,
+          "activities": [
+            {
+              "id": "missing-values",
+              "title": "없는 값은 0과 다르다",
+              "kind": "concept",
+              "body": "결측은 값을 모른다는 뜻이며 실제 0과 다릅니다. orders.isna().sum()은 열마다 비어 있는 값의 수를 구합니다. fillna는 대체 값을 넣고 dropna는 해당 행을 제외합니다. 어느 처리가 맞는지는 분석 목적에 달려 있습니다.\n\n이 가상 거래 표의 가격은 10000, 20000, 12000과 결측 한 개입니다. 중앙값은 12000입니다. 가격을 중앙값으로 채우면 전체 금액은 130000, 결측 행을 제외하면 118000입니다. 이는 실제 가격을 알아낸 결과가 아니라 선택한 처리 기준의 결과입니다.\n\n조건 두 개를 합칠 때는 각각 괄호로 감싸고 &로 연결하세요. 예: (orders['price'] >= 12000) & (orders['quantity'] >= 2). 결과를 수정할 때 copy()로 원본과 분리하세요. 모델용 대체 기준은 뒤에서 훈련 자료만으로 학습합니다.",
+              "check": {
+                "id": "check",
+                "prompt": "값이 비어 있는 상태를 무엇이라고 하나요?",
+                "type": "short_answer",
+                "accepted": [
+                  "결측",
+                  "결측치",
+                  "missing",
+                  "missing value",
+                  "NaN"
+                ],
+                "explanation": "값을 모르는 상태와 0인 상태를 구분해야 합니다."
+              }
+            },
+            {
+              "id": "filter-orders",
+              "title": "두 조건을 모두 만족하는 거래",
+              "kind": "coding",
+              "problem": {
+                "id": "filter-orders",
+                "title": "두 조건을 모두 만족하는 거래",
+                "content": "가격 12000 이상이고 수량 2 이상인 행을 selected에 저장하세요. product·price·quantity 열을 유지하고 copy()로 분리하세요.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\norders = pd.DataFrame({'product':['A','B','A','C'], 'price':[10000,20000,12000,None], 'quantity':[3,2,4,1]})\n# selected를 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['selected']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['selected']['product'].tolist()==['B','A'] and s['selected']['quantity'].tolist()==[2,4]\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "missing-totals",
+              "title": "대체와 제외의 합계 비교",
+              "kind": "coding",
+              "problem": {
+                "id": "missing-totals",
+                "title": "대체와 제외의 합계 비교",
+                "content": "filled는 가격 결측을 중앙값으로 채운 표, dropped는 가격 결측 행을 제외한 표입니다. 각 표에 amount를 만들고 filled_total, dropped_total에 합계를 저장하세요.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\norders = pd.DataFrame({'product':['A','B','A','C'], 'price':[10000,20000,12000,None], 'quantity':[3,2,4,1]})\n# 두 처리 방법과 합계를 비교하세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['dropped', 'dropped_total', 'filled', 'filled_total']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['filled_total']==130000 and s['dropped_total']==118000\n    assert len(s['filled'])==4 and len(s['dropped'])==3\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "missing-check",
+              "title": "정리 방법의 의미",
+              "kind": "quiz",
+              "questions": [
+                {
+                  "id": "q1",
+                  "prompt": "빈 가격을 0으로 채우면?",
+                  "type": "choice",
+                  "options": [
+                    "모른다는 정보를 실제 0으로 바꿈",
+                    "실제 가격을 알아냄"
+                  ],
+                  "correct": 0,
+                  "explanation": "대체 값은 가정이며 사실 확인이 아닙니다."
+                },
+                {
+                  "id": "q2",
+                  "prompt": "두 조건을 모두 만족시키는 pandas 연산자는?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "&"
+                  ],
+                  "explanation": "각 조건을 괄호로 감싸 &로 연결합니다."
+                },
+                {
+                  "id": "q3",
+                  "prompt": "결측 행 제외 후 합계는?",
+                  "type": "choice",
+                  "options": [
+                    "118000",
+                    "130000"
+                  ],
+                  "correct": 0,
+                  "explanation": "알려진 가격의 금액 합계는 118000입니다."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "html",
+          "title": "1일차 · 6교시 — 저장 HTML에서 데이터 수집",
+          "content": "",
+          "revision": 1,
+          "activities": [
+            {
+              "id": "html-selectors",
+              "title": "화면에서 표로: 수집 원리",
+              "kind": "concept",
+              "body": "HTML은 태그로 문서의 구조를 표현합니다. BeautifulSoup은 저장된 HTML을 읽고 선택자로 요소를 고릅니다. 예: soup.select('#prices li')는 id가 prices인 영역의 li 항목들을 찾습니다. .name은 class가 name인 요소입니다.\n\n이번 수업은 data/prices.html에 저장된 가상 가격을 사용합니다. 각 li에는 data-code, 이름 span, 가격 b가 있습니다. '10,000'은 문자열이므로 쉼표를 지우고 int로 바꿔야 계산할 수 있습니다. 추출한 딕셔너리 여러 개를 DataFrame으로 연결하세요.\n\nBeautifulSoup은 문서를 분석합니다. Selenium은 브라우저를 조작하여 동적 화면을 수집할 때 쓰는 도구입니다. 실제 네이버 접속·브라우저 설치 대신 이번 앱에서는 저장된 문서로 선택자·문자 정리·표 변환의 원리를 연습합니다. 사이트 구조가 바뀌면 선택자도 바뀐다는 점을 이해하세요.",
+              "check": {
+                "id": "check",
+                "prompt": "HTML을 태그와 선택자로 분석하는 Python 도구는?",
+                "type": "short_answer",
+                "accepted": [
+                  "BeautifulSoup",
+                  "뷰티풀수프",
+                  "뷰티풀 수프",
+                  "bs4"
+                ],
+                "explanation": "BeautifulSoup은 저장된 문서를 분석할 수 있습니다."
+              }
+            },
+            {
+              "id": "parse-html",
+              "title": "가상 종목 가격 수집",
+              "kind": "coding",
+              "problem": {
+                "id": "parse-html",
+                "title": "가상 종목 가격 수집",
+                "content": "data/prices.html을 UTF-8로 읽어 soup를 만드세요. 각 #prices li에서 code, name, price를 추출해 rows에 넣고 df를 만드세요. price는 쉼표 없는 정수여야 합니다.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\nfrom pathlib import Path\nfrom bs4 import BeautifulSoup\nhtml=Path('data/prices.html').read_text(encoding='utf-8')\n# soup, rows, df를 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['df']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['df']['code'].tolist()==['A','B']\n    assert s['df']['price'].tolist()==[10000,20000]\n    assert s['df']['name'].tolist()==['가상A','가상B']\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "html-check",
+              "title": "수집 이해 점검",
+              "kind": "quiz",
+              "questions": [
+                {
+                  "id": "q1",
+                  "prompt": "10,000을 정수로 바꾸기 전에 제거할 문자는?",
+                  "type": "short_answer",
+                  "accepted": [
+                    ",",
+                    "쉼표",
+                    "comma"
+                  ],
+                  "explanation": "int 변환 전에 천 단위 쉼표를 제거합니다."
+                },
+                {
+                  "id": "q2",
+                  "prompt": "Selenium의 역할은?",
+                  "type": "choice",
+                  "options": [
+                    "브라우저 조작",
+                    "DataFrame 평균 계산"
+                  ],
+                  "correct": 0,
+                  "explanation": "브라우저 동작을 자동화할 때 사용합니다."
+                },
+                {
+                  "id": "q3",
+                  "prompt": "이번 실습에 인터넷이 필요한가?",
+                  "type": "choice",
+                  "options": [
+                    "아니요",
+                    "네"
+                  ],
+                  "correct": 0,
+                  "explanation": "앱이 저장 HTML을 제공합니다."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "eda",
+      "title": "3. Titanic 데이터 탐색 및 기초 분석",
+      "units": [
+        {
+          "id": "titanic-structure",
+          "title": "1일차 · 7교시 — 실제 데이터와 Target",
+          "content": "",
+          "revision": 1,
+          "activities": [
+            {
+              "id": "target",
+              "title": "예측하고 싶은 값부터 정의하기",
+              "kind": "concept",
+              "body": "data/titanic.csv는 제공 교재의 Titanic 자료를 CSV로 변환한 것입니다. 1309행·14열이며 컬럼은 소문자입니다. survived의 0은 사망, 1은 생존입니다. 809명과 500명이므로 0·1의 평균은 생존율 500/1309입니다.\n\nshape로 크기를 보고 columns로 이름을 확인한 뒤 isna().sum()으로 결측을 봅니다. age는 263개, fare는 1개, embarked는 2개가 비어 있습니다. 나이 미상은 0세가 아닙니다. 나이가 알려진 1046명과 미상 263명을 합치면 전체와 같습니다.\n\nTarget은 학습에서 예측할 정답입니다. boat와 body는 사고 이후의 정보일 수 있으므로 생존을 예측하는 입력에 넣으면 안 됩니다. 우선 탐색에서는 관찰된 표의 의미와 누락을 읽습니다. 다른 Titanic 예제의 891행이나 Survived라는 대문자 이름을 그대로 쓰지 마세요.",
+              "check": {
+                "id": "check",
+                "prompt": "이번 자료의 생존 여부 열 이름은?",
+                "type": "short_answer",
+                "accepted": [
+                  "survived"
+                ],
+                "explanation": "실제 제공 자료의 컬럼은 소문자 survived입니다."
+              }
+            },
+            {
+              "id": "titanic-counts",
+              "title": "전체·알려진 나이·미상 확인",
+              "kind": "coding",
+              "problem": {
+                "id": "titanic-counts",
+                "title": "전체·알려진 나이·미상 확인",
+                "content": "n_total, n_known, n_unknown에 전체 인원·나이가 알려진 인원·미상 인원을 저장하세요. survival_rate에는 survived 평균을 저장하세요. 각각 출력해서 분모를 확인하세요.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\n# 인원과 생존율을 계산하세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['n_known', 'n_total', 'n_unknown', 'survival_rate']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert (s['n_total'],s['n_known'],s['n_unknown'])==(1309,1046,263)\n    assert abs(s['survival_rate']-500/1309)<1e-10\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "target-check",
+              "title": "자료 구조와 분모",
+              "kind": "quiz",
+              "questions": [
+                {
+                  "id": "q1",
+                  "prompt": "이 자료의 전체 행 수는?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "1309",
+                    "1,309"
+                  ],
+                  "explanation": "제공한 Titanic 자료는 1309명입니다."
+                },
+                {
+                  "id": "q2",
+                  "prompt": "나이 미상은 어떻게 볼까?",
+                  "type": "choice",
+                  "options": [
+                    "알 수 없는 값",
+                    "0세"
+                  ],
+                  "correct": 0,
+                  "explanation": "0세는 실제 값이므로 미상과 다릅니다."
+                },
+                {
+                  "id": "q3",
+                  "prompt": "예측하려는 정답을 부르는 용어는?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "target",
+                    "타깃",
+                    "타겟",
+                    "목표변수",
+                    "목표 변수"
+                  ],
+                  "explanation": "Target은 모델의 정답 열입니다."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "titanic-groups",
+          "title": "1일차 · 8교시 — 그룹별 생존율",
+          "content": "",
+          "revision": 1,
+          "activities": [
+            {
+              "id": "denominator",
+              "title": "비율과 인원을 함께 읽기",
+              "kind": "concept",
+              "body": "groupby('sex')['survived'].agg(['count','sum','mean'])은 그룹별 인원·생존자·생존율을 만듭니다. Target에 결측이 없으므로 count는 사람 수입니다. age의 count는 나이를 아는 사람 수라서 전체 인원과 다릅니다.\n\n여성 466명과 남성 843명은 같은 크기의 집단이 아닙니다. 비율을 비교할 때는 분모도 제시하세요. pd.cut은 나이를 구간으로 나눕니다. bins=[0,20,40,60,inf]와 right=False라면 20세는 두 번째 구간에 들어갑니다. 나이 미상 263명은 구간 표에서 제외됩니다.\n\n그룹 차이는 이 데이터에서 관찰한 연관성입니다. 성별·등급·나이 등이 함께 달라질 수 있으므로 한 표만으로 원인을 단정하지 않습니다. 두 조건을 같이 묶으면 더 구체적인 질문을 만들 수 있습니다.",
+              "check": {
+                "id": "check",
+                "prompt": "그룹 비율을 보고할 때 함께 적어야 하는 인원은 비율의 무엇인가요?",
+                "type": "short_answer",
+                "accepted": [
+                  "분모",
+                  "denominator"
+                ],
+                "explanation": "분모인 인원을 함께 봐야 비율의 규모를 알 수 있습니다."
+              }
+            },
+            {
+              "id": "sex-summary",
+              "title": "성별 인원·생존자·생존율 표",
+              "kind": "coding",
+              "problem": {
+                "id": "sex-summary",
+                "title": "성별 인원·생존자·생존율 표",
+                "content": "sex_summary에 sex별 survived의 count, sum, mean을 구한 표를 저장하세요. 그룹 인원을 합하면 전체 1309명이어야 합니다.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\n# sex_summary를 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['sex_summary']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert list(s['sex_summary'].columns)==['count','sum','mean']\n    assert s['sex_summary'].loc['female','count']==466 and s['sex_summary'].loc['male','count']==843\n    assert s['sex_summary']['sum'].sum()==500\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "age-groups",
+              "title": "나이 구간과 누락 확인",
+              "kind": "coding",
+              "problem": {
+                "id": "age-groups",
+                "title": "나이 구간과 누락 확인",
+                "content": "age_group을 [0,20,40,60,inf] 경계로 만들고 right=False를 사용하세요. 라벨은 0~19, 20~39, 40~59, 60+입니다. age_summary에는 구간별 survived의 count, sum, mean을 저장하세요.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\n# age_group과 age_summary를 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['age_summary', 'titanic']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['age_summary']['count'].sum()==1046\n    assert s['titanic']['age_group'].isna().sum()==263\n    assert str(s['titanic'].loc[s['titanic']['age']==20,'age_group'].iloc[0])=='20~39'\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "groups-check",
+              "title": "비율의 해석",
+              "kind": "quiz",
+              "questions": [
+                {
+                  "id": "q1",
+                  "prompt": "여성의 생존율이 높다는 표로 알 수 있는 것은?",
+                  "type": "choice",
+                  "options": [
+                    "관찰된 연관성",
+                    "다른 조건과 무관한 원인 효과"
+                  ],
+                  "correct": 0,
+                  "explanation": "한 표만으로 인과 효과를 입증할 수 없습니다."
+                },
+                {
+                  "id": "q2",
+                  "prompt": "나이 구간에 포함된 인원 합은?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "1046",
+                    "1,046"
+                  ],
+                  "explanation": "나이 미상 263명을 제외한 인원입니다."
+                },
+                {
+                  "id": "q3",
+                  "prompt": "0·1의 평균은?",
+                  "type": "choice",
+                  "options": [
+                    "1인 값의 비율",
+                    "항상 전체 개수"
+                  ],
+                  "correct": 0,
+                  "explanation": "합계를 개수로 나눈 값이 1의 비율입니다."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "visualization",
+      "title": "4. Titanic 데이터 시각화 분석",
+      "units": [
+        {
+          "id": "bar-chart",
+          "title": "2일차 · 1교시 — Figure·Axes와 막대그래프",
+          "content": "",
+          "revision": 1,
+          "activities": [
+            {
+              "id": "axes",
+              "title": "그림의 질문과 축을 먼저 정하기",
+              "kind": "concept",
+              "body": "Figure는 전체 그림, Axes는 그래프가 그려지는 영역입니다. fig, ax = plt.subplots()로 만듭니다. ax.bar(그룹, 값)는 막대그래프입니다. ax.set으로 제목·축 이름·범위를 정하고 plt.show()로 앱에 표시하세요. 그래프의 y축이 인원인지 비율인지 먼저 확인합니다.\n\n성별 생존율은 groupby로 먼저 계산합니다. mean이 0.7275라면 72.75%입니다. 값에 100을 곱해 그릴 때는 y축을 0~100으로 두고 Survival rate (%)라고 표시합니다. 절단된 축은 차이를 과장할 수 있습니다. 그래프와 함께 그룹별 count를 출력해 분모를 남기세요.\n\n이번 미션에서는 영어 축 이름을 사용하여 OS마다 한글 폰트가 없어도 읽을 수 있게 합니다. 비교할 그룹과 표시 단위가 설명에 맞는지 테스트에서 확인합니다.",
+              "check": {
+                "id": "check",
+                "prompt": "Matplotlib에서 전체 그림 객체의 이름은?",
+                "type": "short_answer",
+                "accepted": [
+                  "Figure",
+                  "피겨",
+                  "피규어"
+                ],
+                "explanation": "Figure 안에 하나 이상의 Axes가 있습니다."
+              }
+            },
+            {
+              "id": "sex-bar",
+              "title": "성별 생존율을 퍼센트로 그리기",
+              "kind": "coding",
+              "problem": {
+                "id": "sex-bar",
+                "title": "성별 생존율을 퍼센트로 그리기",
+                "content": "rates에 성별 survived 평균을 저장하세요. fig, ax를 만들고 rates × 100을 막대로 그리세요. y축 범위를 0~100으로 하고 xlabel=Sex, ylabel=Survival rate (%)로 지정하세요. plt.show()로 결과를 보세요.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n# rates, fig, ax를 만들고 막대그래프를 그리세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['ax']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert len(s['ax'].patches)==2\n    assert s['ax'].get_ylim()==(0.0,100.0)\n    assert s['ax'].get_ylabel()=='Survival rate (%)'\n    assert abs(s['ax'].patches[0].get_height()-339/466*100)<1e-8\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "bar-check",
+              "title": "그림 구성 이해",
+              "kind": "quiz",
+              "questions": [
+                {
+                  "id": "q1",
+                  "prompt": "그래프가 그려지는 축 영역 객체는?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "Axes",
+                    "축"
+                  ],
+                  "explanation": "Axes에 제목, 축과 데이터를 표시합니다."
+                },
+                {
+                  "id": "q2",
+                  "prompt": "0.4를 퍼센트로 표현하면?",
+                  "type": "choice",
+                  "options": [
+                    "40%",
+                    "0.4%"
+                  ],
+                  "correct": 0,
+                  "explanation": "비율에 100을 곱하면 퍼센트 값입니다."
+                },
+                {
+                  "id": "q3",
+                  "prompt": "막대그래프 비교 전에 확인할 것은?",
+                  "type": "choice",
+                  "options": [
+                    "계산한 표와 표시 단위",
+                    "색만"
+                  ],
+                  "correct": 0,
+                  "explanation": "질문·집계·단위가 맞아야 그림도 의미가 있습니다."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "distribution",
+          "title": "2일차 · 2교시 — 분포와 관계 시각화",
+          "content": "",
+          "revision": 1,
+          "activities": [
+            {
+              "id": "distribution-types",
+              "title": "히스토그램·산점도·히트맵",
+              "kind": "concept",
+              "body": "히스토그램은 연속값을 구간으로 나눠 개수를 셉니다. bins를 바꾸면 같은 데이터도 다르게 보입니다. 나이 히스토그램은 나이 미상 263명을 제외한 1046명을 사용하고, 제외 기준과 구간 수를 함께 적습니다.\n\n산점도는 두 수치값의 관계를 점으로 보여줍니다. 히트맵은 표의 값을 색으로 표시하며 상관계수 표는 -1~1 범위를 사용합니다. 대각선은 자기 자신과의 관계라 1입니다. 상관이 높아도 원인을 입증하지 않습니다. pclass는 숫자로 기록됐지만 등급 범주이므로 해석에 주의합니다.\n\nSeaborn은 DataFrame의 열 이름으로 그래프를 만들 수 있습니다. sns.histplot(data=known_age,x='age',bins=20,ax=ax)처럼 질문에 맞는 함수를 고르세요. 서로 다른 값의 관계를 한꺼번에 탐색하는 pairplot도 있지만 많은 행·열은 느리므로 먼저 작은 질문부터 다룹니다.",
+              "check": {
+                "id": "check",
+                "prompt": "연속값을 구간별 개수로 나타내는 그래프는?",
+                "type": "short_answer",
+                "accepted": [
+                  "히스토그램",
+                  "histogram"
+                ],
+                "explanation": "구간 경계와 bins 선택에 따라 분포가 다르게 보일 수 있습니다."
+              }
+            },
+            {
+              "id": "age-hist",
+              "title": "나이 미상을 제외한 분포",
+              "kind": "coding",
+              "problem": {
+                "id": "age-hist",
+                "title": "나이 미상을 제외한 분포",
+                "content": "known_age는 age 결측 행을 제외한 표입니다. fig, ax를 만들고 sns.histplot으로 age를 bins=20인 히스토그램으로 그리세요.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n# known_age, fig, ax를 준비하세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['ax', 'known_age']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert len(s['known_age'])==1046\n    assert len(s['ax'].patches)==20\n    assert round(sum(p.get_height() for p in s['ax'].patches))==1046\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "correlation",
+              "title": "상관 표와 히트맵",
+              "kind": "coding",
+              "problem": {
+                "id": "correlation",
+                "title": "상관 표와 히트맵",
+                "content": "columns에 제시한 6개 수치 열의 상관계수를 corr에 저장하세요. sns.heatmap으로 annot=True, vmin=-1, vmax=1인 그림을 만들고 plt.show()로 표시하세요.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\nimport seaborn as sns\ncolumns=['pclass','age','sibsp','parch','fare','survived']\n# corr, fig, ax를 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['ax', 'corr']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['corr'].shape==(6,6)\n    assert all(abs(s['corr'].iloc[i,i]-1)<1e-9 for i in range(6))\n    assert len(s['ax'].collections)>0 and s['ax'].collections[0].get_clim()==(-1,1)\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "distribution-check",
+              "title": "그래프를 고르는 기준",
+              "kind": "quiz",
+              "questions": [
+                {
+                  "id": "q1",
+                  "prompt": "두 수치 변수의 관계를 점으로 보면?",
+                  "type": "choice",
+                  "options": [
+                    "산점도",
+                    "막대그래프"
+                  ],
+                  "correct": 0,
+                  "explanation": "산점도는 각 행의 두 값을 좌표로 표현합니다."
+                },
+                {
+                  "id": "q2",
+                  "prompt": "상관계수 히트맵 대각선 값은?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "1",
+                    "1.0"
+                  ],
+                  "explanation": "자기 자신과의 상관은 1입니다."
+                },
+                {
+                  "id": "q3",
+                  "prompt": "나이 미상을 0으로 채운 히스토그램은?",
+                  "type": "choice",
+                  "options": [
+                    "아동 인원을 왜곡할 수 있음",
+                    "정확한 전체 분포"
+                  ],
+                  "correct": 0,
+                  "explanation": "모르는 나이를 0세로 바꾼 것이기 때문입니다."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "insight",
+          "title": "2일차 · 3교시 — 그림에서 근거 읽기",
+          "content": "",
+          "revision": 1,
+          "activities": [
+            {
+              "id": "observations",
+              "title": "관찰·질문·한계를 구분하기",
+              "kind": "concept",
+              "body": "결과를 설명할 때는 무엇을 계산했는지, 어떤 차이가 보이는지, 무엇을 아직 모르는지를 구분합니다. 예를 들어 여성의 생존율이 높다는 관찰 뒤에 그룹 인원과 다른 조건의 차이를 적습니다. 같은 그림에서 원인까지 단정하지 않습니다.\n\n성별과 객실 등급을 함께 나누면 6개 그룹의 count, mean을 볼 수 있습니다. groupby(['sex','pclass'])는 두 조건을 묶습니다. unstack('pclass')는 등급을 열로 펼쳐 비교하는 표를 만듭니다. 각 그룹의 분모와 비율을 함께 읽으세요.\n\n한 번 더 물을 질문의 예는 '등급을 나눈 뒤에도 성별 차이가 관찰되는가?'입니다. 통제 실험 없이 '성별이 원인이다'라고 쓰지 않습니다. 숫자를 외워 보고하지 말고 실행한 표에서 확인합니다.",
+              "check": {
+                "id": "check",
+                "prompt": "관찰된 차이만으로 원인 관계를 단정할 수 있나요?",
+                "type": "short_answer",
+                "accepted": [
+                  "아니요",
+                  "아니오",
+                  "no",
+                  "불가능"
+                ],
+                "explanation": "다른 조건이나 선택 효과를 확인해야 합니다."
+              }
+            },
+            {
+              "id": "combined-groups",
+              "title": "성별과 등급을 함께 비교하기",
+              "kind": "coding",
+              "problem": {
+                "id": "combined-groups",
+                "title": "성별과 등급을 함께 비교하기",
+                "content": "grouped에 sex·pclass별 survived의 count와 mean을 저장하세요. wide에는 mean을 pclass 열로 펼치고 100을 곱한 표를 저장하세요. ax=wide.plot.bar(...)로 0~100 범위의 막대그래프를 그리세요.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n# grouped, wide, ax를 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['ax', 'grouped', 'wide']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['grouped'].shape==(6,2) and s['grouped']['count'].sum()==1309\n    assert s['wide'].shape==(2,3)\n    assert len(s['ax'].patches)==6 and s['ax'].get_ylim()==(0.0,100.0)\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "insight-check",
+              "title": "해석의 클리어 조건",
+              "kind": "quiz",
+              "questions": [
+                {
+                  "id": "q1",
+                  "prompt": "좋은 해석 문장은?",
+                  "type": "choice",
+                  "options": [
+                    "파일·그룹·분모·비율을 제시",
+                    "높으니까 원인이라고 단정"
+                  ],
+                  "correct": 0,
+                  "explanation": "관찰과 원인 해석을 구분합니다."
+                },
+                {
+                  "id": "q2",
+                  "prompt": "groupby로 묶을 두 열은 sex와 무엇인가요?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "pclass"
+                  ],
+                  "explanation": "성별과 객실 등급을 함께 비교합니다."
+                },
+                {
+                  "id": "q3",
+                  "prompt": "그림 제목에 실제로 계산한 내용을 적는 이유는?",
+                  "type": "choice",
+                  "options": [
+                    "무엇을 비교한 결과인지 알기 위해",
+                    "점수를 높이기 위해"
+                  ],
+                  "correct": 0,
+                  "explanation": "그림의 집계·단위를 명확히 하기 위해서입니다."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "modeling",
+      "title": "5. Titanic 전처리 및 머신러닝 모델링",
+      "units": [
+        {
+          "id": "features",
+          "title": "2일차 · 4교시 — 입력과 정답 분리",
+          "content": "",
+          "revision": 1,
+          "activities": [
+            {
+              "id": "leakage",
+              "title": "미래를 미리 아는 모델은 평가할 수 없다",
+              "kind": "concept",
+              "body": "지도학습은 입력 X와 정답 y의 관계를 훈련 자료에서 학습합니다. 생존 0·1을 고르면 분류이고, 다음 날 가격 같은 연속 숫자를 예측하면 회귀입니다.\n\nTitanic 입력은 pclass, sex, age, sibsp, parch, fare, embarked 7개 열입니다. survived는 정답이라 X에 넣지 않습니다. name, ticket, cabin, boat, body, home.dest도 이번 모델 입력에서 제외합니다. 특히 boat·body는 사고 이후 정보이므로 생존 예측 시점에 알 수 없는 값을 섞을 위험이 있습니다.\n\n결측치와 문자열이 있으므로 숫자는 중앙값 대체·표준화, 범주는 최빈값 대체·One-hot encoding으로 준비합니다. One-hot은 범주마다 표시 열을 만듭니다. 결측을 처리한다고 모든 데이터를 먼저 fit하면 테스트의 정보가 새어 나갑니다. 훈련과 테스트를 먼저 나누고 훈련에서만 fit하세요.",
+              "check": {
+                "id": "check",
+                "prompt": "테스트나 미래 정보가 훈련에 섞이는 문제를 무엇이라고 하나요?",
+                "type": "short_answer",
+                "accepted": [
+                  "데이터누수",
+                  "누수",
+                  "data leakage",
+                  "leakage"
+                ],
+                "explanation": "예측 시점에 알 수 없는 정보를 사용하면 평가를 신뢰할 수 없습니다."
+              }
+            },
+            {
+              "id": "xy-separation",
+              "title": "예측 시점에 아는 입력만 고르기",
+              "kind": "coding",
+              "problem": {
+                "id": "xy-separation",
+                "title": "예측 시점에 아는 입력만 고르기",
+                "content": "features에 지정된 7개 열을 담아 X를 만들고, y에는 survived를 정수로 저장하세요. X에 정답·사고 이후 정보가 포함되면 안 됩니다.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\n# features, X, y를 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['X', 'y']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert list(s['X'].columns)==['pclass','sex','age','sibsp','parch','fare','embarked']\n    assert s['X'].shape==(1309,7) and len(s['y'])==1309\n    assert int(s['y'].sum())==500\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "features-check",
+              "title": "문제 정의 점검",
+              "kind": "quiz",
+              "questions": [
+                {
+                  "id": "q1",
+                  "prompt": "생존 여부를 고르는 작업은?",
+                  "type": "choice",
+                  "options": [
+                    "분류",
+                    "회귀"
+                  ],
+                  "correct": 0,
+                  "explanation": "범주 정답을 고르는 분류입니다."
+                },
+                {
+                  "id": "q2",
+                  "prompt": "범주마다 표시 열을 만드는 변환은?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "one-hot encoding",
+                    "one hot",
+                    "원핫인코딩",
+                    "원핫"
+                  ],
+                  "explanation": "문자열 범주를 모델이 사용할 숫자 열로 바꿉니다."
+                },
+                {
+                  "id": "q3",
+                  "prompt": "boat를 생존 예측 입력에 넣으면?",
+                  "type": "choice",
+                  "options": [
+                    "사고 이후 정보 누수 가능",
+                    "항상 성능이 좋아 올바름"
+                  ],
+                  "correct": 0,
+                  "explanation": "예측 시점에 그 값을 알 수 있는지 먼저 판단합니다."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "preprocessing",
+          "title": "2일차 · 5교시 — 분리와 전처리 Pipeline",
+          "content": "",
+          "revision": 1,
+          "activities": [
+            {
+              "id": "fit-train",
+              "title": "훈련에서 정하고 테스트에는 적용만",
+              "kind": "concept",
+              "body": "train_test_split의 test_size=0.2는 약 20%를 테스트로 남깁니다. stratify=y는 두 그룹의 정답 비율을 비슷하게 유지하고 random_state=42는 분리를 재현하게 합니다. 이번 파일은 훈련 1047명, 테스트 262명입니다. 두 인덱스 집합은 겹치면 안 됩니다.\n\nPipeline은 결측 대체·표준화·인코딩·모델을 한 흐름으로 묶습니다. SimpleImputer(strategy='median')는 훈련 자료의 중앙값을 배우고, transform에서는 이미 배운 값을 씁니다. OneHotEncoder(handle_unknown='ignore')는 처음 보는 범주를 만났을 때 오류로 중단하지 않도록 합니다.\n\n테스트에 fit하지 마세요. 전처리 기준을 정하는 것은 학습이므로 훈련 자료만 사용합니다. 테스트 점수를 보며 반복 튜닝하는 것도 테스트의 역할을 흐리므로 최종 비교는 같은 고정 분리에서 합니다.",
+              "check": {
+                "id": "check",
+                "prompt": "전처리 기준을 학습하는 fit은 어느 자료에 적용하나요?",
+                "type": "short_answer",
+                "accepted": [
+                  "훈련자료",
+                  "훈련데이터",
+                  "train",
+                  "training data",
+                  "X_train"
+                ],
+                "explanation": "테스트에는 이미 학습한 변환을 적용합니다."
+              }
+            },
+            {
+              "id": "stratified-split",
+              "title": "겹치지 않는 훈련·테스트",
+              "kind": "coding",
+              "problem": {
+                "id": "stratified-split",
+                "title": "겹치지 않는 훈련·테스트",
+                "content": "X_train, X_test, y_train, y_test를 test_size=0.2, stratify=y, random_state=42로 나누세요. 두 자료의 행 수와 생존 비율을 출력하세요.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nfeatures=['pclass','sex','age','sibsp','parch','fare','embarked']\nX=titanic[features].copy()\ny=titanic['survived'].astype(int)\nfrom sklearn.model_selection import train_test_split\n# 네 변수를 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['X_test', 'X_train', 'y_test', 'y_train']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert len(s['X_train'])==1047 and len(s['X_test'])==262\n    assert set(s['X_train'].index).isdisjoint(s['X_test'].index)\n    assert len(s['y_train'])==1047 and len(s['y_test'])==262\n    assert abs(s['y_train'].mean()-s['y_test'].mean())<0.01\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "train-imputer",
+              "title": "훈련 나이로만 대체 기준 배우기",
+              "kind": "coding",
+              "problem": {
+                "id": "train-imputer",
+                "title": "훈련 나이로만 대체 기준 배우기",
+                "content": "준비된 훈련·테스트 분리를 사용하세요. age와 fare 열에 중앙값 SimpleImputer를 훈련으로 fit한 뒤 train_values, test_values에 각각 변환값을 저장하세요. 변수 이름은 imputer입니다.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nfeatures=['pclass','sex','age','sibsp','parch','fare','embarked']\nX=titanic[features].copy()\ny=titanic['survived'].astype(int)\nfrom sklearn.model_selection import train_test_split\nX_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.2,stratify=y,random_state=42)\nfrom sklearn.impute import SimpleImputer\n# imputer와 두 변환 결과를 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['X_train', 'imputer', 'test_values', 'train_values']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    import numpy as np\n    assert s['train_values'].shape==(1047,2) and s['test_values'].shape==(262,2)\n    assert np.isfinite(s['train_values']).all() and np.isfinite(s['test_values']).all()\n    assert np.allclose(s['imputer'].statistics_,s['X_train'][['age','fare']].median().to_numpy())\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "pipeline-check",
+              "title": "누수를 막는 실행 순서",
+              "kind": "quiz",
+              "questions": [
+                {
+                  "id": "q1",
+                  "prompt": "올바른 전처리 순서는?",
+                  "type": "choice",
+                  "options": [
+                    "훈련에서 fit → 테스트 transform",
+                    "전체에서 fit → 나중에 분리"
+                  ],
+                  "correct": 0,
+                  "explanation": "테스트 정보가 대체 기준에 섞이면 누수가 발생합니다."
+                },
+                {
+                  "id": "q2",
+                  "prompt": "분리 결과를 재현하는 인자는?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "random_state"
+                  ],
+                  "explanation": "같은 설정과 자료에서 분리를 재현합니다."
+                },
+                {
+                  "id": "q3",
+                  "prompt": "stratify=y는 무엇을 유지하려 하나요?",
+                  "type": "choice",
+                  "options": [
+                    "정답 클래스 비율",
+                    "날짜 순서"
+                  ],
+                  "correct": 0,
+                  "explanation": "분류 정답 비율이 두 그룹에서 비슷하도록 합니다."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "classifiers",
+          "title": "2일차 · 6교시 — 세 분류 모델과 기준 비교",
+          "content": "",
+          "revision": 1,
+          "activities": [
+            {
+              "id": "baselines",
+              "title": "좋다는 말에는 비교 기준이 필요하다",
+              "kind": "concept",
+              "body": "다수 클래스를 항상 고르는 DummyClassifier가 기준 모델입니다. 정확도가 높아 보여도 이 기준보다 좋아졌는지 확인해야 합니다. Logistic Regression은 선형 점수로 분류 확률을 계산하고, Decision Tree는 조건을 나누며, RandomForest는 여러 트리의 결과를 결합합니다.\n\n같은 훈련·테스트 자료와 같은 전처리 원칙으로 비교합니다. 각 모델마다 새 make_preprocessor()를 만들어 Pipeline에 넣고 model.fit(X_train,y_train) 후 predict(X_test)합니다. Accuracy는 전체 중 맞힌 비율이며 F1은 양성 precision·recall을 함께 요약합니다.\n\n트리를 깊게 만들면 훈련 점수는 높아져도 테스트가 좋아진다고 보장할 수 없습니다. 가장 높은 테스트 점수 하나를 계속 쫓지 말고 분리·기준·설정을 보고서에 남깁니다. 이번 검사는 정해진 승자를 요구하지 않고 올바른 비교 절차를 확인합니다.",
+              "check": {
+                "id": "check",
+                "prompt": "항상 다수 클래스를 예측하는 scikit-learn 기준 모델은?",
+                "type": "short_answer",
+                "accepted": [
+                  "DummyClassifier",
+                  "더미분류기",
+                  "더미 분류기"
+                ],
+                "explanation": "비교 기준을 두어 모델이 무엇을 개선했는지 봅니다."
+              }
+            },
+            {
+              "id": "model-comparison",
+              "title": "Titanic 분류 모델 비교표",
+              "kind": "coding",
+              "problem": {
+                "id": "model-comparison",
+                "title": "Titanic 분류 모델 비교표",
+                "content": "준비 코드의 입력·분리·전처리를 사용하세요. models에 Dummy, Logistic, Tree, Forest 이름으로 각각 모델을 넣으세요. 각 모델을 전처리 Pipeline으로 fit하고 accuracy와 f1을 계산해 results 표를 만드세요. forest는 n_estimators=50, max_depth=5, random_state=42를 사용합니다.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nfeatures=['pclass','sex','age','sibsp','parch','fare','embarked']\nX=titanic[features].copy()\ny=titanic['survived'].astype(int)\nfrom sklearn.model_selection import train_test_split\nX_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.2,stratify=y,random_state=42)\nfrom sklearn.compose import ColumnTransformer\nfrom sklearn.impute import SimpleImputer\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import OneHotEncoder,StandardScaler\ndef make_preprocessor():\n    return ColumnTransformer([('numeric',Pipeline([('fill',SimpleImputer(strategy='median')),('scale',StandardScaler())]),['pclass','age','sibsp','parch','fare']),('category',Pipeline([('fill',SimpleImputer(strategy='most_frequent')),('encode',OneHotEncoder(handle_unknown='ignore'))]),['sex','embarked'])])\nfrom sklearn.dummy import DummyClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.tree import DecisionTreeClassifier\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import accuracy_score,f1_score\n# models 딕셔너리와 results를 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['results']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert set(s['results'].index)=={'Dummy','Logistic','Tree','Forest'}\n    assert set(s['results'].columns)=={'accuracy','f1'}\n    assert ((s['results']>=0)&(s['results']<=1)).all().all()\n    assert abs(s['results'].loc['Dummy','accuracy']-162/262)<1e-10\n    assert s['results'].loc['Dummy','f1']==0\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "model-check",
+              "title": "학습과 평가",
+              "kind": "quiz",
+              "questions": [
+                {
+                  "id": "q1",
+                  "prompt": "훈련 정확도가 100%면?",
+                  "type": "choice",
+                  "options": [
+                    "테스트에서도 좋은지 별도 확인",
+                    "새 데이터도 반드시 100%"
+                  ],
+                  "correct": 0,
+                  "explanation": "훈련 자료를 외운 과적합일 수 있습니다."
+                },
+                {
+                  "id": "q2",
+                  "prompt": "여러 결정 트리를 결합하는 모델은?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "RandomForest",
+                    "Random Forest",
+                    "랜덤포레스트",
+                    "랜덤 포레스트"
+                  ],
+                  "explanation": "여러 트리의 결과를 결합하는 앙상블입니다."
+                },
+                {
+                  "id": "q3",
+                  "prompt": "모델을 공정하게 비교하려면?",
+                  "type": "choice",
+                  "options": [
+                    "같은 분리·같은 평가 기준",
+                    "모델마다 원하는 테스트를 고르기"
+                  ],
+                  "correct": 0,
+                  "explanation": "자료와 평가 기준이 달라지면 점수를 직접 비교할 수 없습니다."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "credit",
+      "title": "6. 금융 데이터 분석 및 신용카드 부도 예측",
+      "units": [
+        {
+          "id": "credit-target",
+          "title": "2일차 · 7교시 — 부도 정의와 연체 이력",
+          "content": "",
+          "revision": 1,
+          "activities": [
+            {
+              "id": "credit-definition",
+              "title": "과거 연체와 다음 달 부도는 다르다",
+              "kind": "concept",
+              "body": "data/credit.csv는 교재의 신용카드 자료를 CSV로 변환했습니다. 30000명·25열이며 target 열은 default payment next month입니다. 1은 다음 달 부도, 0은 비부도입니다. 부도 6636명, 비부도 23364명으로 22.12%입니다. ID는 식별 번호이므로 모델 입력에서 제외합니다.\n\nLIMIT_BAL은 신용 한도, AGE는 나이입니다. SEX·EDUCATION·MARRIAGE는 숫자로 저장돼도 범주 코드입니다. PAY_0와 PAY_2~PAY_6은 상환 상태이며 PAY_1 열은 없습니다. 양수는 연체 개월 수입니다. 이번 has_delay는 여섯 달 중 한 번이라도 1 이상인지로 정의합니다.\n\n음수와 0도 여러 상태를 나타내므로 모두 같은 뜻이라고 단정하지 않습니다. 연체 이력은 과거 정보이고 다음 달 부도는 예측할 정답입니다. 두 값을 같은 변수로 취급하지 마세요. 그룹마다 인원과 부도율을 함께 읽습니다.",
+              "check": {
+                "id": "check",
+                "prompt": "이번 신용카드 Target에서 부도를 나타내는 값은?",
+                "type": "short_answer",
+                "accepted": [
+                  "1"
+                ],
+                "explanation": "1은 다음 달 부도, 0은 비부도입니다."
+              }
+            },
+            {
+              "id": "default-summary",
+              "title": "부도 비율과 인원 확인",
+              "kind": "coding",
+              "problem": {
+                "id": "default-summary",
+                "title": "부도 비율과 인원 확인",
+                "content": "default_count에 부도 인원, default_rate에 부도 비율을 저장하세요. X는 ID와 target을 제외한 입력 표여야 합니다.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\ncredit = pd.read_csv('data/credit.csv')\ntarget = 'default payment next month'\n# default_count, default_rate, X를 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['X', 'default_count', 'default_rate', 'target']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['default_count']==6636 and abs(s['default_rate']-0.2212)<1e-10\n    assert s['X'].shape==(30000,23) and 'ID' not in s['X'] and s['target'] not in s['X']\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "delay-groups",
+              "title": "한 번이라도 연체했는가",
+              "kind": "coding",
+              "problem": {
+                "id": "delay-groups",
+                "title": "한 번이라도 연체했는가",
+                "content": "pay_columns의 상태가 1 이상인 달이 하나라도 있는지를 has_delay 열로 추가하세요. summary에는 has_delay별 target의 count, sum, mean을 저장하세요. any(axis=1)은 행마다 조건을 합칩니다.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\ncredit = pd.read_csv('data/credit.csv')\ntarget = 'default payment next month'\npay_columns=['PAY_0','PAY_2','PAY_3','PAY_4','PAY_5','PAY_6']\n# has_delay와 summary를 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['credit', 'summary']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['summary']['count'].sum()==30000 and s['summary']['sum'].sum()==6636\n    assert set(s['summary'].index)=={False,True}\n    assert s['credit']['has_delay'].equals((s['credit'][['PAY_0','PAY_2','PAY_3','PAY_4','PAY_5','PAY_6']]>=1).any(axis=1))\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "credit-check",
+              "title": "고객 자료의 의미",
+              "kind": "quiz",
+              "questions": [
+                {
+                  "id": "q1",
+                  "prompt": "고객 식별 번호로 입력에서 빼는 열은?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "ID"
+                  ],
+                  "explanation": "번호 자체를 고객의 부도 특성으로 쓰지 않습니다."
+                },
+                {
+                  "id": "q2",
+                  "prompt": "SEX 코드가 1·2라는 이유로 연속 숫자로 보면?",
+                  "type": "choice",
+                  "options": [
+                    "범주 의미를 놓칠 수 있음",
+                    "언제나 올바름"
+                  ],
+                  "correct": 0,
+                  "explanation": "숫자 표현과 변수의 의미를 구분해야 합니다."
+                },
+                {
+                  "id": "q3",
+                  "prompt": "가장 최근 상환 상태 열은?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "PAY_0"
+                  ],
+                  "explanation": "PAY_1은 없고 PAY_0가 최근 상태입니다."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "credit-metrics",
+          "title": "2일차 · 8교시 — 네 지표와 확률 기준",
+          "content": "",
+          "revision": 1,
+          "activities": [
+            {
+              "id": "metric-meaning",
+              "title": "정확도만 높으면 충분할까?",
+              "kind": "concept",
+              "body": "모든 고객을 비부도로 예측하면 accuracy는 77.88%지만 부도 고객을 하나도 찾지 못합니다. 양성은 부도(1)로 정합니다. Precision은 부도로 예측한 사람 중 실제 부도 비율, recall은 실제 부도 중 찾아낸 비율입니다. F1은 두 지표의 조화평균입니다.\n\n혼동행렬은 행이 실제, 열이 예측입니다. 순서 [0,1]에서는 [[TN,FP],[FN,TP]]입니다. 실제 부도를 놓친 수가 FN입니다. 실무 목표에 따라 놓치는 오류와 잘못 경고하는 오류의 비용을 함께 판단해야 합니다.\n\n확률 p가 threshold 이상이면 1로 바꿉니다. 0.5를 0.3으로 낮추면 보통 더 많은 고객을 양성으로 예측하고 recall은 높아질 수 있지만 precision은 내려갈 수 있습니다. 테스트 자료로 기준을 반복 조정해 최적이라고 주장하지 말고 원리와 변화부터 확인하세요.",
+              "check": {
+                "id": "check",
+                "prompt": "실제 양성 중 찾아낸 비율은?",
+                "type": "short_answer",
+                "accepted": [
+                  "recall",
+                  "재현율"
+                ],
+                "explanation": "Recall은 TP / (TP+FN)입니다."
+              }
+            },
+            {
+              "id": "metrics-matrix",
+              "title": "혼동행렬과 네 지표",
+              "kind": "coding",
+              "problem": {
+                "id": "metrics-matrix",
+                "title": "혼동행렬과 네 지표",
+                "content": "작은 검증 예제에서 accuracy, precision, recall, f1을 계산하여 metrics 딕셔너리에 저장하세요. matrix에는 confusion_matrix(y_true,y_pred,labels=[0,1])을 저장하세요.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "from sklearn.metrics import accuracy_score,precision_score,recall_score,f1_score,confusion_matrix\ny_true=[0,0,1,1,1,0]\ny_pred=[0,1,1,0,1,0]\n# metrics와 matrix를 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['matrix', 'metrics']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert set(s['metrics'])=={'accuracy','precision','recall','f1'}\n    assert all(abs(v-2/3)<1e-10 for v in s['metrics'].values())\n    assert s['matrix'].tolist()==[[2,1],[1,2]]\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "credit-model",
+              "title": "부도 모델과 기준 모델 비교",
+              "kind": "coding",
+              "problem": {
+                "id": "credit-model",
+                "title": "부도 모델과 기준 모델 비교",
+                "content": "준비된 credit의 PAY_0·LIMIT_BAL·AGE를 입력으로 사용합니다. models 딕셔너리에 Dummy와 Logistic을 넣고 각각 학습한 뒤 results에 accuracy·precision·recall·f1을 기록하세요. 전처리는 준비된 Pipeline을 사용하세요. 먼저 기준 모델의 recall을 확인합니다.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\ncredit = pd.read_csv('data/credit.csv')\ntarget = 'default payment next month'\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.dummy import DummyClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import accuracy_score,precision_score,recall_score,f1_score\nX=credit[['PAY_0','LIMIT_BAL','AGE']]\ny=credit[target]\nX_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.2,stratify=y,random_state=42)\n# models와 results를 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['X_test', 'results']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert set(s['results'].index)=={'Dummy','Logistic'}\n    assert set(s['results'].columns)=={'accuracy','precision','recall','f1'}\n    assert s['results'].loc['Dummy','recall']==0\n    assert ((s['results']>=0)&(s['results']<=1)).all().all()\n    assert len(s['X_test'])==6000\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "thresholds",
+              "title": "확률 기준을 바꾸기",
+              "kind": "coding",
+              "problem": {
+                "id": "thresholds",
+                "title": "확률 기준을 바꾸기",
+                "content": "probabilities를 기준 0.5 이상이면 1인 pred_05, 기준 0.3 이상이면 1인 pred_03으로 바꾸세요. 양성으로 예측된 개수를 두 번 출력하세요.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import numpy as np\nprobabilities=np.array([0.1,0.35,0.49,0.51,0.8])\n# pred_05, pred_03을 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['pred_03', 'pred_05']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['pred_05'].tolist()==[0,0,0,1,1]\n    assert s['pred_03'].tolist()==[0,1,1,1,1]\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "metrics-check",
+              "title": "지표와 오류 읽기",
+              "kind": "quiz",
+              "questions": [
+                {
+                  "id": "q1",
+                  "prompt": "양성이라고 예측한 사람 중 실제 양성 비율은?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "precision",
+                    "정밀도"
+                  ],
+                  "explanation": "Precision은 TP / (TP+FP)입니다."
+                },
+                {
+                  "id": "q2",
+                  "prompt": "모두 비부도라고 예측하는 모델의 부도 recall은?",
+                  "type": "choice",
+                  "options": [
+                    "0",
+                    "약 0.78"
+                  ],
+                  "correct": 0,
+                  "explanation": "부도를 하나도 찾지 못하므로 recall은 0입니다."
+                },
+                {
+                  "id": "q3",
+                  "prompt": "실제 양성을 놓친 오류의 약어는?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "FN",
+                    "false negative",
+                    "거짓음성",
+                    "위음성"
+                  ],
+                  "explanation": "FN은 실제 부도인데 비부도로 예측한 경우입니다."
+                },
+                {
+                  "id": "q4",
+                  "prompt": "확률 기준을 낮추면 일반적으로?",
+                  "type": "choice",
+                  "options": [
+                    "양성 예측 대상이 늘어남",
+                    "항상 성능이 모두 좋아짐"
+                  ],
+                  "correct": 0,
+                  "explanation": "Recall과 precision의 변화·오류 비용을 함께 봅니다."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "stock",
+      "title": "7. 주가 데이터 기반 회귀 분석 프로젝트",
+      "units": [
+        {
+          "id": "stock-data",
+          "title": "3일차 · 1교시 — 주가 파일과 시점",
+          "content": "",
+          "revision": 1,
+          "activities": [
+            {
+              "id": "saved-prices",
+              "title": "오늘 알 수 있는 정보로 내일을 예측하기",
+              "kind": "concept",
+              "body": "data/stock.csv는 교재에서 제공한 삼성전자 주가 자료입니다. 401개 행이며 Date·Open·High·Low·Close·Volume·Change가 있습니다. Date를 날짜로 읽고 인덱스로 옮기면 401행·6열입니다. 날짜 순서와 중복을 먼저 확인합니다.\n\n주가 수집 도구 yfinance·FinanceDataReader는 사이트의 가격을 표로 가져오는 역할입니다. 이 앱은 저장 CSV를 사용해 인터넷 없이 같은 원리를 학습합니다. 수집된 자료의 기간·조정 여부·출처는 비교할 때 함께 기록해야 합니다. 다른 파일의 결과를 같은 실험인 것처럼 섞지 마세요.\n\n오늘 장 마감 후에 알고 있는 종가로 다음 거래일 종가를 예측합니다. 다음 거래일은 다음 달력 날짜와 다를 수 있습니다. 입력 시점과 정답 시점을 먼저 정해야 미래 정보가 입력에 섞이지 않습니다. 이 수업은 가격 오차 비교이며 투자 수익을 평가하는 실험이 아닙니다.",
+              "check": {
+                "id": "check",
+                "prompt": "오늘 장 마감 후 다음 거래일에 예측하는 가격 열의 영어 이름은?",
+                "type": "short_answer",
+                "accepted": [
+                  "Close",
+                  "종가"
+                ],
+                "explanation": "종가는 Close이며 다음 거래일의 값을 정답으로 둡니다."
+              }
+            },
+            {
+              "id": "stock-load",
+              "title": "날짜 순서와 크기 확인",
+              "kind": "coding",
+              "problem": {
+                "id": "stock-load",
+                "title": "날짜 순서와 크기 확인",
+                "content": "data/stock.csv를 Date 날짜 인덱스로 읽어 prices에 저장하세요. sort_index()로 정렬하고 n_rows, n_columns에 크기를 저장하세요. 날짜 중복이 없는지 확인하세요.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\n# prices, n_rows, n_columns를 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['n_columns', 'n_rows', 'prices']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['prices'].shape==(401,6) and s['n_rows']==401 and s['n_columns']==6\n    assert s['prices'].index.is_monotonic_increasing and not s['prices'].index.has_duplicates\n    assert s['prices']['Close'].iloc[0]==54100\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "stock-data-check",
+              "title": "주가 자료의 기준",
+              "kind": "quiz",
+              "questions": [
+                {
+                  "id": "q1",
+                  "prompt": "다음 거래일은 항상 다음 달력 날짜일까?",
+                  "type": "choice",
+                  "options": [
+                    "아니요",
+                    "네"
+                  ],
+                  "correct": 0,
+                  "explanation": "휴장일·주말에는 거래가 없습니다."
+                },
+                {
+                  "id": "q2",
+                  "prompt": "제공 파일의 행 수는?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "401"
+                  ],
+                  "explanation": "이 파일은 401개 날짜를 담고 있습니다."
+                },
+                {
+                  "id": "q3",
+                  "prompt": "가격 데이터 비교에 필요한 기록은?",
+                  "type": "choice",
+                  "options": [
+                    "파일·기간·가격 조정 기준",
+                    "모델 이름만"
+                  ],
+                  "correct": 0,
+                  "explanation": "자료 처리 기준이 달라지면 결과도 달라집니다."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "stock-features",
+          "title": "3일차 · 2교시 — 수익률·이동평균·lag",
+          "content": "",
+          "revision": 1,
+          "activities": [
+            {
+              "id": "lag-target",
+              "title": "과거 특성과 미래 정답을 구분하기",
+              "kind": "concept",
+              "body": "pct_change()는 이전 종가 대비 변화율입니다. rolling(5).mean()은 현재를 포함한 최근 5거래일 평균으로, 처음 4행에서는 값이 부족합니다. shift(1)은 이전 행의 값을 현재 행으로 가져오므로 lag 특성이 됩니다. shift(-1)은 다음 행을 가져와 다음 거래일 정답을 만듭니다.\n\n오늘 Close, return_1, ma5, lag_close_1을 입력으로 사용할 수 있습니다. target_next_close는 정답이며 입력에 넣지 않습니다. target_date도 정답이 실제로 발생하는 날짜를 확인할 용도로 유지합니다.\n\n이 파일은 401행에서 5거래일 평균의 첫 4행과 마지막 미래 정답 미상 한 행을 제외하면 396행이 남습니다. 날짜 인덱스와 Target 날짜를 같이 확인하세요. 숫자만 맞아 보여도 하루 밀린 정답이면 다른 문제를 푼 것입니다.",
+              "check": {
+                "id": "check",
+                "prompt": "이전 거래일 값을 현재 행으로 가져오는 표현은?",
+                "type": "short_answer",
+                "accepted": [
+                  "shift(1)",
+                  ".shift(1)"
+                ],
+                "explanation": "양수 shift는 이전 행의 값을 가져옵니다."
+              }
+            },
+            {
+              "id": "lag-next",
+              "title": "과거와 미래 열 만들기",
+              "kind": "coding",
+              "problem": {
+                "id": "lag-next",
+                "title": "과거와 미래 열 만들기",
+                "content": "prices에 lag_close_1은 Close.shift(1), target_next_close는 Close.shift(-1)로 추가하세요. 첫 행의 과거값과 마지막 행의 미래값은 비어 있어야 합니다.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\n# 두 열을 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['prices']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert __import__('pandas').isna(s['prices']['lag_close_1'].iloc[0])\n    assert s['prices']['lag_close_1'].iloc[1]==54100\n    assert s['prices']['target_next_close'].iloc[0]==53900\n    assert __import__('pandas').isna(s['prices']['target_next_close'].iloc[-1])\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "stock-frame",
+              "title": "미래 정답을 포함한 분석 표",
+              "kind": "coding",
+              "problem": {
+                "id": "stock-frame",
+                "title": "미래 정답을 포함한 분석 표",
+                "content": "frame에 close, return_1, ma5, lag_close_1, target_next_close, target_date를 만드세요. return_1은 pct_change, ma5는 rolling(5).mean입니다. target_date는 날짜 인덱스를 Series로 만든 뒤 shift(-1)합니다. 마지막에 dropna로 불완전한 행을 제외하세요.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\nframe=pd.DataFrame(index=prices.index)\n# 여섯 열을 만들고 불완전한 행을 제외하세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['frame', 'prices']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['frame'].shape==(396,6)\n    assert s['frame'].notna().all().all()\n    assert (s['frame']['target_date']>s['frame'].index).all()\n    assert s['frame']['ma5'].iloc[0]==s['prices']['Close'].iloc[:5].mean()\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "feature-time-check",
+              "title": "시점과 특성",
+              "kind": "quiz",
+              "questions": [
+                {
+                  "id": "q1",
+                  "prompt": "다음 거래일 값을 가져오는 shift 인자는?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "-1"
+                  ],
+                  "explanation": "shift(-1)은 다음 행을 현재 행으로 옮깁니다."
+                },
+                {
+                  "id": "q2",
+                  "prompt": "target_next_close를 X에도 넣으면?",
+                  "type": "choice",
+                  "options": [
+                    "미래 정보 누수",
+                    "정상적인 과거 특성"
+                  ],
+                  "correct": 0,
+                  "explanation": "예측할 정답이 입력에 섞입니다."
+                },
+                {
+                  "id": "q3",
+                  "prompt": "5거래일 평균에서 처음 비는 행 수는?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "4"
+                  ],
+                  "explanation": "첫 4행은 5개 관측값이 아직 없습니다."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "stock-split",
+          "title": "3일차 · 3교시 — 시간 분리와 기준 모델",
+          "content": "",
+          "revision": 1,
+          "activities": [
+            {
+              "id": "temporal-boundary",
+              "title": "훈련 정답도 테스트 시작 전이어야 한다",
+              "kind": "concept",
+              "body": "미래를 예측하려면 과거로 훈련하고 뒤의 기간으로 테스트합니다. 날짜를 무작위로 섞으면 미래로 훈련하고 과거를 테스트할 수 있습니다. 마지막 80개 입력 날짜를 테스트로 남깁니다.\n\n입력 날짜만 훈련 쪽이라고 충분하지 않습니다. 경계 바로 전 행의 target_date가 테스트 시작일이면 테스트 시점의 정답을 이미 본 것입니다. train_mask는 입력 날짜 < test_start와 정답 날짜 < test_start를 모두 만족해야 합니다. 제공 자료에서는 396행 중 훈련 315, 경계 제외 1, 테스트 80입니다.\n\n기준 예측은 '내일 종가도 오늘 종가와 같다'입니다. 복잡한 모델도 이것보다 오차를 줄이지 못할 수 있습니다. MAE는 절대 오차 평균으로 가격 단위이며 작을수록 좋습니다. 평가 기간을 고정해서 같은 정답에 대해 비교하세요.",
+              "check": {
+                "id": "check",
+                "prompt": "이 시계열 분리에 train/test를 무작위로 섞나요?",
+                "type": "short_answer",
+                "accepted": [
+                  "아니요",
+                  "아니오",
+                  "no",
+                  "섞지않는다"
+                ],
+                "explanation": "과거 훈련, 미래 테스트 순서를 유지합니다."
+              }
+            },
+            {
+              "id": "time-boundary",
+              "title": "미래 정답이 겹치지 않는 분리",
+              "kind": "coding",
+              "problem": {
+                "id": "time-boundary",
+                "title": "미래 정답이 겹치지 않는 분리",
+                "content": "준비된 frame에서 마지막 80개 입력 날짜의 시작을 test_start로 정하세요. train_mask는 입력 날짜와 target_date가 모두 test_start 전인 행, test_mask는 입력 날짜가 test_start 이상인 행입니다. X_train, X_test, y_train, y_test를 만드세요.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['Close']\nframe['return_1']=prices['Close'].pct_change()\nframe['ma5']=prices['Close'].rolling(5).mean()\nframe['lag_close_1']=prices['Close'].shift(1)\nframe['target_next_close']=prices['Close'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\n# test_start, 마스크와 네 자료를 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['X_test', 'X_train', 'frame', 'train_mask']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert len(s['X_train'])==315 and len(s['X_test'])==80\n    assert s['frame'].loc[s['train_mask'],'target_date'].max()<s['X_test'].index.min()\n    assert set(s['X_train'].index).isdisjoint(s['X_test'].index)\n    assert 'target_next_close' not in s['X_train']\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "close-baseline",
+              "title": "오늘 종가 기준의 오차",
+              "kind": "coding",
+              "problem": {
+                "id": "close-baseline",
+                "title": "오늘 종가 기준의 오차",
+                "content": "준비한 시간 분리에서 baseline_pred에는 X_test의 close 배열을 저장하세요. baseline_mae에는 y_test와 baseline_pred의 MAE를 계산하세요.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['Close']\nframe['return_1']=prices['Close'].pct_change()\nframe['ma5']=prices['Close'].rolling(5).mean()\nframe['lag_close_1']=prices['Close'].shift(1)\nframe['target_next_close']=prices['Close'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\ntest_start=frame.index[-80]\ntrain_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\nX_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\nfrom sklearn.metrics import mean_absolute_error\n# baseline_pred와 baseline_mae를 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['X_test', 'baseline_mae', 'baseline_pred', 'y_test']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    import numpy as np\n    assert np.array_equal(s['baseline_pred'],s['X_test']['close'].to_numpy())\n    assert abs(s['baseline_mae']-float(np.abs(s['y_test'].to_numpy()-s['X_test']['close'].to_numpy()).mean()))<1e-8\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "temporal-check",
+              "title": "누수 없는 평가",
+              "kind": "quiz",
+              "questions": [
+                {
+                  "id": "q1",
+                  "prompt": "훈련 행의 정답 날짜가 테스트 시작일이면?",
+                  "type": "choice",
+                  "options": [
+                    "그 행을 훈련에서 제외",
+                    "입력 날짜가 과거라 포함"
+                  ],
+                  "correct": 0,
+                  "explanation": "정답도 훈련 기간 안에 있어야 합니다."
+                },
+                {
+                  "id": "q2",
+                  "prompt": "오늘 종가를 내일 값으로 쓰는 예측을 무엇이라고 하나요?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "기준모델",
+                    "기준예측",
+                    "baseline",
+                    "베이스라인"
+                  ],
+                  "explanation": "복잡한 모델과 비교할 기준입니다."
+                },
+                {
+                  "id": "q3",
+                  "prompt": "제공 파일의 경계 제외 후 훈련 행 수는?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "315"
+                  ],
+                  "explanation": "훈련 315 + 경계 제외 1 + 테스트 80 = 유효 396행입니다."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "regression-project",
+          "title": "3일차 · 4교시 — 회귀 비교와 최종 결과",
+          "content": "",
+          "revision": 1,
+          "activities": [
+            {
+              "id": "regression-metrics",
+              "title": "기준보다 나쁜 결과도 정확히 보고하기",
+              "kind": "concept",
+              "body": "Linear Regression은 입력의 선형 조합으로 값을 예측합니다. Ridge는 계수가 커지는 것에 제곱 벌점을 더하고, Lasso는 절댓값 벌점을 더해 일부 계수를 0으로 만들 수 있습니다. StandardScaler는 훈련에서만 fit하고 Pipeline으로 모델과 묶습니다.\n\nMAE는 절대 오차 평균, RMSE는 제곱 오차 평균의 제곱근으로 큰 오차에 더 민감합니다. 두 값은 종가의 단위이며 작을수록 좋습니다. R²는 테스트 정답 평균을 기준으로 한 지표로 음수가 될 수도 있습니다. 오늘 종가 기준 예측과는 다른 기준이므로 높은 R² 하나만 보고 성공이라고 말하지 마세요.\n\n같은 테스트 기간에서 기준 예측과 세 모델을 비교하고, actual과 prediction을 target_date 축으로 그립니다. 보고는 ① 예측 시점·분리 기준 ② 기준 대비 MAE 변화 ③ 해당 파일·기간의 한계 순서로 합니다. 기준보다 오차가 크다면 개선하지 못했다고 기록합니다. 테스트 기간을 반복 튜닝에 사용하지 않습니다.",
+              "check": {
+                "id": "check",
+                "prompt": "일부 계수를 0으로 만들 수 있는 절댓값 벌점 모델은?",
+                "type": "short_answer",
+                "accepted": [
+                  "Lasso",
+                  "라쏘",
+                  "라소"
+                ],
+                "explanation": "Lasso는 L1 벌점을 사용합니다."
+              }
+            },
+            {
+              "id": "regression-table",
+              "title": "세 회귀 모델과 기준 비교표",
+              "kind": "coding",
+              "problem": {
+                "id": "regression-table",
+                "title": "세 회귀 모델과 기준 비교표",
+                "content": "준비된 시간 분리와 import를 사용하세요. predictions에는 Baseline, Linear, Ridge, Lasso의 테스트 예측을 저장합니다. Ridge alpha=1, Lasso alpha=10·max_iter=20000·tol=0.001을 사용하세요. 각 모델은 StandardScaler Pipeline으로 훈련합니다. results에는 model 인덱스와 MAE, RMSE, R2 열을 만드세요.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['Close']\nframe['return_1']=prices['Close'].pct_change()\nframe['ma5']=prices['Close'].rolling(5).mean()\nframe['lag_close_1']=prices['Close'].shift(1)\nframe['target_next_close']=prices['Close'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\ntest_start=frame.index[-80]\ntrain_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\nX_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression,Ridge,Lasso\nfrom sklearn.metrics import mean_absolute_error,mean_squared_error,r2_score\n# models, predictions, results를 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['fitted', 'predictions', 'results']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    import numpy as np\n    assert set(s['results'].index)=={'Baseline','Linear','Ridge','Lasso'}\n    assert set(s['results'].columns)=={'MAE','RMSE','R2'}\n    assert np.isfinite(s['results'].to_numpy()).all()\n    assert (s['results']['RMSE']>=s['results']['MAE']).all()\n    assert all(len(p)==80 for p in s['predictions'].values())\n    assert set(s['fitted'])=={'Linear','Ridge','Lasso'}\n    assert all(m.named_steps['scale'].n_samples_seen_==315 for m in s['fitted'].values())\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "forecast-plot",
+              "title": "정답 날짜에 맞춘 회귀 그림",
+              "kind": "coding",
+              "problem": {
+                "id": "forecast-plot",
+                "title": "정답 날짜에 맞춘 회귀 그림",
+                "content": "준비된 분리로 Ridge Pipeline을 학습하고 prediction을 구하세요. comparison에는 target_date 인덱스와 actual, prediction 열을 넣으세요. fig, ax에서 두 값을 같은 날짜 축에 그리고 범례를 표시하세요.\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",
+                "starter_code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['Close']\nframe['return_1']=prices['Close'].pct_change()\nframe['ma5']=prices['Close'].rolling(5).mean()\nframe['lag_close_1']=prices['Close'].shift(1)\nframe['target_next_close']=prices['Close'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\ntest_start=frame.index[-80]\ntrain_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\nX_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression,Ridge,Lasso\nfrom sklearn.metrics import mean_absolute_error,mean_squared_error,r2_score\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n# model, prediction, comparison, fig, ax를 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['ax', 'comparison', 'frame', 'test_mask']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['comparison'].shape==(80,2) and list(s['comparison'].columns)==['actual','prediction']\n    assert list(s['comparison'].index)==list(s['frame'].loc[s['test_mask'],'target_date'])\n    assert len(s['ax'].lines)==2 and s['ax'].get_xlabel()=='Target date'\n    assert s['ax'].get_legend() is not None\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "final-check",
+              "title": "최종 프로젝트 점검",
+              "kind": "quiz",
+              "questions": [
+                {
+                  "id": "q1",
+                  "prompt": "절대 오차 평균 지표의 약어는?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "MAE",
+                    "mean absolute error"
+                  ],
+                  "explanation": "MAE는 가격 단위로 읽으며 작을수록 좋습니다."
+                },
+                {
+                  "id": "q2",
+                  "prompt": "R²가 음수일 수 있을까?",
+                  "type": "choice",
+                  "options": [
+                    "네",
+                    "아니요"
+                  ],
+                  "correct": 0,
+                  "explanation": "정답 평균 기준보다 못한 경우 음수가 될 수 있습니다."
+                },
+                {
+                  "id": "q3",
+                  "prompt": "기준보다 모델 MAE가 크면?",
+                  "type": "choice",
+                  "options": [
+                    "개선하지 못했다고 보고",
+                    "모델이라 무조건 더 좋다고 보고"
+                  ],
+                  "correct": 0,
+                  "explanation": "같은 기간에서 기준과 비교한 수치를 정직하게 보고합니다."
+                },
+                {
+                  "id": "q4",
+                  "prompt": "그림의 날짜 축은 입력 날짜가 아닌 어떤 날짜인가요?",
+                  "type": "short_answer",
+                  "accepted": [
+                    "target_date",
+                    "정답날짜",
+                    "목표날짜"
+                  ],
+                  "explanation": "다음 거래일의 실제값·예측값은 정답 날짜에 표시합니다."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

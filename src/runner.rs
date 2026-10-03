@@ -129,6 +129,28 @@ async fn execute_python(
         return Err("코드와 입력은 각각 64KB 이하여야 합니다.".into());
     }
     let directory = tempfile::tempdir().map_err(|e| e.to_string())?;
+    let data = directory.path().join("data");
+    std::fs::create_dir(&data).map_err(|e| e.to_string())?;
+    for (name, bytes) in [
+        (
+            "titanic.csv",
+            include_bytes!("../courses/data/titanic.csv").as_slice(),
+        ),
+        (
+            "credit.csv",
+            include_bytes!("../courses/data/credit.csv").as_slice(),
+        ),
+        (
+            "stock.csv",
+            include_bytes!("../courses/data/stock.csv").as_slice(),
+        ),
+        (
+            "prices.html",
+            include_bytes!("../courses/data/prices.html").as_slice(),
+        ),
+    ] {
+        std::fs::write(data.join(name), bytes).map_err(|e| e.to_string())?;
+    }
     std::fs::write(directory.path().join("main.py"), code).map_err(|e| e.to_string())?;
     let executable = python_executable();
     let mut command = Command::new(executable);

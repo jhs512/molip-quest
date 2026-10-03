@@ -4,6 +4,60 @@ use std::{collections::HashSet, path::Path};
 
 pub struct LearningStore(Connection);
 impl LearningStore {
+    pub fn quiz_passed(
+        &self,
+        course: &str,
+        unit: &Unit,
+        questions: &[crate::curriculum::Question],
+    ) -> Result<HashSet<String>, String> {
+        let mut passed = HashSet::new();
+        for q in questions {
+            let key = format!("{}/question/{}", unit.id, q.id);
+            let exists:bool = self.0.query_row("SELECT EXISTS(SELECT 1 FROM completed WHERE course=?1 AND unit=?2 AND revision=?3)",params![course,key,unit.revision],|r|r.get(0)).map_err(|e|e.to_string())?;
+            if exists {
+                passed.insert(q.id.clone());
+            }
+        }
+        Ok(passed)
+    }
+    pub fn save_quiz(
+        &mut self,
+        course: &str,
+        unit: &Unit,
+        questions: &[crate::curriculum::Question],
+        answers: &std::collections::HashMap<String, String>,
+    ) -> Result<TestReport, String> {
+        let passed = self.quiz_passed(course, unit, questions)?;
+        let mut report = crate::curriculum::grade_quiz(questions, answers);
+        for (q, case) in questions.iter().zip(&mut report.cases) {
+            if passed.contains(&q.id) {
+                case.passed = true;
+                case.state = "previously_passed".into();
+            }
+        }
+        report.passed = !report.cases.is_empty() && report.cases.iter().all(|c| c.passed);
+        if report.cases.is_empty() {
+            return Err("퀴즈 문항이 없습니다.".into());
+        }
+        let source = serde_json::to_string(answers).map_err(|e| e.to_string())?;
+        let report_json = serde_json::to_string(&report).map_err(|e| e.to_string())?;
+        let tx = self.0.transaction().map_err(|e| e.to_string())?;
+        tx.execute(
+            "INSERT INTO attempts(course,unit,revision,code,report) VALUES (?1,?2,?3,?4,?5)",
+            params![course, unit.id, unit.revision, source, report_json],
+        )
+        .map_err(|e| e.to_string())?;
+        for (q, case) in questions.iter().zip(&report.cases) {
+            if case.passed {
+                tx.execute("INSERT INTO completed VALUES (?1,?2,?3) ON CONFLICT(course,unit) DO UPDATE SET revision=excluded.revision",params![course,format!("{}/question/{}",unit.id,q.id),unit.revision]).map_err(|e|e.to_string())?;
+            }
+        }
+        if report.passed {
+            tx.execute("INSERT INTO completed VALUES (?1,?2,?3) ON CONFLICT(course,unit) DO UPDATE SET revision=excluded.revision",params![course,unit.id,unit.revision]).map_err(|e|e.to_string())?;
+        }
+        tx.commit().map_err(|e| e.to_string())?;
+        Ok(report)
+    }
     pub fn open(path: &Path) -> Result<Self, String> {
         let db = Connection::open(path).map_err(|e| e.to_string())?;
         db.execute_batch("CREATE TABLE IF NOT EXISTS attempts (id INTEGER PRIMARY KEY, course TEXT NOT NULL, unit TEXT NOT NULL, revision INTEGER NOT NULL, code TEXT NOT NULL, report TEXT NOT NULL); CREATE TABLE IF NOT EXISTS completed (course TEXT NOT NULL, unit TEXT NOT NULL, revision INTEGER NOT NULL, PRIMARY KEY(course,unit));").map_err(|e| e.to_string())?;
@@ -38,6 +92,24 @@ impl LearningStore {
         tx.commit().map_err(|e| e.to_string())
     }
     pub fn completed(&self, course: &crate::Course) -> Result<HashSet<String>, String> {
+        let items = self.completed_items(course)?;
+        Ok(course
+            .chapters
+            .iter()
+            .flat_map(|c| &c.units)
+            .filter(|unit| {
+                if unit.activities.is_empty() {
+                    items.contains(&unit.id)
+                } else {
+                    unit.activities
+                        .iter()
+                        .all(|a| items.contains(&a.progress_unit(unit).id))
+                }
+            })
+            .map(|u| u.id.clone())
+            .collect())
+    }
+    pub fn completed_items(&self, course: &crate::Course) -> Result<HashSet<String>, String> {
         let mut statement = self
             .0
             .prepare("SELECT unit,revision FROM completed WHERE course=?1")
@@ -50,12 +122,11 @@ impl LearningStore {
         let mut units = HashSet::new();
         for row in rows {
             let (id, revision) = row.map_err(|e| e.to_string())?;
-            if course
-                .chapters
-                .iter()
-                .flat_map(|c| &c.units)
-                .any(|u| u.id == id && u.revision == revision)
-            {
+            if course.chapters.iter().flat_map(|c| &c.units).any(|u| {
+                u.revision == revision
+                    && ((u.activities.is_empty() && u.id == id)
+                        || u.activities.iter().any(|a| a.progress_unit(u).id == id))
+            }) {
                 units.insert(id);
             }
         }

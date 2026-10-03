@@ -7,7 +7,7 @@
       "id": "prepare",
       "title": "출력과 계산",
       "units": [
-        { "id": "choose-tool", "title": "첫 출력", "content": "Hello, Python!을 출력하세요. 실행 버튼으로 출력해 보고 테스트·제출을 눌러 완료해 보세요. AI에게 설명이나 코드 수정 도움을 요청할 수도 있습니다.", "starter_code": "# 아래에 코드를 작성하세요\n", "tests": [{"input":"", "expected":"Hello, Python!\n"}] },
+        { "id": "choose-tool", "title": "첫 출력", "content": "Hello, Python!을 출력하세요. 실행 버튼으로 출력해 보고 테스트·완료을 눌러 완료해 보세요.", "starter_code": "# 아래에 코드를 작성하세요\n", "tests": [{"input":"", "expected":"Hello, Python!\n"}] },
         { "id": "plan", "title": "빈칸으로 덧셈", "content": "빈칸에 수식을 넣어 2와 3의 합인 5를 출력하세요. 빈칸 밖의 코드는 수정할 수 없습니다.", "starter_code": "print({{answer}})\n", "blanks":["answer"], "tests":[{"input":"", "expected":"5\n"}] }
       ]
     },

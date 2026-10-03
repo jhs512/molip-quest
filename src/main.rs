@@ -64,7 +64,7 @@ fn Workspace() -> Element {
         let source = if let Ok(path) = std::env::var("MOLIP_COURSE_PATH") {
             std::fs::read_to_string(path).map_err(|e| e.to_string())?
         } else {
-            include_str!("../courses/getting-started.json").to_string()
+            include_str!("../courses/kpc-finance.json").to_string()
         };
         Course::parse(&source)
     });
@@ -73,16 +73,16 @@ fn Workspace() -> Element {
             rsx! { main { h1 {"수업을 불러올 수 없습니다."} p {"{error}"} ui::DoctorPanel {} } }
         }
         Ok(course) => rsx! { div { class:if opened() {"shell practice-shell"} else {"shell"},
-            aside { class:"sidebar", div {class:"brand", "몰입 퀘스트"} h3 {"클래스룸"} p {"Python 학습"} ui::DoctorPanel {} }
+            aside { class:"sidebar", div {class:"brand", "몰입 퀘스트"} h3 {"KPC 금융 데이터 분석"} p {"3일 · 20시간 · 7챕터"} ui::DoctorPanel {} }
             main {
                 if opened() {
                     button {class:"classroom-back", onclick:move |_|opened.set(false), "← 클래스룸"}
                     Learning { course:course.clone() }
                 } else {
-                    h1 {"Python 학습 클래스룸"} p {"수업을 선택하고 바로 문제를 풀어보세요."}
+                    h1 {"KPC 학습 여정"} p {"개념을 확인하고 코딩 미션과 퀴즈를 클리어하며 성장하세요."}
                     section {class:"card course-row", h2 {"{course.title}"} p {"{course.description}"}
                         p {{format!("{} 단원",course.total_units())}}
-                        button {class:"primary",onclick:move |_|opened.set(true),"수업 시작"}
+                        button {class:"primary",onclick:move |_|opened.set(true),"학습 시작 · 이어하기"}
                     }
                 }
             }

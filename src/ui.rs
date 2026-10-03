@@ -1,5 +1,6 @@
 use dioxus::prelude::*;
 use molip_quest::{
+    curriculum::{Activity, ActivityKind, Question, QuestionKind},
     drafts,
     runner::{assemble, check_unit, run_python, Artifact},
     Course, Unit,
@@ -19,22 +20,174 @@ pub fn Learning(course: Course) -> Element {
         Ok(completed) => completed,
         Err(error) => return rsx! {p {class:"error", "{error}"}},
     };
+    let unlocked = molip_quest::curriculum::unlocked_units(&course, &completed);
     let active = course
         .chapters
         .iter()
         .flat_map(|c| &c.units)
-        .find(|u| u.id == selected())
+        .find(|u| u.id == selected() && unlocked.contains(&u.id))
+        .or_else(|| {
+            course
+                .chapters
+                .iter()
+                .flat_map(|c| &c.units)
+                .find(|u| unlocked.contains(&u.id) && !completed.contains(&u.id))
+        })
         .unwrap_or(&course.chapters[0].units[0])
         .clone();
     rsx! {header {class:"practice-header", h1 {"{course.title}"} span {{format!("완료 {} / {} 단원",completed.len(),course.total_units())}} DoctorPanel {}}
         div {class:"learning", details {class:"curriculum-menu", summary {"수업 목차 ▾"} nav {class:"curriculum", h2 {"수업 목차"}
             for chapter in &course.chapters {h3 {{format!("{} · {}/{}",chapter.title,chapter.units.iter().filter(|u|completed.contains(&u.id)).count(),chapter.units.len())}}
-                for unit in &chapter.units {button {class:"unit",onclick:{let id=unit.id.clone();move |_|selected.set(id.clone())}, {format!("{} {}",if completed.contains(&unit.id) {"✓"} else {"○"},unit.title)}}}
+                for unit in &chapter.units {button {class:"unit",disabled:!unlocked.contains(&unit.id),onclick:{let id=unit.id.clone();move |_|selected.set(id.clone())}, {format!("{} {}",if completed.contains(&unit.id) {"✓"} else if unlocked.contains(&unit.id) {"○"} else {"🔒"},unit.title)}}}
             }
         }}
-        for active in [active] {UnitWorkspace {key:"{active.id}-{active.revision}", course_id:course.id.clone(), unit:active, oncompleted:move |_|refresh+=1}}
+        for active in [active] {UnitFlow {key:"{active.id}-{active.revision}", course_id:course.id.clone(), unit:active, oncompleted:move |_|refresh+=1}}
         }
     }
+}
+
+#[component]
+fn UnitFlow(course_id: String, unit: Unit, oncompleted: EventHandler<()>) -> Element {
+    let mut index = use_signal(|| usize::MAX);
+    let mut refresh = use_signal(|| 0u64);
+    let progress_course = course_id.clone();
+    let progress_unit = unit.clone();
+    let completed = use_memo(move || {
+        let _ = refresh();
+        let course = Course {
+            id: progress_course.clone(),
+            title: "KPC".into(),
+            description: String::new(),
+            chapters: vec![molip_quest::Chapter {
+                id: "unit".into(),
+                title: "unit".into(),
+                units: vec![progress_unit.clone()],
+            }],
+        };
+        molip_quest::learning_store::LearningStore::user_store()?.completed_items(&course)
+    });
+    if unit.activities.is_empty() {
+        return rsx! { UnitWorkspace {course_id,unit,oncompleted} };
+    }
+    let completed = match completed() {
+        Ok(items) => items,
+        Err(e) => return rsx! {p {class:"error","{e}"}},
+    };
+    let unlocked_count = molip_quest::curriculum::unlocked_activities(&unit, &completed);
+    let active_index = if index() == usize::MAX {
+        unlocked_count.saturating_sub(1)
+    } else {
+        index().min(unlocked_count.saturating_sub(1))
+    };
+    let active = unit.activities[active_index].clone();
+    let progress = active.progress_unit(&unit);
+    let cleared = completed.contains(&progress.id);
+    let count = unit
+        .activities
+        .iter()
+        .filter(|a| completed.contains(&a.progress_unit(&unit).id))
+        .count();
+    let total = unit.activities.len();
+    rsx! {
+        section {class:"mission-strip",
+            div {class:"mission-heading",strong {"{unit.title}"} span {"클리어 {count} / {total}"}}
+            progress {value:count as f64,max:total as f64,aria_label:"단원 진도"}
+            nav {class:"mission-tabs",aria_label:"단원 미션",
+                for (n,activity) in unit.activities.iter().enumerate() {
+                    button {class:if n==active_index {"selected"}else{""},disabled:n>=unlocked_count,onclick:move |_|index.set(n),
+                        {format!("{} {} · {}",if completed.contains(&activity.progress_unit(&unit).id){"✓"}else if n<unlocked_count {"○"}else{"🔒"},n+1,activity.label())}}
+                }
+            }
+            div {class:"mission-controls",
+                button {disabled:active_index==0,onclick:move |_|index.set(active_index-1),"← 이전"}
+                span {if cleared {"미션 클리어!"}else{"내 속도로 읽고, 실행하고, 확인하세요."}}
+                button {disabled:active_index+1>=unlocked_count,onclick:move |_|index.set(active_index+1),"다음 →"}
+            }
+        }
+        for active in [active] {ActivityView {key:"{progress.id}-{progress.revision}",course_id:course_id.clone(),activity:active,progress:progress.clone(),oncompleted:move |_|{refresh+=1;oncompleted.call(());}}}
+    }
+}
+
+#[component]
+fn ActivityView(
+    course_id: String,
+    activity: Activity,
+    progress: Unit,
+    oncompleted: EventHandler<()>,
+) -> Element {
+    match activity.kind {
+        ActivityKind::Coding { .. } => rsx! {UnitWorkspace {course_id,unit:progress,oncompleted}},
+        ActivityKind::Concept { body, check } => rsx! {
+            div {class:"concept-flow",
+                article {class:"reading-mission",span {class:"badge","개념"} h2 {"{activity.title}"}p {class:"content","{body}"}}
+                QuizView {course_id,unit:progress,questions:vec![check],oncompleted}
+            }
+        },
+        ActivityKind::Quiz { questions } => {
+            rsx! {QuizView {course_id,unit:progress,questions,oncompleted}}
+        }
+    }
+}
+
+#[component]
+fn QuizView(
+    course_id: String,
+    unit: Unit,
+    questions: Vec<Question>,
+    oncompleted: EventHandler<()>,
+) -> Element {
+    let key = format!("quiz:{course_id}:{}:{}", unit.id, unit.revision);
+    let initial = use_hook(|| -> Result<_, String> {
+        let answers = drafts::load(&key)?.map(|d| d.answers).unwrap_or_default();
+        let passed = molip_quest::learning_store::LearningStore::user_store()?
+            .quiz_passed(&course_id, &unit, &questions)?;
+        Ok((answers, passed))
+    });
+    let (initial_answers, initial_passed) = match initial {
+        Ok(v) => v,
+        Err(e) => return rsx! {p {class:"error","{e}"}},
+    };
+    let mut answers = use_signal(|| initial_answers);
+    let mut passed = use_signal(|| initial_passed);
+    let mut report = use_signal(|| None::<molip_quest::runner::TestReport>);
+    let mut message = use_signal(String::new);
+    let all_passed = passed.read().len() == questions.len();
+    rsx! {article {class:"reading-mission quiz-mission",span {class:"badge",if questions.len()==1 {"개념 확인"}else{"퀴즈"}} h2 {"{unit.title}"}
+        p {{format!("정답 완료 {} / {} 문항",passed.read().len(),questions.len())}}
+        if all_passed {p {class:"clear-banner",role:"status","미션 클리어! 다음 미션으로 이동할 수 있어요."}}
+        else {p {"맞힌 문항은 저장됩니다. 아직 맞히지 못한 문항만 다시 도전하세요."}}
+        for (n,q) in questions.iter().enumerate().filter(|(_,q)|!passed.read().contains(&q.id)) {
+            section {class:"quiz-question",h3 {"{n+1}. {q.prompt}"}
+                match &q.kind {
+                    QuestionKind::Choice {options,..}=>rsx! {
+                        for (option,text) in options.iter().enumerate() {
+                            label {class:"quiz-option",input {r#type:"radio",name:q.id.clone(),value:option.to_string(),checked:answers.read().get(&q.id)==Some(&option.to_string()),onchange:{let id=q.id.clone();let key=key.clone();move |_|{answers.write().insert(id.clone(),option.to_string());report.set(None);if let Err(e)=drafts::save(&key,"",&answers()){message.set(e);}}}}span {"{text}"}}
+                        }
+                    },
+                    QuestionKind::ShortAnswer {..}=>rsx! {input {aria_label:q.prompt.clone(),placeholder:"답을 입력하세요",value:answers.read().get(&q.id).cloned().unwrap_or_default(),oninput:{let id=q.id.clone();let key=key.clone();move |e|{answers.write().insert(id.clone(),e.value());report.set(None);if let Err(e)=drafts::save(&key,"",&answers()){message.set(e);}}}}},
+                }
+                if let Some(result)=report.read().as_ref().and_then(|r|r.cases.get(n)) {
+                    p {class:"error","다시 생각해보세요."}
+                    p {class:"quiz-explanation","{result.stderr}"}
+                    p {"인정 답안: {result.expected}"}
+                }
+            }
+        }
+        if !passed.read().is_empty() {details {summary {"맞힌 문항과 해설 복습"}
+            for q in questions.iter().filter(|q|passed.read().contains(&q.id)) {p {strong {"✓ {q.prompt}"}}p {"{q.explanation}"}}
+        }}
+        p {class:"execution-status",role:"status","{message}"}
+        button {class:"primary",disabled:all_passed,onclick:move |_|{
+            let result=molip_quest::learning_store::LearningStore::user_store().and_then(|mut store|{
+                let graded=store.save_quiz(&course_id,&unit,&questions,&answers())?;
+                let completed=store.quiz_passed(&course_id,&unit,&questions)?;
+                Ok((graded,completed))
+            });
+            match result {
+                Ok((graded,completed))=>{message.set(format!("{} / {} 정답 · {}",completed.len(),questions.len(),if graded.passed {"미션 클리어!"}else{"오답 문항만 다시 풀어보세요."}));passed.set(completed);report.set(Some(graded));oncompleted.call(());},Err(e)=>message.set(e)
+            }
+        },"채점 · 클리어 확인"}
+    }}
 }
 
 #[component]
@@ -81,6 +234,14 @@ fn UnitWorkspace(course_id: String, unit: Unit, oncompleted: EventHandler<()>) -
         .collect();
     rsx! {article{class:"lesson",
         section{class:"problem-pane",h2{"{unit.title}"}h3{"문제 설명"}p{class:"content","{unit.content}"}
+            button {class:"prompt-copy",onclick:{let unit=unit.clone();move |_|{
+                let prompt=molip_quest::curriculum::answer_prompt(&unit,&code());
+                match arboard::Clipboard::new().and_then(|mut clipboard|clipboard.set_text(prompt)) {
+                    Ok(())=>message.set("정답 요청 프롬프트를 복사했습니다. 원하는 AI에 붙여넣고, 받은 main.py 코드를 편집기에 넣으세요.".into()),
+                    Err(e)=>message.set(format!("클립보드 복사에 실패했습니다: {e}"))
+                }
+            }},"정답 프롬프트 복사"}
+
             if !unit.blanks.is_empty(){p{class:"blank-note","코드의 빈칸만 채워보세요. 나머지 코드는 수정하지 않습니다."}}
         }
         section{class:"coding-pane",div{class:"pane-heading",strong{"main.py"}span{"Python"}}

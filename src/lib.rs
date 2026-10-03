@@ -1,6 +1,7 @@
 use rusqlite::{params, Connection};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashSet, path::Path};
+pub mod curriculum;
 pub mod doctor;
 pub mod drafts;
 pub mod learning_store;
@@ -25,7 +26,10 @@ pub struct Chapter {
 pub struct Unit {
     pub id: String,
     pub title: String,
+    #[serde(default)]
     pub content: String,
+    #[serde(default)]
+    pub activities: Vec<curriculum::Activity>,
     #[serde(default)]
     pub starter_code: String,
     #[serde(default)]
@@ -101,6 +105,7 @@ impl Course {
                 }
             }
         }
+        curriculum::validate(&course)?;
         Ok(course)
     }
 

@@ -106,3 +106,24 @@ textarea[data-code-editor][hidden] { display: none; }
 .doctor-check.missing { border-color: #b37720; background: #fff4df; }
 .doctor-check p { margin: 5px 0 0; font-size: 13px; }
 .practice-header { gap: 10px; }
+
+/* KPC mission flow */
+.mission-strip { padding: 18px 22px; padding-right: 340px; background: #192b3a; border-bottom: 1px solid #496073; }
+.mission-heading, .mission-controls { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.mission-strip progress { margin: 10px 0; height: 8px; accent-color: #63dbb6; }
+.mission-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.mission-tabs button { font-size: 13px; padding: 8px 12px; }
+.mission-tabs .selected { background: #087cf0; }
+.mission-controls span { font-size: 13px; color: #9acbbd; }
+.practice-shell button:disabled { cursor: not-allowed; }
+.reading-mission { max-width: 900px; margin: 24px auto; padding: 30px; background: #1b2c3a; border: 1px solid #496073; border-radius: 12px; }
+.reading-mission .content { color: #d3e3ed; font-size: 16px; line-height: 2; }
+.quiz-question { padding: 20px 0; border-bottom: 1px solid #4c6478; }
+.quiz-option { display: flex; align-items: center; gap: 12px; padding: 12px; background: #263c50; border-radius: 6px; cursor: pointer; }
+.quiz-option input { width: 20px; margin: 0; accent-color: #62d6b1; }
+.quiz-explanation { color: #d5dcb7; line-height: 1.8; }
+.clear-banner { background: #174c3d; color: #a4f3ce; padding: 20px; border-radius: 8px; }
+.quiz-mission .error { color: #ffc3ae; }
+.prompt-copy { border: 1px solid #669abc; width: 100%; }
+.mission-strip ~ .lesson { height: calc(100vh - 235px); min-height: 520px; }
+@media (max-width: 900px) { .mission-strip { padding-right: 22px; padding-top: 62px; } .reading-mission { margin: 16px; padding: 20px; } }
