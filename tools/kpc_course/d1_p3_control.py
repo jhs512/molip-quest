@@ -81,6 +81,21 @@ UNIT = unit('control', '1일차 · 3교시 — 조건·반복과 DataFrame', [
         starter='prices = [10000,10200,9900,10100]\nhighest = prices[0]\n# 반복문과 if로 highest를 갱신하세요\n',
         solution='prices = [10000,10200,9900,10100]\nhighest = prices[0]\nfor price in prices:\n    if price > highest:\n        highest = price\nprint(highest)\n',
         check="assert s['highest']==10200"),
+    coding('croissant-plan', '오늘 크루아상 몇 개 구울까',
+        intro="""
+        파리바게뜨 공장의 생산 담당자는 새벽마다 오늘 크루아상을 몇 개 구울지 정합니다. 너무 많이 구우면 저녁에 버리고, 너무 적게 구우면 오후에 품절입니다. 가장 단순한 방법은 최근 판매량의 평균에서 출발하는 것입니다. 이 공장은 "품절보다 폐기가 싸다"고 보고 평균보다 10% 많이 굽기로 정했습니다.
+        """,
+        goal="""
+        지난 사흘 판매량 `sold`가 준비되어 있습니다. `for`로 합계를 `total`에 누적하고, 평균을 `average`에, 평균의 1.1배를 반올림한 정수를 `plan`에 저장한 뒤 `오늘 생산 계획: 460개` 형식으로 출력하세요.
+
+        합계 1255, 평균 약 418.3, 계획 460이 나와야 합니다. `sum()`을 쓰지 말고 반복문으로 누적하세요.
+        """,
+        hint="""
+        `for count in sold:` 안에서 `total += count`, 반복이 끝난 뒤 `average = total / len(sold)`. 반올림은 `round(average * 1.1)`이고 결과는 정수입니다. 출력은 f-문자열로 `print(f'오늘 생산 계획: {plan}개')`.
+        """,
+        starter='sold = [412, 388, 455]\ntotal = 0\n# total, average, plan을 만들고 출력하세요\n',
+        solution="sold = [412, 388, 455]\ntotal = 0\nfor count in sold:\n    total += count\naverage = total / len(sold)\nplan = round(average * 1.1)\nprint(f'오늘 생산 계획: {plan}개')\n",
+        check="assert s['total']==1255 and abs(s['average']-1255/3)<1e-9\nassert s['plan']==460 and isinstance(s['plan'],int)"),
     coding('holdings-amounts', '세 종목의 금액 계산하기',
         goal="""
         리스트 안의 값이 숫자가 아니라 딕셔너리여도 `for`는 똑같이 돕니다. 세 종목이 든 `holdings`를 돌면서 각 종목의 가격 × 수량을 그 종목의 `amount` 키에 저장하세요.

@@ -1,6 +1,8 @@
 """3일차 · 3교시 — 시간 분리와 기준 모델"""
 from kpc_course.dsl import *
 
+CALLS = PD + "calls = pd.DataFrame({'week': [1]*7 + [2]*7, 'weekday': ['월','화','수','목','금','토','일']*2, 'calls': [1320,980,940,910,1010,420,380, 1410,1020,960,890,1050,450,360]})\n"
+
 UNIT = unit('stock-split', '3일차 · 3교시 — 시간 분리와 기준 모델', [
     concept('temporal-boundary', '시간은 섞으면 안 되고, 경계의 하루도 조심해야 한다',
         body="""
@@ -75,6 +77,21 @@ UNIT = unit('stock-split', '3일차 · 3교시 — 시간 분리와 기준 모�
         starter=ST_FRAME + TIME_SPLIT + "from sklearn.metrics import mean_absolute_error\n# baseline_pred와 baseline_mae를 만드세요\n",
         solution=ST_FRAME + TIME_SPLIT + "from sklearn.metrics import mean_absolute_error\nbaseline_pred=X_test['close'].to_numpy()\nbaseline_mae=mean_absolute_error(y_test,baseline_pred)\nprint(baseline_mae)\n",
         check="import numpy as np\nassert np.array_equal(s['baseline_pred'],s['X_test']['close'].to_numpy())\nassert abs(s['baseline_mae']-float(np.abs(s['y_test'].to_numpy()-s['X_test']['close'].to_numpy()).mean()))<1e-8"),
+    coding('callcenter-baseline', '콜센터 월요일, 지난주와 같다고 보면',
+        intro="""
+        주가에서 잠깐 벗어나 같은 기준 모델을 콜센터에 적용합니다. 어느 카드사 콜센터의 2주치 일별 통화량이 준비되어 있습니다. 주말에 쌓인 전화가 몰려 월요일이 가장 많습니다. 팀장은 매주 "지난주 같은 요일과 같다"고 보고 상담원을 배치해 왔습니다. 이 방법이 얼마나 빗나가는지가, 통화량 예측 모델이 넘어야 할 선입니다.
+        """,
+        goal="""
+        `calls`에서 1주차 통화량을 배열 `last_week`, 2주차 통화량을 배열 `this_week`에 저장하세요. 1주차 값을 2주차 예측으로 쓰는 것이 기준 모델이니, `mean_absolute_error(this_week, last_week)`를 `baseline_mae`에 담아 출력하세요. 월요일 하루의 오차는 `monday_error`에 따로 저장하세요.
+
+        상담원 한 명이 하루 60통을 받는다면, 이 MAE는 상담원 몇 명분의 오차인지 생각해 보세요. 월요일만 보면 어떤가요?
+        """,
+        hint="""
+        `last_week = calls[calls['week'] == 1]['calls'].to_numpy()`, 2주차도 같은 모양입니다. 지표 함수는 `(정답, 예측)` 순서이므로 정답은 `this_week`, 예측은 `last_week`입니다. 월요일은 두 배열의 첫 값이라 `monday_error = abs(this_week[0] - last_week[0])`.
+        """,
+        starter=CALLS + "from sklearn.metrics import mean_absolute_error\n# last_week, this_week, baseline_mae, monday_error를 만드세요\n",
+        solution=CALLS + "from sklearn.metrics import mean_absolute_error\nlast_week = calls[calls['week'] == 1]['calls'].to_numpy()\nthis_week = calls[calls['week'] == 2]['calls'].to_numpy()\nbaseline_mae = mean_absolute_error(this_week, last_week)\nmonday_error = abs(this_week[0] - last_week[0])\nprint(baseline_mae, monday_error)\n",
+        check="import numpy as np\nassert np.array_equal(s['last_week'],[1320,980,940,910,1010,420,380]) and np.array_equal(s['this_week'],[1410,1020,960,890,1050,450,360])\nassert abs(s['baseline_mae']-260/7)<1e-8 and int(s['monday_error'])==90"),
     quiz('temporal-check', '3일차 3교시 점검',
         choice('주가 자료를 `train_test_split`처럼 무작위로 섞어 나누면 어떤 문제가 생기나요?',
                ['미래 가격으로 훈련해 과거를 맞히게 되어 점수를 믿을 수 없다', '행 수가 줄어든다', '아무 문제 없다'], 0,
