@@ -199,7 +199,7 @@ async fn every_kpc_coding_problem_passes_alone_with_its_reference_answer() {
             }
         }
     }
-    assert_eq!(checked, 36);
+    assert_eq!(checked, 90);
     let changed=run_python("from pathlib import Path\nPath('data/titanic.csv').write_text('corrupted')\nPath('previous.txt').write_text('state')\nprint('changed')"," ").await.unwrap();
     assert!(changed.success);
     let clean=run_python("from pathlib import Path\nimport pandas as pd\nassert not Path('previous.txt').exists()\nassert pd.read_csv('data/titanic.csv').shape==(1309,14)\nprint('fresh')","").await.unwrap();
@@ -235,7 +235,7 @@ fn kpc_units_use_varied_sequences_including_repeated_concepts_and_problem_only_u
             .iter()
             .filter(|a| matches!(a.kind, ActivityKind::Coding { .. }))
             .count(),
-        3
+        5
     );
     let mut completed = std::collections::HashSet::new();
     for (index, activity) in intro.activities.iter().enumerate() {

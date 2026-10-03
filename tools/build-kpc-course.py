@@ -54,16 +54,18 @@ def short(prompt,accepted,explanation,*,prompt_markdown=False):
     return dict(id="check",prompt=prompt if prompt_markdown else prose(prompt),type="short_answer",accepted=accepted,explanation=prose(explanation))
 def choice(prompt,options,correct,explanation,*,prompt_markdown=False):
     return dict(id="check",prompt=prompt if prompt_markdown else prose(prompt),type="choice",options=[prose(o) for o in options],correct=correct,explanation=prose(explanation))
-def concept(id,title,body,question):
-    body=prose(body)
+def concept(id,title,body,question,*,markdown=False):
+    # markdown=True: the body already carries its own backticks, so skip prose().
+    body=body if markdown else prose(body)
     if id=='runtime':
         body += "\n\n### 첫 실행 예제\n\n```python\nprint('Hello, KPC!')\n```\n\n> **기억하세요:** 실행은 연습이고, 테스트 통과는 미션 완료입니다."
     return dict(id=id,title=title,kind="concept",body=body,check=question)
 def quiz(id,title,*questions):
     return dict(id=id,title=title,kind="quiz",questions=[dict(q,id=f"q{i+1}") for i,q in enumerate(questions)])
-def coding(id,title,description,starter,solution,assertions=None,tests=None):
+def coding(id,title,description,starter,solution,assertions=None,tests=None,*,hint=None,markdown=False):
     description=description.split(' 힌트:')[0]
-    problem=dict(id=id,title=title,content="### 목표\n\n"+prose(description)+"\n\n### 힌트\n\n"+HINTS[id],starter_code=starter)
+    hint=HINTS[id] if hint is None else hint
+    problem=dict(id=id,title=title,content="### 목표\n\n"+(description if markdown else prose(description))+"\n\n### 힌트\n\n"+hint,starter_code=starter)
     if assertions:
         required=sorted(set(re.findall(r"\bs\[['\"]([A-Za-z_][A-Za-z_0-9]*)['\"]\]",assertions)))
         checked="\n".join("    "+line for line in assertions.splitlines())
@@ -78,6 +80,15 @@ def unit(id,title,activities):
     return dict(id=id,title=title,content="",revision=1,activities=activities)
 def chapter(id,title,units):
     chapters.append(dict(id=id,title=title,units=units))
+def insert_after(unit_id,anchor_id,*activities):
+    # Stepping-stone missions slot in behind an existing mission without renumbering the unit.
+    items=by_unit[unit_id]['activities']
+    index=next(i for i,a in enumerate(items) if a['id']==anchor_id)+1
+    items[index:index]=list(activities)
+def extend_quiz(unit_id,quiz_id,*questions):
+    target=next(a for a in by_unit[unit_id]['activities'] if a['id']==quiz_id)
+    start=len(target['questions'])
+    target['questions'].extend(dict(q,id=f"q{start+i+1}") for i,q in enumerate(questions))
 
 PD="import pandas as pd\n"
 TI=PD+"titanic = pd.read_csv('data/titanic.csv')\n"
@@ -210,19 +221,303 @@ by_unit['environment']['activities'].insert(2, concept('read-input','입력 한 
 by_unit['preprocessing']['activities'].insert(2, concept('fit-train-only','결측값 기준은 훈련에서만 배우기',
     "훈련 자료에는 fit_transform, 테스트 자료에는 transform을 사용합니다. 테스트로 중앙값을 배우면 데이터 누수입니다.\n\nSimpleImputer를 훈련 자료에서 학습한 뒤 같은 객체로 테스트를 변환하세요.",
     short('결측치 대체 기준을 학습하는 자료는?',['훈련자료','훈련데이터','train','training data'],'대체 기준은 훈련에서만 학습합니다.')))
+by_unit['regression-project']['activities'].insert(2, quiz('midpoint','모델 비교 중간 확인',
+    choice('같은 테스트 기간에서 비교해야 할 것은?',['모델과 기준 예측','서로 다른 날짜의 점수'],0,'평가 자료가 같아야 비교할 수 있습니다.'),
+    short('평균 절대 오차의 약어는?',['MAE','mean absolute error'],'MAE가 작을수록 가격 오차가 작습니다.')))
+# Stepping-stone missions. Each one isolates a single idea that the original missions assumed,
+# so a beginner never meets two new ideas in one problem. Ordered by unit as students meet them.
+
+# 1일차 · 1교시 — 숫자·문자열·변수·input() 한 개 → 두 값 읽기
+insert_after('environment','hello',
+concept('numbers-text','숫자와 글자, 그리고 변수',
+"`print(30000)`은 숫자를, `print('30000')`은 글자를 출력합니다. 화면에는 똑같이 보여도 Python에게는 다릅니다. 따옴표가 없으면 **숫자(정수, `int`)**, 따옴표가 있으면 **문자열(`str`)**입니다. 숫자는 `10000 * 3`처럼 계산할 수 있지만 문자열 `'10000' * 3`은 글자를 세 번 반복합니다.\n\n`price = 10000`은 값에 `price`라는 이름표를 붙이는 것입니다. 이름표를 **변수**라고 부릅니다. 한 번 저장한 변수는 아래 줄에서 `price * 3`처럼 다시 쓸 수 있습니다.\n\n`print(price, quantity)`처럼 쉼표로 여러 값을 넣으면 공백으로 구분해 한 줄에 출력합니다. 문장과 값을 섞어 쓰려면 `f'금액: {amount}원'`처럼 앞에 `f`를 붙이고 중괄호 안에 변수를 넣습니다.\n\n```python\nprice = 10000\nquantity = 3\namount = price * quantity\nprint(amount)\nprint(f'금액: {amount}원')\n```",
+short('따옴표 없이 쓴 `10000`의 자료형(정수)을 영어로 무엇이라고 하나요?',['int','integer','정수'],"따옴표가 없는 `10000`은 정수 `int`, 따옴표가 있는 `'10000'`은 문자열 `str`입니다.",prompt_markdown=True),markdown=True),
+coding('print-calc','계산 결과 출력하기',"`print()` 안에 계산식 `10000 * 3`을 넣어 `30000`을 출력하세요. 따옴표로 감싸면 글자가 그대로 출력되니 감싸지 마세요.",'# 10000 × 3의 결과를 출력하세요\n','print(10000 * 3)\n',tests=[dict(input='',expected='30000\n')],
+    hint="`print(10000 * 3)`처럼 괄호 안에 식을 넣으면 Python이 먼저 계산한 뒤 결과를 출력합니다. `print('10000 * 3')`은 식 자체를 글자로 출력하므로 틀립니다.",markdown=True),
+coding('variable-print','변수에 저장하고 출력하기',"준비 코드에 `price`와 `quantity`가 있습니다. 두 변수를 곱해 `amount`에 저장하고 `print(amount)`로 출력하세요. 결과는 `30000`입니다.","price = 10000\nquantity = 3\n# amount를 만들고 출력하세요\n","price = 10000\nquantity = 3\namount = price * quantity\nprint(amount)\n","assert s['amount']==30000 and s['amount']==s['price']*s['quantity']",
+    hint="`amount = price * quantity`는 오른쪽을 먼저 계산해 `amount`라는 이름에 저장합니다. 그다음 줄에 `print(amount)`를 쓰세요. 숫자 30000을 직접 적으면 가격이 바뀌었을 때 틀립니다.",markdown=True),
+coding('single-input','입력 한 개 읽기',"실행 입력에 수량이 한 줄로 주어집니다. `input()`으로 읽어 `int()`로 정수로 바꾼 뒤, 가격 10000과 곱한 금액을 출력하세요.\n\n예: 입력 `3` → 출력 `30000`","quantity = int(input())\n# 가격 10000과 곱한 금액을 출력하세요\n","quantity = int(input())\nprint(10000 * quantity)\n",tests=[dict(input='3\n',expected='30000\n'),dict(input='7\n',expected='70000\n'),dict(input='0\n',expected='0\n')],
+    hint="`input()`이 돌려주는 값은 글자이므로 `int()`로 감싸야 곱셈을 할 수 있습니다. 준비 코드가 이미 `quantity`에 정수를 저장했으니 `print(10000 * quantity)`만 쓰면 됩니다.",markdown=True))
+insert_after('environment','amount-input',
+coding('fstring-report','문장과 숫자를 함께 출력하기',"입력 한 줄에 가격과 수량이 주어집니다. 금액을 계산해 `금액: 30000원` 형식으로 출력하세요. 콜론 뒤 공백 한 칸, 숫자 뒤 `원`을 정확히 지키세요.\n\n예: 입력 `10000 3` → 출력 `금액: 30000원`","price, quantity = map(int, input().split())\namount = price * quantity\n# 금액: 30000원 형식으로 출력하세요\n","price, quantity = map(int, input().split())\namount = price * quantity\nprint(f'금액: {amount}원')\n",tests=[dict(input='10000 3\n',expected='금액: 30000원\n'),dict(input='12000 4\n',expected='금액: 48000원\n')],
+    hint="따옴표 앞에 `f`를 붙이고 변수는 중괄호로 감싸세요: `print(f'금액: {amount}원')`. 중괄호 안의 `amount`가 실제 값으로 바뀌어 출력됩니다.",markdown=True))
+extend_quiz('environment','tools',
+choice("`print('10000' * 3)`의 출력은?",['`100001000010000`','`30000`'],0,"따옴표가 있는 `'10000'`은 문자열입니다. 문자열에 `* 3`을 하면 글자를 세 번 반복합니다. 숫자 계산을 하려면 따옴표를 빼세요.",prompt_markdown=True),
+short("`input()`으로 읽은 `'3'`을 숫자 3으로 바꾸는 함수는?",['int','int()'],'`input()`은 항상 문자열을 돌려주므로 `int()`로 바꿔야 곱셈할 수 있습니다.',prompt_markdown=True),
+choice('코드를 "실행"하는 것과 "제출"하는 것의 차이는?',['실행은 연습, 제출은 테스트 통과 여부로 미션 완료','둘은 완전히 같다'],0,'실행은 결과를 확인하는 연습이고, 제출은 모든 테스트를 통과해야 미션이 완료됩니다.'))
+
+# 1일차 · 2교시 — 읽기(인덱스·키)를 먼저, 수정은 그 다음
+insert_after('structures','values',
+coding('list-index','리스트에서 위치로 값 꺼내기',"`prices` 리스트에서 첫 값을 `first`, 마지막 값을 `last`에 저장하고 둘을 출력하세요. 첫 값은 10000, 마지막 값은 10100입니다.","prices = [10000, 10200, 10100]\n# first, last를 만들고 출력하세요\n","prices = [10000, 10200, 10100]\nfirst = prices[0]\nlast = prices[-1]\nprint(first, last)\n","assert s['first']==10000 and s['last']==10100",
+    hint="리스트의 위치는 0부터 시작합니다. 첫 값은 `prices[0]`, 마지막 값은 `prices[-1]`입니다. `prices[3]`은 없는 위치라 `IndexError`가 납니다.",markdown=True),
+coding('list-len-sum','개수와 합계 구하기',"`prices`의 개수를 `count`, 합계를 `total`에 저장하고 출력하세요. 개수는 3, 합계는 30300입니다.","prices = [10000, 10200, 10100]\n# count, total을 만들고 출력하세요\n","prices = [10000, 10200, 10100]\ncount = len(prices)\ntotal = sum(prices)\nprint(count, total)\n","assert s['count']==3 and s['total']==30300",
+    hint="`len(prices)`는 값의 개수, `sum(prices)`는 모든 값의 합입니다. 두 결과를 각각 변수에 저장한 뒤 `print(count, total)`로 출력하세요.",markdown=True),
+coding('dict-read','딕셔너리에서 키로 값 읽기',"`holding` 딕셔너리에서 가격과 수량을 꺼내 곱한 값을 `amount`에 저장하고 출력하세요. 딕셔너리를 수정하지는 않습니다. 결과는 30000입니다.","holding = {'name':'연습A', 'price':10000, 'quantity':3}\n# amount를 계산하고 출력하세요\n","holding = {'name':'연습A', 'price':10000, 'quantity':3}\namount = holding['price'] * holding['quantity']\nprint(amount)\n","assert s['amount']==30000",
+    hint="딕셔너리 값은 `holding['price']`처럼 대괄호 안에 키를 따옴표로 적어 꺼냅니다. `holding[price]`처럼 따옴표가 없으면 변수 `price`를 찾다가 `NameError`가 납니다.",markdown=True))
+insert_after('structures','holding',
+coding('holdings-access','리스트 안의 딕셔너리',"`holdings`는 딕셔너리 세 개가 들어 있는 리스트입니다. 두 번째 종목의 이름을 `second_name`, 세 번째 종목의 가격을 `third_price`에 저장하고 출력하세요. 각각 `B`, 15000입니다.","holdings = [{'name':'A','price':10000,'quantity':3},{'name':'B','price':20000,'quantity':2},{'name':'C','price':15000,'quantity':4}]\n# second_name, third_price를 만들고 출력하세요\n","holdings = [{'name':'A','price':10000,'quantity':3},{'name':'B','price':20000,'quantity':2},{'name':'C','price':15000,'quantity':4}]\nsecond_name = holdings[1]['name']\nthird_price = holdings[2]['price']\nprint(second_name, third_price)\n","assert s['second_name']=='B' and s['third_price']==15000",
+    hint="먼저 리스트에서 위치로 딕셔너리를 꺼내고, 이어서 키로 값을 꺼냅니다: `holdings[1]['name']`. 두 번째 종목의 위치는 1, 세 번째는 2입니다.",markdown=True))
+extend_quiz('structures','structure-check',
+choice("`prices = [10000, 10200, 10100]`일 때 `prices[3]`을 실행하면?",['`IndexError` — 위치 3은 없다','`10100`이 나온다'],0,'위치는 0, 1, 2까지만 있습니다. 마지막 값은 `prices[2]` 또는 `prices[-1]`입니다.',prompt_markdown=True),
+choice("`holding = {'price': 10000}`에서 `holding['Price']`를 실행하면?",['`KeyError` — 키 이름은 대소문자까지 정확해야 한다','`10000`이 나온다'],0,"딕셔너리 키는 글자가 정확히 같아야 합니다. `'price'`와 `'Price'`는 다른 키입니다.",prompt_markdown=True),
+short("리스트 `prices`의 마지막 값을 꺼내는 음수 인덱스는? (`prices[__]`)",['-1'],'`-1`은 뒤에서 첫 번째, 즉 마지막 값입니다.',prompt_markdown=True))
+
+# 1일차 · 3교시 — if 혼자, for 혼자, 그 다음 for+if
+insert_after('control','flow',
+coding('simple-if','조건에 따라 다른 문장 출력',"실행 입력에 가격이 한 줄로 주어집니다. 가격이 10000 이상이면 `기준 이상`, 아니면 `기준 미만`을 출력하세요.\n\n예: 입력 `10200` → `기준 이상`, 입력 `9900` → `기준 미만`","price = int(input())\n# if와 else로 출력하세요\n","price = int(input())\nif price >= 10000:\n    print('기준 이상')\nelse:\n    print('기준 미만')\n",tests=[dict(input='10200\n',expected='기준 이상\n'),dict(input='9900\n',expected='기준 미만\n'),dict(input='10000\n',expected='기준 이상\n')],
+    hint="`if price >= 10000:` 뒤에 콜론을 쓰고, 다음 줄은 공백 네 칸 들여쓴 뒤 `print(...)`를 적습니다. 그 아래 `else:`도 같은 방식입니다. 10000은 '이상'에 포함되므로 `>=`를 써야 합니다.",markdown=True),
+coding('for-sum','반복문으로 합계 누적하기',"`prices`의 값을 `for` 반복문으로 하나씩 꺼내 `total`에 더하세요. 반복이 끝나면 `total`을 출력하세요. 결과는 40200입니다. `sum()`을 쓰지 않고 직접 누적합니다.","prices = [10000,10200,9900,10100]\ntotal = 0\n# for 반복문으로 total에 누적하세요\n","prices = [10000,10200,9900,10100]\ntotal = 0\nfor price in prices:\n    total += price\nprint(total)\n","assert s['total']==40200",
+    hint="`for price in prices:`라고 쓰면 `price`에 값이 하나씩 들어오며 아래 들여쓴 줄이 반복됩니다. 그 안에서 `total += price`(total = total + price)로 누적하세요. `print(total)`은 들여쓰기 없이 반복문 밖에 둡니다.",markdown=True))
+insert_after('control','above-count',
+coding('max-price','반복문으로 최댓값 찾기',"`prices`에서 가장 큰 값을 `highest`에 저장하세요. `max()` 함수 대신 반복문과 `if`로 직접 찾으세요: 첫 값으로 시작해 더 큰 값을 만나면 바꿉니다. 결과는 10200입니다.","prices = [10000,10200,9900,10100]\nhighest = prices[0]\n# 반복문과 if로 highest를 갱신하세요\n","prices = [10000,10200,9900,10100]\nhighest = prices[0]\nfor price in prices:\n    if price > highest:\n        highest = price\nprint(highest)\n","assert s['highest']==10200",
+    hint="`for price in prices:` 안에서 `if price > highest:`일 때만 `highest = price`로 바꿉니다. 반복문 안의 `if`는 공백 네 칸, 그 안의 문장은 여덟 칸 들여쓰세요.",markdown=True))
+insert_after('control','holdings-frame',
+coding('frame-column-sum','표의 한 열을 합산하기',"준비 코드의 `df`는 세 종목의 표입니다. `amount` 열을 골라 `.sum()`으로 합계를 구해 `total_amount`에 저장하고 출력하세요. 반복문 없이 pandas로 계산합니다. 결과는 130000입니다.","import pandas as pd\nholdings = [{'name':'A','price':10000,'quantity':3,'amount':30000},{'name':'B','price':20000,'quantity':2,'amount':40000},{'name':'C','price':15000,'quantity':4,'amount':60000}]\ndf = pd.DataFrame(holdings)\n# total_amount를 계산하고 출력하세요\n","import pandas as pd\nholdings = [{'name':'A','price':10000,'quantity':3,'amount':30000},{'name':'B','price':20000,'quantity':2,'amount':40000},{'name':'C','price':15000,'quantity':4,'amount':60000}]\ndf = pd.DataFrame(holdings)\ntotal_amount = df['amount'].sum()\nprint(total_amount)\n","assert s['total_amount']==130000",
+    hint="`df['amount']`는 한 열(Series)이고 `.sum()`을 붙이면 합계가 나옵니다. 앞 미션에서 반복문으로 더한 것과 같은 결과를 한 줄로 얻습니다.",markdown=True))
+extend_quiz('control','control-check',
+choice("`for price in prices:` 아래 줄을 들여쓰지 않으면?",['`IndentationError`가 난다','그냥 한 번만 실행된다'],0,'반복할 문장은 반드시 공백 네 칸 들여써야 합니다.',prompt_markdown=True),
+short("`total = total + price`를 짧게 쓰는 연산자는? (`total __ price`)",['+=','+ ='],'`+=`는 기존 값에 더해 다시 저장합니다.',prompt_markdown=True),
+choice("`if price > 10000:`에서 `price`가 10000이면?",['조건이 거짓이라 실행되지 않음','조건이 참이라 실행됨'],0,'`>`는 초과이므로 같은 값은 포함하지 않습니다. 포함하려면 `>=`를 씁니다.',prompt_markdown=True))
+
+# 1일차 · 4교시 — 실제 파일 읽기, 크기·열 이름, Series vs DataFrame, 조건 하나
+insert_after('files','file-table',
+coding('read-csv-titanic','CSV 파일을 표로 읽기',"`data/titanic.csv` 파일을 `pd.read_csv()`로 읽어 `titanic`에 저장하세요. `titanic.shape`를 출력하고 마지막 줄에 `titanic.head()`를 적어 앞 5행을 확인하세요. 크기는 (1309, 14)입니다.","import pandas as pd\n# titanic을 읽고 shape와 head()를 확인하세요\n","import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nprint(titanic.shape)\ntitanic.head()\n","assert s['titanic'].shape==(1309,14)",
+    hint="`pd.read_csv('data/titanic.csv')`처럼 파일 경로를 따옴표로 감싸 전달하고 결과를 `titanic`에 저장하세요. 경로의 `data/`를 빼면 파일을 찾지 못합니다.",markdown=True),
+coding('inspect-frame','표의 크기와 열 이름 확인',"`orders` 표의 행 수를 `n_rows`, 열 수를 `n_columns`에 저장하고, 열 이름을 리스트로 `column_names`에 저장하세요. 세 값을 출력하세요. 4행 3열이며 열은 `product`, `price`, `quantity`입니다.",ORDERS+"# n_rows, n_columns, column_names를 만들고 출력하세요\n",ORDERS+"n_rows, n_columns = orders.shape\ncolumn_names = list(orders.columns)\nprint(n_rows, n_columns, column_names)\n","assert s['n_rows']==4 and s['n_columns']==3\nassert list(s['column_names'])==['product','price','quantity']",
+    hint="`orders.shape`는 `(4, 3)` 같은 (행, 열) 쌍이므로 `n_rows, n_columns = orders.shape`로 한 번에 나눠 담을 수 있습니다. 열 이름은 `list(orders.columns)`로 리스트로 만듭니다.",markdown=True))
+insert_after('files','csv-excel',
+coding('series-vs-frame','Series와 DataFrame 구분하기',"`orders['price']`를 `price_series`에, `orders[['price']]`를 `price_frame`에 저장하세요. 각각 `type()`을 출력해 하나는 `Series`, 하나는 `DataFrame`임을 확인하세요.",ORDERS+"# price_series, price_frame을 만들고 type을 출력하세요\n",ORDERS+"price_series = orders['price']\nprice_frame = orders[['price']]\nprint(type(price_series))\nprint(type(price_frame))\n","import pandas as pd\nassert isinstance(s['price_series'],pd.Series) and isinstance(s['price_frame'],pd.DataFrame)",
+    hint="대괄호 한 겹 `orders['price']`는 한 열인 Series, 두 겹 `orders[['price']]`는 열 이름 리스트를 넣은 것이라 DataFrame입니다. `type(변수)`를 `print()`로 출력하면 자료구조 이름을 볼 수 있습니다.",markdown=True))
+insert_after('files','selection',
+coding('loc-condition','조건으로 행 고르기',"`orders`에서 수량이 3 이상인 행만 골라 `many`에 저장하세요. `orders.loc[조건]` 형식을 쓰고, 마지막 줄에 `many`를 적어 표를 확인하세요. 두 행(A, A)이 남아야 합니다.",ORDERS+"# many를 만들고 표를 표시하세요\n",ORDERS+"many = orders.loc[orders['quantity'] >= 3]\nmany\n","assert s['many']['product'].tolist()==['A','A'] and s['many']['quantity'].tolist()==[3,4]",
+    hint="`orders['quantity'] >= 3`은 행마다 참·거짓을 만듭니다. 이를 `orders.loc[...]` 안에 넣으면 참인 행만 남습니다.",markdown=True))
+extend_quiz('files','files-check',
+choice("`pd.read_csv('titanic.csv')`가 `FileNotFoundError`를 낸다면 가장 먼저 확인할 것은?",['파일 경로 — 이 앱은 `data/titanic.csv`에 있다','pandas 설치 여부'],0,'자료는 `data/` 폴더 안에 있으므로 경로에 `data/`를 포함해야 합니다.',prompt_markdown=True),
+short('표의 앞 5행을 보여주는 메서드는? (`df.____()`)',['head','head()'],'`head()`는 기본으로 앞 5행을 보여줍니다.',prompt_markdown=True),
+choice("`orders.shape`가 `(4, 3)`이면?",['4행 3열','3행 4열'],0,'`shape`는 (행 수, 열 수) 순서입니다.',prompt_markdown=True))
+
+# 1일차 · 5교시 — 결측 세기, 채우기, 제외하기를 따로, 그리고 | 조건
+insert_after('missing','missing-values',
+coding('count-missing','비어 있는 값 세기',"`orders.isna().sum()`으로 열마다 결측 개수를 구해 `missing_counts`에 저장하세요. `price` 열의 결측 개수를 정수로 `n_missing_price`에 저장하고 출력하세요. 결과는 1입니다.",ORDERS+"# missing_counts, n_missing_price를 만들고 출력하세요\n",ORDERS+"missing_counts = orders.isna().sum()\nn_missing_price = int(missing_counts['price'])\nprint(missing_counts)\nprint(n_missing_price)\n","assert s['missing_counts']['price']==1 and s['missing_counts']['product']==0\nassert s['n_missing_price']==1",
+    hint="`orders.isna()`는 빈 칸을 `True`로 표시하고 `.sum()`은 열마다 `True` 개수를 셉니다. 결과에서 `['price']`로 가격 열의 값을 꺼내 `int()`로 감싸세요.",markdown=True),
+coding('fill-median','결측을 중앙값으로 채우기',"`orders['price']`의 중앙값을 `median_price`에 저장하세요. 결측을 그 값으로 채운 Series를 `filled_price`에 저장하고 출력하세요. 중앙값은 12000이며 채운 결과는 10000, 20000, 12000, 12000입니다. 원본 `orders`는 바꾸지 않습니다.",ORDERS+"# median_price, filled_price를 만들고 출력하세요\n",ORDERS+"median_price = orders['price'].median()\nfilled_price = orders['price'].fillna(median_price)\nprint(median_price)\nprint(filled_price)\n","assert s['median_price']==12000\nassert s['filled_price'].tolist()==[10000,20000,12000,12000]\nassert s['orders']['price'].isna().sum()==1",
+    hint="`orders['price'].median()`은 결측을 제외하고 중앙값을 구합니다. `orders['price'].fillna(median_price)`는 빈 칸만 그 값으로 바꾼 **새** Series를 돌려주며 원본은 그대로입니다.",markdown=True),
+coding('drop-missing','결측 행 제외하기',"가격이 비어 있는 행을 제외한 표를 `dropped`에 저장하세요. `dropna(subset=['price'])`를 사용하고, 남은 행 수를 `n_left`에 저장해 출력하세요. 결과는 3입니다.",ORDERS+"# dropped, n_left를 만들고 출력하세요\n",ORDERS+"dropped = orders.dropna(subset=['price'])\nn_left = len(dropped)\nprint(n_left)\ndropped\n","assert len(s['dropped'])==3 and s['n_left']==3\nassert s['dropped']['product'].tolist()==['A','B','A']",
+    hint="`orders.dropna(subset=['price'])`는 `price`가 비어 있는 행만 제외합니다. `subset`을 생략하면 어느 열이든 비어 있는 행을 모두 제외하므로 의도와 다를 수 있습니다.",markdown=True))
+insert_after('missing','filter-orders',
+coding('or-filter','둘 중 하나만 만족해도 고르기',"제품이 `A`**이거나** 수량이 1인 행을 `either`에 저장하세요. 각 조건을 괄호로 감싸고 `|`로 연결합니다. 결과는 A, A, C 세 행입니다.",ORDERS+"# either를 만들고 표를 표시하세요\n",ORDERS+"either = orders.loc[(orders['product'] == 'A') | (orders['quantity'] == 1)]\neither\n","assert s['either']['product'].tolist()==['A','A','C']",
+    hint="`&`는 '그리고', `|`는 '또는'입니다. `(orders['product'] == 'A') | (orders['quantity'] == 1)`처럼 각 조건을 꼭 괄호로 감싸세요. 괄호가 없으면 연산 순서 때문에 오류가 납니다.",markdown=True))
+extend_quiz('missing','missing-check',
+choice("`orders['price'].fillna(0)`을 실행한 뒤 `orders`를 출력하면 결측이 채워져 있을까?",['아니요 — 새 Series를 돌려줄 뿐 원본은 그대로','네 — 원본이 바로 바뀐다'],0,"`fillna`는 결과를 돌려주므로 `orders['price'] = ...`처럼 다시 저장해야 원본이 바뀝니다.",prompt_markdown=True),
+short('조건 둘 중 하나만 만족해도 고르는 pandas 연산자(기호)는?',['|'],'`|`는 "또는"입니다. 각 조건은 괄호로 감쌉니다.'),
+choice("`orders.dropna()`와 `orders.dropna(subset=['price'])`의 차이는?",['앞은 어느 열이든 비면 제외, 뒤는 price가 빈 행만 제외','둘은 같다'],0,'`subset`으로 기준 열을 정하지 않으면 모든 열을 검사합니다.',prompt_markdown=True))
+
+# 1일차 · 6교시 — 문자열 정리 한 개, 선택자로 요소 하나
+insert_after('html','html-selectors',
+coding('string-to-int','쉼표 있는 가격 문자열을 숫자로',"`price_text`는 `'10,000'`이라는 문자열입니다. 쉼표를 제거하고 `int()`로 바꿔 `price`에 저장하세요. `price * 3`을 출력해 30000이 나오는지 확인하세요.","price_text = '10,000'\n# price를 만들고 price * 3을 출력하세요\n","price_text = '10,000'\nprice = int(price_text.replace(',', ''))\nprint(price * 3)\n","assert s['price']==10000 and isinstance(s['price'],int)",
+    hint="`price_text.replace(',', '')`는 쉼표를 빈 문자열로 바꿔 `'10000'`을 만듭니다. 바로 `int('10,000')`을 하면 `ValueError`가 나므로 쉼표 제거가 먼저입니다.",markdown=True),
+coding('select-one','선택자로 요소 하나 찾기',"`soup`에서 `#prices li`의 개수를 `n_items`에 저장하세요. 첫 번째 종목의 이름(`.name` 요소의 글자)을 `first_name`에 저장하세요. 결과는 2와 `가상A`입니다.",PD+"from pathlib import Path\nfrom bs4 import BeautifulSoup\nhtml=Path('data/prices.html').read_text(encoding='utf-8')\nsoup=BeautifulSoup(html,'html.parser')\n# n_items, first_name을 만들고 출력하세요\n",PD+"from pathlib import Path\nfrom bs4 import BeautifulSoup\nhtml=Path('data/prices.html').read_text(encoding='utf-8')\nsoup=BeautifulSoup(html,'html.parser')\nitems = soup.select('#prices li')\nn_items = len(items)\nfirst_name = items[0].select_one('.name').get_text(strip=True)\nprint(n_items, first_name)\n","assert s['n_items']==2 and s['first_name']=='가상A'",
+    hint="`soup.select('#prices li')`는 조건에 맞는 요소를 리스트로 돌려주므로 `len()`으로 개수를 셉니다. 첫 요소 `[0]`에서 `.select_one('.name')`으로 이름 요소를 찾고 `.get_text(strip=True)`로 글자만 꺼냅니다.",markdown=True))
+extend_quiz('html','html-check',
+short("`id`가 `prices`인 요소를 고르는 CSS 선택자는? (기호 포함)",['#prices'],'`#`은 `id`, `.`은 `class`를 뜻합니다.',prompt_markdown=True),
+choice("`int('10,000')`을 실행하면?",['`ValueError` — 쉼표 때문에 숫자로 바꿀 수 없다','`10000`이 된다'],0,'쉼표를 먼저 `replace`로 제거해야 합니다.',prompt_markdown=True),
+choice('수집 코드가 어제는 됐는데 오늘 빈 결과가 나온다면 가능성이 높은 원인은?',['사이트 구조가 바뀌어 선택자가 맞지 않음','Python 문법이 바뀜'],0,'선택자는 문서 구조에 의존하므로 구조가 바뀌면 다시 확인해야 합니다.'))
+
+# 1일차 · 7교시 — 크기·열 이름, value_counts, 열별 결측
+insert_after('titanic-structure','target',
+coding('titanic-shape','자료의 크기와 열 이름',"`titanic`의 행 수를 `n_rows`, 열 수를 `n_columns`, 열 이름 리스트를 `columns`에 저장하고 출력하세요. 1309행 14열이며 생존 열은 소문자 `survived`입니다.",TI+"# n_rows, n_columns, columns를 만들고 출력하세요\n",TI+"n_rows, n_columns = titanic.shape\ncolumns = list(titanic.columns)\nprint(n_rows, n_columns)\nprint(columns)\n","assert s['n_rows']==1309 and s['n_columns']==14\nassert 'survived' in list(s['columns']) and 'age' in list(s['columns'])",
+    hint="`titanic.shape`를 `n_rows, n_columns`에 나눠 담고, `list(titanic.columns)`로 열 이름을 리스트로 만드세요. 대문자 `Survived`가 아니라 소문자 `survived`인지 확인합니다.",markdown=True),
+coding('survived-counts','생존·사망 인원 세기',"`titanic['survived'].value_counts()`로 0과 1의 개수를 `counts`에 저장하세요. 사망(0) 인원을 `n_dead`, 생존(1) 인원을 `n_alive`에 정수로 저장하고 출력하세요. 809명과 500명입니다.",TI+"# counts, n_dead, n_alive를 만들고 출력하세요\n",TI+"counts = titanic['survived'].value_counts()\nn_dead = int(counts[0])\nn_alive = int(counts[1])\nprint(counts)\nprint(n_dead, n_alive)\n","assert s['n_dead']==809 and s['n_alive']==500\nassert s['counts'].sum()==1309",
+    hint="`value_counts()`는 값마다 몇 번 나오는지 세어 줍니다. 결과에서 `counts[0]`은 0의 개수, `counts[1]`은 1의 개수입니다. `int()`로 감싸 정수로 저장하세요.",markdown=True),
+coding('missing-per-column','열마다 결측 개수 확인',"`titanic.isna().sum()`을 `missing`에 저장하세요. `age` 결측 수를 `age_missing`, `fare` 결측 수를 `fare_missing`에 정수로 저장하고 출력하세요. 263과 1입니다.",TI+"# missing, age_missing, fare_missing을 만들고 출력하세요\n",TI+"missing = titanic.isna().sum()\nage_missing = int(missing['age'])\nfare_missing = int(missing['fare'])\nprint(missing)\nprint(age_missing, fare_missing)\n","assert s['age_missing']==263 and s['fare_missing']==1\nassert s['missing']['survived']==0",
+    hint="`titanic.isna().sum()`은 열 이름을 인덱스로 하는 Series입니다. `missing['age']`처럼 열 이름으로 값을 꺼내 `int()`로 바꾸세요.",markdown=True))
+extend_quiz('titanic-structure','target-check',
+choice("`survived`의 평균 `0.382`가 뜻하는 것은?",['전체 중 생존(1)인 비율 38.2%','평균 생존 연령'],0,'0과 1만 있는 열의 평균은 1의 비율입니다.',prompt_markdown=True),
+choice("`boat`(구조 보트 번호) 열을 생존 예측 입력으로 쓰면 안 되는 이유는?",['사고 이후에 정해진 정보라 예측 시점에는 알 수 없음','문자열이라서'],0,'예측하려는 시점에 알 수 있는 정보만 입력으로 씁니다.',prompt_markdown=True),
+short("열마다 결측 개수를 구하는 표현은? (`titanic.____().sum()`)",['isna','isnull','isna()','isnull()'],'`isna()`는 빈 칸을 `True`로 표시하고 `.sum()`이 그 개수를 셉니다.',prompt_markdown=True))
+
+# 1일차 · 8교시 — 인원 → 평균 하나 → agg 세 개, 그리고 등급으로 반복
+insert_after('titanic-groups','denominator',
+coding('sex-counts','성별 인원 세기',"`titanic['sex'].value_counts()`를 `sex_counts`에 저장하고 출력하세요. 여성 466명, 남성 843명이어야 합니다. 두 집단의 크기가 다르다는 점을 기억하세요.",TI+"# sex_counts를 만들고 출력하세요\n",TI+"sex_counts = titanic['sex'].value_counts()\nprint(sex_counts)\n","assert s['sex_counts']['female']==466 and s['sex_counts']['male']==843",
+    hint="`value_counts()`는 각 값이 몇 번 나오는지 셉니다. 비율을 비교하기 전에 이렇게 분모가 되는 인원을 먼저 확인하는 습관을 들이세요.",markdown=True),
+coding('sex-mean','성별 생존율 구하기',"`titanic.groupby('sex')['survived'].mean()`으로 성별 생존율을 `rates`에 저장하고 출력하세요. 여성은 약 0.73, 남성은 약 0.19입니다.",TI+"# rates를 만들고 출력하세요\n",TI+"rates = titanic.groupby('sex')['survived'].mean()\nprint(rates)\n","assert abs(s['rates']['female']-339/466)<1e-9 and abs(s['rates']['male']-161/843)<1e-9",
+    hint="`groupby('sex')`로 성별로 묶고 `['survived']`로 열을 고른 뒤 `.mean()`을 붙입니다. 0·1의 평균이 생존율입니다.",markdown=True))
+insert_after('titanic-groups','sex-summary',
+coding('pclass-summary','객실 등급별 인원과 생존율',"`titanic.groupby('pclass')['survived'].agg(['count','sum','mean'])`으로 등급별 인원·생존자·생존율 표를 `pclass_summary`에 저장하세요. 세 등급의 인원을 합하면 1309명이어야 합니다.",TI+"# pclass_summary를 만드세요\n",TI+"pclass_summary = titanic.groupby('pclass')['survived'].agg(['count','sum','mean'])\npclass_summary\n","assert list(s['pclass_summary'].index)==[1,2,3]\nassert s['pclass_summary']['count'].sum()==1309 and s['pclass_summary']['sum'].sum()==500\nassert s['pclass_summary'].loc[1,'count']==323",
+    hint="`agg(['count','sum','mean'])`은 집계 세 개를 한 번에 열로 만듭니다. `groupby('sex')` 대신 `groupby('pclass')`로 바꾸기만 하면 됩니다.",markdown=True))
+extend_quiz('titanic-groups','groups-check',
+choice('1등급 생존율 62%, 3등급 26%라는 표를 보고 바로 말할 수 있는 것은?',['이 자료에서 등급별 생존율이 다르게 관찰됨','등급이 생존의 원인임이 입증됨'],0,'관찰된 차이와 원인은 다릅니다. 성별·나이 등 다른 조건을 함께 봐야 합니다.'),
+choice("`titanic.groupby('sex')['age'].count()`가 세는 것은?",['나이가 기록된(결측이 아닌) 인원','성별 전체 인원'],0,'`count`는 결측을 제외합니다. 전체 인원은 `survived`처럼 결측 없는 열로 세세요.',prompt_markdown=True),
+choice("`pd.cut(..., right=False)`에서 경계 20이 속하는 구간은?",['20~39 (왼쪽 경계 포함)','0~19 (오른쪽 경계 포함)'],0,'`right=False`는 각 구간이 왼쪽 경계를 포함하고 오른쪽 경계를 제외합니다.',prompt_markdown=True))
+
+# 2일차 · 1교시 — 작은 리스트로 첫 막대, 등급으로 반복
+insert_after('bar-chart','axes',
+coding('simple-bar','리스트로 첫 막대그래프',"`names`와 `amounts`로 막대그래프를 그리세요. `fig, ax = plt.subplots()`를 만들고 `ax.bar(names, amounts)`로 그린 뒤 `ax.set(title='Amount by stock', ylabel='Amount')`를 지정하고 `plt.show()`로 표시하세요.","import matplotlib.pyplot as plt\nnames = ['A', 'B', 'C']\namounts = [30000, 40000, 60000]\n# fig, ax를 만들고 막대그래프를 그리세요\n","import matplotlib.pyplot as plt\nnames = ['A', 'B', 'C']\namounts = [30000, 40000, 60000]\nfig, ax = plt.subplots()\nax.bar(names, amounts)\nax.set(title='Amount by stock', ylabel='Amount')\nplt.show()\n","assert len(s['ax'].patches)==3\nassert [p.get_height() for p in s['ax'].patches]==[30000,40000,60000]\nassert s['ax'].get_ylabel()=='Amount'",
+    hint="`fig, ax = plt.subplots()`가 그림(Figure)과 축(Axes)을 만듭니다. `ax.bar(이름 리스트, 값 리스트)`로 막대를 그리고, `ax.set(...)`에 제목과 축 이름을 넣은 뒤 `plt.show()`를 호출하세요.",markdown=True))
+insert_after('bar-chart','sex-bar',
+coding('pclass-bar','등급별 생존율 막대그래프',"`rates`에 등급별 `survived` 평균을 저장하세요. `fig, ax`를 만들고 `rates × 100`을 막대로 그리세요. y축 범위 0~100, `xlabel='Pclass'`, `ylabel='Survival rate (%)'`를 지정하고 `plt.show()`로 보세요.",TI+PLOT+"# rates, fig, ax를 만들고 막대그래프를 그리세요\n",TI+PLOT+"rates = titanic.groupby('pclass')['survived'].mean()\nfig, ax = plt.subplots()\nax.bar(rates.index.astype(str), rates * 100)\nax.set(xlabel='Pclass', ylabel='Survival rate (%)', ylim=(0, 100), title='Survival by class')\nplt.show()\n","assert len(s['ax'].patches)==3\nassert s['ax'].get_ylim()==(0.0,100.0) and s['ax'].get_xlabel()=='Pclass'\nheights=sorted(p.get_height() for p in s['ax'].patches)\nassert abs(heights[0]-181/709*100)<1e-8 and abs(heights[2]-200/323*100)<1e-8",
+    hint="성별 그래프와 같은 흐름입니다. `groupby('pclass')['survived'].mean()`을 구하고 100을 곱해 `ax.bar()`로 그리세요. 등급 1·2·3이 숫자라 x축 간격이 어색하면 `rates.index.astype(str)`로 글자로 바꿔 전달하세요.",markdown=True))
+extend_quiz('bar-chart','bar-check',
+choice("`fig, ax = plt.subplots()`에서 막대를 그리는 명령은?",['`ax.bar(...)`','`fig.bar(...)`'],0,'그래프는 Axes(`ax`)에 그립니다. Figure는 전체 그림을 담는 종이입니다.',prompt_markdown=True),
+choice('y축을 0이 아닌 60부터 시작하게 잘라 그리면?',['작은 차이가 크게 보여 과장될 수 있음','항상 더 정확함'],0,'절단된 축은 차이를 과장할 수 있어 0~100으로 두는 것이 안전합니다.'),
+short('그래프를 앱 화면에 표시하는 마지막 명령은?',['plt.show()','plt.show','show()'],'`plt.show()`를 호출하면 앱이 그림을 수집해 보여줍니다.'))
+
+# 2일차 · 2교시 — 개념에만 있던 산점도를 실제로
+insert_after('distribution','age-hist',
+coding('fare-scatter','나이와 요금의 산점도',"`age`와 `fare`가 모두 있는 행만 `known`에 저장하세요. `fig, ax`를 만들고 `ax.scatter(known['age'], known['fare'])`로 산점도를 그린 뒤 `xlabel='Age'`, `ylabel='Fare'`를 지정하고 `plt.show()`로 보세요. 1045행이어야 합니다.",TI+PLOT+"# known, fig, ax를 준비하세요\n",TI+PLOT+"known = titanic.dropna(subset=['age', 'fare'])\nfig, ax = plt.subplots()\nax.scatter(known['age'], known['fare'], alpha=0.4)\nax.set(xlabel='Age', ylabel='Fare', title='Age vs fare')\nplt.show()\n","assert len(s['known'])==1045\nassert len(s['ax'].collections)>=1 and len(s['ax'].collections[0].get_offsets())==1045\nassert s['ax'].get_xlabel()=='Age' and s['ax'].get_ylabel()=='Fare'",
+    hint="`dropna(subset=['age', 'fare'])`로 두 열 모두 값이 있는 행만 남기세요. `ax.scatter(x값, y값)`은 각 행을 점 하나로 그립니다. 점이 겹치면 `alpha=0.4`처럼 투명도를 줄 수 있습니다.",markdown=True))
+extend_quiz('distribution','distribution-check',
+choice("`bins=20`을 `bins=5`로 바꾸면?",['같은 자료라도 더 거친 분포로 보임','자료가 바뀜'],0,'구간 수는 보는 방식이며 자료 자체는 그대로입니다. 구간 수를 함께 적으세요.',prompt_markdown=True),
+choice("`fare`와 `survived`의 상관계수가 양수라면?",['요금이 높을수록 생존이 많은 경향이 관찰됨','요금을 올리면 생존함'],0,'상관은 함께 변하는 경향이며 원인을 뜻하지 않습니다.',prompt_markdown=True),
+short('표의 값을 색으로 나타내는 그래프는?',['히트맵','heatmap','heat map'],'상관계수 표는 히트맵으로 -1~1 범위를 색으로 봅니다.'))
+
+# 2일차 · 3교시 — 한 조건 groupby 복습, 교차표(그래프 없이) → 그래프
+insert_after('insight','observations',
+coding('embarked-rate','탑승 항구별 인원과 생존율',"`titanic.groupby('embarked')['survived'].agg(['count','mean'])`을 `by_port`에 저장하세요. 세 항구의 인원 합이 1307인 이유(결측 2명)를 생각하며 표를 확인하세요.",TI+"# by_port를 만드세요\n",TI+"by_port = titanic.groupby('embarked')['survived'].agg(['count','mean'])\nby_port\n","assert set(s['by_port'].index)=={'C','Q','S'}\nassert s['by_port']['count'].sum()==1307\nassert s['by_port'].loc['S','count']==914",
+    hint="`groupby('embarked')`로 항구별로 묶고 `['survived'].agg(['count','mean'])`을 붙이세요. `embarked`가 비어 있는 2명은 어느 그룹에도 들어가지 않아 합이 1307입니다.",markdown=True),
+coding('sex-pclass-table','성별×등급 교차표 만들기',"`grouped`에 `sex`·`pclass`별 `survived`의 `count`와 `mean`을 저장하세요. `wide`에는 `grouped['mean']`을 `unstack('pclass')`로 펼쳐 2행 3열 표를 만들고 마지막 줄에 `wide`를 적어 확인하세요. 그래프는 다음 미션에서 그립니다.",TI+"# grouped, wide를 만드세요\n",TI+"grouped = titanic.groupby(['sex','pclass'])['survived'].agg(['count','mean'])\nwide = grouped['mean'].unstack('pclass')\nwide\n","assert s['grouped'].shape==(6,2) and s['grouped']['count'].sum()==1309\nassert s['wide'].shape==(2,3) and list(s['wide'].index)==['female','male']\nassert abs(s['wide'].loc['female',1]-s['grouped'].loc[('female',1),'mean'])<1e-12",
+    hint="`groupby(['sex','pclass'])`처럼 열 이름을 리스트로 넣으면 두 조건으로 묶입니다. 결과의 `['mean']` 열에 `.unstack('pclass')`를 붙이면 등급이 열로 펼쳐져 성별 2행 × 등급 3열 표가 됩니다.",markdown=True))
+extend_quiz('insight','insight-check',
+choice("`unstack('pclass')`가 하는 일은?",['인덱스에 있던 등급을 열로 펼침','등급 열을 삭제함'],0,'여러 단계 인덱스 중 하나를 열로 옮겨 비교하기 쉬운 표를 만듭니다.',prompt_markdown=True),
+choice("'여성 1등급 생존율 96%'를 보고할 때 함께 적어야 할 것은?",['그 그룹의 인원(분모)','그래프 색'],0,'비율은 인원과 함께 읽어야 규모를 알 수 있습니다.'),
+choice('"등급을 나눠도 성별 차이가 남는가?"는 어떤 종류의 문장인가?',['자료에 다시 물을 질문','이미 입증된 결론'],0,'좋은 분석은 관찰 뒤에 다음 질문을 만듭니다.'))
+
+# 2일차 · 4교시 — 열 제거, 자료형 나누기, One-hot을 눈으로
+insert_after('features','leakage',
+coding('drop-columns','쓰지 않을 열 제거하기',"`titanic.drop(columns=[...])`으로 정답 `survived`와 입력으로 쓰지 않는 `name`, `ticket`, `cabin`, `boat`, `body`, `home.dest`를 제거해 `candidates`에 저장하세요. 남은 열 7개를 출력하세요.",TI+"# candidates를 만들고 열 이름을 출력하세요\n",TI+"candidates = titanic.drop(columns=['survived','name','ticket','cabin','boat','body','home.dest'])\nprint(list(candidates.columns))\n","assert list(s['candidates'].columns)==['pclass','sex','age','sibsp','parch','fare','embarked']\nassert len(s['candidates'])==1309",
+    hint="`drop(columns=[...])`에 제거할 열 이름을 리스트로 넣습니다. 열 이름은 소문자이고 `home.dest`에는 점이 있습니다. 결과를 변수에 저장해야 합니다.",markdown=True))
+insert_after('features','xy-separation',
+coding('column-types','숫자 열과 문자 열 나누기',"준비된 `X`에서 숫자 열 이름 리스트를 `numeric_columns`, 문자(범주) 열 이름 리스트를 `category_columns`에 저장하고 출력하세요. `select_dtypes('number')`와 `select_dtypes(exclude='number')`를 사용합니다.",TI+FEATURES+"# numeric_columns, category_columns를 만들고 출력하세요\n",TI+FEATURES+"numeric_columns = list(X.select_dtypes('number').columns)\ncategory_columns = list(X.select_dtypes(exclude='number').columns)\nprint(numeric_columns)\nprint(category_columns)\n","assert list(s['numeric_columns'])==['pclass','age','sibsp','parch','fare']\nassert list(s['category_columns'])==['sex','embarked']",
+    hint="`X.select_dtypes('number')`는 숫자 열만, `X.select_dtypes(exclude='number')`는 나머지 열만 남긴 표입니다. 각각 `.columns`를 `list()`로 감싸 이름 리스트를 만드세요. 숫자 열은 대체·표준화, 문자 열은 One-hot으로 처리할 예정입니다.",markdown=True),
+coding('get-dummies','One-hot 인코딩 직접 보기',"`pd.get_dummies(titanic[['sex']])`로 `sex` 열을 One-hot 표로 바꿔 `encoded`에 저장하고 마지막 줄에 `encoded.head()`를 적으세요. `sex_female`, `sex_male` 두 열이 생기며 각 행에서 둘 중 하나만 1(True)입니다.",TI+"# encoded를 만들고 head()를 확인하세요\n",TI+"encoded = pd.get_dummies(titanic[['sex']])\nprint(encoded.shape)\nencoded.head()\n","assert list(s['encoded'].columns)==['sex_female','sex_male'] and s['encoded'].shape==(1309,2)\nassert (s['encoded'].astype(int).sum(axis=1)==1).all()",
+    hint="`pd.get_dummies(표)`는 문자 열의 값마다 새 열을 만듭니다. `titanic[['sex']]`처럼 대괄호 두 겹으로 DataFrame을 넘기세요. 모델 Pipeline에서는 같은 일을 `OneHotEncoder`가 합니다.",markdown=True))
+extend_quiz('features','features-check',
+choice('다음 거래일 종가(연속 숫자)를 예측하는 작업은?',['회귀','분류'],0,'연속 숫자를 예측하면 회귀, 범주를 고르면 분류입니다.'),
+choice("`sex` 열을 One-hot으로 바꾸면 열이 몇 개 생기나?",['값의 종류 수만큼 — female, male 2개','항상 1개'],0,'범주 값마다 표시 열이 하나씩 생깁니다.',prompt_markdown=True),
+short('정답 열(`survived`)을 입력 X에 함께 넣으면 생기는 문제는?',['누수','데이터누수','leakage','data leakage','데이터 누수'],'정답을 입력으로 보여주면 평가가 무의미해지는 누수입니다.',prompt_markdown=True))
+
+# 2일차 · 5교시 — 모델 한 번 돌려보기 → 대체기 → 인코더 → Pipeline 조립
+insert_after('preprocessing','stratified-split',
+coding('first-model','결측 없는 숫자 열로 첫 모델',"준비된 분리에서 결측이 없는 숫자 열 `['pclass','sibsp','parch']`만 사용합니다. `LogisticRegression(max_iter=1000)`을 `model`에 만들고 `X_train[simple]`, `y_train`으로 `fit`하세요. `X_test[simple]`을 `predict`해 `accuracy`에 정확도를 저장하고 출력하세요.",TI+FEATURES+SPLIT+"from sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import accuracy_score\nsimple = ['pclass','sibsp','parch']\n# model을 학습하고 accuracy를 구하세요\n",TI+FEATURES+SPLIT+"from sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import accuracy_score\nsimple = ['pclass','sibsp','parch']\nmodel = LogisticRegression(max_iter=1000)\nmodel.fit(X_train[simple], y_train)\npred = model.predict(X_test[simple])\naccuracy = accuracy_score(y_test, pred)\nprint(accuracy)\n","assert 0<=s['accuracy']<=1\nassert s['model'].n_features_in_==3\nassert abs(s['accuracy']-(s['model'].predict(s['X_test'][['pclass','sibsp','parch']])==s['y_test']).mean())<1e-12",
+    hint="모델 사용은 세 단계입니다: 만들기 `model = LogisticRegression(max_iter=1000)`, 학습 `model.fit(X_train[simple], y_train)`, 예측 `model.predict(X_test[simple])`. 예측과 `y_test`를 `accuracy_score(y_test, pred)`에 넣으면 정확도입니다. `age`는 결측이 있어 이번엔 제외합니다.",markdown=True))
+insert_after('preprocessing','train-imputer',
+coding('onehot-fit','범주 열을 훈련 기준으로 인코딩',"`OneHotEncoder(handle_unknown='ignore', sparse_output=False)`를 `encoder`에 만들고 `X_train[['sex']]`로 `fit_transform`한 결과를 `train_encoded`, `X_test[['sex']]`를 `transform`한 결과를 `test_encoded`에 저장하세요. 두 결과의 shape를 출력하세요.",TI+FEATURES+SPLIT+"from sklearn.preprocessing import OneHotEncoder\n# encoder, train_encoded, test_encoded를 만드세요\n",TI+FEATURES+SPLIT+"from sklearn.preprocessing import OneHotEncoder\nencoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)\ntrain_encoded = encoder.fit_transform(X_train[['sex']])\ntest_encoded = encoder.transform(X_test[['sex']])\nprint(train_encoded.shape, test_encoded.shape)\n","assert s['train_encoded'].shape==(1047,2) and s['test_encoded'].shape==(262,2)\nassert list(s['encoder'].categories_[0])==['female','male']\nassert (s['train_encoded'].sum(axis=1)==1).all()",
+    hint="`fit_transform`은 훈련 자료에서 범주 목록을 배우고 바로 변환합니다. 테스트에는 같은 `encoder`로 `transform`만 호출하세요. `sparse_output=False`를 주면 일반 배열로 결과를 봅니다.",markdown=True),
+coding('pipeline-build','대체와 표준화를 한 줄로 묶기',"`Pipeline([('fill', SimpleImputer(strategy='median')), ('scale', StandardScaler())])`를 `numeric_pipeline`에 만드세요. 숫자 열 `numeric`에 대해 훈련은 `fit_transform`, 테스트는 `transform`해 `train_values`, `test_values`에 저장하고 shape를 출력하세요.",TI+FEATURES+SPLIT+"from sklearn.impute import SimpleImputer\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nnumeric = ['pclass','age','sibsp','parch','fare']\n# numeric_pipeline, train_values, test_values를 만드세요\n",TI+FEATURES+SPLIT+"from sklearn.impute import SimpleImputer\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nnumeric = ['pclass','age','sibsp','parch','fare']\nnumeric_pipeline = Pipeline([('fill', SimpleImputer(strategy='median')), ('scale', StandardScaler())])\ntrain_values = numeric_pipeline.fit_transform(X_train[numeric])\ntest_values = numeric_pipeline.transform(X_test[numeric])\nprint(train_values.shape, test_values.shape)\n","import numpy as np\nassert s['train_values'].shape==(1047,5) and s['test_values'].shape==(262,5)\nassert np.isfinite(s['train_values']).all() and np.isfinite(s['test_values']).all()\nassert np.allclose(s['train_values'].mean(axis=0),0,atol=1e-8)\nassert list(s['numeric_pipeline'].named_steps)==['fill','scale']",
+    hint="`Pipeline`에는 `(이름, 변환기)` 쌍을 순서대로 리스트로 넣습니다. 먼저 중앙값으로 채우고(`fill`) 그다음 표준화(`scale`)합니다. 훈련에는 `fit_transform`, 테스트에는 `transform`만 쓰는 규칙은 그대로입니다. 표준화된 훈련 자료의 열 평균은 0에 가깝습니다.",markdown=True))
+extend_quiz('preprocessing','pipeline-check',
+choice("`encoder.fit_transform(X_test[['sex']])`처럼 테스트에 `fit`을 하면?",['테스트 정보로 기준을 정해 누수','더 정확해서 권장'],0,'기준(범주 목록·중앙값·평균)은 훈련에서만 배워야 합니다.',prompt_markdown=True),
+short("모델을 학습시키는 메서드 이름은? (`model.____(X_train, y_train)`)",['fit','fit()'],'`fit`은 학습, `predict`는 예측입니다.',prompt_markdown=True),
+choice("`train_test_split(..., test_size=0.2)`에서 1309명 중 테스트는 약 몇 명?",['약 262명 (20%)','약 1047명 (80%)'],0,'`test_size=0.2`는 20%를 테스트로 남깁니다.',prompt_markdown=True))
+
+# 2일차 · 6교시 — 기준 모델 혼자, 과적합을 숫자로 보기
+insert_after('classifiers','baselines',
+coding('dummy-only','기준 모델 하나만 먼저',"`DummyClassifier(strategy='most_frequent')`를 `dummy`에 만들고 `X_train`, `y_train`으로 `fit`하세요. `X_test`를 예측해 `dummy_accuracy`를 계산하고 출력하세요. 테스트 262명 중 다수 클래스(사망)가 162명이므로 정확도는 162/262입니다.",TI+FEATURES+SPLIT+"from sklearn.dummy import DummyClassifier\nfrom sklearn.metrics import accuracy_score\n# dummy를 학습하고 dummy_accuracy를 구하세요\n",TI+FEATURES+SPLIT+"from sklearn.dummy import DummyClassifier\nfrom sklearn.metrics import accuracy_score\ndummy = DummyClassifier(strategy='most_frequent')\ndummy.fit(X_train, y_train)\ndummy_accuracy = accuracy_score(y_test, dummy.predict(X_test))\nprint(dummy_accuracy)\n","assert abs(s['dummy_accuracy']-162/262)<1e-10\nassert set(s['dummy'].predict(s['X_test']))=={0}",
+    hint="DummyClassifier는 입력을 보지 않고 훈련 정답에서 가장 많은 값(0)만 예측합니다. 그래서 전처리 없이 바로 `fit(X_train, y_train)`할 수 있습니다. 이 점수(약 61.8%)보다 못한 모델은 아무것도 배우지 못한 것입니다.",markdown=True))
+insert_after('classifiers','model-comparison',
+coding('train-vs-test','훈련 점수와 테스트 점수 비교',"깊이 제한이 없는 `DecisionTreeClassifier(random_state=42)`를 전처리 Pipeline으로 묶어 `model`에 학습하세요. 훈련 자료 정확도를 `train_accuracy`, 테스트 자료 정확도를 `test_accuracy`에 저장하고 둘을 출력하세요. 훈련 점수가 테스트보다 높게 나오는 과적합을 확인합니다.",TI+FEATURES+SPLIT+PREP+"from sklearn.tree import DecisionTreeClassifier\nfrom sklearn.metrics import accuracy_score\n# model, train_accuracy, test_accuracy를 만드세요\n",TI+FEATURES+SPLIT+PREP+"from sklearn.tree import DecisionTreeClassifier\nfrom sklearn.metrics import accuracy_score\nmodel = Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(random_state=42))])\nmodel.fit(X_train, y_train)\ntrain_accuracy = accuracy_score(y_train, model.predict(X_train))\ntest_accuracy = accuracy_score(y_test, model.predict(X_test))\nprint(train_accuracy, test_accuracy)\n","assert 0<=s['test_accuracy']<=1 and 0<=s['train_accuracy']<=1\nassert s['train_accuracy']>s['test_accuracy']\nassert s['train_accuracy']>0.9\nassert abs(s['train_accuracy']-(s['model'].predict(s['X_train'])==s['y_train']).mean())<1e-12",
+    hint="`Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(random_state=42))])`로 묶고 `fit(X_train, y_train)`하세요. 정확도는 두 번 계산합니다: `accuracy_score(y_train, model.predict(X_train))`과 `accuracy_score(y_test, model.predict(X_test))`. 훈련 점수만 높으면 외운 것입니다.",markdown=True))
+extend_quiz('classifiers','model-check',
+choice('훈련 정확도 98%, 테스트 정확도 76%인 모델은?',['과적합 — 훈련 자료를 외운 상태','완벽한 모델'],0,'새 자료(테스트)에서의 점수가 실제 성능에 가깝습니다.'),
+short('기준 모델(Dummy)의 테스트 정확도가 약 0.618인 이유는 테스트 262명 중 사망이 몇 명이기 때문인가요?',['162','162명'],'다수 클래스만 예측하므로 162/262 ≈ 0.618입니다.'),
+choice("`DecisionTreeClassifier(max_depth=4)`에서 `max_depth`의 역할은?",['트리 깊이를 제한해 과적합을 줄임','정확도를 항상 높임'],0,'깊이를 제한하면 훈련 자료를 지나치게 외우는 것을 막습니다.',prompt_markdown=True))
+
+# 2일차 · 7교시 — 자료 살펴보기, 그룹 평균 복습, 상환 상태별 부도율
+insert_after('credit-target','credit-definition',
+coding('credit-shape','신용카드 자료 살펴보기',"`credit`의 크기를 `n_rows, n_columns`에 저장하세요. `credit[target].value_counts()`를 `target_counts`에 저장해 0과 1이 각각 23364명, 6636명인지 출력으로 확인하세요.",CR+"# n_rows, n_columns, target_counts를 만들고 출력하세요\n",CR+"n_rows, n_columns = credit.shape\ntarget_counts = credit[target].value_counts()\nprint(n_rows, n_columns)\nprint(target_counts)\n","assert s['n_rows']==30000 and s['n_columns']==25\nassert s['target_counts'][1]==6636 and s['target_counts'][0]==23364",
+    hint="`target` 변수에 정답 열 이름 `'default payment next month'`가 들어 있습니다. 열 이름에 공백이 있으므로 `credit.default...`처럼 점으로 접근할 수 없고 `credit[target]`으로 꺼내야 합니다.",markdown=True))
+insert_after('credit-target','default-summary',
+coding('limit-by-default','부도 여부별 평균 신용 한도',"`credit.groupby(target)['LIMIT_BAL'].mean()`을 `limit_by_default`에 저장하고 출력하세요. 비부도(0) 그룹의 평균 한도가 부도(1) 그룹보다 높은지 확인하세요.",CR+"# limit_by_default를 만들고 출력하세요\n",CR+"limit_by_default = credit.groupby(target)['LIMIT_BAL'].mean()\nprint(limit_by_default)\n","assert set(s['limit_by_default'].index)=={0,1}\nassert s['limit_by_default'][0]>s['limit_by_default'][1]\nassert abs(s['limit_by_default'][1]-130109.65642)<0.01",
+    hint="Titanic에서 `groupby('sex')['survived'].mean()`을 했던 것과 같은 모양입니다. 묶는 열이 `target`, 평균을 구할 열이 `'LIMIT_BAL'`입니다.",markdown=True))
+insert_after('credit-target','delay-groups',
+coding('pay0-rate','최근 상환 상태별 부도율',"`credit.groupby('PAY_0')[target].agg(['count','mean'])`을 `pay0_summary`에 저장하세요. 상태 0(정상)과 상태 2(2개월 연체)의 부도율을 `rate_0`, `rate_2`에 저장하고 출력하세요. 연체 상태의 부도율이 훨씬 높습니다.",CR+"# pay0_summary, rate_0, rate_2를 만들고 출력하세요\n",CR+"pay0_summary = credit.groupby('PAY_0')[target].agg(['count','mean'])\nrate_0 = pay0_summary.loc[0,'mean']\nrate_2 = pay0_summary.loc[2,'mean']\nprint(pay0_summary)\nprint(rate_0, rate_2)\n","assert s['pay0_summary']['count'].sum()==30000\nassert s['rate_2']>s['rate_0']\nassert abs(s['rate_0']-0.128113)<1e-5 and abs(s['rate_2']-0.691414)<1e-5",
+    hint="`groupby('PAY_0')`로 상환 상태별로 묶고 `agg(['count','mean'])`으로 인원과 부도율을 함께 봅니다. 표에서 특정 행의 값은 `pay0_summary.loc[0, 'mean']`처럼 꺼냅니다. 인원이 적은 상태(5~8)의 비율은 흔들릴 수 있으니 `count`도 함께 보세요.",markdown=True))
+extend_quiz('credit-target','credit-check',
+choice("`PAY_0`가 7인 그룹의 부도율 78%를 그대로 믿기 어려운 이유는?",['그 그룹 인원이 9명으로 매우 적음','7은 숫자가 커서'],0,'분모(인원)가 작으면 비율이 크게 흔들립니다. `count`를 함께 보세요.',prompt_markdown=True),
+choice('연체 이력(PAY_0)과 다음 달 부도(target)의 관계는?',['과거 정보로 미래 정답을 예측하는 입력–정답 관계','같은 것'],0,'연체 이력은 입력, 다음 달 부도는 정답입니다.'),
+short("열 이름에 공백이 있는 정답 열을 꺼낼 때 쓴 준비 코드의 변수 이름은? (`credit[______]`)",['target'],"`target = 'default payment next month'`이므로 `credit[target]`으로 꺼냅니다.",prompt_markdown=True))
+
+# 2일차 · 8교시 — 공식 손계산 → 함수, 확률 → 기준값
+insert_after('credit-metrics','metric-meaning',
+coding('manual-metrics','혼동행렬 숫자로 지표 손계산',"혼동행렬 값 `tp`, `fp`, `fn`, `tn`이 준비돼 있습니다. 공식으로 `precision = tp/(tp+fp)`, `recall = tp/(tp+fn)`, `accuracy = (tp+tn)/전체`를 계산해 저장하고 출력하세요. 세 값 모두 약 0.667입니다.","tp, fp, fn, tn = 2, 1, 1, 2\n# precision, recall, accuracy를 계산하고 출력하세요\n","tp, fp, fn, tn = 2, 1, 1, 2\nprecision = tp / (tp + fp)\nrecall = tp / (tp + fn)\naccuracy = (tp + tn) / (tp + fp + fn + tn)\nprint(precision, recall, accuracy)\n","assert abs(s['precision']-2/3)<1e-12 and abs(s['recall']-2/3)<1e-12 and abs(s['accuracy']-2/3)<1e-12",
+    hint="Precision은 '양성이라고 예측한 것 중 맞은 비율' → 분모가 `tp + fp`. Recall은 '실제 양성 중 찾아낸 비율' → 분모가 `tp + fn`. Accuracy는 전체 중 맞은 것(`tp + tn`)의 비율입니다.",markdown=True))
+insert_after('credit-metrics','credit-model',
+coding('predict-proba','확률로 예측하기',"준비된 `model`은 학습된 Logistic Pipeline입니다. `model.predict_proba(X_test)[:, 1]`로 부도 확률을 `probabilities`에 저장하세요. 기준 0.5와 0.3으로 각각 양성 예측 개수를 `n_positive_05`, `n_positive_03`에 저장하고 출력하세요.",CR+"from sklearn.model_selection import train_test_split\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LogisticRegression\nX=credit[['PAY_0','LIMIT_BAL','AGE']]\ny=credit[target]\nX_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.2,stratify=y,random_state=42)\nmodel=Pipeline([('scale',StandardScaler()),('model',LogisticRegression(max_iter=2000))])\nmodel.fit(X_train,y_train)\n# probabilities, n_positive_05, n_positive_03을 만들고 출력하세요\n",CR+"from sklearn.model_selection import train_test_split\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LogisticRegression\nX=credit[['PAY_0','LIMIT_BAL','AGE']]\ny=credit[target]\nX_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.2,stratify=y,random_state=42)\nmodel=Pipeline([('scale',StandardScaler()),('model',LogisticRegression(max_iter=2000))])\nmodel.fit(X_train,y_train)\nprobabilities = model.predict_proba(X_test)[:, 1]\nn_positive_05 = int((probabilities >= 0.5).sum())\nn_positive_03 = int((probabilities >= 0.3).sum())\nprint(n_positive_05, n_positive_03)\n","import numpy as np\nassert len(s['probabilities'])==6000 and ((s['probabilities']>=0)&(s['probabilities']<=1)).all()\nassert np.allclose(s['probabilities'],s['model'].predict_proba(s['X_test'])[:,1])\nassert s['n_positive_05']==int((s['probabilities']>=0.5).sum()) and s['n_positive_03']==int((s['probabilities']>=0.3).sum())\nassert s['n_positive_03']>s['n_positive_05']",
+    hint="`predict_proba`는 행마다 [비부도 확률, 부도 확률] 두 열을 돌려주므로 `[:, 1]`로 부도 확률만 고릅니다. `probabilities >= 0.5`는 참·거짓 배열이고 `.sum()`은 참의 개수입니다. 기준을 낮추면 양성 예측이 늘어납니다.",markdown=True))
+extend_quiz('credit-metrics','metrics-check',
+choice('부도 고객을 놓치는 비용이 매우 크다면 더 신경 쓸 지표는?',['recall (실제 부도 중 찾아낸 비율)','accuracy'],0,'놓치는 오류(FN)를 줄이려면 recall을 봅니다.'),
+short("`predict_proba(X_test)`의 결과에서 양성(1) 확률 열만 고르는 인덱스는? (`[:, _]`)",['1'],'두 번째 열(인덱스 1)이 양성 확률입니다.',prompt_markdown=True))
+
+# 3일차 · 1교시 — 선그래프, 기간과 최고가
+insert_after('stock-data','stock-load',
+coding('close-plot','종가 선그래프 그리기',"`fig, ax`를 만들고 `ax.plot(prices.index, prices['Close'])`로 종가 선그래프를 그리세요. `xlabel='Date'`, `ylabel='Close'`를 지정하고 `plt.show()`로 보세요. 선 하나에 401개 점이 있어야 합니다.",ST+"import matplotlib.pyplot as plt\n# fig, ax를 만들고 종가를 그리세요\n",ST+"import matplotlib.pyplot as plt\nfig, ax = plt.subplots()\nax.plot(prices.index, prices['Close'])\nax.set(xlabel='Date', ylabel='Close', title='Close price')\nplt.show()\n","assert len(s['ax'].lines)==1 and len(s['ax'].lines[0].get_ydata())==401\nassert s['ax'].get_ylabel()=='Close'",
+    hint="막대 대신 `ax.plot(x, y)`를 쓰면 점을 선으로 이어 그립니다. x에는 날짜 인덱스 `prices.index`, y에는 `prices['Close']`를 넣으세요.",markdown=True),
+coding('price-range','기간과 최고 종가',"첫 날짜를 `first_date`, 마지막 날짜를 `last_date`에 저장하세요. 최고 종가를 `max_close`, 그 날짜를 `max_date`에 저장하고 모두 출력하세요. `idxmax()`는 최댓값의 인덱스(날짜)를 돌려줍니다.",ST+"# first_date, last_date, max_close, max_date를 만들고 출력하세요\n",ST+"first_date = prices.index.min()\nlast_date = prices.index.max()\nmax_close = prices['Close'].max()\nmax_date = prices['Close'].idxmax()\nprint(first_date, last_date)\nprint(max_close, max_date)\n","import pandas as pd\nassert s['first_date']==pd.Timestamp('2025-01-13') and s['last_date']==pd.Timestamp('2026-09-04')\nassert s['max_close']==362500 and s['max_date']==pd.Timestamp('2026-06-18')",
+    hint="날짜 인덱스의 `min()`·`max()`가 기간의 양 끝입니다. 종가 열의 `.max()`는 값, `.idxmax()`는 그 값이 있는 날짜입니다.",markdown=True))
+extend_quiz('stock-data','stock-data-check',
+short('최댓값이 있는 위치(날짜)를 돌려주는 메서드는?',['idxmax','idxmax()'],'`max()`는 값, `idxmax()`는 그 값의 인덱스입니다.'),
+choice('이 수업의 주가 분석 결과를 투자 수익 보장으로 해석하면?',['잘못된 해석 — 가격 오차 비교 실습임','올바름'],0,'저장 자료로 예측 오차를 비교하는 학습이며 투자 조언이 아닙니다.'))
+
+# 3일차 · 2교시 — pct_change 혼자, rolling 혼자
+insert_after('stock-features','lag-target',
+coding('daily-return','하루 수익률 계산',"`prices['Close'].pct_change()`를 `return_1` 열로 추가하세요. 첫 행은 비어 있고(이전 값 없음), 둘째 행은 (53900 − 54100) / 54100 ≈ −0.0037입니다. `prices.head()`로 확인하세요.",ST+"# return_1 열을 만들고 head()를 확인하세요\n",ST+"prices['return_1'] = prices['Close'].pct_change()\nprices.head()\n","import pandas as pd\nassert pd.isna(s['prices']['return_1'].iloc[0])\nassert abs(s['prices']['return_1'].iloc[1]-(53900/54100-1))<1e-12",
+    hint="`pct_change()`는 (현재 − 이전) / 이전을 행마다 계산합니다. 새 열은 `prices['return_1'] = ...`처럼 대괄호에 새 이름을 적어 추가합니다.",markdown=True),
+coding('moving-average','5거래일 이동평균',"`prices['Close'].rolling(5).mean()`을 `ma5` 열로 추가하세요. 처음 4행은 값이 부족해 비어 있고, 다섯째 행은 첫 5개 종가의 평균 53940입니다. `prices.head(6)`으로 확인하세요.",ST+"# ma5 열을 만들고 head(6)을 확인하세요\n",ST+"prices['ma5'] = prices['Close'].rolling(5).mean()\nprices.head(6)\n","assert s['prices']['ma5'].iloc[:4].isna().all()\nassert s['prices']['ma5'].iloc[4]==53940\nassert s['prices']['ma5'].isna().sum()==4",
+    hint="`rolling(5)`는 현재 행을 포함한 최근 5행 창을 만들고 `.mean()`이 그 평균을 구합니다. 5개가 안 모인 처음 4행은 `NaN`입니다.",markdown=True))
+extend_quiz('stock-features','feature-time-check',
+choice("`pct_change()`의 첫 행이 `NaN`인 이유는?",['비교할 이전 거래일이 없음','계산 오류'],0,'첫 행에는 이전 값이 없어 변화율을 계산할 수 없습니다.',prompt_markdown=True),
+short("최근 5행 평균을 구하는 표현은? (`Close.________(5).mean()`)",['rolling','rolling(5)'],'`rolling(5)`는 5행 이동 창을 만듭니다.',prompt_markdown=True))
+
+# 3일차 · 3교시 — 경계 날짜 하나, MAE 손계산
+insert_after('stock-split','temporal-boundary',
+coding('test-start','테스트 시작일 정하기',"준비된 `frame`에서 마지막 80개 행의 첫 날짜를 `test_start`에 저장하세요(`frame.index[-80]`). 입력 날짜가 `test_start` 이상인 행 수를 `n_test`에 저장해 80인지 출력하세요.",ST_FRAME+"# test_start, n_test를 만들고 출력하세요\n",ST_FRAME+"test_start = frame.index[-80]\nn_test = int((frame.index >= test_start).sum())\nprint(test_start, n_test)\n","assert s['test_start']==s['frame'].index[-80] and s['n_test']==80",
+    hint="`frame.index[-80]`은 뒤에서 80번째 날짜입니다. `frame.index >= test_start`는 날짜마다 참·거짓이고 `.sum()`이 참의 개수를 셉니다.",markdown=True))
+insert_after('stock-split','time-boundary',
+coding('manual-mae','절대 오차 평균 손계산',"준비된 시간 분리에서 기준 예측(오늘 종가 `X_test['close']`)과 실제 다음 종가 `y_test`의 차이를 구하세요. `errors`에 절대 오차 `(y_test - X_test['close']).abs()`를, `manual_mae`에 그 평균을 저장하고 출력하세요. 다음 미션에서 `mean_absolute_error`와 같은 값인지 비교합니다.",ST_FRAME+TIME_SPLIT+"# errors, manual_mae를 만들고 출력하세요\n",ST_FRAME+TIME_SPLIT+"errors = (y_test - X_test['close']).abs()\nmanual_mae = errors.mean()\nprint(manual_mae)\n","import numpy as np\nassert len(s['errors'])==80 and (s['errors']>=0).all()\nassert abs(s['manual_mae']-float(np.abs(s['y_test'].to_numpy()-s['X_test']['close'].to_numpy()).mean()))<1e-8",
+    hint="오차는 실제값 − 예측값입니다. 부호를 없애려면 `.abs()`, 평균은 `.mean()`입니다. MAE는 이 두 단계를 이름 붙인 것일 뿐입니다.",markdown=True))
+extend_quiz('stock-split','temporal-check',
+choice('MAE가 1500이라는 뜻은?',['예측이 평균적으로 약 1500원 벗어남','정확도 15%'],0,'MAE는 정답과 같은 단위(원)의 평균 절대 오차입니다.'),
+short("마지막 80행의 첫 날짜를 고르는 표현은? (`frame.index[___]`)",['-80'],'음수 인덱스 `-80`은 뒤에서 80번째입니다.',prompt_markdown=True))
+
+# 3일차 · 4교시 — 회귀 하나 → 비교표, 기준 대비 판정 → 그림
+insert_after('regression-project','regression-metrics',
+coding('linear-only','선형 회귀 하나만 먼저',"`StandardScaler()`와 `LinearRegression()`을 `Pipeline`으로 묶어 `model`에 학습하세요. 테스트 예측을 `prediction`, MAE를 `linear_mae`에 저장하고 출력하세요. 학습된 계수는 `model.named_steps['model'].coef_`로 볼 수 있으며 입력 4개에 대응하는 4개 값입니다.",ST_FRAME+TIME_SPLIT+REG+"# model, prediction, linear_mae를 만들고 출력하세요\n",ST_FRAME+TIME_SPLIT+REG+"model = Pipeline([('scale', StandardScaler()), ('model', LinearRegression())])\nmodel.fit(X_train, y_train)\nprediction = model.predict(X_test)\nlinear_mae = mean_absolute_error(y_test, prediction)\nprint(linear_mae)\nprint(model.named_steps['model'].coef_)\n","import numpy as np\nassert len(s['prediction'])==80 and np.isfinite(s['linear_mae'])\nassert len(s['model'].named_steps['model'].coef_)==4\nassert abs(s['linear_mae']-float(np.abs(s['y_test'].to_numpy()-s['prediction']).mean()))<1e-8",
+    hint="분류에서 쓴 흐름과 같습니다: `Pipeline([('scale', StandardScaler()), ('model', LinearRegression())])` → `fit(X_train, y_train)` → `predict(X_test)`. 회귀에서는 정확도 대신 `mean_absolute_error(y_test, prediction)`으로 오차를 봅니다.",markdown=True))
+insert_after('regression-project','midpoint',
+coding('beat-baseline','기준보다 나아졌는지 판정',"준비된 분리에서 기준 예측 MAE를 `baseline_mae`, `Ridge(alpha=1)` Pipeline의 MAE를 `ridge_mae`에 저장하세요. `improved`에는 `ridge_mae < baseline_mae`의 결과(True/False)를 저장하고 세 값을 출력하세요. 결과가 어떻든 사실대로 보고하는 것이 목표입니다.",ST_FRAME+TIME_SPLIT+REG+"# baseline_mae, ridge_mae, improved를 만들고 출력하세요\n",ST_FRAME+TIME_SPLIT+REG+"baseline_mae = mean_absolute_error(y_test, X_test['close'])\nridge = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))])\nridge.fit(X_train, y_train)\nridge_mae = mean_absolute_error(y_test, ridge.predict(X_test))\nimproved = bool(ridge_mae < baseline_mae)\nprint(baseline_mae, ridge_mae, improved)\n","import numpy as np\nassert abs(s['baseline_mae']-float(np.abs(s['y_test'].to_numpy()-s['X_test']['close'].to_numpy()).mean()))<1e-8\nassert np.isfinite(s['ridge_mae'])\nassert s['improved']==(s['ridge_mae']<s['baseline_mae'])",
+    hint="기준 MAE는 `mean_absolute_error(y_test, X_test['close'])`입니다. Ridge는 `Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))])`로 학습·예측해 MAE를 구하세요. `improved = ridge_mae < baseline_mae`는 비교 결과 참·거짓을 저장합니다.",markdown=True))
+extend_quiz('regression-project','final-check',
+choice('Ridge MAE 1800, 기준 MAE 1500이면 보고서에 쓸 문장은?',['이 기간에서 Ridge는 기준 예측보다 오차가 커 개선하지 못했다','Ridge가 더 복잡하니 더 좋다'],0,'같은 기간·같은 정답에서 숫자를 그대로 비교해 보고합니다.'),
+short('회귀 모델이 학습한 입력별 가중치를 보는 속성은? (`model.____`)',['coef_','coef'],'`coef_`는 입력 열마다 하나씩, 표준화된 입력 기준의 계수입니다.',prompt_markdown=True))
+
 for unit_id in ['insight','credit-metrics']:
     activities=by_unit[unit_id]['activities']
     introduction=activities.pop(0)
     first_problem=next(a['problem'] for a in activities if a['kind']=='coding')
     first_problem['content']='### 문제에서 필요한 설명\n\n'+introduction['body']+'\n\n'+first_problem['content']
-by_unit['regression-project']['activities'].insert(2, quiz('midpoint','모델 비교 중간 확인',
-    choice('같은 테스트 기간에서 비교해야 할 것은?',['모델과 기준 예측','서로 다른 날짜의 점수'],0,'평가 자료가 같아야 비교할 수 있습니다.'),
-    short('평균 절대 오차의 약어는?',['MAE','mean absolute error'],'MAE가 작을수록 가격 오차가 작습니다.')))
-for unit_id in ['environment','preprocessing','insight','credit-metrics','regression-project','control']:
-    by_unit[unit_id]['revision']=2
+# Every unit gained stepping-stone missions, so saved progress for the old sequence is stale.
+for u in by_unit.values():
+    u['revision']=3
 
 course=dict(id='kpc-finance-2026',title='KPC · 머신러닝을 활용한 금융데이터 분석',description='3일 · 20시간 · 7챕터. 개념을 확인하고 독립된 main.py 미션과 퀴즈를 클리어하세요.',chapters=chapters)
 (ROOT/'courses/kpc-finance.json').write_text(json.dumps(course,ensure_ascii=False,indent=2),encoding='utf-8')
 (ROOT/'courses/kpc-solutions.json').write_text(json.dumps(solutions,ensure_ascii=False,indent=2),encoding='utf-8')
 units=[u for c in chapters for u in c['units']]
-print(f'{len(chapters)} chapters, {len(units)} units, {sum(len(u["activities"]) for u in units)} missions, {len(solutions)} coding problems')
+
+# Keep the unit table in docs/kpc-course.md in step with the generated course.
+def table_rows():
+    for c in chapters:
+        for u in c['units']:
+            kinds=[a['kind'] for a in u['activities']]
+            questions=sum(len(a['questions']) for a in u['activities'] if a['kind']=='quiz')
+            yield f"| {c['title']} | {u['title']} | {kinds.count('concept')} | {kinds.count('coding')} | {questions} |"
+doc=ROOT/'docs/kpc-course.md'
+lines=doc.read_text(encoding='utf-8').splitlines()
+start=next(i for i,l in enumerate(lines) if l.startswith('| 챕터 |'))
+end=start
+while end<len(lines) and lines[end].startswith('|'):
+    end+=1
+lines[start:end]=[lines[start],lines[start+1],*table_rows()]
+doc.write_text('\n'.join(lines)+'\n',encoding='utf-8')
+
+print(f'{len(chapters)} chapters, {len(units)} units, {sum(len(u["activities"]) for u in units)} missions, {len(solutions)} coding problems, {sum(len(a["questions"]) for u in units for a in u["activities"] if a["kind"]=="quiz")} quiz questions')
