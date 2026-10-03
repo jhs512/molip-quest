@@ -136,7 +136,7 @@ textarea[data-code-editor][hidden] { display: none; }
 .markdown .tok-operator { color: #89dceb; }
 .question-heading { font-size: 18px; font-weight: 700; }
 .quiz-option .markdown p { margin: 0; }
-.mission-strip { padding: 18px 22px; padding-right: 340px; background: #192b3a; border-bottom: 1px solid #496073; }
+.mission-strip { padding: 18px 22px; padding-right: 130px; background: #192b3a; border-bottom: 1px solid #496073; }
 .mission-heading, .mission-controls { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .mission-strip progress { margin: 10px 0; height: 8px; accent-color: #63dbb6; }
 .curriculum-menu .curriculum-missions { padding: 0 0 12px 16px; }
