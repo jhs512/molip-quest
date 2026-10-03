@@ -20,7 +20,7 @@ use uuid::Uuid;
 
 #[derive(Clone)]
 pub struct AppState {
-    pool: AnyPool,
+    pub(crate) pool: AnyPool,
 }
 
 #[derive(Clone, Serialize, Deserialize, PartialEq)]
@@ -47,16 +47,16 @@ impl From<sqlx::Error> for ApiError {
     }
 }
 type ApiResult<T> = Result<Json<T>, ApiError>;
-fn reject(status: StatusCode, message: &str) -> ApiError {
+pub(crate) fn reject(status: StatusCode, message: &str) -> ApiError {
     ApiError(status, message.into())
 }
-fn now() -> i64 {
+pub(crate) fn now() -> i64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap_or_default()
         .as_secs() as i64
 }
-fn token_hash(token: &str) -> String {
+pub(crate) fn token_hash(token: &str) -> String {
     format!("{:x}", Sha256::digest(token.as_bytes()))
 }
 fn identifier() -> String {
@@ -73,6 +73,7 @@ impl AppState {
         for statement in [
             "CREATE TABLE IF NOT EXISTS users (id TEXT PRIMARY KEY, email TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, role TEXT NOT NULL)",
             "CREATE TABLE IF NOT EXISTS sessions (token_hash TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id), expires_at BIGINT NOT NULL)",
+            "CREATE TABLE IF NOT EXISTS github_logins (ticket_hash TEXT PRIMARY KEY, device_code TEXT NOT NULL, expires_at BIGINT NOT NULL, next_poll BIGINT NOT NULL, interval_seconds BIGINT NOT NULL)",
             "CREATE TABLE IF NOT EXISTS classrooms (id TEXT PRIMARY KEY, title TEXT NOT NULL, instructor_id TEXT NOT NULL REFERENCES users(id), invite TEXT NOT NULL UNIQUE)",
             "CREATE TABLE IF NOT EXISTS memberships (classroom_id TEXT NOT NULL REFERENCES classrooms(id), student_id TEXT NOT NULL REFERENCES users(id), PRIMARY KEY(classroom_id,student_id))",
             "CREATE TABLE IF NOT EXISTS courses (id TEXT PRIMARY KEY, author_id TEXT NOT NULL REFERENCES users(id), document TEXT NOT NULL)",
@@ -138,6 +139,8 @@ pub fn router(state: AppState) -> Router {
         )
         .route("/api/register", post(register))
         .route("/api/login", post(login))
+        .route("/api/github/start", post(crate::github::start))
+        .route("/api/github/poll", post(crate::github::poll))
         .route("/api/logout", post(logout))
         .route("/api/me", get(me))
         .route(
@@ -165,6 +168,7 @@ impl Credentials {
     fn validate(&self) -> Result<String, ApiError> {
         let email = self.email.trim().to_lowercase();
         if !email.contains('@')
+            || email.ends_with("@github.local")
             || email.len() > 254
             || self.password.len() < 12
             || self.password.len() > 256

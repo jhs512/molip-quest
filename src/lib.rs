@@ -3,7 +3,9 @@ use serde::{Deserialize, Serialize};
 use std::{collections::HashSet, path::Path};
 pub mod ai;
 pub mod client;
+pub mod doctor;
 pub mod drafts;
+pub mod github;
 pub mod runner;
 pub mod server;
 

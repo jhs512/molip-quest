@@ -57,8 +57,8 @@ try {
         Remove-Item Env:MOLIP_DEMO_EMAIL -ErrorAction SilentlyContinue
         Remove-Item Env:MOLIP_DEMO_PASSWORD -ErrorAction SilentlyContinue
     }
-    $env:MOLIP_DEMO_CLASSROOM = if ($Admin) {''} else {$classroom.id}
-    $env:MOLIP_DEMO_COURSE = if ($Instructor -or $Admin) {''} else {$course.id}
+    $env:MOLIP_DEMO_CLASSROOM = if ($Admin -or $Login) {''} else {$classroom.id}
+    $env:MOLIP_DEMO_COURSE = if ($Instructor -or $Admin -or $Login) {''} else {$course.id}
     $app = Start-Process -FilePath (Join-Path $demoBin 'molip-quest.exe') -WorkingDirectory $projectRoot -RedirectStandardOutput (Join-Path $demoRoot 'app.log') -RedirectStandardError (Join-Path $demoRoot 'app-error.log') -PassThru
     $app.Id | Set-Content (Join-Path $demoRoot 'app.pid')
     Write-Output "Demo app launched. Process: $($app.Id). Mode: $(if ($Admin) {'admin'} elseif ($Instructor) {'instructor'} else {'student'})."

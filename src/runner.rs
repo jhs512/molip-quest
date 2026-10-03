@@ -31,6 +31,69 @@ pub struct Execution {
     pub stderr: String,
     pub success: bool,
     pub state: String,
+    #[serde(default)]
+    pub artifacts: Vec<Artifact>,
+}
+#[derive(Clone, Serialize, Deserialize, PartialEq)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum Artifact {
+    Table {
+        title: String,
+        columns: Vec<String>,
+        rows: Vec<Vec<String>>,
+        total_rows: usize,
+        total_columns: usize,
+    },
+    Image {
+        title: String,
+        data_url: String,
+    },
+}
+
+pub fn python_executable() -> String {
+    std::env::var("MOLIP_PYTHON").unwrap_or_else(|_| {
+        let local = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(if cfg!(windows) {
+            "target/ml-env/Scripts/python.exe"
+        } else {
+            "target/ml-env/bin/python"
+        });
+        if cfg!(debug_assertions) && local.is_file() {
+            local.to_string_lossy().into_owned()
+        } else if cfg!(windows) {
+            "python".into()
+        } else {
+            "python3".into()
+        }
+    })
+}
+
+fn read_artifacts(directory: &std::path::Path) -> Vec<Artifact> {
+    let path = directory.join("rich_results.json");
+    if !path.metadata().is_ok_and(|m| m.len() <= 8_000_000) {
+        return vec![];
+    }
+    let Some(items) = std::fs::read(path)
+        .ok()
+        .and_then(|bytes| serde_json::from_slice::<Vec<Artifact>>(&bytes).ok())
+    else {
+        return vec![];
+    };
+    items
+        .into_iter()
+        .take(14)
+        .filter(|item| match item {
+            Artifact::Table { columns, rows, .. } => {
+                columns.len() <= 31
+                    && rows.len() <= 100
+                    && rows
+                        .iter()
+                        .all(|row| row.len() <= 31 && row.iter().all(|s| s.len() <= 3000))
+            }
+            Artifact::Image { data_url, .. } => {
+                data_url.starts_with("data:image/png;base64,") && data_url.len() <= 2_700_000
+            }
+        })
+        .collect()
 }
 #[derive(Clone, Serialize, Deserialize)]
 pub struct TestCaseResult {
@@ -67,16 +130,14 @@ async fn execute_python(
     }
     let directory = tempfile::tempdir().map_err(|e| e.to_string())?;
     std::fs::write(directory.path().join("main.py"), code).map_err(|e| e.to_string())?;
-    let executable = std::env::var("MOLIP_PYTHON").unwrap_or_else(|_| {
-        if cfg!(windows) {
-            "python".into()
-        } else {
-            "python3".into()
-        }
-    });
+    let executable = python_executable();
     let mut command = Command::new(executable);
     command
         .arg("-I")
+        // Pipes must use the same encoding as the UTF-8 input/output below.
+        // -I ignores PYTHON* environment variables, so set this via -X.
+        .arg("-X")
+        .arg("utf8")
         .arg("-u")
         .current_dir(directory.path())
         .stdin(Stdio::piped())
@@ -92,7 +153,12 @@ async fn execute_python(
             .arg("check_runner.py")
             .arg(directory.path().join("main.py"));
     } else {
-        command.arg("main.py");
+        std::fs::write(
+            directory.path().join("rich_runner.py"),
+            include_str!("../assets/python/rich_runner.py"),
+        )
+        .map_err(|e| e.to_string())?;
+        command.arg("rich_runner.py");
     }
     #[cfg(windows)]
     command.creation_flags(0x08000000);
@@ -120,10 +186,11 @@ async fn execute_python(
         )?;
         Ok::<_, std::io::Error>((stdout, stderr, status))
     };
-    match tokio::time::timeout(Duration::from_secs(5), collected).await {
+    match tokio::time::timeout(Duration::from_secs(60), collected).await {
         Ok(Ok((stdout, stderr, status))) => {
             let limited = stdout.len() as u64 > OUTPUT_LIMIT || stderr.len() as u64 > OUTPUT_LIMIT;
             Ok(Execution {
+                artifacts: read_artifacts(directory.path()),
                 stdout: String::from_utf8_lossy(&stdout[..stdout.len().min(OUTPUT_LIMIT as usize)])
                     .replace("\r\n", "\n"),
                 stderr: String::from_utf8_lossy(&stderr[..stderr.len().min(OUTPUT_LIMIT as usize)])
@@ -150,8 +217,9 @@ async fn execute_python(
         Err(_) => {
             let _ = child.kill().await;
             Ok(Execution {
+                artifacts: vec![],
                 stdout: String::new(),
-                stderr: "실행 시간 제한 5초를 초과했습니다.".into(),
+                stderr: "실행 시간 제한 60초를 초과했습니다.".into(),
                 success: false,
                 state: "timeout".into(),
             })

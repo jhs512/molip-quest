@@ -1,5 +1,6 @@
 # Rust build output
 /target/
+/assets/editor/node_modules/
 
 # Local environment and credentials
 .env

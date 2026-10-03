@@ -2,6 +2,7 @@ use molip_quest::server::{router, AppState};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    dotenvy::dotenv().ok();
     let database = std::env::var("DATABASE_URL")
         .unwrap_or_else(|_| "sqlite://molip-server.sqlite3?mode=rwc".into());
     let state = AppState::connect(&database).await?;

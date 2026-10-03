@@ -3062,6 +3062,7 @@ dependencies = [
  "axum",
  "dioxus",
  "directories",
+ "dotenvy",
  "reqwest",
  "rusqlite",
  "serde",
