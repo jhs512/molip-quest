@@ -275,3 +275,7 @@ body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { poi
   .practice-shell .lesson, .practice-shell .mission-strip ~ .lesson { flex: 1; min-height: 0; height: auto; }
   .practice-shell .concept-flow, .practice-shell .reading-mission { flex: none; }
 }
+
+/* "one input → one output" pictures from ```mapping fences. */
+.diagram-strip { margin: 20px 0; padding: 0; }
+.diagram-strip svg { display: block; width: 100%; max-width: 720px; height: auto; margin: 0 auto; background: #0f1d28; border: 1px solid #405970; border-radius: 8px; }
