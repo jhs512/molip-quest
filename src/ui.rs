@@ -1,6 +1,5 @@
 use dioxus::prelude::*;
 use molip_quest::{
-    ai::AiConnection,
     drafts,
     runner::{assemble, check_unit, run_python, Artifact},
     Course, Unit,
@@ -83,7 +82,6 @@ fn UnitWorkspace(course_id: String, unit: Unit, oncompleted: EventHandler<()>) -
     rsx! {article{class:"lesson",
         section{class:"problem-pane",h2{"{unit.title}"}h3{"문제 설명"}p{class:"content","{unit.content}"}
             if !unit.blanks.is_empty(){p{class:"blank-note","코드의 빈칸만 채워보세요. 나머지 코드는 수정하지 않습니다."}}
-            div{class:"lesson-ai",h3{"AI와 함께 풀기"}AiPanel{unit:unit.clone(),code,answers,input,output,artifacts,busy,draft_key:key.clone()}}
         }
         section{class:"coding-pane",div{class:"pane-heading",strong{"main.py"}span{"Python"}}
         div{class:"editor-pane",
@@ -108,35 +106,6 @@ fn UnitWorkspace(course_id: String, unit: Unit, oncompleted: EventHandler<()>) -
                 }}busy.set(false);
             }}},"테스트 · 완료"}
         }
-    }}
-}
-
-#[component]
-fn AiPanel(
-    unit: Unit,
-    mut code: Signal<String>,
-    mut answers: Signal<HashMap<String, String>>,
-    input: Signal<String>,
-    mut output: Signal<String>,
-    mut artifacts: Signal<Vec<Artifact>>,
-    mut busy: Signal<bool>,
-    draft_key: String,
-) -> Element {
-    let mut connection = use_signal(AiConnection::default);
-    let mut question = use_signal(String::new);
-    let mut reply = use_signal(String::new);
-    rsx! {section{class:"ai-panel",h3{"나의 AI 도구"}details{summary{"연결 설정과 준비 안내"}
-        p{class:"muted","기본 연결은 설치·로그인한 Claude Code입니다. claude-cli를 그대로 사용하세요. 필요하면 OmniRoute 등의 OpenAI 호환 주소로 바꿀 수 있습니다. 비용과 한도는 연결 계정의 조건을 따릅니다."}
-        label{"연결 방식 또는 주소" input{value:connection.read().base.clone(),oninput:move|e|connection.write().base=e.value()}}
-        label{"모델" input{value:connection.read().model.clone(),oninput:move|e|connection.write().model=e.value()}}
-        label{"연결 키 (필요한 경우)" input{r#type:"password",value:connection.read().key.clone(),oninput:move|e|connection.write().key=e.value()}}
-    }textarea{placeholder:"AI에게 질문하거나 수정할 내용을 입력하세요",value:question(),oninput:move|e|question.set(e.value())}
-        div{class:"actions",
-            button{disabled:busy(),onclick:{let unit=unit.clone();move |_|{let unit=unit.clone();async move{busy.set(true);match connection().ask(&unit,&code(),&question(),false).await{Ok(answer)=>reply.set(answer.message),Err(e)=>reply.set(e)}busy.set(false);}}},"설명 · 힌트"}
-            button{disabled:busy(),onclick:{let unit=unit.clone();let key=draft_key.clone();move |_|{let unit=unit.clone();let key=key.clone();async move{busy.set(true);
-                match connection().ask(&unit,&code(),&question(),true).await{Err(e)=>reply.set(e),Ok(answer)=>{reply.set(answer.message);if let Some(source)=answer.code{code.set(source.clone());if !unit.blanks.is_empty(){answers.set(answer.answers);}if let Err(e)=drafts::save(&key,&source,&answers()){reply.set(e);}artifacts.set(vec![]);match run_python(&source,&input()).await{Ok(result)=>{artifacts.set(result.artifacts);output.set(format!("{}\n{}\n{}",result.stdout,result.stderr,if result.success {"실행 완료"} else {"실행 실패"}));},Err(e)=>output.set(e)}}}}busy.set(false);
-            }}},"AI 수정 · 실행"}
-        }p{class:"content","{reply}"}
     }}
 }
 
@@ -167,7 +136,7 @@ pub fn DoctorPanel() -> Element {
     }, "환경 진단" }
     if open() { div { class:"doctor-backdrop", section { class:"doctor-panel", role:"dialog", aria_label:"학습 환경 진단",
         h2 { "학습 환경 진단" }
-        p { "Python과 실습 패키지, Claude 설치·로그인 상태를 확인합니다." }
+        p { "Python과 실습 패키지 설치 상태를 확인합니다." }
         if busy() { p { role:"status", "검사 중입니다…" } }
         for check in checks() { div { class:if check.ready {"doctor-check ready"} else {"doctor-check missing"},
             strong { if check.ready {"✓ "} else {"! "} "{check.name}" } p { "{check.detail}" }

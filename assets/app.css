@@ -14,7 +14,6 @@ button:disabled { opacity: .55; cursor: wait; }
 .author-editor { min-height: 550px; }
 pre { white-space: pre-wrap; overflow-wrap: anywhere; padding: 16px; background: #f3f6f3; border-radius: 10px; font-family: Consolas, Menlo, monospace; }
 .output { background: #18332c; color: #e7f3e9; min-height: 60px; }
-.ai-panel { border-top: 1px solid #dde5df; margin-top: 28px; padding-top: 14px; }
 summary { cursor: pointer; line-height: 1.7; }
 button { font: inherit; cursor: pointer; border: 0; border-radius: 9px; padding: 12px 16px; }
 button:focus-visible { outline: 3px solid #79b5a6; outline-offset: 3px; }
@@ -42,7 +41,6 @@ progress { width: 100%; height: 14px; accent-color: #2c7662; margin: 12px 0 32px
 .unit { display: block; width: 100%; text-align: left; background: transparent; color: #4c6058; margin-bottom: 6px; }
 .unit.selected { background: #e9f2ec; color: #174938; font-weight: 650; }
 .content { line-height: 1.9; white-space: pre-wrap; margin: 24px 0; }
-.ai-note { background: #f5f6ee; border-radius: 10px; padding: 16px; font-size: 13px; line-height: 1.7; color: #657054; margin: 28px 0; }
 .primary { background: #236b55; color: white; }
 .error { color: #a12828; }
 .student-row { display: flex; justify-content: space-between; gap: 16px; border-block: 1px solid #e3e8e4; padding: 20px 0; margin: 24px 0; }
@@ -87,9 +85,6 @@ progress { width: 100%; height: 14px; accent-color: #2c7662; margin: 12px 0 32px
 .execution-status { color: #89d7b4; font-size: 14px; }
 .practice-actions { grid-column: 1 / -1; margin: 0; padding: 12px 20px; justify-content: flex-end; align-items: center; border-top: 1px solid #142633; background: #263747; }
 .practice-shell .primary { background: #087cf0; }
-.lesson-ai { margin-top: 32px; border-top: 1px solid #4c6478; padding-top: 18px; }
-.lesson-ai .ai-panel { margin-top: 10px; border: 0; padding: 0; }
-.lesson-ai .muted { color: #afc5d5; }
 .blank-note { color: #9cb5ca; background: #202d3e; padding: 16px; font-size: 14px; line-height: 1.8; }
 @media (max-width: 760px) { .practice-header { padding-left: 140px; } .practice-header span, .practice-header button { display: none; } .lesson { height: auto; min-height: calc(100vh - 62px); grid-template-columns: 1fr; grid-template-rows: auto auto 65px; } .problem-pane { padding-top: 64px; } .coding-pane { height: 640px; } .practice-actions { position: sticky; bottom: 0; } .curriculum-menu { left: 20px; right: auto; } }
 .python-editor-host { height: 100%; min-height: 180px; }

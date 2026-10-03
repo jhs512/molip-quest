@@ -1,7 +1,6 @@
 use rusqlite::{params, Connection};
 use serde::{Deserialize, Serialize};
 use std::{collections::HashSet, path::Path};
-pub mod ai;
 pub mod doctor;
 pub mod drafts;
 pub mod learning_store;

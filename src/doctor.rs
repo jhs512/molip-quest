@@ -60,43 +60,5 @@ pub async fn inspect() -> Vec<Check> {
                 .unwrap_or_else(|| "선택한 Python 환경에 패키지를 설치하세요.".into()),
         });
     }
-    checks.extend(inspect_ai().await);
-    checks
-}
-
-pub async fn inspect_ai() -> Vec<Check> {
-    let mut checks = Vec::new();
-    let claude = std::env::var("MOLIP_CLAUDE_PATH").unwrap_or_else(|_| "claude".into());
-    let installed = probe(&claude, &["--version"]).await.is_some();
-    checks.push(Check {
-        name: "Claude Code CLI".into(),
-        ready: installed,
-        detail: if installed {
-            "실행할 수 있습니다."
-        } else {
-            "Claude Code를 설치하거나 실행 경로를 설정하세요."
-        }
-        .into(),
-    });
-    let auth = if installed {
-        probe(&claude, &["auth", "status", "--json"])
-            .await
-            .and_then(|out| serde_json::from_slice::<serde_json::Value>(&out).ok())
-    } else {
-        None
-    };
-    let logged_in = auth
-        .as_ref()
-        .is_some_and(|v| v["loggedIn"].as_bool() == Some(true));
-    checks.push(Check {
-        name: "Claude 로그인".into(),
-        ready: logged_in,
-        detail: if logged_in {
-            "로그인되어 있습니다. 실제 요청은 사용 한도에 따라 달라질 수 있습니다."
-        } else {
-            "Claude Code에서 로그인한 뒤 다시 검사하세요."
-        }
-        .into(),
-    });
     checks
 }

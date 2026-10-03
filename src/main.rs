@@ -60,16 +60,6 @@ fn App() -> Element {
 #[component]
 fn Workspace() -> Element {
     let mut opened = use_signal(|| false);
-    let mut ai_refresh = use_signal(|| 0u64);
-    let ai_checks = use_resource(move || {
-        let _ = ai_refresh();
-        async move { molip_quest::doctor::inspect_ai().await }
-    });
-    let ai_ready = ai_checks
-        .read()
-        .as_ref()
-        .is_some_and(|checks| !checks.is_empty() && checks.iter().all(|check| check.ready));
-
     let course = use_hook(|| {
         let source = if let Ok(path) = std::env::var("MOLIP_COURSE_PATH") {
             std::fs::read_to_string(path).map_err(|e| e.to_string())?
@@ -92,14 +82,7 @@ fn Workspace() -> Element {
                     h1 {"Python 학습 클래스룸"} p {"수업을 선택하고 바로 문제를 풀어보세요."}
                     section {class:"card course-row", h2 {"{course.title}"} p {"{course.description}"}
                         p {{format!("{} 단원",course.total_units())}}
-                        section {class:"ai-requirement", h3 {"AI 연결이 필요합니다"}
-                            p {"설치하고 로그인한 Claude Code로 AI와 함께 학습합니다."}
-                            if let Some(checks)=ai_checks.read().as_ref() {
-                                for check in checks {p {{format!("{} {} · {}",if check.ready {"✓"}else{"!"},check.name,check.detail)}}}
-                            } else {p {"AI 환경을 확인하고 있습니다…"}}
-                            button {onclick:move |_|ai_refresh+=1, "AI 준비 다시 확인"}
-                        }
-                        button {class:"primary",disabled:!ai_ready,onclick:move |_|opened.set(true),"AI와 수업 시작"}
+                        button {class:"primary",onclick:move |_|opened.set(true),"수업 시작"}
                     }
                 }
             }
