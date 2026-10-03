@@ -21,24 +21,18 @@ fn copy_to_clipboard(_text: String) -> Result<(), String> {
     Err("Android 열람 모드에서는 클립보드 복사를 지원하지 않습니다.".into())
 }
 
-/// Sequential unlocking only makes sense when missions are actually solved; the view-only
-/// build opens every unit and mission so students can browse freely.
-fn unlocked_units(course: &Course, completed: &HashSet<String>) -> HashSet<String> {
-    if VIEW_ONLY {
-        return course
-            .chapters
-            .iter()
-            .flat_map(|c| &c.units)
-            .map(|u| u.id.clone())
-            .collect();
-    }
-    molip_quest::curriculum::unlocked_units(course, completed)
+/// Every unit and mission can be opened at any time so students can look ahead; clearing
+/// still requires passing the mission, and progress still decides where a unit resumes.
+fn unlocked_units(course: &Course, _completed: &HashSet<String>) -> HashSet<String> {
+    course
+        .chapters
+        .iter()
+        .flat_map(|c| &c.units)
+        .map(|u| u.id.clone())
+        .collect()
 }
-fn unlocked_activities(unit: &Unit, completed: &HashSet<String>) -> usize {
-    if VIEW_ONLY {
-        return unit.activities.len();
-    }
-    molip_quest::curriculum::unlocked_activities(unit, completed)
+fn unlocked_activities(unit: &Unit, _completed: &HashSet<String>) -> usize {
+    unit.activities.len()
 }
 
 fn mission_progress<'a>(
@@ -104,14 +98,11 @@ pub fn Learning(course: Course) -> Element {
     let following_id = units.get(position + 1).map(|u| u.id.clone());
     let active_unlocked = unlocked_activities(&active, &completed_items);
     let active_total = active.activities.len();
-    // Desktop resumes at the frontier (last unlocked mission); the view-only build, where
-    // everything is unlocked, must start a unit at its first mission or "다음" would skip the unit.
+    // A unit resumes at its first mission that is not cleared yet.
     let active_mission = if mission_index() == usize::MAX {
-        if VIEW_ONLY {
-            0
-        } else {
-            active_unlocked.saturating_sub(1)
-        }
+        molip_quest::curriculum::unlocked_activities(&active, &completed_items)
+            .saturating_sub(1)
+            .min(active_unlocked.saturating_sub(1))
     } else {
         mission_index().min(active_unlocked.saturating_sub(1))
     };
@@ -370,6 +361,8 @@ fn UnitWorkspace(course_id: String, unit: Unit, oncompleted: EventHandler<bool>)
         })
         .collect();
     let mut guide_open = use_signal(|| false);
+    // Copy feedback lives next to the prompt buttons, not in the run-result status line.
+    let mut prompt_note = use_signal(String::new);
     rsx! {article{class:"lesson",
         if guide_open() {PromptGuide {unit:unit.clone(),code:code(),onclose:move |_|guide_open.set(false)}}
         section{class:"problem-pane",h2{"{unit.title}"}h3{"문제 설명"}Markdown {text:unit.content.clone()}
@@ -377,19 +370,20 @@ fn UnitWorkspace(course_id: String, unit: Unit, oncompleted: EventHandler<bool>)
                 button {class:"prompt-copy",onclick:{let unit=unit.clone();move |_|{
                     let prompt=molip_quest::curriculum::answer_prompt(&unit,&code());
                     match copy_to_clipboard(prompt) {
-                        Ok(())=>message.set("인간 버전 프롬프트를 복사했습니다. 원하는 AI에 붙여넣고, 받은 main.py 코드를 편집기에 넣으세요.".into()),
-                        Err(e)=>message.set(format!("클립보드 복사에 실패했습니다: {e}"))
+                        Ok(())=>prompt_note.set("인간 버전을 복사했습니다. AI에 붙여넣고, 받은 코드를 편집기에 넣으세요.".into()),
+                        Err(e)=>prompt_note.set(format!("클립보드 복사에 실패했습니다: {e}"))
                     }
                 }},"프롬프트 복사 · 인간 버전"}
                 button {class:"prompt-copy",onclick:{let unit=unit.clone();move |_|{
                     let prompt=molip_quest::curriculum::machine_prompt(&unit,&code());
                     match copy_to_clipboard(prompt) {
-                        Ok(())=>message.set("기계 버전 프롬프트를 복사했습니다. 원하는 AI에 붙여넣고, 받은 main.py 코드를 편집기에 넣으세요.".into()),
-                        Err(e)=>message.set(format!("클립보드 복사에 실패했습니다: {e}"))
+                        Ok(())=>prompt_note.set("기계 버전을 복사했습니다. AI에 붙여넣고, 받은 코드를 편집기에 넣으세요.".into()),
+                        Err(e)=>prompt_note.set(format!("클립보드 복사에 실패했습니다: {e}"))
                     }
                 }},"프롬프트 복사 · 기계 버전"}
                 button {class:"prompt-guide-open",onclick:move |_|guide_open.set(true),"프롬프트 해설"}
             }
+            if !prompt_note().is_empty() {p {class:"prompt-note",role:"status","{prompt_note}"}}
 
             if !unit.blanks.is_empty(){p{class:"blank-note","코드의 빈칸만 채워보세요. 나머지 코드는 수정하지 않습니다."}}
         }

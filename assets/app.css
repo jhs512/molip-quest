@@ -243,3 +243,5 @@ body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { poi
 
 .prompt-guide-note { margin: 0 0 10px; font-size: 13px; color: #9ab0c2; }
 .prompt-guide-text .markdown pre { background: #16283a; border-color: #4f6b84; font-size: 15px; }
+
+.prompt-note { margin: 10px 0 0; font-size: 13px; color: #9fe3c6; }
