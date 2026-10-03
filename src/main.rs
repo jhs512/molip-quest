@@ -85,7 +85,6 @@ fn Login(onlogin: EventHandler<Auth>) -> Element {
     rsx! {main{class:"login card",p{class:"eyebrow","내 컴퓨터에서 배우는 프로그래밍"}h1{"몰입 퀘스트"}
         ui::DoctorPanel {}
         p{class:"muted","로그인하고 클래스룸의 수업을 시작하세요. 인터넷 연결이 필요합니다."}
-        GitHubLogin { onlogin }
         label{"이메일" input{r#type:"email",value:email(),oninput:move|e|email.set(e.value())}}
         label{"비밀번호" input{r#type:"password",value:password(),oninput:move|e|password.set(e.value())}}
         div{class:"actions",
@@ -99,48 +98,6 @@ fn Login(onlogin: EventHandler<Auth>) -> Element {
         }
         p{class:"muted","비밀번호는 12자 이상입니다. 가입 링크로 참여한 클래스룸도 같은 계정으로 로그인하면 표시됩니다."}
         p{role:"status",class:"error","{message}"}
-    }}
-}
-#[component]
-fn GitHubLogin(onlogin: EventHandler<Auth>) -> Element {
-    let mut busy = use_signal(|| false);
-    let mut generation = use_signal(|| 0u64);
-    let mut user_code = use_signal(String::new);
-    let mut message = use_signal(String::new);
-    rsx! {section { class:"github-login",
-        button { disabled:busy(), onclick:move |_| async move {
-            busy.set(true); user_code.set(String::new()); message.set(String::new());
-            generation += 1; let current = generation();
-            let api = Api::new(String::new());
-            let outcome = async {
-                let start = api.post::<Value>("/api/github/start",json!({})).await?;
-                user_code.set(start["user_code"].as_str().unwrap_or_default().into());
-                let ticket = start["ticket"].as_str().unwrap_or_default();
-                let mut interval = start["interval"].as_u64().unwrap_or(5).max(1);
-                let deadline = std::time::Instant::now()+std::time::Duration::from_secs(start["expires_in"].as_u64().unwrap_or(900));
-                while generation() == current && std::time::Instant::now() < deadline {
-                    tokio::time::sleep(std::time::Duration::from_secs(interval)).await;
-                    if generation() != current { return Ok::<_,String>(()); }
-                    let response = api.post::<Value>("/api/github/poll",json!({"ticket":ticket})).await?;
-                    if generation() != current { return Ok(()); }
-                    if response["pending"].as_bool() == Some(true) {
-                        interval = response["interval"].as_u64().unwrap_or(5).max(1);
-                    } else {
-                        let auth = serde_json::from_value::<Auth>(response).map_err(|_| "로그인 응답을 확인해 주세요.".to_string())?;
-                        onlogin.call(auth); return Ok(());
-                    }
-                }
-                Err("인증 시간이 만료되었습니다. 다시 시도해 주세요.".into())
-            }.await;
-            if generation() == current { if let Err(error) = outcome { message.set(error); } busy.set(false); }
-        }, "GitHub로 로그인하기" }
-        if busy() && !user_code().is_empty() {
-            p { "아래 코드를 GitHub 인증 페이지에 입력하고 승인하세요." }
-            code { "{user_code}" }
-            a { href:"https://github.com/login/device", target:"_blank", rel:"noopener noreferrer", "GitHub에서 승인하기 ↗" }
-        }
-        if busy() { button { onclick:move |_| {generation+=1;busy.set(false);user_code.set(String::new());}, "로그인 취소" } }
-        p { role:"status", class:"error", "{message}" }
     }}
 }
 #[component]
