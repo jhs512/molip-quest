@@ -198,17 +198,16 @@ fn progress_unlocks_only_the_next_mission_and_prompt_requests_one_python_file() 
     );
     for required in [
         "main.py",
-        "설명 없이",
-        "Python 파일 하나",
-        "print(0)",
-        "price = 10000",
-        "50000",
+        "코드만",
+        "현재 코드:\nprint(0)",
+        "기본 코드(그대로 두고 이어서):\nprice = 10000",
+        "입력 5 → 출력 50000",
         "수량과 가격",
-        "역할:",
-        "random_state=42",
-        "data/",
     ] {
         assert!(prompt.contains(required), "missing {required}");
+    }
+    for absent in ["역할", "random_state", "data/", "pandas"] {
+        assert!(!prompt.contains(absent), "unexpected {absent}");
     }
     assert!(molip_quest::curriculum::prompt_guide(&problem).contains("## 왜 이 단어들인가"));
 }
@@ -241,32 +240,44 @@ fn every_kpc_coding_problem_has_a_human_prompt_and_a_machine_prompt() {
                         "{}: guide lacks prompt or why",
                         problem.id
                     );
-                    // Machine version: the specification with the chapter's principles.
+                    // Machine version: only what the problem uses, never the checker boilerplate.
                     let machine = machine_prompt(problem, &problem.starter_code);
-                    let expertise = problem.expertise.as_ref().expect("chapter expertise");
-                    for principle in &expertise.principles {
+                    assert!(
+                        machine.starts_with("과제: ") && machine.contains("출력: main.py 하나."),
+                        "{}: machine prompt contract",
+                        problem.id
+                    );
+                    let has_code = problem
+                        .starter_code
+                        .lines()
+                        .any(|l| !l.trim().is_empty() && !l.trim_start().starts_with('#'));
+                    assert_eq!(
+                        machine.contains("기본 코드"),
+                        has_code,
+                        "{}: starter code presence",
+                        problem.id
+                    );
+                    assert_eq!(
+                        machine.contains("채점: 변수"),
+                        problem.checker.is_some(),
+                        "{}: checker variables",
+                        problem.id
+                    );
+                    for absent in ["runpy", "현재 코드", "역할:", "원칙:", "환경:", "### "]
+                    {
                         assert!(
-                            machine.contains(principle.as_str()),
-                            "{}: machine prompt lacks principle",
+                            !machine.contains(absent),
+                            "{}: machine prompt carries {absent}",
                             problem.id
                         );
                     }
-                    assert!(
-                        machine.contains("역할:")
-                            && machine.contains(problem.starter_code.trim_end())
-                    );
-                    assert!(
-                        !machine.contains("runpy") && !machine.contains("현재 코드"),
-                        "{}: machine prompt carries boilerplate",
-                        problem.id
-                    );
                     checked += 1;
                 }
             }
         }
     }
     assert_eq!(checked, 95);
-    // The vocabulary a working analyst uses reaches the student through both versions.
+    // The vocabulary a working analyst uses reaches the student through the human version.
     let stock = course.chapters.last().unwrap().units.last().unwrap();
     let problem = stock
         .activities
@@ -277,9 +288,6 @@ fn every_kpc_coding_problem_has_a_human_prompt_and_a_machine_prompt() {
         })
         .unwrap();
     assert!(answer_prompt(problem, "").contains("temporal split"));
-    for term in ["temporal split", "naive forecast", "MAE·RMSE·R²", "누수"] {
-        assert!(machine_prompt(problem, "").contains(term), "missing {term}");
-    }
 }
 
 #[tokio::test]

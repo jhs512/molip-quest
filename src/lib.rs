@@ -43,23 +43,12 @@ pub struct Unit {
     pub revision: i64,
     #[serde(default)]
     pub reset_completion: bool,
-    /// Chapter-level professional principles that the answer prompt teaches alongside the task.
-    #[serde(default)]
-    pub expertise: Option<Expertise>,
     /// The "human" answer prompt: the few lines a person actually types into an AI for this problem.
     #[serde(default)]
     pub prompt: Option<String>,
     /// Which words in `prompt` carry the expertise and why; shown in the prompt guide.
     #[serde(default)]
     pub prompt_why: Option<String>,
-}
-
-/// What an expert would insist on for this chapter's problems: the `principles` go into the
-/// answer prompt verbatim, `why` explains them in the prompt guide.
-#[derive(Clone, Deserialize, Serialize, PartialEq, Debug)]
-pub struct Expertise {
-    pub principles: Vec<String>,
-    pub why: String,
 }
 
 fn initial_revision() -> i64 {

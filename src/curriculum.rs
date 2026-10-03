@@ -96,75 +96,63 @@ pub fn answer_prompt(unit: &Unit, code: &str) -> String {
     }
 }
 
-/// The "machine" answer prompt: the same request as a compact specification. One line per
-/// item, the chapter's principles, the starter code, the current code only when it differs,
-/// then the acceptance criteria with the checker boilerplate stripped.
+/// The "machine" answer prompt: the request as a minimal specification. Only what this
+/// problem actually uses appears: the task, the output contract, the starter code when it
+/// holds real code, the current code when it differs, the examples, and the checker's
+/// variables and assertions. No role line, no environment boilerplate.
 pub fn machine_prompt(unit: &Unit, code: &str) -> String {
     // Hints are written for people; the specification carries only the task itself.
-    let content = unit
+    let task = unit
         .content
         .split("### 힌트")
         .next()
         .unwrap_or("")
         .replace("### 문제에서 필요한 설명\n\n", "")
         .replace("### 목표\n\n", "");
-    let principles = unit
-        .expertise
-        .as_ref()
-        .map(|e| {
-            e.principles
-                .iter()
-                .map(|p| format!("- {p}"))
-                .collect::<Vec<_>>()
-                .join("\n")
-        })
-        .unwrap_or_else(|| "- 입출력 조건을 그대로 따른다.".into());
+    let task = task
+        .lines()
+        .map(str::trim)
+        .filter(|l| !l.is_empty())
+        .collect::<Vec<_>>()
+        .join("\n");
+    let mut parts = vec![
+        format!("과제: {task}"),
+        "출력: main.py 하나. 설명·코드 펜스 없이 코드만.".to_string(),
+    ];
     let starter = unit.starter_code.trim_end();
+    let has_code = starter
+        .lines()
+        .any(|l| !l.trim().is_empty() && !l.trim_start().starts_with('#'));
+    if has_code {
+        parts.push(format!("기본 코드(그대로 두고 이어서):\n{starter}"));
+    }
     let current = code.trim_end();
-    let current = if current.is_empty() || current == starter {
-        String::new()
-    } else {
-        format!("\n\n현재 코드:\n{current}")
-    };
-    let examples = if unit.tests.is_empty() {
-        String::new()
-    } else {
+    if !current.is_empty() && current != starter {
+        parts.push(format!("현재 코드:\n{current}"));
+    }
+    if !unit.tests.is_empty() {
+        let quote = |s: &str| {
+            let s = s.trim_end();
+            if s.is_empty() {
+                "없음".to_string()
+            } else if s.contains('\n') {
+                format!("{s:?}")
+            } else {
+                s.to_string()
+            }
+        };
         let cases = unit
             .tests
             .iter()
-            .enumerate()
-            .map(|(n, t)| {
-                let input = t.input.trim_end();
-                format!(
-                    "예제 {}: 입력 {} → 출력 {}",
-                    n + 1,
-                    if input.is_empty() {
-                        "(없음)".to_string()
-                    } else {
-                        format!("{input:?}")
-                    },
-                    format!("{:?}", t.expected.trim_end())
-                )
-            })
+            .map(|t| format!("입력 {} → 출력 {}", quote(&t.input), quote(&t.expected)))
             .collect::<Vec<_>>()
             .join("\n");
-        format!("\n\n입출력 예시:\n{cases}")
-    };
-    let check = match unit.checker.as_deref() {
-        Some(checker) => checker_summary(checker),
-        None => "출력을 글자 단위로 비교(공백·줄바꿈·자릿수 포함).".to_string(),
-    };
-    format!(
-        "역할: Python 3·pandas·scikit-learn·matplotlib에 능숙한 금융 데이터 분석가.\n\
-과제: {title}\n{content}\n\n\
-출력: 설명 없이 Python 파일 하나(main.py)의 전체 코드만. 코드 펜스 없음.\n\
-환경: Python 3, pandas, numpy, scikit-learn, matplotlib, seaborn. 자료는 data/ 아래 제공 파일만, 인터넷 금지. 앞 문제의 변수·파일 가정 금지. 난수는 random_state=42. 준비 코드의 변수 이름과 읽는 방식은 그대로.\n\
-원칙:\n{principles}\n\n\
-기본 코드:\n{starter}{current}{examples}\n\n\
-검사: {check}",
-        title = unit.title,
-        content = content.trim(),
-    )
+        parts.push(format!("예시:\n{cases}\n채점: 출력 글자 단위 비교."));
+    }
+    if let Some(checker) = unit.checker.as_deref() {
+        parts.push(format!("채점: {}", checker_summary(checker)));
+    }
+    parts.join("\n")
 }
 
 /// Reduce the checker source to what the AI must satisfy: the result variables it reads and
@@ -180,7 +168,7 @@ fn checker_summary(checker: &str) -> String {
                 .filter(|n| !n.is_empty())
                 .collect();
             if !names.is_empty() {
-                lines.push(format!("결과 변수 {} 를 만든다.", names.join(", ")));
+                lines.push(format!("변수 {}.", names.join(", ")));
             }
         }
     }
@@ -200,7 +188,7 @@ fn checker_summary(checker: &str) -> String {
         }
     }
     if lines.is_empty() {
-        "검사 코드가 결과 변수와 값을 확인한다.".to_string()
+        "검사 코드가 변수 값을 확인.".to_string()
     } else {
         lines.join("\n")
     }
