@@ -104,8 +104,14 @@ pub fn Learning(course: Course) -> Element {
     let following_id = units.get(position + 1).map(|u| u.id.clone());
     let active_unlocked = unlocked_activities(&active, &completed_items);
     let active_total = active.activities.len();
+    // Desktop resumes at the frontier (last unlocked mission); the view-only build, where
+    // everything is unlocked, must start a unit at its first mission or "다음" would skip the unit.
     let active_mission = if mission_index() == usize::MAX {
-        active_unlocked.saturating_sub(1)
+        if VIEW_ONLY {
+            0
+        } else {
+            active_unlocked.saturating_sub(1)
+        }
     } else {
         mission_index().min(active_unlocked.saturating_sub(1))
     };
@@ -200,7 +206,11 @@ fn UnitFlow(
     };
     let unlocked_count = unlocked_activities(&unit, &completed);
     let active_index = if index() == usize::MAX {
-        unlocked_count.saturating_sub(1)
+        if VIEW_ONLY {
+            0
+        } else {
+            unlocked_count.saturating_sub(1)
+        }
     } else {
         index().min(unlocked_count.saturating_sub(1))
     };
