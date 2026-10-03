@@ -5,6 +5,7 @@ use dioxus::prelude::*;
 use molip_quest::Course;
 use ui::Learning;
 
+#[cfg(feature = "desktop")]
 fn main() {
     use dioxus::desktop::muda::{Menu, MenuItem, PredefinedMenuItem, Submenu};
     let menu = Menu::new();
@@ -39,14 +40,24 @@ fn main() {
         )
         .launch(App);
 }
+
+// Mobile builds (Android view-only) have no window menu.
+#[cfg(not(feature = "desktop"))]
+fn main() {
+    dioxus::launch(App);
+}
+
 #[component]
 fn App() -> Element {
-    let window = dioxus::desktop::use_window();
-    dioxus::desktop::use_muda_event_handler(move |event| {
-        if event.id.0 == "quest-fullscreen" {
-            window.set_fullscreen(window.window.fullscreen().is_none());
-        }
-    });
+    #[cfg(feature = "desktop")]
+    {
+        let window = dioxus::desktop::use_window();
+        dioxus::desktop::use_muda_event_handler(move |event| {
+            if event.id.0 == "quest-fullscreen" {
+                window.set_fullscreen(window.window.fullscreen().is_none());
+            }
+        });
+    }
     use_effect(|| {
         document::eval(include_str!("../assets/editor/editor.bundle.js"));
     });
@@ -75,7 +86,9 @@ fn Workspace() -> Element {
             rsx! { main { h1 {"수업을 불러올 수 없습니다."} p {"{error}"} ui::DoctorPanel {} } }
         }
         Ok(course) => rsx! { div { class:if opened() {"shell practice-shell"} else {"shell"},
-            aside { class:"sidebar", div {class:"brand", "몰입 퀘스트"} h3 {"KPC 금융 데이터 분석"} p {"3일 · 20시간 · 7챕터"} ui::DoctorPanel {} }
+            aside { class:"sidebar", div {class:"brand", "몰입 퀘스트"} h3 {"KPC 금융 데이터 분석"} p {"3일 · 20시간 · 7챕터"}
+                if ui::VIEW_ONLY { p {class:"muted","Android 열람 모드 · 개념과 퀴즈를 풀고, 코딩 미션은 읽고 넘어갑니다. 코드 실행·채점은 데스크톱 앱에서 하세요."} }
+                ui::DoctorPanel {} }
             main {
                 if opened() {
                     button {class:"classroom-back", onclick:move |_|opened.set(false), "← 클래스룸"}

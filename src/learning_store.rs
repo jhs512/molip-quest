@@ -64,10 +64,7 @@ impl LearningStore {
         Ok(Self(db))
     }
     pub fn user_store() -> Result<Self, String> {
-        let dirs = directories::ProjectDirs::from("", "MolipQuest", "MolipQuest")
-            .ok_or("저장 위치를 찾을 수 없습니다.")?;
-        std::fs::create_dir_all(dirs.data_local_dir()).map_err(|e| e.to_string())?;
-        Self::open(&dirs.data_local_dir().join("learning.sqlite3"))
+        Self::open(&crate::data_dir()?.join("learning.sqlite3"))
     }
     pub fn save(
         &mut self,

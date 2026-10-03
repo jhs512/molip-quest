@@ -49,6 +49,23 @@ fn initial_revision() -> i64 {
     1
 }
 
+/// Local folder for progress and drafts. Android has no XDG/HOME, so fall back to the
+/// app's own files directory (the package id from Dioxus.toml).
+pub fn data_dir() -> Result<std::path::PathBuf, String> {
+    let dir = directories::ProjectDirs::from("", "MolipQuest", "MolipQuest")
+        .map(|dirs| dirs.data_local_dir().to_path_buf())
+        .or_else(|| {
+            std::env::var_os("HOME").map(|home| std::path::PathBuf::from(home).join(".molip-quest"))
+        })
+        .or_else(|| {
+            cfg!(target_os = "android")
+                .then(|| std::path::PathBuf::from("/data/data/dev.molipquest.app/files"))
+        })
+        .ok_or("저장 위치를 찾을 수 없습니다.")?;
+    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    Ok(dir)
+}
+
 #[derive(Clone, Deserialize, Serialize, PartialEq)]
 pub struct InputOutputTest {
     pub input: String,

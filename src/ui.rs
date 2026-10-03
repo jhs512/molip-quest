@@ -7,6 +7,20 @@ use molip_quest::{
 };
 use std::collections::{HashMap, HashSet};
 
+/// The Android build cannot spawn Python, so coding missions are read and acknowledged instead.
+pub const VIEW_ONLY: bool = cfg!(target_os = "android");
+
+#[cfg(not(target_os = "android"))]
+fn copy_to_clipboard(text: String) -> Result<(), String> {
+    arboard::Clipboard::new()
+        .and_then(|mut clipboard| clipboard.set_text(text))
+        .map_err(|e| e.to_string())
+}
+#[cfg(target_os = "android")]
+fn copy_to_clipboard(_text: String) -> Result<(), String> {
+    Err("Android 열람 모드에서는 클립보드 복사를 지원하지 않습니다.".into())
+}
+
 fn mission_progress<'a>(
     units: impl Iterator<Item = &'a Unit>,
     completed: &HashSet<String>,
@@ -123,7 +137,8 @@ pub fn Learning(course: Course) -> Element {
             }}}}
         }
         if clear_popup() {div {class:"doctor-backdrop",section {class:"doctor-panel",role:"dialog",aria_label:"정답 확인",aria_modal:"true",
-            h2 {"정답입니다!"} p {"제출한 답안이 정답입니다. 진도를 저장하고 다음 미션을 준비했습니다."}
+            if VIEW_ONLY {h2 {"미션 클리어!"} p {"진도를 저장하고 다음 미션을 준비했습니다."}}
+            else {h2 {"정답입니다!"} p {"제출한 답안이 정답입니다. 진도를 저장하고 다음 미션을 준비했습니다."}}
             button {class:"primary",autofocus:true,onclick:move |_|clear_popup.set(false),"확인"}
         }}}
     }
@@ -192,6 +207,9 @@ fn ActivityView(
     oncompleted: EventHandler<bool>,
 ) -> Element {
     match activity.kind {
+        ActivityKind::Coding { .. } if VIEW_ONLY => {
+            rsx! {ReadOnlyMission {course_id,unit:progress,oncompleted}}
+        }
         ActivityKind::Coding { .. } => rsx! {UnitWorkspace {course_id,unit:progress,oncompleted}},
         ActivityKind::Concept { body, check } => rsx! {
             div {class:"concept-flow",
@@ -322,7 +340,7 @@ fn UnitWorkspace(course_id: String, unit: Unit, oncompleted: EventHandler<bool>)
         section{class:"problem-pane",h2{"{unit.title}"}h3{"문제 설명"}Markdown {text:unit.content.clone()}
             button {class:"prompt-copy",onclick:{let unit=unit.clone();move |_|{
                 let prompt=molip_quest::curriculum::answer_prompt(&unit,&code());
-                match arboard::Clipboard::new().and_then(|mut clipboard|clipboard.set_text(prompt)) {
+                match copy_to_clipboard(prompt) {
                     Ok(())=>message.set("정답 구하는 프롬프트를 복사했습니다. 원하는 AI에 붙여넣고, 받은 main.py 코드를 편집기에 넣으세요.".into()),
                     Err(e)=>message.set(format!("클립보드 복사에 실패했습니다: {e}"))
                 }
@@ -356,6 +374,28 @@ fn UnitWorkspace(course_id: String, unit: Unit, oncompleted: EventHandler<bool>)
     }}
 }
 
+/// View-only coding mission for the Android build: read the problem, acknowledge, move on.
+#[component]
+fn ReadOnlyMission(course_id: String, unit: Unit, oncompleted: EventHandler<bool>) -> Element {
+    let mut message = use_signal(String::new);
+    rsx! {article {class:"reading-mission view-only-mission",span {class:"badge","코딩 미션 · 열람"} h2 {"{unit.title}"}
+        p {class:"muted","Android에서는 코드를 실행·채점하지 않습니다. 문제와 준비 코드를 읽고 데스크톱 앱에서 직접 풀어보세요. 아래 버튼을 누르면 다음 미션이 열립니다."}
+        Markdown {text:unit.content.clone()}
+        h3 {"준비 코드 · main.py"} pre {class:"output","{unit.starter_code}"}
+        if !unit.tests.is_empty() {details {summary {"입출력 예제"}
+            for (n,test) in unit.tests.iter().enumerate() {pre {class:"output",{format!("예제 {}\n입력:\n{}\n예상 출력:\n{}",n+1,test.input.trim_end(),test.expected.trim_end())}}}
+        }}
+        p {class:"execution-status",role:"status","{message}"}
+        button {class:"primary",onclick:{let unit=unit.clone();move |_|{
+            let report=molip_quest::runner::TestReport{passed:true,cases:vec![molip_quest::runner::TestCaseResult{input:String::new(),expected:"열람 확인".into(),stdout:"열람 확인".into(),stderr:String::new(),passed:true,state:"viewed".into()}]};
+            match molip_quest::learning_store::LearningStore::user_store().and_then(|mut store|store.save(&course_id,&unit,&unit.starter_code,&report)) {
+                Ok(())=>oncompleted.call(true),
+                Err(e)=>message.set(e)
+            }
+        }},"읽었어요 · 다음 미션"}
+    }}
+}
+
 #[component]
 fn RichResults(artifacts: Vec<Artifact>) -> Element {
     rsx! { div { class: "rich-results",
@@ -374,6 +414,9 @@ fn RichResults(artifacts: Vec<Artifact>) -> Element {
 
 #[component]
 pub fn DoctorPanel() -> Element {
+    if VIEW_ONLY {
+        return rsx! { span { class:"muted", "열람 모드 · Python 실행 없음" } };
+    }
     let mut open = use_signal(|| false);
     let mut busy = use_signal(|| false);
     let mut checks = use_signal(Vec::<molip_quest::doctor::Check>::new);

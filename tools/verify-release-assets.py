@@ -1,12 +1,14 @@
 """Check required release containers. Does not certify code signing, notarization or runtime."""
 import sys
+import zipfile
 from pathlib import Path
 
 
 def verify(root):
     windows = root / 'molip-quest-windows-x64-setup.exe'
     macos = root / 'molip-quest-macos-arm64.dmg'
-    for path in (windows, macos):
+    android = root / 'molip-quest-android.apk'
+    for path in (windows, macos, android):
         if not path.is_file() or path.stat().st_size == 0:
             raise ValueError(f'Missing installer: {path.name}')
     with windows.open('rb') as stream:
@@ -17,8 +19,14 @@ def verify(root):
         stream.seek(-512, 2)
         if stream.read(4) != b'koly':
             raise ValueError('macOS disk image has no UDIF trailer')
+    with zipfile.ZipFile(android) as apk:
+        names = apk.namelist()
+        if 'AndroidManifest.xml' not in names:
+            raise ValueError('APK has no Android manifest')
+        if not any(name.startswith('lib/arm64-v8a/') and name.endswith('.so') for name in names):
+            raise ValueError('APK has no arm64 native library')
 
 
 if __name__ == '__main__':
     verify(Path(sys.argv[1]))
-    print('Both installer containers are present. Signing and device testing are separate release requirements.')
+    print('All three installer containers are present. Signing and device testing are separate release requirements.')

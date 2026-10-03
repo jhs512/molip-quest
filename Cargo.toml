@@ -3,17 +3,26 @@ name = "molip-quest"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+# dx picks the feature named after the platform (--desktop / --android → mobile).
+default = ["desktop"]
+desktop = ["dioxus/desktop"]
+mobile = ["dioxus/mobile"]
+
 [dependencies]
-dioxus = { version = "0.7", features = ["desktop"] }
+dioxus = { version = "0.7" }
 directories = "6"
 rusqlite = { version = "0.32", features = ["bundled"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1", features = ["full"] }
 tempfile = "3"
-arboard = { version = "3.6.1", default-features = false }
 pulldown-cmark = "0.13"
 ammonia = "4"
+
+# The clipboard crate has no Android backend; the Android build is view-only anyway.
+[target.'cfg(not(target_os = "android"))'.dependencies]
+arboard = { version = "3.6.1", default-features = false }
 
 [[bin]]
 name = "molip-quest"

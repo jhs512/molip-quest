@@ -8,11 +8,8 @@ pub struct Draft {
     pub answers: HashMap<String, String>,
 }
 fn connection() -> Result<Connection, String> {
-    let directory = directories::ProjectDirs::from("", "MolipQuest", "MolipQuest")
-        .ok_or("저장 위치를 찾을 수 없습니다.")?;
-    std::fs::create_dir_all(directory.data_local_dir()).map_err(|e| e.to_string())?;
-    let connection = Connection::open(directory.data_local_dir().join("drafts.sqlite3"))
-        .map_err(|e| e.to_string())?;
+    let connection =
+        Connection::open(crate::data_dir()?.join("drafts.sqlite3")).map_err(|e| e.to_string())?;
     connection
         .execute_batch(
             "CREATE TABLE IF NOT EXISTS drafts (scope TEXT PRIMARY KEY, document TEXT NOT NULL)",

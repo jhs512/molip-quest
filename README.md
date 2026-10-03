@@ -4,7 +4,7 @@ KPC 「머신러닝을 활용한 금융데이터 분석」 3일(8+8+4시간) 수
 
 ## 학습 기능
 
-main에 커밋이 올라갈 때마다 GitHub Releases에 **Windows x64 설치 EXE·macOS Apple Silicon DMG** 두 파일이 자동으로 첨부됩니다. 설치 방법과 서명·검증 상태는 [릴리즈 문서](docs/releases.md)를 확인하세요.
+main에 커밋이 올라갈 때마다 GitHub Releases에 **Windows x64 설치 EXE·macOS Apple Silicon DMG·Android APK** 세 파일이 자동으로 첨부됩니다. Android는 코드 실행 없이 개념·퀴즈를 풀고 코딩 미션은 읽고 넘어가는 열람 모드입니다. 설치 방법과 서명·검증 상태는 [릴리즈 문서](docs/releases.md)를 확인하세요.
 
 - 단원마다 개념·코딩 미션·퀴즈의 수와 순서를 다르게 배치 (개념 반복, 문제 중심, 중간 퀴즈 등)
 - 개념마다 단답형 확인 문제 정확히 한 개, 정답이면 클리어

@@ -1,8 +1,8 @@
 name: Release installers
 
-# Every push to main publishes a GitHub Release carrying the Windows x64 installer
-# and the macOS Apple Silicon disk image. The release job refuses to publish
-# unless both installers were built and pass the container checks.
+# Every push to main publishes a GitHub Release carrying the Windows x64 installer,
+# the macOS Apple Silicon disk image and the Android view-only APK. The release job
+# refuses to publish unless all three were built and pass the container checks.
 
 on:
   push:
@@ -79,8 +79,63 @@ jobs:
           path: target/installers/molip-quest-macos-arm64.dmg
           if-no-files-found: error
 
+  android:
+    # View-only build: concepts and quizzes work, coding missions are read and acknowledged.
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      DX_VERSION: v0.7.10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: android
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Dioxus CLI
+        run: |
+          set -euo pipefail
+          curl -fsSL "https://github.com/DioxusLabs/dioxus/releases/download/${DX_VERSION}/dx-x86_64-unknown-linux-gnu.tar.gz" | tar -xz -C /usr/local/bin
+          dx --version
+      - name: Restore the release signing keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          set -euo pipefail
+          test -n "$KEYSTORE_BASE64" || { echo 'ANDROID_KEYSTORE_BASE64 secret is missing'; exit 1; }
+          mkdir -p packaging/android
+          echo "$KEYSTORE_BASE64" | base64 -d > packaging/android/release.jks
+          printf '\n[bundle.android]\njks_file = "packaging/android/release.jks"\njks_password = "%s"\nkey_alias = "molip"\nkey_password = "%s"\n' "$KEYSTORE_PASSWORD" "$KEYSTORE_PASSWORD" >> Dioxus.toml
+      - name: Build signed release APK
+        env:
+          ANDROID_NDK_HOME: ${{ env.ANDROID_NDK_LATEST_HOME }}
+          NDK_HOME: ${{ env.ANDROID_NDK_LATEST_HOME }}
+        run: |
+          set -euo pipefail
+          dx build --android --release --no-default-features --features mobile --verbose
+          apk=$(find target/dx -name 'app-release.apk' -print -quit)
+          test -n "$apk" || { echo 'No signed release APK produced'; find target/dx -name '*.apk'; exit 1; }
+          mkdir -p target/installers
+          cp "$apk" target/installers/molip-quest-android.apk
+      - name: Verify the APK signature
+        run: |
+          set -euo pipefail
+          apksigner=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -n 1)
+          "$apksigner" verify --print-certs target/installers/molip-quest-android.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-android
+          path: target/installers/molip-quest-android.apk
+          if-no-files-found: error
+
   release:
-    needs: [windows, macos]
+    needs: [windows, macos, android]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -89,7 +144,7 @@ jobs:
           pattern: release-*
           merge-multiple: true
           path: target/release-assets
-      - name: Require real installer containers for both platforms
+      - name: Require real installer containers for all three platforms
         run: python3 tools/verify-release-assets.py target/release-assets
       - name: Publish release for this commit
         env:
@@ -104,4 +159,5 @@ jobs:
           subject=$(git log -1 --format=%s "$COMMIT_SHA")
           gh release create "$tag" --target "$COMMIT_SHA" --latest --title "$tag — $subject" --generate-notes \
             target/release-assets/molip-quest-windows-x64-setup.exe \
-            target/release-assets/molip-quest-macos-arm64.dmg
+            target/release-assets/molip-quest-macos-arm64.dmg \
+            target/release-assets/molip-quest-android.apk
