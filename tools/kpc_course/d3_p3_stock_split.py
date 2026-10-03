@@ -90,6 +90,10 @@ UNIT = unit('stock-split', '3일차 · 3교시 — 시간 분리와 기준 모�
         check="assert len(s['X_train'])==315 and len(s['X_test'])==80\nassert s['frame'].loc[s['train_mask'],'target_date'].max()<s['X_test'].index.min()\nassert set(s['X_train'].index).isdisjoint(s['X_test'].index)\nassert 'target_next_close' not in s['X_train']"),
     coding('manual-mae', 'MAE를 손으로 계산하기',
         goal="""
+        ```interactive
+        위젯: mae
+        ```
+
         기준 예측의 오차를 직접 계산합니다. 테스트 기간에서 "내일 종가 = 오늘 종가"로 예측하면 예측값은 `X_test['close']`입니다. 정답 `y_test`와의 차이에 `.abs()`를 붙인 것을 `errors`에, 그 평균을 `manual_mae`에 저장하고 출력하세요.
 
         결과는 원 단위입니다. "하루에 평균 이 정도 빗나간다"로 읽으세요. 다음 미션에서 함수로 구한 값과 같은지 비교합니다.

@@ -183,7 +183,191 @@
     ]);
   }
 
-  const WIDGETS = { overfit, threshold, temporal };
+  // ---- widget 4: stratified split — a random split can skew the survivor share; stratify keeps it ----
+  function stratify(container) {
+    const H = 330, N = 100, SURV = 38, COLS = 20, cell = 14;
+    const f = frame(container, '층화 분할: 비율을 지키며 나누기', H);
+    const random = rng(21);
+    const people = Array.from({ length: N }, (_, i) => ({ i, survived: i < SURV }));
+    const gAll = el('g', { class: 'fade' }, f.svg), gSplit = el('g', { class: 'fade' }, f.svg);
+    const dots = people.map(p => el('circle', { cx: 60 + (p.i % COLS) * cell, cy: 40 + Math.floor(p.i / COLS) * cell, r: 5, class: p.survived ? 'train' : 'dead' }, gAll));
+    text(gAll, 60, 24, '승객 100명 · 생존 38명 (38%)', { class: 'label' });
+    const trainBox = el('rect', { x: 60, y: 150, width: 300, height: 130, rx: 8, class: 'box' }, gSplit);
+    const testBox = el('rect', { x: 400, y: 150, width: 260, height: 130, rx: 8, class: 'box' }, gSplit);
+    const trainLabel = text(gSplit, 70, 170, '', { class: 'score' });
+    const testLabel = text(gSplit, 410, 170, '', { class: 'score test-score' });
+    const trainDots = [], testDots = [];
+    let useStratify = false;
+    function split() {
+      const shuffled = [...people].sort(() => random() - 0.5);
+      let test;
+      if (useStratify) {
+        const s = shuffled.filter(p => p.survived).slice(0, Math.round(SURV * 0.2)), d = shuffled.filter(p => !p.survived).slice(0, 20 - Math.round(SURV * 0.2));
+        test = new Set([...s, ...d].map(p => p.i));
+      } else test = new Set(shuffled.slice(0, 20).map(p => p.i));
+      for (const d of [...trainDots, ...testDots]) d.remove();
+      trainDots.length = 0; testDots.length = 0;
+      let ti = 0, si = 0, tSurv = 0, sSurv = 0;
+      for (const p of people) {
+        if (test.has(p.i)) { testDots.push(el('circle', { cx: 410 + (si % 10) * cell, cy: 190 + Math.floor(si / 10) * cell, r: 5, class: p.survived ? 'train' : 'dead' }, gSplit)); si++; sSurv += p.survived; }
+        else { trainDots.push(el('circle', { cx: 70 + (ti % 20) * cell, cy: 190 + Math.floor(ti / 20) * cell, r: 5, class: p.survived ? 'train' : 'dead' }, gSplit)); ti++; tSurv += p.survived; }
+      }
+      trainLabel.textContent = `훈련 80명 · 생존 ${tSurv}명 (${Math.round(tSurv / 80 * 100)}%)`;
+      testLabel.textContent = `테스트 20명 · 생존 ${sSurv}명 (${Math.round(sSurv / 20 * 100)}%)`;
+      dots.forEach(d => d.classList.toggle('dim', true));
+    }
+    const again = document.createElement('button'); again.type = 'button'; again.className = 'interactive-action'; again.textContent = '다시 나누기'; again.hidden = true; again.onclick = split; f.extra.append(again);
+    const toggle = document.createElement('label'); toggle.className = 'interactive-toggle'; toggle.hidden = true;
+    const box = document.createElement('input'); box.type = 'checkbox'; toggle.append(box, document.createTextNode(' stratify=y')); box.onchange = () => { useStratify = box.checked; split(); }; f.extra.append(toggle);
+    f.start([
+      { text: '승객 100명 중 38명이 생존(초록)입니다. 이 비율이 정답의 비율입니다.', enter() { show(gAll); hide(gSplit); again.hidden = true; toggle.hidden = true; box.checked = false; useStratify = false; dots.forEach(d => d.classList.remove('dim')); } },
+      { text: '무작위로 20명을 테스트로 떼어 냈습니다. 테스트 쪽 생존 비율을 보세요. "다시 나누기"를 눌러 보면 매번 다릅니다.', enter() { show(gSplit); again.hidden = false; split(); } },
+      { text: 'stratify=y를 켜고 다시 나눠 보세요. 생존자와 사망자를 각각 20%씩 떼어 내므로 테스트 비율이 전체 비율 38%에서 거의 벗어나지 않습니다.', enter() { toggle.hidden = false; } },
+    ]);
+  }
+
+  // ---- widget 5: leakage — add the lifeboat column and watch the score lie ----
+  function leakage(container) {
+    const H = 300, f = frame(container, '누수: 답을 알려 주는 열', H);
+    const features = ['객실등급', '성별', '나이', '형제배우자', '부모자녀', '요금', '탑승항구'];
+    const gList = el('g', { class: 'fade' }, f.svg), gBar = el('g', { class: 'fade' }, f.svg), gBoat = el('g', { class: 'fade' }, f.svg), gTime = el('g', { class: 'fade' }, f.svg);
+    features.forEach((name, i) => { el('rect', { x: 40, y: 30 + i * 26, width: 130, height: 20, rx: 5, class: 'chip' }, gList); text(gList, 105, 45 + i * 26, name, { class: 'label', 'text-anchor': 'middle' }); });
+    const boatChip = el('rect', { x: 40, y: 30 + 7 * 26, width: 130, height: 20, rx: 5, class: 'chip leak' }, gBoat);
+    text(gBoat, 105, 45 + 7 * 26, '구명보트 번호', { class: 'label', 'text-anchor': 'middle' });
+    el('rect', { x: 260, y: 40, width: 60, height: 200, class: 'track' }, gBar);
+    const bar = el('rect', { x: 260, y: 240, width: 60, height: 0, class: 'acc' }, gBar);
+    const accText = text(gBar, 290, 30, '', { class: 'score', 'text-anchor': 'middle' });
+    text(gBar, 290, 262, '테스트 정확도', { class: 'label', 'text-anchor': 'middle' });
+    // Timeline: when each piece of information exists.
+    el('line', { x1: 380, y1: 150, x2: 690, y2: 150, class: 'axis' }, gTime);
+    for (const [x, label] of [[400, '승선'], [535, '사고'], [670, '구조 뒤']]) { el('circle', { cx: x, cy: 150, r: 5, class: 'tick' }, gTime); text(gTime, x, 175, label, { class: 'label', 'text-anchor': 'middle' }); }
+    text(gTime, 400, 120, '등급·성별·나이·요금', { class: 'label', 'text-anchor': 'middle' });
+    text(gTime, 535, 120, '맞혀야 하는 순간', { class: 'label cut-label', 'text-anchor': 'middle' });
+    text(gTime, 670, 120, '구명보트 번호 기록', { class: 'label', 'text-anchor': 'middle', fill: '#ff6b6b' });
+    function setAcc(v) { bar.setAttribute('height', 200 * v); bar.setAttribute('y', 240 - 200 * v); accText.textContent = `${Math.round(v * 100)}%`; bar.classList.toggle('leak', v > 0.95); }
+    const toggle = document.createElement('label'); toggle.className = 'interactive-toggle'; toggle.hidden = true;
+    const box = document.createElement('input'); box.type = 'checkbox'; toggle.append(box, document.createTextNode(' 구명보트 열 포함')); box.onchange = () => { if (box.checked) show(gBoat); else hide(gBoat); setAcc(box.checked ? 0.99 : 0.78); }; f.extra.append(toggle);
+    f.start([
+      { text: '배를 타기 전에 알 수 있는 일곱 열로 생존을 맞힙니다.', enter() { show(gList); hide(gBar); hide(gBoat); hide(gTime); toggle.hidden = true; box.checked = false; } },
+      { text: '테스트 정확도는 78% 근처입니다. 재료가 이 정도면 이 정도가 실력입니다.', enter() { show(gBar); setAcc(0.78); } },
+      { text: '구명보트 번호 열을 넣어 보세요. 정확도가 99%로 뜁니다. 좋아진 걸까요?', enter() { toggle.hidden = false; } },
+      { text: '시점을 보세요. 구명보트 번호는 구조된 뒤에 적힙니다. 맞혀야 하는 순간에는 없는 정보라 답을 보고 답을 맞힌 셈입니다. 이것이 누수입니다.', enter() { show(gTime); box.checked = true; show(gBoat); setAcc(0.99); } },
+    ]);
+  }
+
+  // ---- widget 6: MAE — error bars stack up one day at a time and average out ----
+  function maeWidget(container) {
+    const H = 340, L = 60, R = 560, T = 30, B = 260, days = 10;
+    const f = frame(container, 'MAE: 하루하루 빗나간 만큼의 평균', H);
+    const random = rng(5);
+    const actual = []; let v = 50;
+    for (let i = 0; i < days; i++) { v += (random() - 0.5) * 12; actual.push(Math.round(v * 10) / 10); }
+    const baseline = actual.map((_, i) => (i ? actual[i - 1] : actual[0]));
+    const sx = i => L + i * (R - L) / (days - 1), lo = Math.min(...actual) - 8, hi = Math.max(...actual) + 8, sy = y => B - (y - lo) / (hi - lo) * (B - T);
+    el('line', { x1: L, y1: B, x2: R, y2: B, class: 'axis' }, f.svg);
+    text(f.svg, (L + R) / 2, B + 24, '테스트 기간의 거래일', { class: 'label', 'text-anchor': 'middle' });
+    const gActual = el('g', { class: 'fade' }, f.svg), gPred = el('g', { class: 'fade' }, f.svg), gErr = el('g', {}, f.svg), gMean = el('g', { class: 'fade' }, f.svg);
+    const pathActual = el('path', { class: 'model actual' }, gActual), pathPred = el('path', { class: 'model pred' }, gPred);
+    actual.forEach((y, i) => el('circle', { cx: sx(i), cy: sy(y), r: 4, class: 'train' }, gActual));
+    const errBars = actual.map((y, i) => el('line', { x1: sx(i), y1: sy(y), x2: sx(i), y2: sy(baseline[i]), class: 'err fade' }, gErr));
+    const errLabels = actual.map((y, i) => text(gErr, sx(i) + 6, (sy(y) + sy(baseline[i])) / 2, '', { class: 'label err-label fade' }));
+    el('rect', { x: 600, y: T, width: 50, height: B - T, class: 'track' }, gMean);
+    const meanBar = el('rect', { x: 600, y: B, width: 50, height: 0, class: 'acc' }, gMean);
+    const meanText = text(gMean, 625, T - 8, '', { class: 'score', 'text-anchor': 'middle' });
+    text(gMean, 625, B + 24, 'MAE', { class: 'label', 'text-anchor': 'middle' });
+    let offset = 0;
+    function draw(revealUpTo) {
+      const pred = baseline.map(p => p + offset);
+      pathActual.setAttribute('d', actual.map((y, i) => (i ? 'L' : 'M') + sx(i) + ',' + sy(y)).join(''));
+      pathPred.setAttribute('d', pred.map((y, i) => (i ? 'L' : 'M') + sx(i) + ',' + sy(y)).join(''));
+      let sum = 0;
+      actual.forEach((y, i) => {
+        const e = Math.abs(y - pred[i]); sum += e;
+        errBars[i].setAttribute('y1', sy(y)); errBars[i].setAttribute('y2', sy(pred[i]));
+        errLabels[i].setAttribute('y', (sy(y) + sy(pred[i])) / 2 + 4); errLabels[i].textContent = e.toFixed(1);
+        if (i < revealUpTo) { show(errBars[i]); show(errLabels[i]); } else { hide(errBars[i]); hide(errLabels[i]); }
+      });
+      const mae = sum / days, scale = (B - T) / 20;
+      meanBar.setAttribute('height', Math.min(B - T, mae * scale)); meanBar.setAttribute('y', B - Math.min(B - T, mae * scale));
+      meanText.textContent = `MAE ${mae.toFixed(2)}`;
+    }
+    let timer;
+    const s = slider(f.extra, '예측을 위아래로 이동', -10, 10, 1, 0, val => { offset = val; draw(days); });
+    f.start([
+      { text: '테스트 기간 10일의 실제 종가입니다.', enter() { clearTimeout(timer); offset = 0; s.set(0); s.wrap.hidden = true; hide(gPred); hide(gMean); draw(0); show(gActual); } },
+      { text: '기준 예측 "내일 종가 = 오늘 종가"를 겹쳤습니다. 하루 늦게 따라가는 선입니다.', enter() { show(gPred); draw(0); } },
+      { text: '날마다 실제와 예측의 차이를 재서 세웁니다. 부호는 버리고 크기만 봅니다.', enter() { let i = 0; const tick = () => { i++; draw(i); if (i < days) timer = setTimeout(tick, 220); }; timer = setTimeout(tick, 100); } },
+      { text: '열 개 차이의 평균이 MAE입니다. 슬라이더로 예측을 위아래로 옮겨 보세요. 한쪽으로 치우칠수록 평균 오차가 커집니다.', enter() { clearTimeout(timer); draw(days); show(gMean); s.enable(); } },
+    ]);
+  }
+
+  // ---- widget 7: moving average — the window slides and the line smooths ----
+  function movingAverage(container) {
+    const H = 320, L = 50, R = 690, T = 30, B = 250, N = 40;
+    const f = frame(container, '이동평균: 창 안의 평균을 이어 그리기', H);
+    const random = rng(9);
+    const price = []; let v = 50;
+    for (let i = 0; i < N; i++) { v += (random() - 0.48) * 8; price.push(v); }
+    const sx = i => L + i * (R - L) / (N - 1), lo = Math.min(...price) - 5, hi = Math.max(...price) + 5, sy = y => B - (y - lo) / (hi - lo) * (B - T);
+    el('line', { x1: L, y1: B, x2: R, y2: B, class: 'axis' }, f.svg);
+    const gPrice = el('g', { class: 'fade' }, f.svg), gWin = el('g', { class: 'fade' }, f.svg), gMa = el('g', { class: 'fade' }, f.svg);
+    el('path', { d: price.map((y, i) => (i ? 'L' : 'M') + sx(i) + ',' + sy(y)).join(''), class: 'model actual' }, gPrice);
+    const win = el('rect', { x: 0, y: T, width: 0, height: B - T, class: 'window-fill' }, gWin);
+    const winDot = el('circle', { r: 6, class: 'ma-dot' }, gWin);
+    const winLabel = text(gWin, 0, T - 8, '', { class: 'label cut-label', 'text-anchor': 'middle' });
+    const maPath = el('path', { class: 'model ma' }, gMa);
+    let window = 5;
+    function ma(i) { if (i < window - 1) return null; let s = 0; for (let k = i - window + 1; k <= i; k++) s += price[k]; return s / window; }
+    function draw() {
+      const i = 20, m = ma(i);
+      win.setAttribute('x', sx(i - window + 1) - 6); win.setAttribute('width', sx(i) - sx(i - window + 1) + 12);
+      winDot.setAttribute('cx', sx(i)); winDot.setAttribute('cy', sy(m));
+      winLabel.setAttribute('x', (sx(i - window + 1) + sx(i)) / 2); winLabel.textContent = `최근 ${window}일 평균 ${m.toFixed(1)}`;
+      let d = '', started = false;
+      for (let k = 0; k < N; k++) { const y = ma(k); if (y === null) continue; d += (started ? 'L' : 'M') + sx(k) + ',' + sy(y); started = true; }
+      maPath.setAttribute('d', d);
+    }
+    const s = slider(f.extra, '창 크기 (거래일)', 2, 20, 1, 5, val => { window = val; draw(); });
+    f.start([
+      { text: '40거래일의 종가입니다. 하루하루 흔들립니다.', enter() { window = 5; s.set(5); s.wrap.hidden = true; show(gPrice); hide(gWin); hide(gMa); } },
+      { text: '어느 날의 이동평균은 그날까지 최근 5일(창)의 평균입니다. 창 안의 값 다섯 개를 더해 5로 나눈 점입니다.', enter() { draw(); show(gWin); } },
+      { text: '창을 하루씩 밀며 같은 계산을 하면 선이 됩니다. 처음 4일은 5개가 안 모여 비어 있습니다.', enter() { show(gMa); } },
+      { text: '창 크기를 바꿔 보세요. 창이 클수록 선이 부드러워지고 비는 날도 늘어납니다.', enter() { s.enable(); draw(); } },
+    ]);
+  }
+
+  // ---- widget 8: histogram bins — the same ages, coarser or finer ----
+  function histogram(container) {
+    const H = 320, L = 50, R = 690, T = 40, B = 240;
+    const f = frame(container, '히스토그램: 구간 수는 보는 방식일 뿐', H);
+    const random = rng(13);
+    // Ages shaped like the Titanic distribution: many in their twenties, a few children and elderly.
+    const ages = Array.from({ length: 300 }, () => { const u = random(); const base = u < 0.1 ? random() * 12 : u < 0.8 ? 16 + random() * 30 : 40 + random() * 40; return Math.min(80, Math.max(0, Math.round(base))); });
+    const sx = a => L + a / 80 * (R - L);
+    el('line', { x1: L, y1: B, x2: R, y2: B, class: 'axis' }, f.svg);
+    for (const a of [0, 20, 40, 60, 80]) text(f.svg, sx(a), B + 20, String(a), { class: 'label', 'text-anchor': 'middle' });
+    text(f.svg, (L + R) / 2, B + 40, '나이', { class: 'label', 'text-anchor': 'middle' });
+    const gRug = el('g', { class: 'fade' }, f.svg), gBars = el('g', { class: 'fade' }, f.svg);
+    for (const a of ages) el('line', { x1: sx(a) + (random() - 0.5) * 4, y1: B, x2: sx(a) + (random() - 0.5) * 4, y2: B - 10, class: 'rug' }, gRug);
+    const countText = text(f.svg, R, T - 10, '', { class: 'score', 'text-anchor': 'end' });
+    let bins = 5;
+    function draw() {
+      while (gBars.firstChild) gBars.firstChild.remove();
+      const counts = Array(bins).fill(0);
+      for (const a of ages) counts[Math.min(bins - 1, Math.floor(a / 80 * bins))]++;
+      const max = Math.max(...counts), w = (R - L) / bins;
+      counts.forEach((c, i) => { const h = c / max * (B - T - 30); el('rect', { x: L + i * w + 1, y: B - 12 - h, width: w - 2, height: h, class: 'hist' }, gBars); if (bins <= 12) text(gBars, L + i * w + w / 2, B - 16 - h, String(c), { class: 'label', 'text-anchor': 'middle' }); });
+      countText.textContent = `구간 ${bins}개 · 막대 높이의 합은 늘 300명`;
+    }
+    const s = slider(f.extra, '구간 수 bins', 3, 40, 1, 5, val => { bins = val; draw(); });
+    f.start([
+      { text: '승객 300명의 나이를 바닥에 눈금처럼 찍었습니다. 어디에 몰려 있는지 보이나요?', enter() { bins = 5; s.set(5); s.wrap.hidden = true; show(gRug); hide(gBars); countText.textContent = ''; } },
+      { text: '나이를 다섯 구간으로 잘라 구간마다 몇 명인지 세우면 히스토그램입니다.', enter() { draw(); show(gBars); } },
+      { text: '구간 수를 바꿔 보세요. 자료는 그대로인데 모양이 달라집니다. 그래서 보고할 때 구간 수를 적습니다.', enter() { s.enable(); draw(); } },
+    ]);
+  }
+
+  const WIDGETS = { overfit, threshold, temporal, stratify, leakage, mae: maeWidget, moving: movingAverage, histogram };
   const seen = new WeakSet();
   function render(root) {
     if (!(root instanceof Element) && root !== document) return;

@@ -317,3 +317,25 @@ body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { poi
 .interactive-slider { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 13px; color: #bcd7ee; }
 .interactive-slider input[type=range] { width: 180px; margin: 0; padding: 0; accent-color: #79dcff; }
 .interactive-slider output { min-width: 2.5em; color: #79dcff; font-weight: 700; }
+
+.interactive .dead { fill: #5b7489; }
+.interactive .dim { opacity: .35; }
+.interactive .box { fill: #16283a; stroke: #405970; }
+.interactive .chip { fill: #1f3346; stroke: #4f6b84; }
+.interactive .chip.leak { fill: #4a1f24; stroke: #ff6b6b; }
+.interactive .track { fill: #16283a; stroke: #405970; }
+.interactive .acc { fill: #63dbb6; transition: height .5s ease, y .5s ease, fill .3s ease; }
+.interactive .acc.leak { fill: #ff6b6b; }
+.interactive .tick { fill: #9ab0c2; }
+.interactive .actual { stroke: #63dbb6; }
+.interactive .pred { stroke: #79dcff; stroke-dasharray: 6 4; }
+.interactive .ma { stroke: #e0a63a; }
+.interactive .err { stroke: #ff9b7a; stroke-width: 4; }
+.interactive .err-label { fill: #ffc3ae; font-size: 11px; }
+.interactive .window-fill { fill: #e0a63a33; stroke: #e0a63a; }
+.interactive .ma-dot { fill: #e0a63a; }
+.interactive .rug { stroke: #79dcff; stroke-width: 1; opacity: .7; }
+.interactive .hist { fill: #4f8fd0; stroke: #0f1d28; }
+.practice-shell .interactive-action { background: #43596d; color: #fff; padding: 8px 14px; font-size: 13px; }
+.interactive-toggle { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 13px; color: #bcd7ee; }
+.interactive-toggle input { width: 16px; margin: 0; accent-color: #79dcff; }
