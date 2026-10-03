@@ -15,6 +15,16 @@ cp target/release/molip-quest "$app/Contents/MacOS/molip-quest"
 sed "s/APP_VERSION/$version/g" packaging/macos/Info.plist > "$app/Contents/Info.plist"
 cp README.md requirements-learning.txt "$app/Contents/Resources/"
 
+# App icon: build an .icns from the 1024px master with the system tools.
+iconset=target/bundle/AppIcon.iconset
+rm -rf "$iconset" && mkdir -p "$iconset"
+for size in 16 32 128 256 512; do
+  sips -z $size $size assets/icon/icon-1024.png --out "$iconset/icon_${size}x${size}.png" >/dev/null
+  double=$((size * 2))
+  sips -z $double $double assets/icon/icon-1024.png --out "$iconset/icon_${size}x${size}@2x.png" >/dev/null
+done
+iconutil -c icns "$iconset" -o "$app/Contents/Resources/AppIcon.icns"
+
 codesign --force --deep --sign - "$app"
 
 ln -s /Applications target/bundle/Applications

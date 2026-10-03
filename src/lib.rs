@@ -49,6 +49,12 @@ fn initial_revision() -> i64 {
     1
 }
 
+/// Start a course over: clear completions, attempts, saved code and quiz answers.
+pub fn reset_progress(course: &str) -> Result<(), String> {
+    learning_store::LearningStore::user_store()?.reset(course)?;
+    drafts::clear_course(course)
+}
+
 /// Local folder for progress and drafts. Android has no XDG/HOME, so fall back to the
 /// app's own files directory (the package id from Dioxus.toml).
 pub fn data_dir() -> Result<std::path::PathBuf, String> {

@@ -173,3 +173,8 @@ textarea[data-code-editor][hidden] { display: none; }
 .curriculum-menu { max-height: calc(100vh - 64px - var(--inset-top, 0px) - var(--inset-bottom, 0px)); }
 .doctor-backdrop { padding-top: calc(24px + var(--inset-top, 0px)); padding-bottom: calc(24px + var(--inset-bottom, 0px)); }
 @media (max-width: 600px) { .sidebar { padding-top: calc(20px + var(--inset-top, 0px)); } .shell:not(.practice-shell) > main { padding-bottom: calc(20px + var(--inset-bottom, 0px)); } }
+
+/* Progress reset: a quiet button whose confirmation step carries the danger colour. */
+.reset-progress { background: transparent; color: #a9c6bd; border: 1px solid #3f6a5e; padding: 8px 12px; font-size: 13px; margin-top: 12px; }
+.practice-header .reset-progress { margin-top: 0; color: #99aec1; border-color: #3f5468; }
+.danger { background: #a12828; color: #fff; }

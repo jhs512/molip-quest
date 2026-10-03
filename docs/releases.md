@@ -4,7 +4,7 @@
 
 | 플랫폼 | 파일 | 빌드 방식 | 현재 상태 |
 | --- | --- | --- | --- |
-| Windows x64 | molip-quest-windows-x64-setup.exe | Inno Setup. CI에서 무인 설치·제거까지 검증 | 자동 발행. 인증서 서명 없음 (SmartScreen 경고 가능) |
+| Windows x64 | molip-quest-windows-x64-setup.exe | Inno Setup. `build.rs`가 아이콘을 실행 파일에 내장. CI에서 무인 설치·제거까지 검증 | 자동 발행. 인증서 서명 없음 (SmartScreen 경고 가능) |
 | macOS Apple Silicon | molip-quest-macos-arm64.dmg | `packaging/macos/bundle.sh`가 .app 번들을 만들고 ad-hoc 서명 후 DMG로 묶음. CI에서 DMG 마운트·arm64·서명 검증 | 자동 발행. Apple 공증 없음 (아래 첫 실행 안내 필요). 실기기 수동 검증은 아직 없음 |
 | Android (열람 모드) | molip-quest-android.apk | `dx build --android --release`(Cargo `mobile` 기능). 저장소 비밀 `ANDROID_KEYSTORE_BASE64`·`ANDROID_KEYSTORE_PASSWORD`의 키스토어로 서명하고 `apksigner verify`로 확인 | 자동 발행. Play 스토어 외 설치(APK 직접 설치 허용 필요). 실기기 수동 검증은 아직 없음 |
 
@@ -31,3 +31,7 @@ xattr -cr "/Applications/몰입 퀘스트.app"
 현재 앱은 로컬 Python 프로세스를 띄워 pandas·scikit-learn을 실행하는 데스크톱 구조입니다. 모바일에서 같은 학습 기능을 제공하려면 Python과 수업 패키지를 앱 안에 임베딩해야 하며 이는 별도의 대형 작업입니다. iOS는 Apple 인증서·프로비저닝이 필요해 범위에서 제외했습니다. Android는 위의 열람 모드로 제공합니다.
 
 공식 참고: [Dioxus 배포](https://dioxuslabs.com/learn/0.7/tutorial/bundle/), [Python Android 임베딩](https://docs.python.org/3/using/android.html).
+
+## 앱 아이콘
+
+`tools/make-icon.py`가 `assets/icon/`에 퀘스트 깃발 아이콘(1024px 원본, Windows `.ico`, Android 밀도별 PNG와 적응형 전경)을 생성합니다. Windows는 `build.rs`(winresource)로 실행 파일에 내장하고 Inno Setup 설치 프로그램에도 씁니다. macOS는 `bundle.sh`가 `sips`·`iconutil`로 `.icns`를 만듭니다. Android는 dx가 기본 아이콘을 항상 덮어쓰므로 CI가 `tools/apply-android-icon.py`로 생성된 프로젝트의 리소스를 바꾼 뒤 Gradle로 다시 조립합니다.

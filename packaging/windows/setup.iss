@@ -19,6 +19,7 @@ Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
 UninstallDisplayIcon={app}\molip-quest.exe
+SetupIconFile=..\..\assets\icon\icon.ico
 
 [Files]
 Source: "..\..\target\release\molip-quest.exe"; DestDir: "{app}"; Flags: ignoreversion

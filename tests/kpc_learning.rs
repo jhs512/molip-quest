@@ -52,6 +52,35 @@ fn concept_requires_one_answer_and_accepts_korean_or_english() {
 }
 
 #[test]
+fn reset_forgets_completions_for_the_course_only() {
+    let course = concept_course();
+    let unit = &course.chapters[0].units[0];
+    let activity = &unit.activities[0];
+    let ActivityKind::Concept { check, .. } = &activity.kind else {
+        panic!("concept")
+    };
+    let directory = tempfile::tempdir().unwrap();
+    let mut store = LearningStore::open(&directory.path().join("learning.sqlite3")).unwrap();
+    let progress = activity.progress_unit(unit);
+    let report = grade_quiz(
+        std::slice::from_ref(check),
+        &HashMap::from([("term".into(), "DataFrame".into())]),
+    );
+    store
+        .save(&course.id, &progress, "DataFrame", &report)
+        .unwrap();
+    store
+        .save("other-course", &progress, "DataFrame", &report)
+        .unwrap();
+    assert!(store.completed(&course).unwrap().contains("variables"));
+    store.reset(&course.id).unwrap();
+    assert!(store.completed(&course).unwrap().is_empty());
+    let mut other = course.clone();
+    other.id = "other-course".into();
+    assert!(store.completed(&other).unwrap().contains("variables"));
+}
+
+#[test]
 fn mixed_twenty_question_quiz_retries_only_wrong_answers_after_restart() {
     use molip_quest::curriculum::{Question, QuestionKind};
     let course = concept_course();

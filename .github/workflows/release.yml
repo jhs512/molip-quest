@@ -119,6 +119,10 @@ jobs:
           export ANDROID_NDK_HOME="$ANDROID_NDK_LATEST_HOME" NDK_HOME="$ANDROID_NDK_LATEST_HOME"
           echo "NDK: $ANDROID_NDK_HOME"
           dx build --android --release --target aarch64-linux-android --no-default-features --features mobile --verbose
+          # dx always writes its own launcher icon; swap in ours and let Gradle reassemble the signed APK.
+          gradle_app=$(dirname "$(find target/dx -path '*/android/app/app/build.gradle.kts' -print -quit)")
+          python3 tools/apply-android-icon.py "$gradle_app/src/main/res"
+          (cd "$gradle_app/.." && chmod +x gradlew && ./gradlew assembleRelease --no-daemon --quiet)
           apk=$(find target/dx -name 'app-release.apk' -print -quit)
           test -n "$apk" || { echo 'No signed release APK produced'; find target/dx -name '*.apk'; exit 1; }
           mkdir -p target/installers

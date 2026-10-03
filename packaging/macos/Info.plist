@@ -8,6 +8,8 @@
   <string>몰입 퀘스트</string>
   <key>CFBundleExecutable</key>
   <string>molip-quest</string>
+  <key>CFBundleIconFile</key>
+  <string>AppIcon</string>
   <key>CFBundleIdentifier</key>
   <string>dev.molipquest.app</string>
   <key>CFBundleInfoDictionaryVersion</key>

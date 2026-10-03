@@ -88,6 +88,15 @@ impl LearningStore {
         }
         tx.commit().map_err(|e| e.to_string())
     }
+    /// Forget every attempt and completion for one course so the student starts over.
+    pub fn reset(&mut self, course: &str) -> Result<(), String> {
+        let tx = self.0.transaction().map_err(|e| e.to_string())?;
+        tx.execute("DELETE FROM attempts WHERE course=?1", [course])
+            .map_err(|e| e.to_string())?;
+        tx.execute("DELETE FROM completed WHERE course=?1", [course])
+            .map_err(|e| e.to_string())?;
+        tx.commit().map_err(|e| e.to_string())
+    }
     pub fn completed(&self, course: &crate::Course) -> Result<HashSet<String>, String> {
         let items = self.completed_items(course)?;
         Ok(course

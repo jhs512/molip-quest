@@ -28,6 +28,16 @@ pub fn load(scope: &str) -> Result<Option<Draft>, String> {
         .map(|d| serde_json::from_str(&d).map_err(|e| e.to_string()))
         .transpose()
 }
+/// Drop saved code and quiz answers for one course. Scopes are "local:<course>:…" and "quiz:<course>:…".
+pub fn clear_course(course: &str) -> Result<(), String> {
+    connection()?
+        .execute(
+            "DELETE FROM drafts WHERE scope LIKE ?1 OR scope LIKE ?2",
+            params![format!("local:{course}:%"), format!("quiz:{course}:%")],
+        )
+        .map_err(|e| e.to_string())?;
+    Ok(())
+}
 pub fn save(scope: &str, code: &str, answers: &HashMap<String, String>) -> Result<(), String> {
     let document = serde_json::to_string(&Draft {
         code: code.into(),

@@ -8,3 +8,4 @@ android_main_activity = "packaging/android/MainActivity.kt"
 [bundle]
 identifier = "dev.molipquest.app"
 publisher = "Molip Quest"
+icon = ["assets/icon/icon-1024.png"]

@@ -63,6 +63,8 @@ pub fn Learning(course: Course) -> Element {
     let mut mission_index = use_signal(|| usize::MAX);
     let mut clear_popup = use_signal(|| false);
     let mut refresh = use_signal(|| 0u64);
+    // Bumped on reset so the mounted mission re-reads drafts and quiz state from scratch.
+    let mut epoch = use_signal(|| 0u64);
     let progress_course = course.clone();
     let completed = use_memo(move || {
         let _ = refresh();
@@ -112,7 +114,8 @@ pub fn Learning(course: Course) -> Element {
             button {disabled:active_mission==0&&previous.is_none(),onclick:{let previous=previous.clone();move |_|{if active_mission>0 {mission_index.set(active_mission-1);}else if let Some(id)=&previous {mission_index.set(usize::MAX);selected.set(id.clone());}}},"← 이전"}
             button {disabled:active_mission+1>=active_unlocked&&!(active_mission+1==active_total&&next.is_some()),onclick:{let next=next.clone();move |_|{if active_mission+1<active_unlocked {mission_index.set(active_mission+1);}else if let Some(id)=&next {mission_index.set(usize::MAX);selected.set(id.clone());}}},"다음 →"}
         }
-        span {{format!("완료 {} / {} 단원",completed.len(),course.total_units())}} DoctorPanel {}}
+        span {{format!("완료 {} / {} 단원",completed.len(),course.total_units())}} DoctorPanel {}
+        ResetProgress {course_id:course.id.clone(),onreset:move |_|{selected.set(String::new());mission_index.set(usize::MAX);clear_popup.set(false);refresh+=1;epoch+=1;}}}
         div {class:"learning",
         button {class:"curriculum-toggle",onclick:move |_|{document::eval(r#"const dialog = document.querySelector('.curriculum-menu');
             if (!dialog.dataset.dismissBound) {
@@ -149,7 +152,7 @@ pub fn Learning(course: Course) -> Element {
                 }}
             }
         }}
-        for active in [active] {UnitFlow {key:"{active.id}-{active.revision}", course_id:course.id.clone(), unit:active,index:mission_index,
+        for active in [active] {UnitFlow {key:"{active.id}-{active.revision}-{epoch}", course_id:course.id.clone(), unit:active,index:mission_index,
             oncompleted:{let active_id=active_id.clone();let following_id=following_id.clone();let course=course.clone();move |passed|{
                 let unit_finished=passed&&molip_quest::learning_store::LearningStore::user_store().and_then(|store|store.completed(&course)).is_ok_and(|done|done.contains(&active_id));
                 if unit_finished {mission_index.set(usize::MAX);}
@@ -430,6 +433,30 @@ fn RichResults(artifacts: Vec<Artifact>) -> Element {
             } },
         } }
     } }
+}
+
+/// "Start over" button with a confirmation step; wipes completions, attempts and drafts for the course.
+#[component]
+pub fn ResetProgress(course_id: String, onreset: EventHandler<()>) -> Element {
+    let mut confirming = use_signal(|| false);
+    let mut message = use_signal(String::new);
+    rsx! {
+        button { class:"reset-progress", onclick: move |_| { message.set(String::new()); confirming.set(true); }, "진도 초기화" }
+        if confirming() { div { class:"doctor-backdrop", section { class:"doctor-panel", role:"dialog", aria_label:"진도 초기화", aria_modal:"true",
+            h2 { "처음부터 다시 시작할까요?" }
+            p { "이 컴퓨터에 저장된 클리어 기록, 제출 기록, 작성 중인 코드와 퀴즈 답안을 모두 지웁니다. 되돌릴 수 없습니다." }
+            if !message().is_empty() { p { class:"error", "{message}" } }
+            div { class:"actions",
+                button { onclick: move |_| confirming.set(false), "취소" }
+                button { class:"danger", autofocus:true, onclick: {let course_id=course_id.clone(); move |_| {
+                    match molip_quest::reset_progress(&course_id) {
+                        Ok(()) => { confirming.set(false); onreset.call(()); }
+                        Err(e) => message.set(e),
+                    }
+                }}, "모두 지우고 처음부터" }
+            }
+        } } }
+    }
 }
 
 #[component]
