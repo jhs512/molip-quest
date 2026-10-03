@@ -96,30 +96,18 @@ pub fn answer_prompt(unit: &Unit, code: &str) -> String {
     }
 }
 
-/// The "machine" answer prompt: the same request written as a specification an analyst
-/// hands to a tool. Role, task, output contract, environment constraints, the chapter's
-/// professional principles, then the exact code and acceptance criteria.
+/// The "machine" answer prompt: the same request as a compact specification. One line per
+/// item, the chapter's principles, the starter code, the current code only when it differs,
+/// then the acceptance criteria with the checker boilerplate stripped.
 pub fn machine_prompt(unit: &Unit, code: &str) -> String {
-    let tests = if unit.tests.is_empty() {
-        "입출력 예시 없음. 아래 검사 조건을 따르세요.".to_string()
-    } else {
-        unit.tests
-            .iter()
-            .enumerate()
-            .map(|(n, t)| {
-                format!(
-                    "예제 {}\n입력:\n{}\n예상 출력:\n{}",
-                    n + 1,
-                    t.input.trim_end(),
-                    t.expected.trim_end()
-                )
-            })
-            .collect::<Vec<_>>()
-            .join("\n\n")
-    };
-    let checker = unit.checker.as_deref().map(str::trim).unwrap_or(
-        "입출력 예시의 출력을 글자 단위로 일치시키세요. 공백, 줄바꿈, 소수점 자릿수까지 비교합니다.",
-    );
+    // Hints are written for people; the specification carries only the task itself.
+    let content = unit
+        .content
+        .split("### 힌트")
+        .next()
+        .unwrap_or("")
+        .replace("### 문제에서 필요한 설명\n\n", "")
+        .replace("### 목표\n\n", "");
     let principles = unit
         .expertise
         .as_ref()
@@ -130,30 +118,92 @@ pub fn machine_prompt(unit: &Unit, code: &str) -> String {
                 .collect::<Vec<_>>()
                 .join("\n")
         })
-        .unwrap_or_else(|| "- 문제의 입출력 조건과 검사 조건을 그대로 따릅니다.".into());
+        .unwrap_or_else(|| "- 입출력 조건을 그대로 따른다.".into());
+    let starter = unit.starter_code.trim_end();
+    let current = code.trim_end();
+    let current = if current.is_empty() || current == starter {
+        String::new()
+    } else {
+        format!("\n\n현재 코드:\n{current}")
+    };
+    let examples = if unit.tests.is_empty() {
+        String::new()
+    } else {
+        let cases = unit
+            .tests
+            .iter()
+            .enumerate()
+            .map(|(n, t)| {
+                let input = t.input.trim_end();
+                format!(
+                    "예제 {}: 입력 {} → 출력 {}",
+                    n + 1,
+                    if input.is_empty() {
+                        "(없음)".to_string()
+                    } else {
+                        format!("{input:?}")
+                    },
+                    format!("{:?}", t.expected.trim_end())
+                )
+            })
+            .collect::<Vec<_>>()
+            .join("\n");
+        format!("\n\n입출력 예시:\n{cases}")
+    };
+    let check = match unit.checker.as_deref() {
+        Some(checker) => checker_summary(checker),
+        None => "출력을 글자 단위로 비교(공백·줄바꿈·자릿수 포함).".to_string(),
+    };
     format!(
-        "# 역할\n당신은 Python 3와 pandas·scikit-learn·matplotlib에 능숙한 금융 데이터 분석가입니다. 아래 과제를 재현 가능한 단일 스크립트로 해결하세요.\n\n\
-# 과제\n{title}\n\n{content}\n\n\
-# 산출물 형식 (반드시 지킬 것)\n\
-- 설명 없이, 바로 실행할 수 있는 Python 파일 하나(main.py)의 전체 코드만 출력합니다. 앞뒤 설명 문장과 Markdown 코드 펜스를 넣지 않습니다.\n\
-- 여러 파일, Notebook, 셸 명령, 패키지 설치를 요구하지 않습니다.\n\n\
-# 실행 환경과 제약\n\
-- 실행 환경: Python 3, pandas, numpy, scikit-learn, matplotlib, seaborn. 표준 입력은 `input()`으로 읽습니다.\n\
-- 자료: 작업 폴더의 `data/` 아래 제공 파일만 사용합니다. 인터넷 접근, 외부 다운로드, 다른 경로의 파일은 금지합니다.\n\
-- 독립 실행: 앞 문제의 변수나 파일을 가정하지 않습니다. 필요한 import와 준비 코드를 모두 포함합니다.\n\
-- 재현성: 난수가 필요하면 `random_state=42`로 고정해 실행할 때마다 같은 결과를 냅니다.\n\
-- 준비 코드(기본 코드)의 변수 이름과 자료 읽는 방식은 그대로 두고 그 아래를 완성합니다.\n\
-- 검사기가 읽는 결과 변수의 이름과 자료형을 아래 검사 조건과 정확히 맞춥니다. 출력은 글자 단위로 비교됩니다.\n\n\
-# 이 단원의 전문 원칙\n{principles}\n\n\
-# 기본 코드\n{starter}\n\n\
-# 현재 코드\n{code}\n\n\
-# 입출력 예시\n{tests}\n\n\
-# 검사 조건 (결과 변수 이름과 조건은 여기서 읽으세요)\n{checker}",
+        "역할: Python 3·pandas·scikit-learn·matplotlib에 능숙한 금융 데이터 분석가.\n\
+과제: {title}\n{content}\n\n\
+출력: 설명 없이 Python 파일 하나(main.py)의 전체 코드만. 코드 펜스 없음.\n\
+환경: Python 3, pandas, numpy, scikit-learn, matplotlib, seaborn. 자료는 data/ 아래 제공 파일만, 인터넷 금지. 앞 문제의 변수·파일 가정 금지. 난수는 random_state=42. 준비 코드의 변수 이름과 읽는 방식은 그대로.\n\
+원칙:\n{principles}\n\n\
+기본 코드:\n{starter}{current}{examples}\n\n\
+검사: {check}",
         title = unit.title,
-        content = unit.content.trim(),
-        starter = unit.starter_code.trim_end(),
-        code = code.trim_end(),
+        content = content.trim(),
     )
+}
+
+/// Reduce the checker source to what the AI must satisfy: the result variables it reads and
+/// the assertions inside its `try` block, without the runpy boilerplate.
+fn checker_summary(checker: &str) -> String {
+    let mut lines = Vec::new();
+    if let Some(start) = checker.find("assert set([") {
+        let rest = &checker[start + "assert set([".len()..];
+        if let Some(end) = rest.find("])") {
+            let names: Vec<_> = rest[..end]
+                .split(',')
+                .map(|n| n.trim().trim_matches(|c| c == '\'' || c == '"'))
+                .filter(|n| !n.is_empty())
+                .collect();
+            if !names.is_empty() {
+                lines.push(format!("결과 변수 {} 를 만든다.", names.join(", ")));
+            }
+        }
+    }
+    if let Some(start) = checker.rfind("\ntry:\n") {
+        let body = &checker[start + "\ntry:\n".len()..];
+        let body = body.split("\nexcept (KeyError").next().unwrap_or(body);
+        let assertions: Vec<_> = body
+            .lines()
+            .map(|l| l.strip_prefix("    ").unwrap_or(l))
+            .filter(|l| !l.trim().is_empty())
+            .collect();
+        if !assertions.is_empty() {
+            lines.push(format!(
+                "검사 코드(s는 main.py의 변수들):\n{}",
+                assertions.join("\n")
+            ));
+        }
+    }
+    if lines.is_empty() {
+        "검사 코드가 결과 변수와 값을 확인한다.".to_string()
+    } else {
+        lines.join("\n")
+    }
 }
 
 /// Markdown for the prompt guide: the human prompt and, for each word that matters, why.

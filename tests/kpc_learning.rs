@@ -204,7 +204,7 @@ fn progress_unlocks_only_the_next_mission_and_prompt_requests_one_python_file() 
         "price = 10000",
         "50000",
         "수량과 가격",
-        "# 역할",
+        "역할:",
         "random_state=42",
         "data/",
     ] {
@@ -252,8 +252,13 @@ fn every_kpc_coding_problem_has_a_human_prompt_and_a_machine_prompt() {
                         );
                     }
                     assert!(
-                        machine.contains("# 역할")
+                        machine.contains("역할:")
                             && machine.contains(problem.starter_code.trim_end())
+                    );
+                    assert!(
+                        !machine.contains("runpy") && !machine.contains("현재 코드"),
+                        "{}: machine prompt carries boilerplate",
+                        problem.id
                     );
                     checked += 1;
                 }
