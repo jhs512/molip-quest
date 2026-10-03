@@ -162,3 +162,14 @@ textarea[data-code-editor][hidden] { display: none; }
 .prompt-copy { border: 1px solid #669abc; width: 100%; }
 .mission-strip ~ .lesson { height: calc(100vh - 235px); min-height: 520px; }
 @media (max-width: 900px) { .mission-strip { padding-right: 22px; padding-top: 62px; } .reading-mission { margin: 16px; padding: 20px; } }
+
+/* System-bar insets: the Android activity sets --inset-top/--inset-bottom; elsewhere they are 0. */
+.sidebar { padding-top: calc(30px + var(--inset-top, 0px)); }
+.view-only-note { color: #b2c7bf; margin-top: 12px; font-size: 14px; line-height: 1.6; }
+.shell:not(.practice-shell) > main { padding-bottom: calc(40px + var(--inset-bottom, 0px)); }
+.practice-header { height: calc(62px + var(--inset-top, 0px)); padding-top: calc(8px + var(--inset-top, 0px)); }
+.classroom-back { top: calc(12px + var(--inset-top, 0px)); }
+.practice-actions { padding-bottom: calc(12px + var(--inset-bottom, 0px)); }
+.curriculum-menu { max-height: calc(100vh - 64px - var(--inset-top, 0px) - var(--inset-bottom, 0px)); }
+.doctor-backdrop { padding-top: calc(24px + var(--inset-top, 0px)); padding-bottom: calc(24px + var(--inset-bottom, 0px)); }
+@media (max-width: 600px) { .sidebar { padding-top: calc(20px + var(--inset-top, 0px)); } .shell:not(.practice-shell) > main { padding-bottom: calc(20px + var(--inset-bottom, 0px)); } }

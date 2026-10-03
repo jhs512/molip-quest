@@ -87,7 +87,7 @@ fn Workspace() -> Element {
         }
         Ok(course) => rsx! { div { class:if opened() {"shell practice-shell"} else {"shell"},
             aside { class:"sidebar", div {class:"brand", "몰입 퀘스트"} h3 {"KPC 금융 데이터 분석"} p {"3일 · 20시간 · 7챕터"}
-                if ui::VIEW_ONLY { p {class:"muted","Android 열람 모드 · 모든 단원과 미션이 열려 있습니다. 개념과 퀴즈를 풀고, 코딩 미션은 읽고 넘어갑니다. 코드 실행·채점은 데스크톱 앱에서 하세요."} }
+                if ui::VIEW_ONLY { p {class:"view-only-note","Android 열람 모드 · 모든 단원과 미션이 열려 있습니다. 개념과 퀴즈를 풀고, 코딩 미션은 읽고 넘어갑니다. 코드 실행·채점은 데스크톱 앱에서 하세요."} }
                 ui::DoctorPanel {} }
             main {
                 if opened() {
