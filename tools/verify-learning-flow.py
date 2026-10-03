@@ -57,7 +57,7 @@ async def main():
    else:
     await expect("!!document.querySelector('.cm-editor .cm-content')",'CodeMirror content mounted')
     source=solutions[activity['problem']['id']]
-    await js('(()=>{const textarea=document.querySelector("textarea[data-code-editor]");textarea.value='+json.dumps(source)+';textarea.dispatchEvent(new Event("input",{bubbles:true}));})()')
+    await js('(()=>{const view=document.querySelector(".cm-content").cmTile.root.view;view.dispatch({changes:{from:0,to:view.state.doc.length,insert:'+json.dumps(source)+'}});})()')
     await asyncio.sleep(.2)
     await expect('document.querySelector(".cm-content").textContent.includes('+json.dumps(source.splitlines()[0])+')','CodeMirror synchronized with code')
     await click('테스트 · 완료')

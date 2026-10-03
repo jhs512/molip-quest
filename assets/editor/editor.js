@@ -8,6 +8,7 @@ import { tags, highlightCode, classHighlighter } from '@lezer/highlight';
 // The textarea stays as the Dioxus event bridge and accessible fallback.
 if (!window.molipCodeEditors) {
   const editors = new Map();
+  const resetVersions = new Map();
   const colors = syntaxHighlighting(HighlightStyle.define([
     { tag: tags.keyword, color: '#c792ea' },
     { tag: tags.string, color: '#a8d99c' },
@@ -42,10 +43,11 @@ if (!window.molipCodeEditors) {
       code.replaceChildren(fragment);
     });
     for (const [element, view] of editors) {
-      if (!element.isConnected) { view.destroy(); editors.delete(element); }
+      if (!element.isConnected) { view.destroy(); editors.delete(element); resetVersions.delete(element); }
     }
     document.querySelectorAll('textarea[data-code-editor]').forEach(element => {
       const source = element.getAttribute('data-editor-value') ?? element.value;
+      const resetVersion = element.getAttribute('data-editor-reset');
       let view = editors.get(element);
       if (!view) {
         const host = document.createElement('div');
@@ -63,18 +65,23 @@ if (!window.molipCodeEditors) {
             })],
         });
         editors.set(element, view);
+        resetVersions.set(element, resetVersion);
         element.hidden = true;
-      } else if (view.state.doc.toString() !== source) {
-        // Reset and AI edits must also update the editor without losing the bridge.
+      } else if (resetVersions.get(element) !== resetVersion) {
+        // Only explicit resets may replace the editor document. Typing is owned
+        // by CodeMirror: delayed backend echoes must not interrupt IME input.
+        resetVersions.set(element, resetVersion);
         element.value = source;
-        view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: source } });
+        if (view.state.doc.toString() !== source) {
+          view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: source } });
+        }
       }
     });
   }
   window.molipCodeEditors = { sync };
   new MutationObserver(sync).observe(document.body, {
     subtree: true, childList: true, attributes: true,
-    attributeFilter: ['data-editor-value'],
+    attributeFilter: ['data-editor-value', 'data-editor-reset'],
   });
   sync();
 }

@@ -2,8 +2,10 @@
 
 CodeMirror 6 is bundled locally so the desktop editor works without a CDN.
 The same local Python parser highlights Markdown code blocks via Lezer.
-The hidden textarea bridges edits to Dioxus; code reset updates flow back
-through `data-editor-value`.
+The hidden textarea bridges edits to Dioxus. Normal edits are owned by
+CodeMirror; delayed `data-editor-value` echoes never replace its document.
+Explicit code reset updates increment `data-editor-reset` and supply the new
+`data-editor-value`, so resetting still works without interrupting IME input.
 
 To rebuild after changing `editor.js`, run from the repository root:
 
