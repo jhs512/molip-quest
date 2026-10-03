@@ -274,6 +274,8 @@ body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { poi
   .practice-shell .mission-strip { flex: none; }
   .practice-shell .lesson, .practice-shell .mission-strip ~ .lesson { flex: 1; min-height: 0; height: auto; }
   .practice-shell .concept-flow, .practice-shell .reading-mission { flex: none; }
+  /* Gallery pages are long lists: the main column itself scrolls. */
+  .gallery-shell > main { overflow: auto; display: block; }
 }
 
 /* "one input → one output" pictures from ```mapping fences. */

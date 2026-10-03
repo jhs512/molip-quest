@@ -713,7 +713,8 @@ fn gallery_items(course: &Course, kind: GalleryKind) -> Vec<GalleryItem> {
     for chapter in &course.chapters {
         for unit in &chapter.units {
             for activity in &unit.activities {
-                let location = format!("{} · {}", chapter.title, unit.title);
+                // Course order is time order: the unit (day · period) leads, the chapter follows.
+                let location = format!("{} · {}", unit.title, chapter.title);
                 match kind {
                     GalleryKind::Slides => {
                         if let ActivityKind::Slides { markdown } = &activity.kind {
@@ -798,7 +799,7 @@ pub fn Gallery(course: Course, kind: GalleryKind) -> Element {
                     for (n, item) in items.iter().enumerate() {
                         li { key:"{kind:?}-{n}",
                             button { class:"gallery-entry", onclick: move |_| selected.set(Some(n)),
-                                span { class:"gallery-entry-title", "{item.title}" }
+                                span { class:"gallery-entry-title", {format!("{}. {}", n + 1, item.title)} }
                                 span { class:"gallery-location", "{item.location}" }
                             }
                         }
