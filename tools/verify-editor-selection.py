@@ -30,7 +30,7 @@ async def main():
    r=await call('Page.captureScreenshot',dict(format='png'))
    return Image.open(io.BytesIO(base64.b64decode(r['data']))).convert('RGB')
   before=await shot()
-  await js("const start=probeView.state.doc.line(3).from;probeView.dispatch({selection:{anchor:start,head:start+10}})")
+  await js("(()=>{const start=probeView.state.doc.line(3).from;probeView.dispatch({selection:{anchor:start,head:start+10}})})()")
   await asyncio.sleep(.2)
   details=await js("(()=>{const e=document.querySelector('.cm-selectionBackground');const r=e.getBoundingClientRect();return {range:probeView.state.selection.main.toJSON(),color:getComputedStyle(e).backgroundColor,rect:{x:r.x,y:r.y,width:r.width,height:r.height},lineColor:getComputedStyle(document.querySelector('.cm-activeLine')).backgroundColor}})()")
   after=await shot();r=details['rect']
