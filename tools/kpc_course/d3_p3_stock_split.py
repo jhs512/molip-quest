@@ -2,38 +2,93 @@
 from kpc_course.dsl import *
 
 UNIT = unit('stock-split', '3일차 · 3교시 — 시간 분리와 기준 모델', [
-    concept('temporal-boundary', '훈련 정답도 테스트 시작 전이어야 한다',
-        body="미래를 예측하려면 과거로 훈련하고 뒤의 기간으로 테스트합니다. 날짜를 무작위로 섞으면 미래로 훈련하고 과거를 테스트할 수 있습니다. 마지막 80개 입력 날짜를 테스트로 남깁니다.\n\n입력 날짜만 훈련 쪽이라고 충분하지 않습니다. 경계 바로 전 행의 `target_date`가 테스트 시작일이면 테스트 시점의 정답을 이미 본 것입니다. `train_mask`는 입력 날짜 < `test_start`와 정답 날짜 < `test_start`를 모두 만족해야 합니다. 제공 자료에서는 396행 중 훈련 315, 경계 제외 1, 테스트 80입니다.\n\n기준 예측은 '내일 종가도 오늘 종가와 같다'입니다. 복잡한 모델도 이것보다 오차를 줄이지 못할 수 있습니다. `MAE`는 절대 오차 평균으로 가격 단위이며 작을수록 좋습니다. 평가 기간을 고정해서 같은 정답에 대해 비교하세요.",
-        check=short('이 시계열 분리에 `train`/`test`를 무작위로 섞나요?', ['아니요', '아니오', 'no', '섞지않는다'], '과거 훈련, 미래 테스트 순서를 유지합니다.')),
+    concept('temporal-boundary', '시간은 섞으면 안 되고, 경계의 하루도 조심해야 한다',
+        body="""
+        어제는 `train_test_split`이 승객을 무작위로 섞어 훈련과 테스트를 나눴습니다. 승객끼리는 순서가 없으니 괜찮았습니다. 주가는 다릅니다. 날짜를 무작위로 섞으면 6월 가격으로 훈련한 모델이 3월 가격을 맞히는 꼴이 됩니다. 미래를 보고 과거를 맞히는 것은 시험이 아닙니다. 그래서 시간 자료는 **앞쪽 기간으로 훈련하고 뒤쪽 기간으로 테스트**합니다. 여기서는 마지막 80거래일을 테스트로 떼어 둡니다.
+
+        그런데 경계를 하루 잘못 그으면 작은 누수가 숨어듭니다. 테스트가 시작되는 날을 `test_start`라고 합시다. 그 바로 전날 행을 보세요. 입력 날짜는 테스트 전이니 훈련에 들어가도 될 것 같지만, 그 행의 **정답**은 `test_start` 당일의 종가입니다. 테스트 첫날의 답을 훈련에서 이미 본 셈입니다.
+
+        | 행의 날짜 | 정답 날짜 | 훈련에 넣어도 되나 |
+        | --- | --- | --- |
+        | test_start 이틀 전 | test_start 하루 전 | 된다 |
+        | test_start 하루 전 | **test_start** | 안 된다. 정답이 테스트 기간 |
+        | test_start | test_start 다음 거래일 | 테스트 |
+
+        그래서 훈련 조건은 둘입니다. 입력 날짜도 `test_start` 전, 그리고 `target_date`도 `test_start` 전. 2교시에서 `target_date`를 남겨 둔 이유가 이것입니다.
+
+        ```python
+        test_start = frame.index[-80]
+        train_mask = (frame.index < test_start) & (frame['target_date'] < test_start)
+        test_mask = frame.index >= test_start
+        X_train, X_test = X.loc[train_mask], X.loc[test_mask]
+        ```
+
+        나눴으면 기준 모델입니다. 어제의 "전원 사망"에 해당하는 가장 단순한 예측은 **"내일 종가는 오늘 종가와 같다"**입니다. 우습게 들리지만 주가에서는 이 기준을 이기기가 생각보다 어렵습니다. 점수는 정확도 대신 **MAE**(평균 절대 오차)로 잽니다. 예측과 정답의 차이를 부호 없이 평균 낸 것이라 단위가 원이고, "평균적으로 몇 원 빗나갔나"로 읽으면 됩니다. 작을수록 좋습니다.
+        """,
+        check=short('"내일 종가는 오늘 종가와 같다"처럼 가장 단순한 예측을 두고 모델과 비교하는 것을 무엇이라고 하나요?', ['기준 모델', '기준모델', '기준 예측', '기준예측', 'baseline', '베이스라인'],
+                    '기준(baseline)이 있어야 모델이 실제로 무엇을 배웠는지 알 수 있습니다. 주가에서는 "오늘 종가 그대로"가 생각보다 강한 기준입니다.')),
     coding('test-start', '테스트 시작일 정하기',
-        goal='준비된 `frame`에서 마지막 80개 행의 첫 날짜를 `test_start`에 저장하세요(`frame.index[-80]`). 입력 날짜가 `test_start` 이상인 행 수를 `n_test`에 저장해 80인지 출력하세요.',
-        hint='`frame.index[-80]`은 뒤에서 80번째 날짜입니다. `frame.index >= test_start`는 날짜마다 참·거짓이고 `.sum()`이 참의 개수를 셉니다.',
-        starter="import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['Close']\nframe['return_1']=prices['Close'].pct_change()\nframe['ma5']=prices['Close'].rolling(5).mean()\nframe['lag_close_1']=prices['Close'].shift(1)\nframe['target_next_close']=prices['Close'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\n# test_start, n_test를 만들고 출력하세요\n",
-        solution="import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['Close']\nframe['return_1']=prices['Close'].pct_change()\nframe['ma5']=prices['Close'].rolling(5).mean()\nframe['lag_close_1']=prices['Close'].shift(1)\nframe['target_next_close']=prices['Close'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\ntest_start = frame.index[-80]\nn_test = int((frame.index >= test_start).sum())\nprint(test_start, n_test)\n",
+        goal="""
+        준비된 `frame`에서 마지막 80행의 첫 날짜를 `test_start`에 저장하세요. 그리고 날짜가 `test_start` 이상인 행 수를 `n_test`에 담아 출력하세요.
+
+        `n_test`가 80이면 맞게 정한 것입니다.
+        """,
+        hint="""
+        `frame.index[-80]`이 뒤에서 80번째 날짜입니다. `frame.index >= test_start`는 행마다 참·거짓이고 `.sum()`이 참의 개수, `int()`로 감싸 정수로 저장하세요.
+        """,
+        starter=ST_FRAME + "# test_start, n_test를 만들고 출력하세요\n",
+        solution=ST_FRAME + "test_start = frame.index[-80]\nn_test = int((frame.index >= test_start).sum())\nprint(test_start, n_test)\n",
         check="assert s['test_start']==s['frame'].index[-80] and s['n_test']==80"),
-    coding('time-boundary', '미래 정답이 겹치지 않는 분리',
-        goal='준비된 `frame`에서 마지막 80개 입력 날짜의 시작을 `test_start`로 정하세요. `train_mask`는 입력 날짜와 `target_date`가 모두 `test_start` 전인 행, `test_mask`는 입력 날짜가 `test_start` 이상인 행입니다. `X_train`, `X_test`, `y_train`, `y_test`를 만드세요.',
-        hint='테스트 시작일은 `frame.index[-80]`입니다. 훈련 행은 입력 날짜뿐 아니라 `target_date`도 그 날짜보다 이전이어야 합니다. 두 조건을 `&`로 연결해 훈련 마스크를 만들고 `.loc[마스크]`로 입력과 정답을 같은 행에서 고르세요.',
-        starter="import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['Close']\nframe['return_1']=prices['Close'].pct_change()\nframe['ma5']=prices['Close'].rolling(5).mean()\nframe['lag_close_1']=prices['Close'].shift(1)\nframe['target_next_close']=prices['Close'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\n# test_start, 마스크와 네 자료를 만드세요\n",
-        solution="import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['Close']\nframe['return_1']=prices['Close'].pct_change()\nframe['ma5']=prices['Close'].rolling(5).mean()\nframe['lag_close_1']=prices['Close'].shift(1)\nframe['target_next_close']=prices['Close'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\ntest_start=frame.index[-80]\ntrain_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\nX_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\nprint(len(X_train),len(X_test))\nprint(frame.loc[train_mask,'target_date'].max(),X_test.index.min())\n",
+    coding('time-boundary', '정답 날짜까지 보고 나누기',
+        goal="""
+        훈련·테스트를 나눕니다. `test_start`를 정하고, 입력 날짜와 `target_date`가 **모두** `test_start` 전인 행을 `train_mask`, 입력 날짜가 `test_start` 이상인 행을 `test_mask`로 만든 뒤 `X_train`, `X_test`, `y_train`, `y_test`를 만드세요. 두 쪽의 행 수를 출력합니다.
+
+        396행이 훈련 315, 경계 하루 제외 1, 테스트 80으로 나뉘면 맞게 한 것입니다. 훈련 정답의 마지막 날짜가 테스트 첫 날짜보다 앞인지도 출력해 보세요.
+        """,
+        hint="""
+        개념의 네 줄 그대로입니다. 두 조건을 괄호로 감싸 `&`로 잇는 것은 1일차와 같습니다. `X.loc[train_mask]`, `y.loc[train_mask]`처럼 같은 마스크로 입력과 정답을 함께 골라야 행이 어긋나지 않습니다.
+        """,
+        starter=ST_FRAME + "feature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\n# test_start, 마스크와 네 자료를 만드세요\n",
+        solution=ST_FRAME + TIME_SPLIT + "print(len(X_train),len(X_test))\nprint(frame.loc[train_mask,'target_date'].max(),X_test.index.min())\n",
         check="assert len(s['X_train'])==315 and len(s['X_test'])==80\nassert s['frame'].loc[s['train_mask'],'target_date'].max()<s['X_test'].index.min()\nassert set(s['X_train'].index).isdisjoint(s['X_test'].index)\nassert 'target_next_close' not in s['X_train']"),
-    coding('manual-mae', '절대 오차 평균 손계산',
-        goal="준비된 시간 분리에서 기준 예측(오늘 종가 `X_test['close']`)과 실제 다음 종가 `y_test`의 차이를 구하세요. `errors`에 절대 오차 `(y_test - X_test['close']).abs()`를, `manual_mae`에 그 평균을 저장하고 출력하세요. 다음 미션에서 `mean_absolute_error`와 같은 값인지 비교합니다.",
-        hint='오차는 실제값 − 예측값입니다. 부호를 없애려면 `.abs()`, 평균은 `.mean()`입니다. MAE는 이 두 단계를 이름 붙인 것일 뿐입니다.',
-        starter="import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['Close']\nframe['return_1']=prices['Close'].pct_change()\nframe['ma5']=prices['Close'].rolling(5).mean()\nframe['lag_close_1']=prices['Close'].shift(1)\nframe['target_next_close']=prices['Close'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\ntest_start=frame.index[-80]\ntrain_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\nX_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\n# errors, manual_mae를 만들고 출력하세요\n",
-        solution="import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['Close']\nframe['return_1']=prices['Close'].pct_change()\nframe['ma5']=prices['Close'].rolling(5).mean()\nframe['lag_close_1']=prices['Close'].shift(1)\nframe['target_next_close']=prices['Close'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\ntest_start=frame.index[-80]\ntrain_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\nX_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\nerrors = (y_test - X_test['close']).abs()\nmanual_mae = errors.mean()\nprint(manual_mae)\n",
+    coding('manual-mae', 'MAE를 손으로 계산하기',
+        goal="""
+        기준 예측의 오차를 직접 계산합니다. 테스트 기간에서 "내일 종가 = 오늘 종가"로 예측하면 예측값은 `X_test['close']`입니다. 정답 `y_test`와의 차이에 `.abs()`를 붙인 것을 `errors`에, 그 평균을 `manual_mae`에 저장하고 출력하세요.
+
+        결과는 원 단위입니다. "하루에 평균 이 정도 빗나간다"로 읽으세요. 다음 미션에서 함수로 구한 값과 같은지 비교합니다.
+        """,
+        hint="""
+        `errors = (y_test - X_test['close']).abs()`, `manual_mae = errors.mean()`. MAE라는 이름이 붙어 있지만 하는 일은 "차이의 절댓값을 평균 낸다" 두 단계뿐입니다.
+        """,
+        starter=ST_FRAME + TIME_SPLIT + "# errors, manual_mae를 만들고 출력하세요\n",
+        solution=ST_FRAME + TIME_SPLIT + "errors = (y_test - X_test['close']).abs()\nmanual_mae = errors.mean()\nprint(manual_mae)\n",
         check="import numpy as np\nassert len(s['errors'])==80 and (s['errors']>=0).all()\nassert abs(s['manual_mae']-float(np.abs(s['y_test'].to_numpy()-s['X_test']['close'].to_numpy()).mean()))<1e-8"),
-    coding('close-baseline', '오늘 종가 기준의 오차',
-        goal='준비한 시간 분리에서 `baseline_pred`에는 `X_test`의 `close` 배열을 저장하세요. `baseline_mae`에는 `y_test`와 `baseline_pred`의 `MAE`를 계산하세요.',
-        hint="단순 기준 예측은 테스트 입력의 현재 종가 `X_test['close']`입니다. 이를 배열로 바꿔 `baseline_pred`에 저장하고 `mean_absolute_error(y_test, baseline_pred)`로 오차를 계산하세요.",
-        starter="import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['Close']\nframe['return_1']=prices['Close'].pct_change()\nframe['ma5']=prices['Close'].rolling(5).mean()\nframe['lag_close_1']=prices['Close'].shift(1)\nframe['target_next_close']=prices['Close'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\ntest_start=frame.index[-80]\ntrain_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\nX_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\nfrom sklearn.metrics import mean_absolute_error\n# baseline_pred와 baseline_mae를 만드세요\n",
-        solution="import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['Close']\nframe['return_1']=prices['Close'].pct_change()\nframe['ma5']=prices['Close'].rolling(5).mean()\nframe['lag_close_1']=prices['Close'].shift(1)\nframe['target_next_close']=prices['Close'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\ntest_start=frame.index[-80]\ntrain_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\nX_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\nfrom sklearn.metrics import mean_absolute_error\nbaseline_pred=X_test['close'].to_numpy()\nbaseline_mae=mean_absolute_error(y_test,baseline_pred)\nprint(baseline_mae)\n",
+    coding('close-baseline', '같은 계산을 함수로',
+        goal="""
+        `scikit-learn`의 `mean_absolute_error`로 같은 값을 구합니다. 기준 예측 `X_test['close']`를 배열로 바꿔 `baseline_pred`에 저장하고, `mean_absolute_error(y_test, baseline_pred)`를 `baseline_mae`에 담아 출력하세요.
+
+        앞 미션의 `manual_mae`와 같은 숫자가 나와야 합니다. 이 값이 오늘 남은 시간 동안 모든 모델이 넘어야 할 선입니다.
+        """,
+        hint="""
+        `baseline_pred = X_test['close'].to_numpy()`, `baseline_mae = mean_absolute_error(y_test, baseline_pred)`. 지표 함수는 어제처럼 `(정답, 예측)` 순서입니다.
+        """,
+        starter=ST_FRAME + TIME_SPLIT + "from sklearn.metrics import mean_absolute_error\n# baseline_pred와 baseline_mae를 만드세요\n",
+        solution=ST_FRAME + TIME_SPLIT + "from sklearn.metrics import mean_absolute_error\nbaseline_pred=X_test['close'].to_numpy()\nbaseline_mae=mean_absolute_error(y_test,baseline_pred)\nprint(baseline_mae)\n",
         check="import numpy as np\nassert np.array_equal(s['baseline_pred'],s['X_test']['close'].to_numpy())\nassert abs(s['baseline_mae']-float(np.abs(s['y_test'].to_numpy()-s['X_test']['close'].to_numpy()).mean()))<1e-8"),
-    quiz('temporal-check', '누수 없는 평가',
-        choice('훈련 행의 정답 날짜가 테스트 시작일이면?', ['그 행을 훈련에서 제외', '입력 날짜가 과거라 포함'], 0, '정답도 훈련 기간 안에 있어야 합니다.'),
-        short('오늘 종가를 내일 값으로 쓰는 예측을 무엇이라고 하나요?', ['기준모델', '기준예측', 'baseline', '베이스라인'], '복잡한 모델과 비교할 기준입니다.'),
-        short('제공 파일의 경계 제외 후 훈련 행 수는?', ['315'], '훈련 315 + 경계 제외 1 + 테스트 80 = 유효 396행입니다.'),
-        choice('`MAE`가 1500이라는 뜻은?', ['예측이 평균적으로 약 1500원 벗어남', '정확도 15%'], 0, '`MAE`는 정답과 같은 단위(원)의 평균 절대 오차입니다.'),
-        short('마지막 80행의 첫 날짜를 고르는 표현은? (`frame.index[___]`)', ['-80'], '음수 인덱스 `-80`은 뒤에서 80번째입니다.'),
+    quiz('temporal-check', '3일차 3교시 점검',
+        choice('주가 자료를 `train_test_split`처럼 무작위로 섞어 나누면 어떤 문제가 생기나요?',
+               ['미래 가격으로 훈련해 과거를 맞히게 되어 점수를 믿을 수 없다', '행 수가 줄어든다', '아무 문제 없다'], 0,
+               '승객은 순서가 없지만 날짜는 순서가 있습니다. 시간 자료는 앞 기간으로 훈련하고 뒤 기간으로 테스트합니다.'),
+        choice('`test_start` 하루 전 행을 훈련에서 빼야 하는 이유는 무엇인가요?',
+               ['그 행의 정답이 `test_start` 당일 종가라 테스트 첫날의 답을 훈련에서 보게 된다', '입력이 비어 있어서', '가격이 너무 높아서'], 0,
+               '입력 날짜만 보면 훈련 같지만 정답 날짜가 테스트 기간입니다. 그래서 `target_date`도 `test_start` 전이어야 합니다.'),
+        short('396행을 나누면 테스트 80행, 경계 제외 1행, 훈련은 몇 행인가요?', ['315', '315행'],
+              '396에서 80과 1을 빼면 315입니다. 두 조건을 모두 만족하는 행만 훈련에 들어갑니다.'),
+        choice('MAE가 1500이라는 것은 무슨 뜻인가요?',
+               ['예측이 하루 평균 약 1500원 빗나간다', '정확도가 15%다', '1500일을 예측했다'], 0,
+               'MAE는 예측과 정답의 차이를 부호 없이 평균 낸 값이라 단위가 정답과 같은 원입니다. 작을수록 좋습니다.'),
+        choice('"내일 종가는 오늘 종가와 같다"는 기준 예측은 어떤 역할을 하나요?',
+               ['모델이 이 오차보다 작아야 무언가 배운 것이라는 선', '가장 좋은 모델', '쓸모없는 농담'], 0,
+               '어제의 "전원 사망"과 같은 역할입니다. 주가에서는 이 단순한 기준을 이기기가 쉽지 않습니다.'),
     ),
 ])

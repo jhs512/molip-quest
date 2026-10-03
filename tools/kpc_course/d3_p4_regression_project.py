@@ -1,44 +1,128 @@
 """3일차 · 4교시 — 회귀 비교와 최종 결과"""
 from kpc_course.dsl import *
 
+STOCK_MODEL = ST_FRAME + TIME_SPLIT + REG
+
 UNIT = unit('regression-project', '3일차 · 4교시 — 회귀 비교와 최종 결과', [
-    concept('regression-metrics', '기준보다 나쁜 결과도 정확히 보고하기',
-        body='`Linear` `Regression`은 입력의 선형 조합으로 값을 예측합니다. `Ridge`는 계수가 커지는 것에 제곱 벌점을 더하고, `Lasso`는 절댓값 벌점을 더해 일부 계수를 0으로 만들 수 있습니다. `StandardScaler`는 훈련에서만 `fit`하고 `Pipeline`으로 모델과 묶습니다.\n\n`MAE`는 절대 오차 평균, `RMSE`는 제곱 오차 평균의 제곱근으로 큰 오차에 더 민감합니다. 두 값은 종가의 단위이며 작을수록 좋습니다. `R`²는 테스트 정답 평균을 기준으로 한 지표로 음수가 될 수도 있습니다. 오늘 종가 기준 예측과는 다른 기준이므로 높은 `R`² 하나만 보고 성공이라고 말하지 마세요.\n\n같은 테스트 기간에서 기준 예측과 세 모델을 비교하고, `actual`과 `prediction`을 `target_date` 축으로 그립니다. 보고는 ① 예측 시점·분리 기준 ② 기준 대비 `MAE` 변화 ③ 해당 파일·기간의 한계 순서로 합니다. 기준보다 오차가 크다면 개선하지 못했다고 기록합니다. 테스트 기간을 반복 튜닝에 사용하지 않습니다.',
-        check=short('일부 계수를 0으로 만들 수 있는 절댓값 벌점 모델은?', ['Lasso', '라쏘', '라소'], '`Lasso`는 `L1` 벌점을 사용합니다.')),
+    concept('regression-metrics', '직선 맞추기, 그리고 기준보다 못한 결과도 그대로 보고하기',
+        body="""
+        마지막 시간입니다. 입력 네 열(오늘 종가, 수익률, 5일 평균, 어제 종가)로 내일 종가를 맞히는 회귀 모델을 세 개 돌리고, 3교시의 기준과 비교해서 결론을 씁니다.
+
+        **선형 회귀**(`LinearRegression`)는 입력마다 가중치를 곱해 더한 값으로 정답을 맞힙니다. 입력이 하나면 점들 사이에 가장 잘 맞는 직선을 긋는 것이고, 넷이면 네 방향으로 기울어진 판을 맞추는 것입니다. 학습이 끝나면 `coef_`에 가중치 네 개가 남아 어느 입력이 얼마나 영향을 줬는지 읽을 수 있습니다. **릿지**(`Ridge`)와 **라쏘**(`Lasso`)는 같은 직선 맞추기에 **브레이크**를 단 것입니다. 가중치가 너무 커지면 벌점을 매겨, 훈련 자료의 우연한 흔들림까지 외우는 것을 막습니다. 라쏘는 브레이크가 세서 쓸모없는 입력의 가중치를 아예 0으로 만들기도 합니다. 입력 크기가 제각각이면 브레이크가 공평하지 않으니 어제처럼 `StandardScaler`와 묶어 씁니다.
+
+        ```python
+        model = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))])
+        model.fit(X_train, y_train)
+        prediction = model.predict(X_test)
+        mean_absolute_error(y_test, prediction)
+        ```
+
+        점수는 셋을 함께 적습니다. **MAE**는 3교시 그대로, 하루 평균 몇 원 빗나갔나. **RMSE**는 차이를 제곱해 평균 낸 뒤 제곱근을 씌운 것이라 단위는 같은 원이지만 **큰 실수에 더 민감**합니다. 어쩌다 한 번 크게 틀리는 모델은 MAE보다 RMSE가 많이 커집니다. **R²**는 "정답의 평균값으로만 찍었을 때보다 얼마나 나은가"를 1을 만점으로 적은 것입니다. 평균보다 못하면 음수도 나옵니다. 주의할 점은 R²의 비교 대상이 "평균으로 찍기"이지 우리의 기준 "오늘 종가 그대로"가 아니라는 것입니다. R²가 높아 보여도 기준 MAE를 못 넘을 수 있습니다.
+
+        결론을 쓰는 순서는 셋입니다. ① 무엇을 언제 예측했고 훈련·테스트를 어떻게 나눴는지. ② 기준 MAE와 모델 MAE, 그 차이. ③ 이 파일, 이 기간에서만 본 결과라는 한계. 모델이 기준보다 나쁘면 **나쁘다고 적습니다.** 이 수업의 검사는 "이기는 모델"을 요구하지 않습니다. 같은 테스트 기간에서 정직하게 비교했는지를 봅니다. 테스트 점수가 마음에 안 든다고 테스트 기간을 바꿔 가며 다시 돌리는 것은, 모의고사 문제를 바꿔 가며 점수 좋은 것만 고르는 일입니다.
+        """,
+        check=short('예측과 정답의 차이를 제곱해 평균 낸 뒤 제곱근을 씌운 지표로, 큰 실수에 더 민감한 것의 약어는 무엇인가요?', ['RMSE', 'rmse'],
+                    'RMSE는 제곱 때문에 큰 오차가 더 크게 반영됩니다. MAE와 단위는 같지만, 가끔 크게 틀리는 모델에서 둘의 차이가 벌어집니다.')),
     coding('linear-only', '선형 회귀 하나만 먼저',
-        goal="`StandardScaler()`와 `LinearRegression()`을 `Pipeline`으로 묶어 `model`에 학습하세요. 테스트 예측을 `prediction`, MAE를 `linear_mae`에 저장하고 출력하세요. 학습된 계수는 `model.named_steps['model'].coef_`로 볼 수 있으며 입력 4개에 대응하는 4개 값입니다.",
-        hint="분류에서 쓴 흐름과 같습니다: `Pipeline([('scale', StandardScaler()), ('model', LinearRegression())])` → `fit(X_train, y_train)` → `predict(X_test)`. 회귀에서는 정확도 대신 `mean_absolute_error(y_test, prediction)`으로 오차를 봅니다.",
-        starter="import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['Close']\nframe['return_1']=prices['Close'].pct_change()\nframe['ma5']=prices['Close'].rolling(5).mean()\nframe['lag_close_1']=prices['Close'].shift(1)\nframe['target_next_close']=prices['Close'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\ntest_start=frame.index[-80]\ntrain_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\nX_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression,Ridge,Lasso\nfrom sklearn.metrics import mean_absolute_error,mean_squared_error,r2_score\n# model, prediction, linear_mae를 만들고 출력하세요\n",
-        solution="import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['Close']\nframe['return_1']=prices['Close'].pct_change()\nframe['ma5']=prices['Close'].rolling(5).mean()\nframe['lag_close_1']=prices['Close'].shift(1)\nframe['target_next_close']=prices['Close'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\ntest_start=frame.index[-80]\ntrain_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\nX_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression,Ridge,Lasso\nfrom sklearn.metrics import mean_absolute_error,mean_squared_error,r2_score\nmodel = Pipeline([('scale', StandardScaler()), ('model', LinearRegression())])\nmodel.fit(X_train, y_train)\nprediction = model.predict(X_test)\nlinear_mae = mean_absolute_error(y_test, prediction)\nprint(linear_mae)\nprint(model.named_steps['model'].coef_)\n",
+        goal="""
+        `StandardScaler`와 `LinearRegression`을 `Pipeline`으로 묶어 `model`에 학습하세요. 테스트 예측을 `prediction`, MAE를 `linear_mae`에 저장해 출력하고, `model.named_steps['model'].coef_`로 가중치 네 개도 출력하세요.
+
+        `linear_mae`를 3교시의 기준 MAE와 비교해 보세요. 가중치 네 개 중 어느 것이 가장 큰지도 보세요.
+        """,
+        hint="""
+        어제 분류와 같은 흐름입니다. `Pipeline([('scale', StandardScaler()), ('model', LinearRegression())])` → `fit(X_train, y_train)` → `predict(X_test)`. 점수는 `mean_absolute_error(y_test, prediction)`.
+        """,
+        starter=STOCK_MODEL + "# model, prediction, linear_mae를 만들고 출력하세요\n",
+        solution=STOCK_MODEL + "model = Pipeline([('scale', StandardScaler()), ('model', LinearRegression())])\nmodel.fit(X_train, y_train)\nprediction = model.predict(X_test)\nlinear_mae = mean_absolute_error(y_test, prediction)\nprint(linear_mae)\nprint(model.named_steps['model'].coef_)\n",
         check="import numpy as np\nassert len(s['prediction'])==80 and np.isfinite(s['linear_mae'])\nassert len(s['model'].named_steps['model'].coef_)==4\nassert abs(s['linear_mae']-float(np.abs(s['y_test'].to_numpy()-s['prediction']).mean()))<1e-8"),
-    coding('regression-table', '세 회귀 모델과 기준 비교표',
-        goal='준비된 시간 분리와 `import`를 사용하세요. `predictions`에는 `Baseline`, `Linear`, `Ridge`, `Lasso`의 테스트 예측을 저장합니다. `Ridge` `alpha`=1, `Lasso` `alpha`=10·`max_iter`=20000·`tol`=0.001을 사용하세요. 각 모델은 `StandardScaler` `Pipeline`으로 훈련합니다. `results`에는 `model` 인덱스와 `MAE`, `RMSE`, `R2` 열을 만드세요.',
-        hint='회귀 모델마다 `StandardScaler()`와 모델을 `Pipeline`으로 묶고 훈련 자료로 학습하세요. 테스트 예측을 `predictions`, 학습한 모델을 `fitted`에 저장합니다. 기준 예측까지 같은 `y_test`로 MAE, RMSE, R²를 계산하세요. RMSE는 `mean_squared_error(...) ** 0.5`입니다.',
-        starter="import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['Close']\nframe['return_1']=prices['Close'].pct_change()\nframe['ma5']=prices['Close'].rolling(5).mean()\nframe['lag_close_1']=prices['Close'].shift(1)\nframe['target_next_close']=prices['Close'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\ntest_start=frame.index[-80]\ntrain_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\nX_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression,Ridge,Lasso\nfrom sklearn.metrics import mean_absolute_error,mean_squared_error,r2_score\n# models, predictions, results를 만드세요\n",
-        solution="import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['Close']\nframe['return_1']=prices['Close'].pct_change()\nframe['ma5']=prices['Close'].rolling(5).mean()\nframe['lag_close_1']=prices['Close'].shift(1)\nframe['target_next_close']=prices['Close'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\ntest_start=frame.index[-80]\ntrain_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\nX_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression,Ridge,Lasso\nfrom sklearn.metrics import mean_absolute_error,mean_squared_error,r2_score\nmodels={'Linear':LinearRegression(),'Ridge':Ridge(alpha=1),'Lasso':Lasso(alpha=10,max_iter=20000,tol=0.001)}\npredictions={'Baseline':X_test['close'].to_numpy()}\nfitted={}\nfor name,estimator in models.items():\n    model=Pipeline([('scale',StandardScaler()),('model',estimator)])\n    model.fit(X_train,y_train)\n    predictions[name]=model.predict(X_test)\n    fitted[name]=model\nrows=[]\nfor name,pred in predictions.items():\n    rows.append({'model':name,'MAE':mean_absolute_error(y_test,pred),'RMSE':mean_squared_error(y_test,pred)**0.5,'R2':r2_score(y_test,pred)})\nresults=pd.DataFrame(rows).set_index('model')\nresults\n",
+    coding('regression-table', '기준과 세 모델을 한 표에',
+        goal="""
+        어제 분류 비교표와 같은 표를 회귀로 만듭니다. `models`에 `Linear`, `Ridge(alpha=1)`, `Lasso(alpha=10, max_iter=20000, tol=0.001)`를 넣고 각각 `StandardScaler`와 묶어 학습한 뒤, 테스트 예측을 `predictions` 딕셔너리에 모으세요. `predictions`에는 기준 예측 `Baseline`(오늘 종가)도 함께 넣습니다. 그다음 네 예측 각각의 `MAE`, `RMSE`, `R2`를 구해 `results` 표를 만드세요. 학습한 모델은 `fitted`에 보관합니다.
+
+        `results`는 네 행 세 열입니다. 기준을 넘는 모델이 있는지, RMSE가 MAE보다 얼마나 큰지 보세요.
+        """,
+        hint="""
+        `predictions = {'Baseline': X_test['close'].to_numpy()}`로 시작해 `for name, estimator in models.items():`에서 `Pipeline`을 만들어 `fit`하고 `predictions[name] = model.predict(X_test)`, `fitted[name] = model`. 두 번째 반복 `for name, pred in predictions.items():`에서 `rows.append({'model': name, 'MAE': mean_absolute_error(y_test, pred), 'RMSE': mean_squared_error(y_test, pred) ** 0.5, 'R2': r2_score(y_test, pred)})`. 끝으로 `results = pd.DataFrame(rows).set_index('model')`.
+        """,
+        starter=STOCK_MODEL + "# models, predictions, results를 만드세요\n",
+        solution=STOCK_MODEL + "models={'Linear':LinearRegression(),'Ridge':Ridge(alpha=1),'Lasso':Lasso(alpha=10,max_iter=20000,tol=0.001)}\npredictions={'Baseline':X_test['close'].to_numpy()}\nfitted={}\nfor name,estimator in models.items():\n    model=Pipeline([('scale',StandardScaler()),('model',estimator)])\n    model.fit(X_train,y_train)\n    predictions[name]=model.predict(X_test)\n    fitted[name]=model\nrows=[]\nfor name,pred in predictions.items():\n    rows.append({'model':name,'MAE':mean_absolute_error(y_test,pred),'RMSE':mean_squared_error(y_test,pred)**0.5,'R2':r2_score(y_test,pred)})\nresults=pd.DataFrame(rows).set_index('model')\nresults\n",
         check="import numpy as np\nassert set(s['results'].index)=={'Baseline','Linear','Ridge','Lasso'}\nassert set(s['results'].columns)=={'MAE','RMSE','R2'}\nassert np.isfinite(s['results'].to_numpy()).all()\nassert (s['results']['RMSE']>=s['results']['MAE']).all()\nassert all(len(p)==80 for p in s['predictions'].values())\nassert set(s['fitted'])=={'Linear','Ridge','Lasso'}\nassert all(m.named_steps['scale'].n_samples_seen_==315 for m in s['fitted'].values())"),
-    quiz('midpoint', '모델 비교 중간 확인',
-        choice('같은 테스트 기간에서 비교해야 할 것은?', ['모델과 기준 예측', '서로 다른 날짜의 점수'], 0, '평가 자료가 같아야 비교할 수 있습니다.'),
-        short('평균 절대 오차의 약어는?', ['MAE', 'mean absolute error'], '`MAE`가 작을수록 가격 오차가 작습니다.'),
+    quiz('midpoint', '비교표 중간 확인',
+        choice('네 예측의 점수를 비교할 때 반드시 같아야 하는 것은 무엇인가요?',
+               ['테스트 기간과 정답 `y_test`', '모델 이름의 길이', '학습에 걸린 시간'], 0,
+               '다른 기간의 점수는 비교할 수 없습니다. 기준과 세 모델 모두 같은 80일, 같은 정답으로 채점했기 때문에 표가 의미를 가집니다.'),
+        choice('어떤 모델의 RMSE가 MAE보다 유난히 크다면 무엇을 뜻하나요?',
+               ['가끔 크게 틀리는 날이 있다', '항상 조금씩 틀린다', '예측이 전부 맞았다'], 0,
+               'RMSE는 큰 오차를 제곱해 더 무겁게 셉니다. 둘의 차이가 크면 오차가 고르지 않고 몇몇 날에 몰려 있다는 뜻입니다.'),
     ),
-    coding('beat-baseline', '기준보다 나아졌는지 판정',
-        goal='준비된 분리에서 기준 예측 MAE를 `baseline_mae`, `Ridge(alpha=1)` Pipeline의 MAE를 `ridge_mae`에 저장하세요. `improved`에는 `ridge_mae < baseline_mae`의 결과(True/False)를 저장하고 세 값을 출력하세요. 결과가 어떻든 사실대로 보고하는 것이 목표입니다.',
-        hint="기준 MAE는 `mean_absolute_error(y_test, X_test['close'])`입니다. Ridge는 `Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))])`로 학습·예측해 MAE를 구하세요. `improved = ridge_mae < baseline_mae`는 비교 결과 참·거짓을 저장합니다.",
-        starter="import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['Close']\nframe['return_1']=prices['Close'].pct_change()\nframe['ma5']=prices['Close'].rolling(5).mean()\nframe['lag_close_1']=prices['Close'].shift(1)\nframe['target_next_close']=prices['Close'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\ntest_start=frame.index[-80]\ntrain_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\nX_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression,Ridge,Lasso\nfrom sklearn.metrics import mean_absolute_error,mean_squared_error,r2_score\n# baseline_mae, ridge_mae, improved를 만들고 출력하세요\n",
-        solution="import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['Close']\nframe['return_1']=prices['Close'].pct_change()\nframe['ma5']=prices['Close'].rolling(5).mean()\nframe['lag_close_1']=prices['Close'].shift(1)\nframe['target_next_close']=prices['Close'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\ntest_start=frame.index[-80]\ntrain_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\nX_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression,Ridge,Lasso\nfrom sklearn.metrics import mean_absolute_error,mean_squared_error,r2_score\nbaseline_mae = mean_absolute_error(y_test, X_test['close'])\nridge = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))])\nridge.fit(X_train, y_train)\nridge_mae = mean_absolute_error(y_test, ridge.predict(X_test))\nimproved = bool(ridge_mae < baseline_mae)\nprint(baseline_mae, ridge_mae, improved)\n",
+    coding('beat-baseline', '기준보다 나아졌는지 판정하기',
+        goal="""
+        비교를 참·거짓 하나로 정리합니다. 기준 예측의 MAE를 `baseline_mae`, `Ridge(alpha=1)` 파이프라인의 MAE를 `ridge_mae`에 저장하고, `improved`에 `ridge_mae < baseline_mae`의 결과를 담아 세 값을 출력하세요.
+
+        `improved`가 `False`로 나와도 틀린 것이 아닙니다. 그것이 이 기간의 사실이고, 검사는 계산이 맞는지만 봅니다.
+        """,
+        hint="""
+        `baseline_mae = mean_absolute_error(y_test, X_test['close'])`. 릿지는 `Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))])`로 학습·예측해 MAE를 구하세요. `improved = bool(ridge_mae < baseline_mae)`.
+        """,
+        starter=STOCK_MODEL + "# baseline_mae, ridge_mae, improved를 만들고 출력하세요\n",
+        solution=STOCK_MODEL + "baseline_mae = mean_absolute_error(y_test, X_test['close'])\nridge = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))])\nridge.fit(X_train, y_train)\nridge_mae = mean_absolute_error(y_test, ridge.predict(X_test))\nimproved = bool(ridge_mae < baseline_mae)\nprint(baseline_mae, ridge_mae, improved)\n",
         check="import numpy as np\nassert abs(s['baseline_mae']-float(np.abs(s['y_test'].to_numpy()-s['X_test']['close'].to_numpy()).mean()))<1e-8\nassert np.isfinite(s['ridge_mae'])\nassert s['improved']==(s['ridge_mae']<s['baseline_mae'])"),
-    coding('forecast-plot', '정답 날짜에 맞춘 회귀 그림',
-        goal='준비된 분리로 `Ridge` `Pipeline`을 학습하고 `prediction`을 구하세요. `comparison`에는 `target_date` 인덱스와 `actual`, `prediction` 열을 넣으세요. `fig`, `ax`에서 두 값을 같은 날짜 축에 그리고 범례를 표시하세요.',
-        hint='`StandardScaler()`와 `Ridge(alpha=1)`을 묶어 훈련한 뒤 테스트를 예측하세요. `comparison`에는 실제값과 예측값을 넣고 인덱스는 테스트 행의 `target_date`로 지정합니다. 같은 축에 두 선을 그리고 축 이름, 제목, 범례를 표시하세요.',
-        starter="import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['Close']\nframe['return_1']=prices['Close'].pct_change()\nframe['ma5']=prices['Close'].rolling(5).mean()\nframe['lag_close_1']=prices['Close'].shift(1)\nframe['target_next_close']=prices['Close'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\ntest_start=frame.index[-80]\ntrain_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\nX_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression,Ridge,Lasso\nfrom sklearn.metrics import mean_absolute_error,mean_squared_error,r2_score\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n# model, prediction, comparison, fig, ax를 만드세요\n",
-        solution="import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['Close']\nframe['return_1']=prices['Close'].pct_change()\nframe['ma5']=prices['Close'].rolling(5).mean()\nframe['lag_close_1']=prices['Close'].shift(1)\nframe['target_next_close']=prices['Close'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\ntest_start=frame.index[-80]\ntrain_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\nX_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression,Ridge,Lasso\nfrom sklearn.metrics import mean_absolute_error,mean_squared_error,r2_score\nimport matplotlib.pyplot as plt\nimport seaborn as sns\nmodel=Pipeline([('scale',StandardScaler()),('model',Ridge(alpha=1))])\nmodel.fit(X_train,y_train)\nprediction=model.predict(X_test)\ncomparison=pd.DataFrame({'actual':y_test.to_numpy(),'prediction':prediction},index=pd.DatetimeIndex(frame.loc[test_mask,'target_date']))\nfig,ax=plt.subplots()\nax.plot(comparison.index,comparison['actual'],label='Actual next close')\nax.plot(comparison.index,comparison['prediction'],label='Ridge')\nax.set(xlabel='Target date',ylabel='Price',title='Held-out next trading day')\nax.legend()\nplt.show()\ncomparison.head()\n",
+    coding('forecast-plot', '정답 날짜 위에 실제와 예측을 겹쳐 그리기',
+        goal="""
+        마지막 그림입니다. 릿지 파이프라인을 학습해 `prediction`을 구하고, `target_date`를 인덱스로 `actual`(실제 다음 종가)과 `prediction` 두 열을 가진 `comparison` 표를 만드세요. `fig, ax`에 두 선을 같은 날짜 축에 그리고 x축 이름 `Target date`, 범례를 표시하세요.
+
+        x축이 입력 날짜가 아니라 **정답 날짜**인 이유를 생각해 보세요. 예측이 실제를 얼마나 따라가는지, 어느 구간에서 벌어지는지 보세요.
+        """,
+        hint="""
+        `comparison = pd.DataFrame({'actual': y_test.to_numpy(), 'prediction': prediction}, index=pd.DatetimeIndex(frame.loc[test_mask, 'target_date']))`. 그다음 `ax.plot(comparison.index, comparison['actual'], label='Actual next close')`와 예측 선을 하나 더 그리고 `ax.set(xlabel='Target date', ...)`, `ax.legend()`, `plt.show()`.
+        """,
+        starter=STOCK_MODEL + PLOT + "# model, prediction, comparison, fig, ax를 만드세요\n",
+        solution=STOCK_MODEL + PLOT + "model=Pipeline([('scale',StandardScaler()),('model',Ridge(alpha=1))])\nmodel.fit(X_train,y_train)\nprediction=model.predict(X_test)\ncomparison=pd.DataFrame({'actual':y_test.to_numpy(),'prediction':prediction},index=pd.DatetimeIndex(frame.loc[test_mask,'target_date']))\nfig,ax=plt.subplots()\nax.plot(comparison.index,comparison['actual'],label='Actual next close')\nax.plot(comparison.index,comparison['prediction'],label='Ridge')\nax.set(xlabel='Target date',ylabel='Price',title='Held-out next trading day')\nax.legend()\nplt.show()\ncomparison.head()\n",
         check="assert s['comparison'].shape==(80,2) and list(s['comparison'].columns)==['actual','prediction']\nassert list(s['comparison'].index)==list(s['frame'].loc[s['test_mask'],'target_date'])\nassert len(s['ax'].lines)==2 and s['ax'].get_xlabel()=='Target date'\nassert s['ax'].get_legend() is not None"),
-    quiz('final-check', '최종 프로젝트 점검',
-        short('절대 오차 평균 지표의 약어는?', ['MAE', 'mean absolute error'], '`MAE`는 가격 단위로 읽으며 작을수록 좋습니다.'),
-        choice('`R`²가 음수일 수 있을까?', ['네', '아니요'], 0, '정답 평균 기준보다 못한 경우 음수가 될 수 있습니다.'),
-        choice('기준보다 모델 `MAE`가 크면?', ['개선하지 못했다고 보고', '모델이라 무조건 더 좋다고 보고'], 0, '같은 기간에서 기준과 비교한 수치를 정직하게 보고합니다.'),
-        short('그림의 날짜 축은 입력 날짜가 아닌 어떤 날짜인가요?', ['target_date', '정답날짜', '목표날짜'], '다음 거래일의 실제값·예측값은 정답 날짜에 표시합니다.'),
-        choice('`Ridge` `MAE` 1800, 기준 `MAE` 1500이면 보고서에 쓸 문장은?', ['이 기간에서 `Ridge`는 기준 예측보다 오차가 커 개선하지 못했다', '`Ridge`가 더 복잡하니 더 좋다'], 0, '같은 기간·같은 정답에서 숫자를 그대로 비교해 보고합니다.'),
-        short('회귀 모델이 학습한 입력별 가중치를 보는 속성은? (`model.____`)', ['coef_', 'coef'], '`coef_`는 입력 열마다 하나씩, 표준화된 입력 기준의 계수입니다.'),
+    coding('final-report', '최종 보고: 숫자 다섯 개와 결론 세 줄',
+        goal="""
+        3일의 결론을 코드로 적습니다. 준비된 `models`(`Linear`, `Ridge`)를 각각 학습해 테스트 MAE를 `maes` 딕셔너리에 모으고, 기준 MAE와 비교해 `report` 딕셔너리를 만드세요. 키는 `test_days`(테스트 거래일 수), `baseline_mae`, `best_model`(MAE가 가장 작은 모델 이름), `best_mae`, `improved`(최선 모델이 기준보다 나은지) 다섯 개입니다. 그리고 결론 세 줄을 출력하세요. ① 무엇을 언제 예측했고 어떻게 나눴는지 ② 기준 MAE와 최선 모델 MAE ③ 개선했는지 못 했는지.
+
+        검사는 다섯 숫자가 실제 계산과 맞는지만 봅니다. `improved`가 `False`여도 정직하게 적은 보고가 정답입니다.
+        """,
+        hint="""
+        `maes = {}`를 두고 `for name, estimator in models.items():`에서 파이프라인을 학습해 `maes[name] = mean_absolute_error(y_test, model.predict(X_test))`. 최선 모델은 `best_model = min(maes, key=maes.get)`. `report = {'test_days': len(X_test), 'baseline_mae': ..., 'best_model': best_model, 'best_mae': maes[best_model], 'improved': bool(maes[best_model] < baseline_mae)}`. 출력은 `print(f'...{report["baseline_mae"]:.0f}원...')`처럼 f-string으로.
+        """,
+        starter=STOCK_MODEL + "models={'Linear':LinearRegression(),'Ridge':Ridge(alpha=1)}\n# maes, report를 만들고 결론 세 줄을 출력하세요\n",
+        solution=STOCK_MODEL + "models={'Linear':LinearRegression(),'Ridge':Ridge(alpha=1)}\nbaseline_mae=mean_absolute_error(y_test,X_test['close'])\nmaes={}\nfor name,estimator in models.items():\n    model=Pipeline([('scale',StandardScaler()),('model',estimator)])\n    model.fit(X_train,y_train)\n    maes[name]=mean_absolute_error(y_test,model.predict(X_test))\nbest_model=min(maes,key=maes.get)\nreport={'test_days':len(X_test),'baseline_mae':baseline_mae,'best_model':best_model,'best_mae':maes[best_model],'improved':bool(maes[best_model]<baseline_mae)}\nprint(f\"다음 거래일 종가를 예측했고, 마지막 {report['test_days']}거래일을 테스트로 두었으며 훈련 정답은 모두 테스트 시작 전이다.\")\nprint(f\"기준 예측(오늘 종가 그대로) MAE {baseline_mae:.0f}원, 최선 모델 {best_model} MAE {maes[best_model]:.0f}원.\")\nprint('최선 모델이 기준보다 오차를 줄였다.' if report['improved'] else '최선 모델도 기준보다 오차를 줄이지 못했다. 이 파일, 이 기간의 결과다.')\n",
+        check="import numpy as np\nr=s['report']\nassert {'test_days','baseline_mae','best_model','best_mae','improved'}<=set(r)\nassert r['test_days']==80\nassert abs(r['baseline_mae']-float(np.abs(s['y_test'].to_numpy()-s['X_test']['close'].to_numpy()).mean()))<1e-8\nassert set(s['maes'])=={'Linear','Ridge'} and all(np.isfinite(v) for v in s['maes'].values())\nassert r['best_model']==min(s['maes'],key=s['maes'].get) and abs(r['best_mae']-min(s['maes'].values()))<1e-9\nassert r['improved']==(r['best_mae']<r['baseline_mae'])"),
+    quiz('final-check', '3일차 4교시 점검',
+        short('예측과 정답의 차이를 부호 없이 평균 낸, 원 단위로 읽는 지표의 약어는 무엇인가요?', ['MAE', 'mae', 'mean absolute error'],
+              'MAE는 "하루 평균 몇 원 빗나갔나"입니다. 3일차 내내 기준과 모델을 비교한 잣대입니다.'),
+        choice('R²가 음수로 나왔습니다. 무슨 뜻인가요?',
+               ['정답의 평균값으로만 찍은 것보다도 못 맞혔다', '계산이 틀렸다', '모델이 완벽하다'], 0,
+               'R²는 "평균으로 찍기"와 비교해 1을 만점으로 적은 값이라 그보다 못하면 음수가 됩니다. 비교 대상이 우리의 기준(오늘 종가)이 아니라는 점도 기억하세요.'),
+        choice('릿지 MAE 1800원, 기준 MAE 1500원이면 보고서에 어떻게 적어야 하나요?',
+               ['이 기간에서 릿지는 기준보다 오차가 커 개선하지 못했다', '릿지가 더 복잡한 모델이니 더 좋다', '기준은 모델이 아니므로 무시한다'], 0,
+               '같은 기간, 같은 정답에서 숫자를 그대로 비교해 적습니다. 기준보다 못한 결과도 결과입니다.'),
+        short('마지막 그림의 x축은 입력 날짜가 아니라 어느 날짜였나요? (열 이름)', ['target_date', '정답 날짜', '정답날짜'],
+              '실제값과 예측값은 모두 "다음 거래일"의 값이므로 그 날짜 위에 그려야 맞습니다.'),
+        choice('테스트 점수가 마음에 안 들어 테스트 기간을 바꿔 가며 다시 돌리면 어떤 문제가 생기나요?',
+               ['모의고사 문제를 고르는 셈이라 점수가 실력을 반영하지 않게 된다', '컴퓨터가 느려진다', '아무 문제 없다'], 0,
+               '테스트는 한 번만 채점하는 모의고사입니다. 기간을 고르기 시작하면 테스트가 훈련의 일부가 됩니다.'),
+        short('선형 회귀가 학습한 입력별 가중치를 보는 속성은 무엇인가요? (`model.named_steps[\'model\'].____`)', ['coef_', 'coef'],
+              '`coef_`에 입력 열마다 가중치가 하나씩 들어 있습니다. 표준화된 입력 기준이라 크기를 서로 비교할 수 있습니다.'),
+    ),
+    quiz('course-wrap', '3일을 한 줄로 잇기',
+        choice('타이타닉의 `boat` 열과 주가의 `target_next_close` 열의 공통점은 무엇인가요?',
+               ['맞히려는 시점에 알 수 없는 정보라 입력에 넣으면 누수다', '둘 다 글자 열이다', '둘 다 빈칸이 많다'], 0,
+               '하나는 사고 뒤에 적힌 정보, 하나는 내일의 값입니다. 자료가 달라도 "맞히는 시점에 아는 것만 입력"이라는 원칙은 같습니다.'),
+        choice('타이타닉의 "전원 사망" 예측과 주가의 "오늘 종가 그대로" 예측은 어떤 역할을 했나요?',
+               ['모델이 넘어야 할 기준', '가장 정확한 모델', '오류를 내는 예'], 0,
+               '분류든 회귀든 기준이 있어야 모델이 배운 몫이 보입니다. 기준을 못 넘으면 아무것도 배우지 못한 것입니다.'),
+        choice('타이타닉은 무작위로 나누고 주가는 날짜순으로 나눈 이유는 무엇인가요?',
+               ['승객끼리는 순서가 없지만 날짜는 순서가 있어서', '주가 자료가 더 커서', '분류와 회귀의 차이 때문에'], 0,
+               '시간 순서가 있는 자료에서 무작위로 섞으면 미래로 과거를 맞히게 됩니다. 나누는 방법은 자료의 성질이 정합니다.'),
+        choice('빈 나이를 중앙값으로 채울 때 그 중앙값을 훈련 자료에서만 구한 이유는 무엇인가요?',
+               ['테스트 자료를 미리 보는 작은 누수를 막으려고', '테스트 자료에는 빈칸이 없어서', '계산이 빨라서'], 0,
+               '손질 기준을 정하는 것도 학습입니다. 훈련에서 정하고 테스트에는 적용만 하는 규칙이 `Pipeline`으로 이어졌습니다.'),
+        choice('분류의 정확도와 회귀의 MAE에 공통으로 적용되는 주의점은 무엇인가요?',
+               ['숫자 하나만 보지 말고 기준과 비교하고, 무엇을 몇 개로 잰 점수인지 함께 적는다', '높을수록 무조건 좋다', '훈련 자료로 재야 정확하다'], 0,
+               '정확도 78%도, MAE 1500원도 혼자서는 뜻이 없습니다. 기준과 분모가 붙어야 읽을 수 있는 숫자가 됩니다.'),
     ),
 ])

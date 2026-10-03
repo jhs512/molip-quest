@@ -14,10 +14,11 @@ def broken_backtick(value):
     for match in INLINE_CODE.finditer(prose):
         before = prose[match.start() - 1] if match.start() > 0 else ""
         after = prose[match.end()] if match.end() < len(prose) else ""
-        after2 = prose[match.end() + 1] if match.end() + 1 < len(prose) else ""
-        # `name`(그리고) is a Korean parenthetical; `name`() or `name`('x') is split code.
-        split_call = after == "(" and (after2 in ")'\"" or after2.isascii() and after2.isalnum())
-        if split_call or after in "[=" or (before in "'\"" and before and after in "'\"" and after):
+        # `name`(그리고 …) is a Korean parenthetical; `name`() or `name`('x') is split code.
+        parenthetical = prose[match.end() + 1 : prose.find(")", match.end()) if prose.find(")", match.end()) != -1 else len(prose)]
+        split_call = after == "(" and not re.search(r"[가-힣]", parenthetical) and not parenthetical.startswith("`")
+        quoted = bool(before) and before in "'\"" and bool(after) and after in "'\""
+        if split_call or (after and after in "[=") or quoted:
             return match.group(0) + after
     return None
 
