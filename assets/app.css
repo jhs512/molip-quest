@@ -178,3 +178,25 @@ textarea[data-code-editor][hidden] { display: none; }
 .reset-progress { background: transparent; color: #a9c6bd; border: 1px solid #3f6a5e; padding: 8px 12px; font-size: 13px; margin-top: 12px; }
 .practice-header .reset-progress { margin-top: 0; color: #99aec1; border-color: #3f5468; }
 .danger { background: #a12828; color: #fff; }
+
+/* Double-click text-to-speech: floating controls and the sentence being read. */
+.speech-controls { position: fixed; right: max(16px, env(safe-area-inset-right)); bottom: max(16px, calc(16px + var(--inset-bottom, 0px))); z-index: 900; width: min(440px, calc(100vw - 32px)); padding: 14px 16px; background: #0f1d28; color: #dce7f1; border: 1px solid #4c657a; border-radius: 12px; box-shadow: 0 12px 40px #0009; font-size: 14px; line-height: 1.6; }
+.speech-controls[hidden] { display: none; }
+.speech-buttons { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.speech-buttons button, .speech-buttons select { font: inherit; min-height: 38px; padding: 6px 12px; border-radius: 6px; border: 1px solid #5b7489; background: #1f3346; color: #e4eef7; }
+.speech-buttons button:disabled { opacity: .4; cursor: default; }
+.speech-buttons label { display: flex; align-items: center; gap: 6px; }
+.speech-buttons select { width: auto; margin: 0; }
+.speech-close { margin-left: auto; background: transparent !important; border-color: transparent !important; }
+.speech-status { margin: 10px 0 0; color: #9fe3c6; }
+.speech-controls[data-state="error"] .speech-status { color: #ffc3ae; }
+.speech-help { margin: 6px 0 0; font-size: 12px; color: #9ab0c2; }
+.speech-active { outline: 2px solid #63dbb6; outline-offset: 6px; border-radius: 3px; }
+::highlight(speech-sentence) { background-color: #ffe08a; color: #17271e; }
+.speech-range-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 899; }
+.speech-range-overlay > span { position: fixed; background: #ffe08a33; outline: 2px solid #ffe08a; border-radius: 2px; }
+
+/* Comic strips rendered from comic-gen code fences inside course Markdown. */
+.comic-strip { margin: 20px 0; padding: 0; }
+.comic-strip svg { display: block; width: 100%; max-width: 720px; height: auto; margin: 0 auto; border-radius: 8px; background: white; }
+.comic-strip.comic-error { padding: 12px 16px; border: 1px dashed #c98282; border-radius: 8px; color: #ffc3ae; font-size: 13px; white-space: pre-wrap; }

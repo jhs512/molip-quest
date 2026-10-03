@@ -60,6 +60,14 @@ fn App() -> Element {
     }
     use_effect(|| {
         document::eval(include_str!("../assets/editor/editor.bundle.js"));
+        // The comic SDK is an ES module, so the loader imports it from a Blob URL built from this string.
+        document::eval(&format!(
+            "window.__molipComicGenSource={};{}",
+            serde_json::to_string(include_str!("../assets/comics/comic-gen.js"))
+                .expect("comic sdk"),
+            include_str!("../assets/comics/comics.js")
+        ));
+        document::eval(include_str!("../assets/speech/speech.js"));
     });
     rsx! {
         if cfg!(debug_assertions) && std::env::var_os("MOLIP_DEV_LIVE").is_some() {
