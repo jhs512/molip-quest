@@ -35,6 +35,15 @@ fn unlocked_activities(unit: &Unit, _completed: &HashSet<String>) -> usize {
     unit.activities.len()
 }
 
+/// Brief feedback that floats over the page (assets/layout/toast.js) instead of taking up layout.
+fn toast(message: &str, error: bool) {
+    document::eval(&format!(
+        "window.molipToast && molipToast({}, {})",
+        serde_json::to_string(message).expect("toast text"),
+        if error { "'error'" } else { "'info'" }
+    ));
+}
+
 fn mission_progress<'a>(
     units: impl Iterator<Item = &'a Unit>,
     completed: &HashSet<String>,
@@ -106,12 +115,31 @@ pub fn Learning(course: Course) -> Element {
     } else {
         mission_index().min(active_unlocked.saturating_sub(1))
     };
+    let can_prev = !(active_mission == 0 && previous.is_none());
+    let can_next = !(active_mission + 1 >= active_unlocked
+        && !(active_mission + 1 == active_total && next.is_some()));
+    // Shared by the header buttons and the buttons at the bottom of concept and quiz missions.
+    let navigate = Callback::new(move |delta: i32| {
+        if delta < 0 {
+            if active_mission > 0 {
+                mission_index.set(active_mission - 1);
+            } else if let Some(id) = &previous {
+                mission_index.set(usize::MAX);
+                selected.set(id.clone());
+            }
+        } else if active_mission + 1 < active_unlocked {
+            mission_index.set(active_mission + 1);
+        } else if let Some(id) = &next {
+            mission_index.set(usize::MAX);
+            selected.set(id.clone());
+        }
+    });
     rsx! {header {class:"practice-header", h1 {"{course.title}"}
         div {class:"header-navigation",aria_label:"학습 이동",
-            button {disabled:active_mission==0&&previous.is_none(),onclick:{let previous=previous.clone();move |_|{if active_mission>0 {mission_index.set(active_mission-1);}else if let Some(id)=&previous {mission_index.set(usize::MAX);selected.set(id.clone());}}},"← 이전"}
-            button {disabled:active_mission+1>=active_unlocked&&!(active_mission+1==active_total&&next.is_some()),onclick:{let next=next.clone();move |_|{if active_mission+1<active_unlocked {mission_index.set(active_mission+1);}else if let Some(id)=&next {mission_index.set(usize::MAX);selected.set(id.clone());}}},"다음 →"}
+            button {disabled:!can_prev,onclick:move |_|navigate.call(-1),"← 이전"}
+            button {disabled:!can_next,onclick:move |_|navigate.call(1),"다음 →"}
         }
-        span {{format!("완료 {} / {} 단원",completed.len(),course.total_units())}} DoctorPanel {}
+        span {{format!("완료 {} / {} 단원",completed.len(),course.total_units())}}
         ResetProgress {course_id:course.id.clone(),onreset:move |_|{selected.set(String::new());mission_index.set(usize::MAX);clear_popup.set(false);refresh+=1;epoch+=1;}}}
         div {class:"learning",
         button {class:"curriculum-toggle",onclick:move |_|{document::eval(r#"const dialog = document.querySelector('.curriculum-menu');
@@ -149,7 +177,7 @@ pub fn Learning(course: Course) -> Element {
                 }}
             }
         }}
-        for active in [active] {UnitFlow {key:"{active.id}-{active.revision}-{epoch}", course_id:course.id.clone(), unit:active,index:mission_index,
+        for active in [active] {UnitFlow {key:"{active.id}-{active.revision}-{epoch}", course_id:course.id.clone(), unit:active,index:mission_index,nav_prev:can_prev,nav_next:can_next,onnavigate:navigate,
             oncompleted:{let active_id=active_id.clone();let following_id=following_id.clone();let course=course.clone();move |passed|{
                 let unit_finished=passed&&molip_quest::learning_store::LearningStore::user_store().and_then(|store|store.completed(&course)).is_ok_and(|done|done.contains(&active_id));
                 if unit_finished {mission_index.set(usize::MAX);}
@@ -169,6 +197,9 @@ fn UnitFlow(
     course_id: String,
     unit: Unit,
     mut index: Signal<usize>,
+    nav_prev: bool,
+    nav_next: bool,
+    onnavigate: EventHandler<i32>,
     oncompleted: EventHandler<bool>,
 ) -> Element {
     let mut refresh = use_signal(|| 0u64);
@@ -227,7 +258,7 @@ fn UnitFlow(
             }
 
         }
-        for active in [active] {ActivityView {key:"{progress.id}-{progress.revision}",course_id:course_id.clone(),activity:active,progress:progress.clone(),oncompleted:move |passed|{index.set(if passed {(active_index+1).min(total-1)}else{active_index});refresh+=1;oncompleted.call(passed);}}}
+        for active in [active] {ActivityView {key:"{progress.id}-{progress.revision}",course_id:course_id.clone(),activity:active,progress:progress.clone(),nav_prev,nav_next,onnavigate,oncompleted:move |passed|{index.set(if passed {(active_index+1).min(total-1)}else{active_index});refresh+=1;oncompleted.call(passed);}}}
     }
 }
 
@@ -236,6 +267,9 @@ fn ActivityView(
     course_id: String,
     activity: Activity,
     progress: Unit,
+    nav_prev: bool,
+    nav_next: bool,
+    onnavigate: EventHandler<i32>,
     oncompleted: EventHandler<bool>,
 ) -> Element {
     match activity.kind {
@@ -246,11 +280,11 @@ fn ActivityView(
         ActivityKind::Concept { body, check } => rsx! {
             div {class:"concept-flow",
                 article {class:"reading-mission",span {class:"badge","개념"} h2 {"{activity.title}"}Markdown {text:body}}
-                QuizView {course_id,unit:progress,questions:vec![check],oncompleted}
+                QuizView {course_id,unit:progress,questions:vec![check],nav_prev,nav_next,onnavigate,oncompleted}
             }
         },
         ActivityKind::Quiz { questions } => {
-            rsx! {QuizView {course_id,unit:progress,questions,oncompleted}}
+            rsx! {QuizView {course_id,unit:progress,questions,nav_prev,nav_next,onnavigate,oncompleted}}
         }
     }
 }
@@ -260,6 +294,9 @@ fn QuizView(
     course_id: String,
     unit: Unit,
     questions: Vec<Question>,
+    nav_prev: bool,
+    nav_next: bool,
+    onnavigate: EventHandler<i32>,
     oncompleted: EventHandler<bool>,
 ) -> Element {
     let key = format!("quiz:{course_id}:{}:{}", unit.id, unit.revision);
@@ -306,6 +343,7 @@ fn QuizView(
             for q in questions.iter().filter(|q|passed.read().contains(&q.id)) {p {strong {"✓ {q.prompt}"}}Markdown {text:q.explanation.clone()}}
         }}
         p {class:"execution-status",role:"status","{message}"}
+        div {class:"quiz-actions",
         button {class:"primary",disabled:all_passed,onclick:move |_|{
             let result=molip_quest::learning_store::LearningStore::user_store().and_then(|mut store|{
                 let graded=store.save_quiz(&course_id,&unit,&questions,&answers())?;
@@ -316,7 +354,18 @@ fn QuizView(
                 Ok((graded,completed))=>{message.set(format!("{} / {} 정답 · {}",completed.len(),questions.len(),if graded.passed {"미션 클리어!"}else{"오답 문항만 다시 풀어보세요."}));let cleared=graded.passed;passed.set(completed);report.set(Some(graded));oncompleted.call(cleared);},Err(e)=>message.set(e)
             }
         },"제출"}
+        MissionNav {nav_prev,nav_next,onnavigate}
+        }
     }}
+}
+
+/// Previous/next mission buttons for the bottom of a concept or quiz card.
+#[component]
+fn MissionNav(nav_prev: bool, nav_next: bool, onnavigate: EventHandler<i32>) -> Element {
+    rsx! { div {class:"mission-nav",aria_label:"학습 이동",
+        button {disabled:!nav_prev,onclick:move |_|onnavigate.call(-1),"← 이전"}
+        button {disabled:!nav_next,onclick:move |_|onnavigate.call(1),"다음 →"}
+    } }
 }
 
 #[component]
@@ -369,8 +418,6 @@ fn UnitWorkspace(course_id: String, unit: Unit, oncompleted: EventHandler<bool>)
         })
         .collect();
     let mut guide_open = use_signal(|| false);
-    // Copy feedback lives next to the prompt buttons, not in the run-result status line.
-    let mut prompt_note = use_signal(String::new);
     rsx! {article{class:"lesson",
         if guide_open() {PromptGuide {unit:unit.clone(),code:code(),onclose:move |_|guide_open.set(false)}}
         section{class:"problem-pane",h2{"{unit.title}"}h3{"문제 설명"}Markdown {text:unit.content.clone()}
@@ -378,36 +425,25 @@ fn UnitWorkspace(course_id: String, unit: Unit, oncompleted: EventHandler<bool>)
                 button {class:"prompt-copy",onclick:{let unit=unit.clone();move |_|{
                     let prompt=molip_quest::curriculum::answer_prompt(&unit,&code());
                     match copy_to_clipboard(prompt) {
-                        Ok(())=>prompt_note.set("인간 버전을 복사했습니다. AI에 붙여넣고, 받은 코드를 편집기에 넣으세요.".into()),
-                        Err(e)=>prompt_note.set(format!("클립보드 복사에 실패했습니다: {e}"))
+                        Ok(())=>toast("인간 버전을 복사했습니다. AI에 붙여넣고, 받은 코드를 편집기에 넣으세요.", false),
+                        Err(e)=>toast(&format!("클립보드 복사에 실패했습니다: {e}"), true)
                     }
                 }},"프롬프트 복사 · 인간 버전"}
                 button {class:"prompt-copy",onclick:{let unit=unit.clone();move |_|{
                     let prompt=molip_quest::curriculum::machine_prompt(&unit,&code());
                     match copy_to_clipboard(prompt) {
-                        Ok(())=>prompt_note.set("기계 버전을 복사했습니다. AI에 붙여넣고, 받은 코드를 편집기에 넣으세요.".into()),
-                        Err(e)=>prompt_note.set(format!("클립보드 복사에 실패했습니다: {e}"))
+                        Ok(())=>toast("기계 버전을 복사했습니다. AI에 붙여넣고, 받은 코드를 편집기에 넣으세요.", false),
+                        Err(e)=>toast(&format!("클립보드 복사에 실패했습니다: {e}"), true)
                     }
                 }},"프롬프트 복사 · 기계 버전"}
                 button {class:"prompt-guide-open",onclick:move |_|guide_open.set(true),"프롬프트 해설"}
             }
-            if !prompt_note().is_empty() {p {class:"prompt-note",role:"status","{prompt_note}"}}
 
             if !unit.blanks.is_empty(){p{class:"blank-note","코드의 빈칸만 채워보세요. 나머지 코드는 수정하지 않습니다."}}
         }
         div{class:"split-handle split-col",role:"separator",aria_orientation:"vertical",aria_label:"문제와 코드 영역 너비 조절",tabindex:"0",title:"드래그로 너비 조절, 더블 클릭으로 되돌리기"}
-        section{class:"coding-pane",div{class:"pane-heading",strong{"main.py"}span{"Python"}}
-        div{class:"editor-pane",
-        if unit.blanks.is_empty(){textarea{class:"code-editor", "data-code-editor":"python", "data-editor-value":code(),"data-editor-reset":editor_reset().to_string(),aria_label:"Python 코드",spellcheck:false,initial_value:initial.code.clone(),oninput:{let key=key.clone();move|e|{code.set(e.value());if let Err(error)=drafts::save(&key,&code(),&answers()){message.set(error)}}}}}
-        else{div{class:"inline-code",for (number,parts) in lines.iter().enumerate(){div{class:"code-line",span{class:"line-number","{number+1}"}div{class:"line-source",for (text,blank) in parts {if let Some(blank)=blank {input{class:"code-blank",aria_label:"빈칸 {blank}",spellcheck:false,value:answers.read().get(blank).cloned().unwrap_or_default(),oninput:{let blank=blank.clone();let unit=unit.clone();let key=key.clone();move|e|{answers.write().insert(blank.clone(),e.value());if let Ok(assembled)=assemble(&unit,&answers()){code.set(assembled);if let Err(error)=drafts::save(&key,&code(),&answers()){message.set(error)}}}}}}else{span{"{text}"}}}}}}}}
-        }
-        div{class:"split-handle split-row",role:"separator",aria_orientation:"horizontal",aria_label:"편집기와 실행 결과 높이 조절",tabindex:"0",title:"드래그로 높이 조절, 더블 클릭으로 되돌리기"}
-        section{class:"result-pane",h3{"실행 결과"}details{open:!unit.tests.is_empty(),summary{"실행 입력"}p{"아래 입력값으로 실행합니다. 예제 입력을 바꾸며 연습할 수 있어요."}textarea{aria_label:"실행 입력",initial_value:sample_input.clone(),oninput:move|e|input.set(e.value())}}
-            p{class:"execution-status",role:"status","{message}"}
-            pre{class:"output",if output().is_empty(){"실행 결과가 여기에 표시됩니다."}else{"{output}"}}
-            RichResults { artifacts: artifacts() }
-        }}
-        footer{class:"actions practice-actions",button{disabled:busy(),onclick:{let unit=unit.clone();let key=key.clone();move |_|{code.set(unit.starter_code.clone());editor_reset+=1;answers.set(HashMap::new());output.set(String::new());artifacts.set(vec![]);message.set(String::new());let _=drafts::save(&key,&code(),&answers());}},"초기화"}
+        section{class:"coding-pane",div{class:"pane-heading",strong{"main.py"}
+        div{class:"pane-actions",button{disabled:busy(),onclick:{let unit=unit.clone();let key=key.clone();move |_|{code.set(unit.starter_code.clone());editor_reset+=1;answers.set(HashMap::new());output.set(String::new());artifacts.set(vec![]);message.set(String::new());let _=drafts::save(&key,&code(),&answers());}},"초기화"}
         button{disabled:busy(),onclick:move |_|async move{busy.set(true);message.set(String::new());artifacts.set(vec![]);match run_python(&code(),&input()).await{Ok(result)=>{artifacts.set(result.artifacts);if result.stderr.contains("EOFError: EOF when reading a line") {message.set("실행 입력이 부족합니다. 실행 입력 칸에 문제에서 요구한 값을 넣어주세요.".into());}else if result.success {message.set("실행 완료. 제출하면 전체 테스트로 정답을 확인합니다.".into());}output.set(format!("{}\n{}\n{}",result.stdout,result.stderr,if result.success {"실행 완료"} else {"실행 실패"}));},Err(e)=>message.set(e)}busy.set(false);},"코드 실행"}
             button{class:"primary",disabled:busy(),onclick:{let unit=unit.clone();let course_id=course_id.clone();move |_|{let unit=unit.clone();let course_id=course_id.clone();async move{
                 busy.set(true);message.set(String::new());artifacts.set(vec![]);let source=code();let blank_answers=answers();
@@ -420,6 +456,17 @@ fn UnitWorkspace(course_id: String, unit: Unit, oncompleted: EventHandler<bool>)
                 }}busy.set(false);
             }}},"제출"}
         }
+        }
+        div{class:"editor-pane",
+        if unit.blanks.is_empty(){textarea{class:"code-editor", "data-code-editor":"python", "data-editor-value":code(),"data-editor-reset":editor_reset().to_string(),aria_label:"Python 코드",spellcheck:false,initial_value:initial.code.clone(),oninput:{let key=key.clone();move|e|{code.set(e.value());if let Err(error)=drafts::save(&key,&code(),&answers()){message.set(error)}}}}}
+        else{div{class:"inline-code",for (number,parts) in lines.iter().enumerate(){div{class:"code-line",span{class:"line-number","{number+1}"}div{class:"line-source",for (text,blank) in parts {if let Some(blank)=blank {input{class:"code-blank",aria_label:"빈칸 {blank}",spellcheck:false,value:answers.read().get(blank).cloned().unwrap_or_default(),oninput:{let blank=blank.clone();let unit=unit.clone();let key=key.clone();move|e|{answers.write().insert(blank.clone(),e.value());if let Ok(assembled)=assemble(&unit,&answers()){code.set(assembled);if let Err(error)=drafts::save(&key,&code(),&answers()){message.set(error)}}}}}}else{span{"{text}"}}}}}}}}
+        }
+        div{class:"split-handle split-row",role:"separator",aria_orientation:"horizontal",aria_label:"편집기와 실행 결과 높이 조절",tabindex:"0",title:"드래그로 높이 조절, 더블 클릭으로 되돌리기"}
+        section{class:"result-pane",h3{"실행 결과"}details{open:!unit.tests.is_empty(),summary{"실행 입력"}p{"아래 입력값으로 실행합니다. 예제 입력을 바꾸며 연습할 수 있어요."}textarea{aria_label:"실행 입력",initial_value:sample_input.clone(),oninput:move|e|input.set(e.value())}}
+            p{class:"execution-status",role:"status","{message}"}
+            pre{class:"output",if output().is_empty(){"실행 결과가 여기에 표시됩니다."}else{"{output}"}}
+            RichResults { artifacts: artifacts() }
+        }}
     }}
 }
 
@@ -468,7 +515,6 @@ fn RichResults(artifacts: Vec<Artifact>) -> Element {
 fn PromptGuide(unit: Unit, code: String, onclose: EventHandler<()>) -> Element {
     let guide = molip_quest::curriculum::prompt_guide(&unit);
     let prompt = molip_quest::curriculum::machine_prompt(&unit, &code);
-    let mut message = use_signal(String::new);
     rsx! { div { class:"prompt-guide-layer", role:"dialog", aria_modal:"true", aria_label:"정답 구하는 프롬프트 해설",
         onkeydown: move |e| { if e.key() == Key::Escape { onclose.call(()); } },
         header { class:"prompt-guide-header",
@@ -481,11 +527,10 @@ fn PromptGuide(unit: Unit, code: String, onclose: EventHandler<()>) -> Element {
             section { class:"prompt-guide-prompt",
                 h3 { "기계 버전" }
                 p { class:"prompt-guide-note", "같은 요청을 명세서로 쓴 것. 자동화할 때 쓴다." }
-                p { class:"execution-status", role:"status", "{message}" }
                 button { class:"prompt-copy", onclick: {let prompt=prompt.clone(); move |_| {
                     match copy_to_clipboard(prompt.clone()) {
-                        Ok(()) => message.set("프롬프트를 복사했습니다.".into()),
-                        Err(e) => message.set(format!("클립보드 복사에 실패했습니다: {e}")),
+                        Ok(()) => toast("기계 버전을 복사했습니다.", false),
+                        Err(e) => toast(&format!("클립보드 복사에 실패했습니다: {e}"), true),
                     }
                 }}, "기계 버전 복사" }
                 pre { class:"prompt-guide-source", "{prompt}" }
