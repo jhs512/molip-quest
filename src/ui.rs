@@ -36,11 +36,11 @@ fn unlocked_activities(unit: &Unit, _completed: &HashSet<String>) -> usize {
 }
 
 /// Brief feedback that floats over the page (assets/layout/toast.js) instead of taking up layout.
-fn toast(message: &str, error: bool) {
+fn toast(message: &str, kind: &str) {
     document::eval(&format!(
         "window.molipToast && molipToast({}, {})",
         serde_json::to_string(message).expect("toast text"),
-        if error { "'error'" } else { "'info'" }
+        serde_json::to_string(kind).expect("toast kind")
     ));
 }
 
@@ -490,15 +490,15 @@ fn UnitWorkspace(course_id: String, unit: Unit, oncompleted: EventHandler<bool>)
                 button {class:"prompt-copy",onclick:{let unit=unit.clone();move |_|{
                     let prompt=molip_quest::curriculum::answer_prompt(&unit,&code());
                     match copy_to_clipboard(prompt) {
-                        Ok(())=>toast("인간 버전을 복사했습니다. AI에 붙여넣고, 받은 코드를 편집기에 넣으세요.", false),
-                        Err(e)=>toast(&format!("클립보드 복사에 실패했습니다: {e}"), true)
+                        Ok(())=>toast("인간 버전을 복사했습니다. AI에 붙여넣고, 받은 코드를 편집기에 넣으세요.", "success"),
+                        Err(e)=>toast(&format!("클립보드 복사에 실패했습니다: {e}"), "error")
                     }
                 }},"프롬프트 복사 · 인간 버전"}
                 button {class:"prompt-copy",onclick:{let unit=unit.clone();move |_|{
                     let prompt=molip_quest::curriculum::machine_prompt(&unit,&code());
                     match copy_to_clipboard(prompt) {
-                        Ok(())=>toast("기계 버전을 복사했습니다. AI에 붙여넣고, 받은 코드를 편집기에 넣으세요.", false),
-                        Err(e)=>toast(&format!("클립보드 복사에 실패했습니다: {e}"), true)
+                        Ok(())=>toast("기계 버전을 복사했습니다. AI에 붙여넣고, 받은 코드를 편집기에 넣으세요.", "success"),
+                        Err(e)=>toast(&format!("클립보드 복사에 실패했습니다: {e}"), "error")
                     }
                 }},"프롬프트 복사 · 기계 버전"}
                 button {class:"prompt-guide-open",onclick:move |_|guide_open.set(true),"프롬프트 해설"}
@@ -594,8 +594,8 @@ fn PromptGuide(unit: Unit, code: String, onclose: EventHandler<()>) -> Element {
                 p { class:"prompt-guide-note", "같은 요청을 명세서로 쓴 것. 자동화할 때 쓴다." }
                 button { class:"prompt-copy", onclick: {let prompt=prompt.clone(); move |_| {
                     match copy_to_clipboard(prompt.clone()) {
-                        Ok(()) => toast("기계 버전을 복사했습니다.", false),
-                        Err(e) => toast(&format!("클립보드 복사에 실패했습니다: {e}"), true),
+                        Ok(()) => toast("기계 버전을 복사했습니다.", "success"),
+                        Err(e) => toast(&format!("클립보드 복사에 실패했습니다: {e}"), "error"),
                     }
                 }}, "기계 버전 복사" }
                 pre { class:"prompt-guide-source", "{prompt}" }

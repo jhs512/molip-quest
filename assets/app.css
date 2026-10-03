@@ -253,8 +253,9 @@ body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { poi
 .quiz-actions { display: flex; align-items: center; gap: 8px; }
 .mission-nav { margin-left: auto; display: flex; gap: 6px; }
 .practice-shell .mission-nav button { font-size: 13px; padding: 8px 12px; }
-.molip-toast { position: fixed; left: 50%; bottom: calc(28px + var(--inset-bottom, 0px)); transform: translate(-50%, 12px); max-width: min(560px, calc(100vw - 32px)); padding: 10px 16px; background: #0f1d28; color: #dce7f1; border: 1px solid #4c657a; border-radius: 10px; font-size: 14px; box-shadow: 0 8px 30px #0008; opacity: 0; pointer-events: none; transition: opacity .18s, transform .18s; z-index: 1200; }
-.molip-toast.show { opacity: 1; transform: translate(-50%, 0); }
+.molip-toast { position: fixed; left: 0; top: 0; max-width: min(420px, calc(100vw - 16px)); padding: 10px 14px; background: #0f1d28; color: #dce7f1; border: 1px solid #4c657a; border-radius: 10px; font-size: 14px; line-height: 1.5; box-shadow: 0 8px 30px #0008; opacity: 0; transform: translateY(6px); pointer-events: none; transition: opacity .18s, transform .18s; z-index: 1200; }
+.molip-toast.show { opacity: 1; transform: translateY(0); }
+.molip-toast[data-kind="success"] { border-color: #3fa37c; background: #10302a; color: #a4f3ce; }
 .molip-toast[data-kind="error"] { border-color: #c98282; color: #ffc3ae; }
 
 /* Data file preview: buttons under the problem text and a full-screen table layer. */
@@ -264,3 +265,13 @@ body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { poi
 .data-viewer-body .data-grid { max-height: none; }
 .data-viewer-note { margin: 0 0 12px; color: #9ab0c2; font-size: 13px; }
 .data-viewer-source { font-size: 13px; line-height: 1.6; background: #101e2b; border: 1px solid #405970; border-radius: 8px; padding: 18px; white-space: pre-wrap; }
+
+/* Practice screen fills the window: header, mission strip, then the lesson or the reading cards take the rest. */
+@media (min-width: 761px) {
+  .practice-shell > main { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+  .practice-shell .practice-header { flex: none; }
+  .practice-shell .learning { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: auto; }
+  .practice-shell .mission-strip { flex: none; }
+  .practice-shell .lesson, .practice-shell .mission-strip ~ .lesson { flex: 1; min-height: 0; height: auto; }
+  .practice-shell .concept-flow, .practice-shell .reading-mission { flex: none; }
+}
