@@ -84,6 +84,10 @@ UNIT = unit('credit-metrics', '2일차 · 8교시 — 네 지표와 확률 기�
         check="assert set(s['results'].index)=={'Dummy','Logistic'}\nassert set(s['results'].columns)=={'accuracy','precision','recall','f1'}\nassert s['results'].loc['Dummy','recall']==0\nassert ((s['results']>=0)&(s['results']<=1)).all().all()\nassert len(s['X_test'])==6000"),
     coding('predict-proba', '모델은 사실 확률을 내놓는다',
         goal="""
+        ```interactive
+        위젯: threshold
+        ```
+
         로지스틱 회귀는 "부도/정상"을 바로 고르는 것이 아니라 **부도일 확률**을 먼저 계산하고, 0.5를 넘으면 부도라고 답합니다. 준비된 학습 완료 `model`에서 `model.predict_proba(X_test)[:, 1]`로 부도 확률을 `probabilities`에 저장하세요. 그리고 확률이 0.5 이상인 고객 수를 `n_positive_05`, 0.3 이상인 고객 수를 `n_positive_03`에 담아 출력하세요.
 
         기준을 0.5에서 0.3으로 낮추면 부도라고 경고하는 고객이 늘어납니다. 얼마나 늘어나는지 보세요.

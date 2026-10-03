@@ -81,6 +81,13 @@ def coding(id, title, goal, hint, starter, solution, check=None, tests=None, int
     return dict(id=id, title=title, kind="coding", problem=problem)
 
 
+def challenge(id, title, **kwargs):
+    """A chapter capstone: a coding problem that needs everything the chapter taught."""
+    activity = coding(id, '★ 도전 과제 · ' + title, **kwargs)
+    activity["challenge"] = True
+    return activity
+
+
 def quiz(id, title, *questions):
     shuffled = []
     for index, question in enumerate(questions):

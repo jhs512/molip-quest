@@ -279,3 +279,41 @@ body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { poi
 /* "one input → one output" pictures from ```mapping fences. */
 .diagram-strip { margin: 20px 0; padding: 0; }
 .diagram-strip svg { display: block; width: 100%; max-width: 720px; height: auto; margin: 0 auto; background: #0f1d28; border: 1px solid #405970; border-radius: 8px; }
+
+/* Chapter challenges: starred in the mission bar and the curriculum. */
+.practice-shell .mission-cell.challenge { background: #6b5a2a; }
+.practice-shell .mission-cell.challenge.cleared { background: #f2c94c; }
+.practice-shell .curriculum-mission.challenge .mission-title { color: #f2c94c; }
+
+/* Stepwise interactive pictures from ```interactive fences. */
+.interactive-strip { margin: 20px 0; padding: 0; }
+.interactive { max-width: 760px; margin: 0 auto; padding: 14px 16px 12px; background: #0f1d28; border: 1px solid #405970; border-radius: 10px; }
+.interactive-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 8px; color: #a9d9ff; }
+.interactive-step { color: #9ab0c2; font-size: 13px; }
+.interactive svg { display: block; width: 100%; height: auto; font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif; }
+.interactive .fade { opacity: 0; transition: opacity .45s ease, transform .45s ease; transform: translateY(6px); }
+.interactive .fade.on { opacity: 1; transform: none; }
+.interactive .axis { stroke: #5b7489; stroke-width: 1.5; }
+.interactive .label { fill: #9ab0c2; font-size: 13px; }
+.interactive .score { fill: #dce7f1; font-size: 14px; font-weight: 600; }
+.interactive .train-score { fill: #a6efd1; }
+.interactive .test-score { fill: #ffc3ae; }
+.interactive .train { fill: #63dbb6; }
+.interactive .test { stroke: #ff9b7a; stroke-width: 2.5; fill: none; }
+.interactive .model { fill: none; stroke: #79dcff; stroke-width: 3; transition: d .3s ease; }
+.interactive .bar { fill: #35506a; transition: fill .3s ease; }
+.interactive .bar.warn { fill: #e0a63a; }
+.interactive .bad { fill: #ff6b6b; }
+.interactive .cut { stroke: #79dcff; stroke-width: 3; stroke-dasharray: 6 4; transition: x1 .25s ease, x2 .25s ease; }
+.interactive .cut-label { fill: #79dcff; font-weight: 700; transition: x .25s ease; }
+.interactive .day { fill: #35506a; stroke: #0f1d28; transition: fill .4s ease; }
+.interactive .day.test { fill: #e0a63a; }
+.interactive .day.boundary { fill: #ff6b6b; }
+.interactive .window { fill: none; stroke: #e0a63a; stroke-width: 2; stroke-dasharray: 6 4; }
+.interactive .arrow { fill: none; stroke: #ff6b6b; stroke-width: 2.5; }
+.interactive-caption { margin: 10px 0 8px; color: #dce7f1; line-height: 1.7; min-height: 2.4em; }
+.interactive-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.practice-shell .interactive-next { background: #236b55; color: #fff; padding: 8px 14px; font-size: 13px; }
+.interactive-slider { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 13px; color: #bcd7ee; }
+.interactive-slider input[type=range] { width: 180px; margin: 0; padding: 0; accent-color: #79dcff; }
+.interactive-slider output { min-width: 2.5em; color: #79dcff; font-weight: 700; }

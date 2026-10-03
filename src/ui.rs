@@ -165,7 +165,7 @@ pub fn Learning(course: Course) -> Element {
                 if unit.id==active_id {
                     nav {class:"curriculum-missions",aria_label:"단원 미션",
                         for (n,activity) in unit.activities.iter().enumerate() {
-                            button {class:if n==active_mission {"curriculum-mission selected"}else{"curriculum-mission"},
+                            button {class:format!("curriculum-mission{}{}", if n==active_mission {" selected"} else {""}, if activity.challenge {" challenge"} else {""}),
                                 aria_current:if n==active_mission {"step"}else{"false"},disabled:n>=active_unlocked,
                                 onclick:move |_|{mission_index.set(n);document::eval("document.querySelector('.curriculum-menu').close();");},
                                 span {class:"mission-kind",{format!("{} {} · {}",if n==active_mission {"▶"}else if completed_items.contains(&activity.progress_unit(unit).id){"✓"}else if n<active_unlocked {"○"}else{"🔒"},n+1,activity.label())}}
@@ -250,7 +250,7 @@ fn UnitFlow(
             div {class:"mission-bar",role:"list",aria_label:"단원 진도",
                 for (n, activity) in unit.activities.iter().enumerate() {
                     button {key:"{activity.id}",role:"listitem",
-                        class:format!("mission-cell{}{}", if completed.contains(&activity.progress_unit(&unit).id) {" cleared"} else {""}, if n == active_index {" current"} else {""}),
+                        class:format!("mission-cell{}{}{}", if completed.contains(&activity.progress_unit(&unit).id) {" cleared"} else {""}, if n == active_index {" current"} else {""}, if activity.challenge {" challenge"} else {""}),
                         title:format!("{} · {}{}", n + 1, activity.title, if completed.contains(&activity.progress_unit(&unit).id) {" (클리어)"} else {""}),
                         aria_current:if n == active_index {"step"} else {"false"},
                         onclick:move |_| index.set(n)}

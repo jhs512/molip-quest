@@ -9,6 +9,9 @@ use std::collections::{HashMap, HashSet};
 pub struct Activity {
     pub id: String,
     pub title: String,
+    /// A chapter capstone that needs everything the chapter taught.
+    #[serde(default)]
+    pub challenge: bool,
     #[serde(flatten)]
     pub kind: ActivityKind,
 }
@@ -46,6 +49,7 @@ impl Activity {
     pub fn label(&self) -> &'static str {
         match self.kind {
             ActivityKind::Concept { .. } => "개념",
+            ActivityKind::Coding { .. } if self.challenge => "도전 과제",
             ActivityKind::Coding { .. } => "코딩 미션",
             ActivityKind::Quiz { .. } => "퀴즈",
         }

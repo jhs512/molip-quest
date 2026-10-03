@@ -148,6 +148,10 @@ async fn execute_python(
             "prices.html",
             include_bytes!("../courses/data/prices.html").as_slice(),
         ),
+        (
+            "croissant.csv",
+            include_bytes!("../courses/data/croissant.csv").as_slice(),
+        ),
     ] {
         std::fs::write(data.join(name), bytes).map_err(|e| e.to_string())?;
     }
