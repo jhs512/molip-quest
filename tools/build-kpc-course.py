@@ -6,6 +6,44 @@ ROOT=Path(__file__).resolve().parents[1]
 chapters=[]
 solutions={}
 
+# Each fixed-course problem carries its own guidance, independent of prior work.
+HINTS = {
+    'hello': "`print()`의 괄호 안에 따옴표로 감싼 문장을 넣으세요. 대소문자와 쉼표, 공백, 느낌표까지 목표 문장과 같아야 합니다.",
+    'amount-input': "준비 코드가 입력을 `price`와 `quantity`에 저장합니다. 두 값을 `*`로 곱하고, 계산 결과를 `print()`로 출력하세요.",
+    'holding': "딕셔너리는 `holding['quantity'] = 5`처럼 키에 새 값을 저장합니다. 수량을 바꾼 **뒤에** 가격과 수량을 곱해 `holding['amount']`에 저장하세요.",
+    'price-average': "1. `prices.append(10300)`으로 마지막에 값을 추가하세요.\n2. `len(prices)`는 개수, `sum(prices)`는 합계입니다.\n3. 평균은 **합계 ÷ 개수**입니다. Python 기본 함수에는 `average()`가 없으므로 `sum(prices) / count`로 계산하세요.\n4. `print(count, average)`로 두 값을 출력하세요.",
+    'above-count': "`for price in prices:`로 값을 하나씩 확인하세요. 매번 `total`에 가격을 더하고, `if price >= 10000:`일 때만 `above_count`를 1 늘립니다. 반복문 안은 들여쓰기하세요.",
+    'holdings-frame': "`for holding in holdings:`로 각 종목을 꺼내 금액을 저장하고 `total_amount`에 누적하세요. 반복문이 끝나면 `pd.DataFrame(holdings)`로 표를 만듭니다.",
+    'csv-excel': "저장은 `orders.to_csv(...)`, `orders.to_excel(...)`을 사용하며 둘 다 `index=False`를 지정하세요. 읽을 때는 `pd.read_csv(...)`, `pd.read_excel(...)`에 저장한 파일 이름을 전달합니다.",
+    'selection': "여러 열을 고를 때는 `orders[['product', 'price']]`처럼 열 이름 리스트를 넣습니다. 첫 두 행은 `orders.iloc[:2]`로 고르세요. 끝 위치 2는 포함하지 않습니다.",
+    'filter-orders': "각 조건을 괄호로 감싼 뒤 `&`로 연결하세요. `orders.loc[조건, ['product', 'price', 'quantity']].copy()`로 해당 행과 열을 골라 저장합니다.",
+    'missing-totals': "`orders.copy()`에서 가격을 `fillna(...median())`로 채우고, 다른 표는 `dropna(subset=['price']).copy()`로 만드세요. 각 표에서 가격 × 수량을 `amount` 열에 넣은 뒤 `.sum()`으로 합계를 구합니다.",
+    'parse-html': "`BeautifulSoup(html, 'html.parser')`로 문서를 분석하고 `soup.select('#prices li')`를 반복하세요. 코드는 `item['data-code']`, 이름은 `.select_one('.name').get_text(strip=True)`로 찾습니다. 가격 문자열에서 `replace(',', '')`로 쉼표를 제거하고 `int()`로 바꾼 뒤, 딕셔너리들을 `rows`에 모아 `pd.DataFrame(rows)`로 만드세요.",
+    'titanic-counts': "전체 인원은 `len(titanic)`입니다. `titanic['age'].notna().sum()`은 나이가 알려진 인원, `.isna().sum()`은 미상 인원입니다. 생존 여부가 0과 1이므로 `titanic['survived'].mean()`이 생존율입니다.",
+    'sex-summary': "`titanic.groupby('sex')['survived']`로 성별별 생존 여부를 묶고 `.agg(['count', 'sum', 'mean'])`을 붙이세요. 각각 인원, 생존자 수, 생존율입니다.",
+    'age-groups': "`pd.cut()`에 경계 `[0, 20, 40, 60, float('inf')]`, 문제의 구간 이름, `right=False`를 지정하세요. 만든 `age_group`으로 묶고 `observed=True`를 지정하여 생존 여부의 `count`, `sum`, `mean`을 집계합니다.",
+    'sex-bar': "성별별 `survived`의 `.mean()`을 구하고 100을 곱해 백분율로 바꾸세요. `fig, ax = plt.subplots()`와 `ax.bar()`로 그린 뒤 `ax.set()`으로 축 이름, 제목, `ylim=(0, 100)`을 설정합니다.",
+    'age-hist': "먼저 `dropna(subset=['age'])`로 나이 미상 행을 제외하세요. `sns.histplot(data=known_age, x='age', bins=20, ax=ax)`로 그린 뒤 축 이름과 제목을 설정합니다.",
+    'correlation': "문제에서 지정한 숫자 열만 리스트로 골라 `.corr()`를 호출하세요. `sns.heatmap()`에 `annot=True`, `vmin=-1`, `vmax=1`, `center=0`을 지정하면 숫자와 상관 방향을 함께 볼 수 있습니다.",
+    'combined-groups': "`groupby(['sex', 'pclass'])`로 묶고 생존 여부의 `count`와 `mean`을 집계하세요. 평균 열에 `.unstack('pclass')`를 적용해 등급을 열로 펼치고 100을 곱한 뒤 `.plot.bar()`로 그립니다.",
+    'xy-separation': "문제에서 지정한 입력 열 이름을 리스트로 만들고 `X = titanic[features].copy()`로 고르세요. 정답 `y`는 `survived` 열을 `.astype(int)`로 변환합니다. 사고 이후 정보인 `boat`, `body`는 입력에 넣지 않습니다.",
+    'stratified-split': "`train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)`는 훈련 입력, 테스트 입력, 훈련 정답, 테스트 정답 순서로 반환합니다. `stratify=y`는 정답 비율을 유지하도록 돕습니다.",
+    'train-imputer': "`SimpleImputer(strategy='median')`를 만들고 훈련 표의 `['age', 'fare']`에만 `fit_transform()`을 호출하세요. 테스트 표에는 같은 대체기의 `transform()`만 호출해야 훈련 기준을 유지합니다.",
+    'model-comparison': "모델마다 `Pipeline([('prepare', make_preprocessor()), ('model', estimator)])`를 새로 만드세요. 훈련 자료로 `fit()`, 테스트 자료로 `predict()`하고 `accuracy_score`, `f1_score`를 계산합니다. 모델별 지표를 딕셔너리로 모아 표로 만들고, 학습한 모델은 `fitted`에 보관하세요.",
+    'default-summary': "부도 여부가 0과 1이므로 정답 열의 `.sum()`은 부도 인원, `.mean()`은 부도율입니다. 입력 `X`는 `credit.drop(columns=['ID', target])`로 식별자와 정답을 제외합니다.",
+    'delay-groups': "지정한 상환 상태 열들에 `>= 1` 조건을 적용하고 `.any(axis=1)`로 행마다 한 번이라도 연체했는지 구하세요. 그 결과로 그룹을 나누고 정답 열의 `count`, `sum`, `mean`을 집계합니다.",
+    'metrics-matrix': "각 지표 함수에 `y_true, y_pred` 순서로 전달하고 문제의 키 이름으로 `metrics` 딕셔너리에 저장하세요. 혼동행렬은 `confusion_matrix(y_true, y_pred, labels=[0, 1])`로 만듭니다.",
+    'credit-model': "`StandardScaler()`와 분류 모델을 하나의 `Pipeline`으로 묶으세요. 두 모델에 같은 훈련·테스트 분리를 사용하고 정확도, 정밀도, 재현율, F1을 표로 모읍니다. 정밀도·재현율·F1에는 `zero_division=0`을 지정할 수 있습니다.",
+    'thresholds': "`probabilities >= 기준값`은 참·거짓 배열을 만듭니다. `.astype(int)`로 0과 1로 바꾸세요. 기준값 0.5와 0.3 각각의 결과를 저장하면 `.sum()`으로 양성 예측 개수를 비교할 수 있습니다.",
+    'stock-load': "준비 코드가 날짜를 인덱스로 바꾸고 정렬합니다. `prices.shape`를 `n_rows, n_columns`에 나누어 저장하세요. 날짜 범위는 `prices.index.min()`과 `.max()`로 확인합니다.",
+    'lag-next': "`prices['Close'].shift(1)`은 이전 거래일 값을 현재 행에 놓습니다. `.shift(-1)`은 다음 거래일 값을 현재 행에 놓으므로 예측할 정답을 만들 때 사용합니다.",
+    'stock-frame': "현재 종가, `.pct_change()` 수익률, `.rolling(5).mean()` 이동평균, `.shift(1)` 전일 종가를 입력 열로 만드세요. 다음 종가와 날짜는 `.shift(-1)`로 만들고 마지막에 `.dropna().copy()`로 불완전한 행을 제외합니다.",
+    'time-boundary': "테스트 시작일은 `frame.index[-80]`입니다. 훈련 행은 입력 날짜뿐 아니라 `target_date`도 그 날짜보다 이전이어야 합니다. 두 조건을 `&`로 연결해 훈련 마스크를 만들고 `.loc[마스크]`로 입력과 정답을 같은 행에서 고르세요.",
+    'close-baseline': "단순 기준 예측은 테스트 입력의 현재 종가 `X_test['close']`입니다. 이를 배열로 바꿔 `baseline_pred`에 저장하고 `mean_absolute_error(y_test, baseline_pred)`로 오차를 계산하세요.",
+    'regression-table': "회귀 모델마다 `StandardScaler()`와 모델을 `Pipeline`으로 묶고 훈련 자료로 학습하세요. 테스트 예측을 `predictions`, 학습한 모델을 `fitted`에 저장합니다. 기준 예측까지 같은 `y_test`로 MAE, RMSE, R²를 계산하세요. RMSE는 `mean_squared_error(...) ** 0.5`입니다.",
+    'forecast-plot': "`StandardScaler()`와 `Ridge(alpha=1)`을 묶어 훈련한 뒤 테스트를 예측하세요. `comparison`에는 실제값과 예측값을 넣고 인덱스는 테스트 행의 `target_date`로 지정합니다. 같은 축에 두 선을 그리고 축 이름, 제목, 범례를 표시하세요.",
+}
+
 def prose(text):
     # The fixed course uses Markdown to distinguish code names from Korean prose.
     return re.sub(r"(?<![A-Za-z0-9_`])([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)*)(?![A-Za-z0-9_`])", lambda m: "`"+m.group(1)+"`", text)
@@ -22,7 +60,8 @@ def concept(id,title,body,question):
 def quiz(id,title,*questions):
     return dict(id=id,title=title,kind="quiz",questions=[dict(q,id=f"q{i+1}") for i,q in enumerate(questions)])
 def coding(id,title,description,starter,solution,assertions=None,tests=None):
-    problem=dict(id=id,title=title,content="### 목표\n\n"+prose(description),starter_code=starter)
+    description=description.split(' 힌트:')[0]
+    problem=dict(id=id,title=title,content="### 목표\n\n"+prose(description)+"\n\n### 힌트\n\n"+HINTS[id],starter_code=starter)
     if assertions:
         required=sorted(set(re.findall(r"\bs\[['\"]([A-Za-z_][A-Za-z_0-9]*)['\"]\]",assertions)))
         checked="\n".join("    "+line for line in assertions.splitlines())
