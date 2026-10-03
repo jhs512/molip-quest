@@ -1,0 +1,54 @@
+name: Windows installer
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+    paths:
+      - 'src/**'
+      - 'assets/**'
+      - 'courses/**'
+      - 'Cargo.*'
+      - 'packaging/**'
+      - '.github/workflows/windows-installer.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  installer:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Build release executable
+        run: cargo build --release --locked --bin molip-quest
+      - name: Prepare Inno Setup
+        shell: pwsh
+        run: |
+          if (!(Test-Path 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe')) {
+            choco install innosetup --yes --no-progress
+            if ($LASTEXITCODE -ne 0) { throw 'Inno Setup installation failed.' }
+          }
+      - name: Build installer
+        shell: pwsh
+        run: |
+          $version = (Select-String '^version = "([^"]+)"' Cargo.toml | Select-Object -First 1).Matches.Groups[1].Value
+          & 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' "/DAppVersion=$version" packaging/windows/setup.iss
+          if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed.' }
+      - name: Verify installation and uninstallation
+        shell: pwsh
+        run: |
+          $installPath = Join-Path $env:RUNNER_TEMP 'molip-install-check'
+          $installer = Start-Process target/installers/molip-quest-windows-x64-setup.exe -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', "/DIR=$installPath") -Wait -PassThru
+          if ($installer.ExitCode -ne 0 -or !(Test-Path "$installPath/molip-quest.exe")) { throw 'Installation failed.' }
+          $uninstaller = Start-Process "$installPath/unins000.exe" -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART') -Wait -PassThru
+          if ($uninstaller.ExitCode -ne 0) { throw 'Uninstallation failed.' }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-windows-x64
+          path: target/installers/molip-quest-windows-x64-setup.exe
+          if-no-files-found: error
