@@ -21,6 +21,26 @@ fn copy_to_clipboard(_text: String) -> Result<(), String> {
     Err("Android 열람 모드에서는 클립보드 복사를 지원하지 않습니다.".into())
 }
 
+/// Sequential unlocking only makes sense when missions are actually solved; the view-only
+/// build opens every unit and mission so students can browse freely.
+fn unlocked_units(course: &Course, completed: &HashSet<String>) -> HashSet<String> {
+    if VIEW_ONLY {
+        return course
+            .chapters
+            .iter()
+            .flat_map(|c| &c.units)
+            .map(|u| u.id.clone())
+            .collect();
+    }
+    molip_quest::curriculum::unlocked_units(course, completed)
+}
+fn unlocked_activities(unit: &Unit, completed: &HashSet<String>) -> usize {
+    if VIEW_ONLY {
+        return unit.activities.len();
+    }
+    molip_quest::curriculum::unlocked_activities(unit, completed)
+}
+
 fn mission_progress<'a>(
     units: impl Iterator<Item = &'a Unit>,
     completed: &HashSet<String>,
@@ -56,7 +76,7 @@ pub fn Learning(course: Course) -> Element {
         Ok(completed) => completed,
         Err(error) => return rsx! {p {class:"error", "{error}"}},
     };
-    let unlocked = molip_quest::curriculum::unlocked_units(&course, &completed);
+    let unlocked = unlocked_units(&course, &completed);
     let active = course
         .chapters
         .iter()
@@ -80,7 +100,7 @@ pub fn Learning(course: Course) -> Element {
         .map(|u| u.id.clone());
     let active_id = active.id.clone();
     let following_id = units.get(position + 1).map(|u| u.id.clone());
-    let active_unlocked = molip_quest::curriculum::unlocked_activities(&active, &completed_items);
+    let active_unlocked = unlocked_activities(&active, &completed_items);
     let active_total = active.activities.len();
     let active_mission = if mission_index() == usize::MAX {
         active_unlocked.saturating_sub(1)
@@ -175,7 +195,7 @@ fn UnitFlow(
         Ok(items) => items,
         Err(e) => return rsx! {p {class:"error","{e}"}},
     };
-    let unlocked_count = molip_quest::curriculum::unlocked_activities(&unit, &completed);
+    let unlocked_count = unlocked_activities(&unit, &completed);
     let active_index = if index() == usize::MAX {
         unlocked_count.saturating_sub(1)
     } else {
