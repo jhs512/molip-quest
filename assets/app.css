@@ -138,7 +138,12 @@ textarea[data-code-editor][hidden] { display: none; }
 .quiz-option .markdown p { margin: 0; }
 .mission-strip { padding: 18px 22px; padding-right: 130px; background: #192b3a; border-bottom: 1px solid #496073; }
 .mission-heading, .mission-controls { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-.mission-strip progress { margin: 10px 0; height: 8px; accent-color: #63dbb6; }
+.mission-bar { display: flex; gap: 4px; margin: 10px 0; }
+.practice-shell .mission-cell { flex: 1; height: 10px; min-width: 0; padding: 0; border: 0; border-radius: 3px; background: #35506a; cursor: pointer; transition: background .15s; }
+.practice-shell .mission-cell:hover { background: #4c6d8e; }
+.practice-shell .mission-cell.cleared { background: #63dbb6; }
+.practice-shell .mission-cell.current { box-shadow: 0 0 0 2px #192b3a, 0 0 0 4px #79dcff; }
+.practice-shell .mission-cell.cleared.current { background: #63dbb6; }
 .curriculum-menu .curriculum-missions { padding: 0 0 12px 16px; }
 .curriculum-mission { display: flex; flex-direction: column; gap: 4px; width: 100%; text-align: left; margin: 4px 0; padding: 9px 10px; border-left: 3px solid transparent; }
 .practice-shell .curriculum-mission { background: transparent; color: #b8ccdd; }

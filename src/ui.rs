@@ -196,12 +196,11 @@ fn UnitFlow(
         Err(e) => return rsx! {p {class:"error","{e}"}},
     };
     let unlocked_count = unlocked_activities(&unit, &completed);
+    // A unit resumes at its first mission that is not cleared yet (the same rule as Learning).
     let active_index = if index() == usize::MAX {
-        if VIEW_ONLY {
-            0
-        } else {
-            unlocked_count.saturating_sub(1)
-        }
+        molip_quest::curriculum::unlocked_activities(&unit, &completed)
+            .saturating_sub(1)
+            .min(unlocked_count.saturating_sub(1))
     } else {
         index().min(unlocked_count.saturating_sub(1))
     };
@@ -215,8 +214,17 @@ fn UnitFlow(
     let total = unit.activities.len();
     rsx! {
         section {class:"mission-strip",
-            div {class:"mission-heading",strong {"{unit.title}"} span {"클리어 {count} / {total}"}}
-            progress {value:count as f64,max:total as f64,aria_label:"단원 진도"}
+            div {class:"mission-heading",strong {"{unit.title}"} span {"클리어 {count} / {total} · 현재 {active_index + 1}번째"}}
+            // One cell per mission: cleared cells fill, the current one is outlined, and any cell jumps there.
+            div {class:"mission-bar",role:"list",aria_label:"단원 진도",
+                for (n, activity) in unit.activities.iter().enumerate() {
+                    button {key:"{activity.id}",role:"listitem",
+                        class:format!("mission-cell{}{}", if completed.contains(&activity.progress_unit(&unit).id) {" cleared"} else {""}, if n == active_index {" current"} else {""}),
+                        title:format!("{} · {}{}", n + 1, activity.title, if completed.contains(&activity.progress_unit(&unit).id) {" (클리어)"} else {""}),
+                        aria_current:if n == active_index {"step"} else {"false"},
+                        onclick:move |_| index.set(n)}
+                }
+            }
 
         }
         for active in [active] {ActivityView {key:"{progress.id}-{progress.revision}",course_id:course_id.clone(),activity:active,progress:progress.clone(),oncompleted:move |passed|{index.set(if passed {(active_index+1).min(total-1)}else{active_index});refresh+=1;oncompleted.call(passed);}}}
