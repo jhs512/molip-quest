@@ -1,6 +1,6 @@
 # KPC 전용 몰입 학습
 
-Status: ready-for-agent
+Status: completed
 
 ## Problem Statement
 

@@ -236,3 +236,34 @@ async fn incomplete_kpc_answer_is_wrong_answer_and_does_not_clear_a_mission() {
         .unwrap();
     assert!(store.completed_items(&course).unwrap().is_empty());
 }
+
+#[tokio::test]
+async fn sex_bar_accepts_either_group_order_but_rejects_incorrect_heights() {
+    let course = Course::parse(include_str!("../courses/kpc-finance.json")).unwrap();
+    let problem = course
+        .chapters
+        .iter()
+        .flat_map(|c| &c.units)
+        .flat_map(|u| &u.activities)
+        .find_map(|a| match &a.kind {
+            ActivityKind::Coding { problem } if problem.id == "sex-bar" => Some(problem),
+            _ => None,
+        })
+        .unwrap();
+    let solutions: HashMap<String, String> =
+        serde_json::from_str(include_str!("../courses/kpc-solutions.json")).unwrap();
+    let reversed = solutions["sex-bar"].replace(".mean()", ".mean().sort_index(ascending=False)");
+    let report = molip_quest::runner::check_unit(problem, &reversed)
+        .await
+        .unwrap();
+    assert!(report.passed, "{}", serde_json::to_string(&report).unwrap());
+    let incorrect = reversed.replace(
+        "fig,ax=plt.subplots()",
+        "rates.loc['male'] = 0\nfig,ax=plt.subplots()",
+    );
+    let report = molip_quest::runner::check_unit(problem, &incorrect)
+        .await
+        .unwrap();
+    assert!(!report.passed);
+    assert_eq!(report.cases[0].state, "wrong_answer");
+}

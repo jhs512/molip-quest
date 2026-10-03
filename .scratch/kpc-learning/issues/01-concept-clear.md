@@ -4,8 +4,8 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** completed
 
-- [ ] 개념마다 단답형 한 문항
-- [ ] 복수 답안과 정규화 채점
-- [ ] 답안·완료 저장 및 화면 표시
+- [x] 개념마다 단답형 한 문항
+- [x] 복수 답안과 정규화 채점
+- [x] 답안·완료 저장 및 화면 표시
