@@ -191,14 +191,14 @@
                 },
                 {
                   "id": "q2",
-                  "prompt": "수량만 바꾸면 이전 `amount`는?",
+                  "prompt": "아래 코드를 위에서부터 실행했습니다. `quantity`를 3에서 5로 바꾼 뒤 `print(amount)`가 출력하는 값은 무엇인가요?\n\n```python\nprice = 10000\nquantity = 3\namount = price * quantity\nquantity = 5\nprint(amount)\n```",
                   "type": "choice",
                   "options": [
-                    "이전 값 유지",
-                    "자동 갱신"
+                    "30000 — 처음 계산한 값이 유지된다",
+                    "50000 — 새 수량에 맞춰 자동으로 바뀐다"
                   ],
                   "correct": 0,
-                  "explanation": "계산문을 다시 실행해야 합니다."
+                  "explanation": "`amount`에는 계산 당시의 결과인 30000이 저장됩니다. `quantity`만 바꿔도 `amount`가 자동으로 바뀌지는 않습니다. 50000으로 바꾸려면 `amount` = `price` * `quantity`를 다시 실행해야 합니다."
                 },
                 {
                   "id": "q3",
