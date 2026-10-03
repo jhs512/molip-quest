@@ -185,10 +185,6 @@ async fn every_kpc_coding_problem_passes_alone_with_its_reference_answer() {
         serde_json::from_str(include_str!("../courses/kpc-solutions.json")).unwrap();
     let mut checked = 0;
     for unit in course.chapters.iter().flat_map(|c| &c.units) {
-        assert!(matches!(
-            unit.activities.first().unwrap().kind,
-            ActivityKind::Concept { .. }
-        ));
         for activity in &unit.activities {
             if let ActivityKind::Coding { problem } = &activity.kind {
                 let report = check_unit(problem, &solutions[&problem.id]).await.unwrap();
@@ -209,6 +205,50 @@ async fn every_kpc_coding_problem_passes_alone_with_its_reference_answer() {
     let clean=run_python("from pathlib import Path\nimport pandas as pd\nassert not Path('previous.txt').exists()\nassert pd.read_csv('data/titanic.csv').shape==(1309,14)\nprint('fresh')","").await.unwrap();
     assert!(clean.success, "{}", clean.stderr);
     assert_eq!(clean.stdout.trim(), "fresh");
+}
+
+#[test]
+fn kpc_units_use_varied_sequences_including_repeated_concepts_and_problem_only_units() {
+    let course = Course::parse(include_str!("../courses/kpc-finance.json")).unwrap();
+    let units: Vec<_> = course.chapters.iter().flat_map(|c| &c.units).collect();
+    let intro = units.iter().find(|u| u.id == "environment").unwrap();
+    assert!(matches!(
+        intro.activities[0].kind,
+        ActivityKind::Concept { .. }
+    ));
+    assert!(matches!(
+        intro.activities[1].kind,
+        ActivityKind::Coding { .. }
+    ));
+    assert!(matches!(
+        intro.activities[2].kind,
+        ActivityKind::Concept { .. }
+    ));
+    let practice = units.iter().find(|u| u.id == "credit-metrics").unwrap();
+    assert!(practice
+        .activities
+        .iter()
+        .all(|a| !matches!(a.kind, ActivityKind::Concept { .. })));
+    assert_eq!(
+        practice
+            .activities
+            .iter()
+            .filter(|a| matches!(a.kind, ActivityKind::Coding { .. }))
+            .count(),
+        3
+    );
+    let mut completed = std::collections::HashSet::new();
+    for (index, activity) in intro.activities.iter().enumerate() {
+        assert_eq!(
+            molip_quest::curriculum::unlocked_activities(intro, &completed),
+            index + 1
+        );
+        completed.insert(activity.progress_unit(intro).id);
+    }
+    assert_eq!(
+        molip_quest::curriculum::unlocked_activities(intro, &completed),
+        intro.activities.len()
+    );
 }
 
 #[tokio::test]

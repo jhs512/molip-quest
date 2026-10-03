@@ -108,6 +108,25 @@ textarea[data-code-editor][hidden] { display: none; }
 .practice-header { gap: 10px; }
 
 /* KPC mission flow */
+.markdown { color: #d3e3ed; line-height: 1.85; overflow-wrap: anywhere; }
+.markdown p { margin: .7em 0; white-space: normal; }
+.markdown h1, .markdown h2, .markdown h3, .markdown h4 { color: #a9d9ff; margin: 1.1em 0 .5em; }
+.markdown strong { color: #a6efd1; }
+.markdown code { color: #f7cc91; background: #12212f; padding: .15em .35em; border-radius: 4px; font-family: Consolas, monospace; }
+.markdown pre { background: #101e2b; border: 1px solid #405970; padding: 18px; border-radius: 8px; overflow-x: auto; white-space: pre; }
+.markdown pre code { background: none; padding: 0; font-size: 14px; }
+.markdown blockquote { margin: 18px 0; border-left: 4px solid #60bba6; padding: 8px 18px; background: #213b43; }
+.markdown table { border-collapse: collapse; max-width: 100%; }
+.markdown th, .markdown td { border: 1px solid #496073; padding: 8px 12px; }
+.markdown th { background: #304a60; }
+.markdown .tok-keyword { color: #c792ea; }
+.markdown .tok-string { color: #a8d99c; }
+.markdown .tok-comment { color: #92abc0; font-style: italic; }
+.markdown .tok-number { color: #f6c177; }
+.markdown .tok-variableName, .markdown .tok-definition { color: #82cfff; }
+.markdown .tok-operator { color: #89dceb; }
+.question-heading { font-size: 18px; font-weight: 700; }
+.quiz-option .markdown p { margin: 0; }
 .mission-strip { padding: 18px 22px; padding-right: 340px; background: #192b3a; border-bottom: 1px solid #496073; }
 .mission-heading, .mission-controls { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .mission-strip progress { margin: 10px 0; height: 8px; accent-color: #63dbb6; }

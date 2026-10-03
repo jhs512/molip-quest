@@ -3,7 +3,7 @@ import { python } from '@codemirror/lang-python';
 import { keymap } from '@codemirror/view';
 import { indentWithTab } from '@codemirror/commands';
 import { syntaxHighlighting, HighlightStyle } from '@codemirror/language';
-import { tags } from '@lezer/highlight';
+import { tags, highlightCode, classHighlighter } from '@lezer/highlight';
 
 // The textarea stays as the Dioxus event bridge and accessible fallback.
 if (!window.molipCodeEditors) {
@@ -28,6 +28,19 @@ if (!window.molipCodeEditors) {
   }, { dark: true });
 
   function sync() {
+    document.querySelectorAll('.markdown pre code.language-python').forEach(code => {
+      const source = code.textContent;
+      if (code.dataset.highlighted === source) return;
+      code.dataset.highlighted = source;
+      const fragment = document.createDocumentFragment();
+      highlightCode(source, python().language.parser.parse(source), classHighlighter, (text, classes) => {
+        const span = document.createElement('span');
+        span.textContent = text;
+        span.className = classes;
+        fragment.append(span);
+      }, () => fragment.append(document.createTextNode('\n')));
+      code.replaceChildren(fragment);
+    });
     for (const [element, view] of editors) {
       if (!element.isConnected) { view.destroy(); editors.delete(element); }
     }

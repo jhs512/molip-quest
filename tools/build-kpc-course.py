@@ -6,16 +6,23 @@ ROOT=Path(__file__).resolve().parents[1]
 chapters=[]
 solutions={}
 
+def prose(text):
+    # The fixed course uses Markdown to distinguish code names from Korean prose.
+    return re.sub(r"(?<![A-Za-z0-9_`])([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)*)(?![A-Za-z0-9_`])", lambda m: "`"+m.group(1)+"`", text)
+
 def short(prompt,accepted,explanation):
-    return dict(id="check",prompt=prompt,type="short_answer",accepted=accepted,explanation=explanation)
+    return dict(id="check",prompt=prose(prompt),type="short_answer",accepted=accepted,explanation=prose(explanation))
 def choice(prompt,options,correct,explanation):
-    return dict(id="check",prompt=prompt,type="choice",options=options,correct=correct,explanation=explanation)
+    return dict(id="check",prompt=prose(prompt),type="choice",options=[prose(o) for o in options],correct=correct,explanation=prose(explanation))
 def concept(id,title,body,question):
+    body=prose(body)
+    if id=='runtime':
+        body += "\n\n### 첫 실행 예제\n\n```python\nprint('Hello, KPC!')\n```\n\n> **기억하세요:** 실행은 연습이고, 테스트 통과는 미션 완료입니다."
     return dict(id=id,title=title,kind="concept",body=body,check=question)
 def quiz(id,title,*questions):
     return dict(id=id,title=title,kind="quiz",questions=[dict(q,id=f"q{i+1}") for i,q in enumerate(questions)])
 def coding(id,title,description,starter,solution,assertions=None,tests=None):
-    problem=dict(id=id,title=title,content=description+"\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 main.py에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 data/에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 테스트 · 완료를 누르세요.",starter_code=starter)
+    problem=dict(id=id,title=title,content="### 목표\n\n"+prose(description)+"\n\n### 실행 안내\n\n이 문제만 열어도 풀 수 있습니다. 필요한 준비 코드는 아래 `main.py`에 있습니다. 데이터는 앱이 매번 새 작업 폴더의 `data/`에 준비합니다. 앞 문제의 변수나 파일을 가져오지 않습니다. 코드를 실행해 표·그래프·오류를 확인한 다음 **테스트 · 완료**를 누르세요.",starter_code=starter)
     if assertions:
         required=sorted(set(re.findall(r"\bs\[['\"]([A-Za-z_][A-Za-z_0-9]*)['\"]\]",assertions)))
         checked="\n".join("    "+line for line in assertions.splitlines())
@@ -151,6 +158,25 @@ concept('regression-metrics','기준보다 나쁜 결과도 정확히 보고하�
 coding('regression-table','세 회귀 모델과 기준 비교표','준비된 시간 분리와 import를 사용하세요. predictions에는 Baseline, Linear, Ridge, Lasso의 테스트 예측을 저장합니다. Ridge alpha=1, Lasso alpha=10·max_iter=20000·tol=0.001을 사용하세요. 각 모델은 StandardScaler Pipeline으로 훈련합니다. results에는 model 인덱스와 MAE, RMSE, R2 열을 만드세요.',ST_FRAME+TIME_SPLIT+REG+"# models, predictions, results를 만드세요\n",ST_FRAME+TIME_SPLIT+REG+"models={'Linear':LinearRegression(),'Ridge':Ridge(alpha=1),'Lasso':Lasso(alpha=10,max_iter=20000,tol=0.001)}\npredictions={'Baseline':X_test['close'].to_numpy()}\nfitted={}\nfor name,estimator in models.items():\n    model=Pipeline([('scale',StandardScaler()),('model',estimator)])\n    model.fit(X_train,y_train)\n    predictions[name]=model.predict(X_test)\n    fitted[name]=model\nrows=[]\nfor name,pred in predictions.items():\n    rows.append({'model':name,'MAE':mean_absolute_error(y_test,pred),'RMSE':mean_squared_error(y_test,pred)**0.5,'R2':r2_score(y_test,pred)})\nresults=pd.DataFrame(rows).set_index('model')\nresults\n","import numpy as np\nassert set(s['results'].index)=={'Baseline','Linear','Ridge','Lasso'}\nassert set(s['results'].columns)=={'MAE','RMSE','R2'}\nassert np.isfinite(s['results'].to_numpy()).all()\nassert (s['results']['RMSE']>=s['results']['MAE']).all()\nassert all(len(p)==80 for p in s['predictions'].values())\nassert set(s['fitted'])=={'Linear','Ridge','Lasso'}\nassert all(m.named_steps['scale'].n_samples_seen_==315 for m in s['fitted'].values())"),
 coding('forecast-plot','정답 날짜에 맞춘 회귀 그림','준비된 분리로 Ridge Pipeline을 학습하고 prediction을 구하세요. comparison에는 target_date 인덱스와 actual, prediction 열을 넣으세요. fig, ax에서 두 값을 같은 날짜 축에 그리고 범례를 표시하세요.',ST_FRAME+TIME_SPLIT+REG+PLOT+"# model, prediction, comparison, fig, ax를 만드세요\n",ST_FRAME+TIME_SPLIT+REG+PLOT+"model=Pipeline([('scale',StandardScaler()),('model',Ridge(alpha=1))])\nmodel.fit(X_train,y_train)\nprediction=model.predict(X_test)\ncomparison=pd.DataFrame({'actual':y_test.to_numpy(),'prediction':prediction},index=pd.DatetimeIndex(frame.loc[test_mask,'target_date']))\nfig,ax=plt.subplots()\nax.plot(comparison.index,comparison['actual'],label='Actual next close')\nax.plot(comparison.index,comparison['prediction'],label='Ridge')\nax.set(xlabel='Target date',ylabel='Price',title='Held-out next trading day')\nax.legend()\nplt.show()\ncomparison.head()\n","assert s['comparison'].shape==(80,2) and list(s['comparison'].columns)==['actual','prediction']\nassert list(s['comparison'].index)==list(s['frame'].loc[s['test_mask'],'target_date'])\nassert len(s['ax'].lines)==2 and s['ax'].get_xlabel()=='Target date'\nassert s['ax'].get_legend() is not None"),
 quiz('final-check','最終'.replace('最終','최종')+' 프로젝트 점검',short('절대 오차 평균 지표의 약어는?',['MAE','mean absolute error'],'MAE는 가격 단위로 읽으며 작을수록 좋습니다.'),choice('R²가 음수일 수 있을까?',['네','아니요'],0,'정답 평균 기준보다 못한 경우 음수가 될 수 있습니다.'),choice('기준보다 모델 MAE가 크면?',['개선하지 못했다고 보고','모델이라 무조건 더 좋다고 보고'],0,'같은 기간에서 기준과 비교한 수치를 정직하게 보고합니다.'),short('그림의 날짜 축은 입력 날짜가 아닌 어떤 날짜인가요?',['target_date','정답날짜','목표날짜'],'다음 거래일의 실제값·예측값은 정답 날짜에 표시합니다.'))])])
+
+# Each unit has its own ordered teaching sequence; there is no fixed type cycle.
+by_unit={u['id']:u for c in chapters for u in c['units']}
+by_unit['environment']['activities'].insert(2, concept('read-input','입력 한 줄에서 두 값을 읽기',
+    "입력은 문자열입니다. input().split()은 공백으로 나누고, map(int, ...)는 각 값을 정수로 바꿉니다.\n\n가격과 수량을 받은 뒤 둘을 곱해 출력하세요. 입력은 실행 입력 칸에 넣습니다.",
+    short('문자열을 정수로 바꾸는 Python 함수는?',['int'],'int가 숫자 문자열을 정수로 바꿉니다.')))
+by_unit['preprocessing']['activities'].insert(2, concept('fit-train-only','결측값 기준은 훈련에서만 배우기',
+    "훈련 자료에는 fit_transform, 테스트 자료에는 transform을 사용합니다. 테스트로 중앙값을 배우면 데이터 누수입니다.\n\nSimpleImputer를 훈련 자료에서 학습한 뒤 같은 객체로 테스트를 변환하세요.",
+    short('결측치 대체 기준을 학습하는 자료는?',['훈련자료','훈련데이터','train','training data'],'대체 기준은 훈련에서만 학습합니다.')))
+for unit_id in ['insight','credit-metrics']:
+    activities=by_unit[unit_id]['activities']
+    introduction=activities.pop(0)
+    first_problem=next(a['problem'] for a in activities if a['kind']=='coding')
+    first_problem['content']='### 문제에서 필요한 설명\n\n'+introduction['body']+'\n\n'+first_problem['content']
+by_unit['regression-project']['activities'].insert(2, quiz('midpoint','모델 비교 중간 확인',
+    choice('같은 테스트 기간에서 비교해야 할 것은?',['모델과 기준 예측','서로 다른 날짜의 점수'],0,'평가 자료가 같아야 비교할 수 있습니다.'),
+    short('평균 절대 오차의 약어는?',['MAE','mean absolute error'],'MAE가 작을수록 가격 오차가 작습니다.')))
+for unit_id in ['environment','preprocessing','insight','credit-metrics','regression-project']:
+    by_unit[unit_id]['revision']=2
 
 course=dict(id='kpc-finance-2026',title='KPC · 머신러닝을 활용한 금융데이터 분석',description='3일 · 20시간 · 7챕터. 개념을 확인하고 독립된 main.py 미션과 퀴즈를 클리어하세요.',chapters=chapters)
 (ROOT/'courses/kpc-finance.json').write_text(json.dumps(course,ensure_ascii=False,indent=2),encoding='utf-8')

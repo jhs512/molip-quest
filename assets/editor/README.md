@@ -1,7 +1,8 @@
 # Python editor
 
 CodeMirror 6 is bundled locally so the desktop editor works without a CDN.
-The hidden textarea bridges edits to Dioxus; reset and AI updates flow back
+The same local Python parser highlights Markdown code blocks via Lezer.
+The hidden textarea bridges edits to Dioxus; code reset updates flow back
 through `data-editor-value`.
 
 To rebuild after changing `editor.js`, run from the repository root:
