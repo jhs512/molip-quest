@@ -113,12 +113,12 @@ jobs:
           echo "$KEYSTORE_BASE64" | base64 -d > packaging/android/release.jks
           printf '\n[bundle.android]\njks_file = "packaging/android/release.jks"\njks_password = "%s"\nkey_alias = "molip"\nkey_password = "%s"\n' "$KEYSTORE_PASSWORD" "$KEYSTORE_PASSWORD" >> Dioxus.toml
       - name: Build signed release APK
-        env:
-          ANDROID_NDK_HOME: ${{ env.ANDROID_NDK_LATEST_HOME }}
-          NDK_HOME: ${{ env.ANDROID_NDK_LATEST_HOME }}
         run: |
           set -euo pipefail
-          dx build --android --release --no-default-features --features mobile --verbose
+          # The runner exports ANDROID_NDK_LATEST_HOME only into the shell, not the workflow env context.
+          export ANDROID_NDK_HOME="$ANDROID_NDK_LATEST_HOME" NDK_HOME="$ANDROID_NDK_LATEST_HOME"
+          echo "NDK: $ANDROID_NDK_HOME"
+          dx build --android --release --target aarch64-linux-android --no-default-features --features mobile --verbose
           apk=$(find target/dx -name 'app-release.apk' -print -quit)
           test -n "$apk" || { echo 'No signed release APK produced'; find target/dx -name '*.apk'; exit 1; }
           mkdir -p target/installers
