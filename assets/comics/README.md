@@ -10,8 +10,9 @@ SVG of every panel, so the strip reads inline with the surrounding paragraphs.
 `comic-gen.js` is the vendored browser SDK (v0.7.5, an ES module from
 `https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.5/cdn/comic-gen.js`). The app
 embeds it as a string and the loader imports it from a Blob URL, so comics work
-offline on desktop and Android. Mermaid diagrams inside panels are not used:
-they would fetch Mermaid from a CDN at runtime.
+offline on desktop and Android. Panels may hold Mermaid diagrams: `mermaid.min.js`
+(Mermaid 11.17.2, MIT, https://github.com/mermaid-js/mermaid) is vendored too and served
+to the SDK's isolated frame from a Blob URL by `comics.js`, so diagrams also render offline.
 
 Editorial rules for new comics live with the course source in `tools/kpc_course/`:
 a comic is one Markdown paragraph (no blank lines inside the fence), every

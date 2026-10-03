@@ -11,7 +11,21 @@
   const source = globalThis.__molipComicGenSource;
   delete globalThis.__molipComicGenSource;
   if (typeof document === 'undefined' || !source) return;
-  const url = URL.createObjectURL(new Blob([source], { type: 'text/javascript' }));
+  // Mermaid diagrams inside panels: the SDK would fetch its loader and Mermaid from a CDN,
+  // so the vendored Mermaid build is served from a Blob URL through a tiny loader of our own
+  // that fulfils the same ready/error events. Comics then render fully offline.
+  const mermaidSource = globalThis.__molipMermaidSource;
+  delete globalThis.__molipMermaidSource;
+  let sdkSource = source;
+  if (mermaidSource) {
+    const mermaidUrl = URL.createObjectURL(new Blob([mermaidSource], { type: 'text/javascript' }));
+    const loader = "const s=document.createElement('script');s.src=" + JSON.stringify(mermaidUrl)
+      + ";s.onload=()=>{const e=globalThis.mermaid;if(e&&typeof e.initialize==='function'&&typeof e.render==='function'){Object.defineProperty(window,'__comicGenMermaid',{value:e});window.dispatchEvent(new Event('comic-gen-mermaid-ready'));}else{window.dispatchEvent(new Event('comic-gen-mermaid-error'));}};"
+      + "s.onerror=()=>window.dispatchEvent(new Event('comic-gen-mermaid-error'));document.head.append(s);";
+    const loaderUrl = URL.createObjectURL(new Blob([loader], { type: 'text/javascript' }));
+    sdkSource = sdkSource.replace('"https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.6.0/cdn/comic-gen.mermaid.js"', JSON.stringify(loaderUrl));
+  }
+  const url = URL.createObjectURL(new Blob([sdkSource], { type: 'text/javascript' }));
   const sdk = import(url).catch(error => { console.error('comic-gen SDK failed to load', error); return null; });
   const seen = new WeakSet();
   let count = 0;
@@ -31,7 +45,7 @@
       figure.setAttribute('aria-label', '설명 만화');
       try {
         if (!api) throw new Error('SDK unavailable');
-        const result = api.renderComic(code.textContent, { 너비: 720 });
+        const result = await api.renderComicAsync(code.textContent, { 너비: 720 });
         if (result.diagnostics.length) throw new Error(result.diagnostics.join(' / '));
         figure.innerHTML = result.svg;
         const svg = figure.querySelector('svg');

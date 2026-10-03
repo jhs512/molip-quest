@@ -2,10 +2,11 @@ import { EditorView, basicSetup } from 'codemirror';
 import { python } from '@codemirror/lang-python';
 import { keymap } from '@codemirror/view';
 import { indentWithTab } from '@codemirror/commands';
-import { syntaxHighlighting, HighlightStyle } from '@codemirror/language';
+import { syntaxHighlighting, HighlightStyle, indentUnit } from '@codemirror/language';
 import { tags, highlightCode, classHighlighter } from '@lezer/highlight';
 
 // The textarea stays as the Dioxus event bridge and accessible fallback.
+// Indentation is four spaces, as the course text and every example teach.
 if (!window.molipCodeEditors) {
   const editors = new Map();
   const resetVersions = new Map();
@@ -58,7 +59,7 @@ if (!window.molipCodeEditors) {
         view = new EditorView({
           doc: source,
           parent: host,
-          extensions: [basicSetup, python(), keymap.of([indentWithTab]), theme, colors,
+          extensions: [basicSetup, python(), indentUnit.of('    '), keymap.of([indentWithTab]), theme, colors,
             EditorView.contentAttributes.of({ 'aria-label': 'Python 코드 편집기' }),
             EditorView.updateListener.of(update => {
               if (!update.docChanged || element.value === update.state.doc.toString()) return;

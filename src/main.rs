@@ -62,9 +62,11 @@ fn App() -> Element {
         document::eval(include_str!("../assets/editor/editor.bundle.js"));
         // The comic SDK is an ES module, so the loader imports it from a Blob URL built from this string.
         document::eval(&format!(
-            "window.__molipComicGenSource={};{}",
+            "window.__molipComicGenSource={};window.__molipMermaidSource={};{}",
             serde_json::to_string(include_str!("../assets/comics/comic-gen.js"))
                 .expect("comic sdk"),
+            serde_json::to_string(include_str!("../assets/comics/mermaid.min.js"))
+                .expect("mermaid"),
             include_str!("../assets/comics/comics.js")
         ));
         document::eval(include_str!("../assets/speech/speech.js"));
