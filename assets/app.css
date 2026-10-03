@@ -176,6 +176,8 @@ textarea[data-code-editor][hidden] { display: none; }
 
 /* Progress reset: a quiet button whose confirmation step carries the danger colour. */
 .reset-progress { background: transparent; color: #a9c6bd; border: 1px solid #3f6a5e; padding: 8px 12px; font-size: 13px; margin-top: 12px; }
+/* Classroom sidebar: the doctor and reset buttons sit side by side, so keep a gap between them and allow wrapping. */
+.sidebar > button, .sidebar > .reset-progress { margin: 12px 10px 0 0; }
 .practice-header .reset-progress { margin-top: 0; color: #99aec1; border-color: #3f5468; }
 .danger { background: #a12828; color: #fff; }
 
