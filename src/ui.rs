@@ -147,6 +147,9 @@ fn QuizView(
         Ok(v) => v,
         Err(e) => return rsx! {p {class:"error","{e}"}},
     };
+    // Keep the DOM value independent of answer updates: writing a controlled value
+    // on every input interrupts native Korean IME composition in WebView2.
+    let input_defaults = initial_answers.clone();
     let mut answers = use_signal(|| initial_answers);
     let mut passed = use_signal(|| initial_passed);
     let mut report = use_signal(|| None::<molip_quest::runner::TestReport>);
@@ -164,7 +167,7 @@ fn QuizView(
                             label {class:"quiz-option",input {r#type:"radio",name:q.id.clone(),value:option.to_string(),checked:answers.read().get(&q.id)==Some(&option.to_string()),onchange:{let id=q.id.clone();let key=key.clone();move |_|{answers.write().insert(id.clone(),option.to_string());report.set(None);if let Err(e)=drafts::save(&key,"",&answers()){message.set(e);}}}}span {"{text}"}}
                         }
                     },
-                    QuestionKind::ShortAnswer {..}=>rsx! {input {aria_label:q.prompt.clone(),placeholder:"답을 입력하세요",value:answers.read().get(&q.id).cloned().unwrap_or_default(),oninput:{let id=q.id.clone();let key=key.clone();move |e|{answers.write().insert(id.clone(),e.value());report.set(None);if let Err(e)=drafts::save(&key,"",&answers()){message.set(e);}}}}},
+                    QuestionKind::ShortAnswer {..}=>rsx! {input {aria_label:q.prompt.clone(),placeholder:"답을 입력하세요",initial_value:input_defaults.get(&q.id).cloned().unwrap_or_default(),oninput:{let id=q.id.clone();let key=key.clone();move |e|{answers.write().insert(id.clone(),e.value());report.set(None);if let Err(e)=drafts::save(&key,"",&answers()){message.set(e);}}}}},
                 }
                 if let Some(result)=report.read().as_ref().and_then(|r|r.cases.get(n)) {
                     p {class:"error","다시 생각해보세요."}
@@ -249,7 +252,7 @@ fn UnitWorkspace(course_id: String, unit: Unit, oncompleted: EventHandler<()>) -
         if unit.blanks.is_empty(){textarea{class:"code-editor", "data-code-editor":"python", "data-editor-value":code(),aria_label:"Python 코드",spellcheck:false,value:code(),oninput:{let key=key.clone();move|e|{code.set(e.value());if let Err(error)=drafts::save(&key,&code(),&answers()){message.set(error)}}}}}
         else{div{class:"inline-code",for (number,parts) in lines.iter().enumerate(){div{class:"code-line",span{class:"line-number","{number+1}"}div{class:"line-source",for (text,blank) in parts {if let Some(blank)=blank {input{class:"code-blank",aria_label:"빈칸 {blank}",spellcheck:false,value:answers.read().get(blank).cloned().unwrap_or_default(),oninput:{let blank=blank.clone();let unit=unit.clone();let key=key.clone();move|e|{answers.write().insert(blank.clone(),e.value());if let Ok(assembled)=assemble(&unit,&answers()){code.set(assembled);if let Err(error)=drafts::save(&key,&code(),&answers()){message.set(error)}}}}}}else{span{"{text}"}}}}}}}}
         }
-        section{class:"result-pane",h3{"실행 결과"}details{summary{"실행 입력"}textarea{aria_label:"실행 입력",value:input(),oninput:move|e|input.set(e.value())}}
+        section{class:"result-pane",h3{"실행 결과"}details{summary{"실행 입력"}textarea{aria_label:"실행 입력",initial_value:"",oninput:move|e|input.set(e.value())}}
             p{class:"execution-status",role:"status","{message}"}
             pre{class:"output",if output().is_empty(){"실행 결과가 여기에 표시됩니다."}else{"{output}"}}
             RichResults { artifacts: artifacts() }
