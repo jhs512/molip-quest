@@ -60,6 +60,12 @@ pub async fn inspect() -> Vec<Check> {
                 .unwrap_or_else(|| "선택한 Python 환경에 패키지를 설치하세요.".into()),
         });
     }
+    checks.extend(inspect_ai().await);
+    checks
+}
+
+pub async fn inspect_ai() -> Vec<Check> {
+    let mut checks = Vec::new();
     let claude = std::env::var("MOLIP_CLAUDE_PATH").unwrap_or_else(|_| "claude".into());
     let installed = probe(&claude, &["--version"]).await.is_some();
     checks.push(Check {
