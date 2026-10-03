@@ -217,7 +217,7 @@
           "id": "control",
           "title": "1일차 · 3교시 — 조건·반복과 DataFrame",
           "content": "",
-          "revision": 1,
+          "revision": 2,
           "activities": [
             {
               "id": "flow",
@@ -248,15 +248,39 @@
               }
             },
             {
+              "id": "holdings-amounts",
+              "title": "세 종목의 금액 계산하기",
+              "kind": "coding",
+              "problem": {
+                "id": "holdings-amounts",
+                "title": "세 종목의 금액 계산하기",
+                "content": "### 목표\n\n각 종목의 가격과 수량을 곱해 `amount`에 저장하세요. 마지막에 `holdings`를 출력하여 세 종목의 금액이 30000, 40000, 60000인지 확인하세요. 이번 미션에서는 합계나 표를 만들지 않습니다.\n\n### 힌트\n\n`for holding in holdings:`로 종목을 하나씩 꺼내세요. 각 종목의 `price * quantity`를 `holding['amount']`에 저장합니다. 반복문이 끝나면 `print(holdings)`로 세 종목의 계산 결과를 확인하세요.",
+                "starter_code": "holdings = [{'name':'A','price':10000,'quantity':3},{'name':'B','price':20000,'quantity':2},{'name':'C','price':15000,'quantity':4}]\n# 각 종목에 amount를 추가하세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['holdings']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert len(s['holdings'])==3\n    assert [h['amount'] for h in s['holdings']]==[30000,40000,60000]\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
+              "id": "holdings-total",
+              "title": "세 종목의 금액 합산하기",
+              "kind": "coding",
+              "problem": {
+                "id": "holdings-total",
+                "title": "세 종목의 금액 합산하기",
+                "content": "### 목표\n\n아래 준비 코드에 세 종목의 금액이 이미 들어 있습니다. `amount`를 모두 더해 `total_amount`에 저장하고, 전체 금액 130000을 출력하세요.\n\n### 힌트\n\n준비 코드에 각 종목의 금액이 들어 있습니다. 반복문 전에 `total_amount = 0`으로 시작하고, 반복문 안에서 `holding['amount']`를 더하세요. 반복문이 끝난 뒤 `print(total_amount)`로 합계 하나만 출력합니다.",
+                "starter_code": "holdings = [{'name':'A','price':10000,'quantity':3,'amount':30000},{'name':'B','price':20000,'quantity':2,'amount':40000},{'name':'C','price':15000,'quantity':4,'amount':60000}]\n# total_amount를 계산하고 출력하세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['total_amount']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['total_amount']==130000\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+              }
+            },
+            {
               "id": "holdings-frame",
-              "title": "세 종목을 표로 완성하기",
+              "title": "세 종목을 표로 보기",
               "kind": "coding",
               "problem": {
                 "id": "holdings-frame",
-                "title": "세 종목을 표로 완성하기",
-                "content": "### 목표\n\n각 `holding`에 `amount`를 추가하고 `total_amount`에 전체 금액을 저장하세요. `df`는 `holdings`로 만든 `DataFrame`이어야 합니다. 마지막 줄에 `df`를 써서 결과를 확인하세요.\n\n### 힌트\n\n`for holding in holdings:`로 각 종목을 꺼내 금액을 저장하고 `total_amount`에 누적하세요. 반복문이 끝나면 `pd.DataFrame(holdings)`로 표를 만듭니다.",
-                "starter_code": "import pandas as pd\nholdings = [{'name':'A','price':10000,'quantity':3},{'name':'B','price':20000,'quantity':2},{'name':'C','price':15000,'quantity':4}]\n# 금액과 합계를 계산하고 df를 만드세요\n",
-                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['df', 'total_amount']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['total_amount']==130000 and s['df'].shape==(3,4)\n    assert s['df']['amount'].tolist()==[30000,40000,60000]\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
+                "title": "세 종목을 표로 보기",
+                "content": "### 목표\n\n아래 준비 코드에 종목 이름, 가격, 수량, 계산한 금액이 들어 있습니다. `holdings`로 `DataFrame`을 만들어 `df`에 저장하세요. 마지막 줄에 `df`를 적어 3행 4열 표를 확인하세요.\n\n### 힌트\n\n준비 코드에 각 종목의 금액이 들어 있습니다. `pd.DataFrame(holdings)`로 표를 만들고 `df`에 저장하세요. 마지막 줄에 `df`만 적으면 앱에서 표로 볼 수 있습니다. 합계를 계산하거나 `print()`를 추가할 필요는 없습니다.",
+                "starter_code": "import pandas as pd\nholdings = [{'name':'A','price':10000,'quantity':3,'amount':30000},{'name':'B','price':20000,'quantity':2,'amount':40000},{'name':'C','price':15000,'quantity':4,'amount':60000}]\n# df를 만들고 표를 표시하세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['df']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['df'].shape==(3,4)\n    assert list(s['df'].columns)==['name','price','quantity','amount']\n    assert s['df']['name'].tolist()==['A','B','C']\n    assert s['df']['amount'].tolist()==[30000,40000,60000]\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n"
               }
             },
             {
