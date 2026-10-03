@@ -344,14 +344,25 @@ fn kpc_units_use_varied_sequences_including_repeated_concepts_and_problem_only_u
         .activities
         .iter()
         .all(|a| !matches!(a.kind, ActivityKind::Concept { .. })));
+    // Five standalone problems plus the chapter's ★ 도전 과제 at the end.
     assert_eq!(
         practice
             .activities
             .iter()
-            .filter(|a| matches!(a.kind, ActivityKind::Coding { .. }))
+            .filter(|a| matches!(a.kind, ActivityKind::Coding { .. }) && !a.challenge)
             .count(),
         5
     );
+    assert!(practice.activities.last().unwrap().challenge);
+    for chapter in &course.chapters {
+        let last = chapter.units.last().unwrap().activities.last().unwrap();
+        assert!(
+            last.challenge,
+            "{}: chapter must end with a challenge",
+            chapter.id
+        );
+        assert_eq!(last.label(), "도전 과제");
+    }
     let mut completed = std::collections::HashSet::new();
     for (index, activity) in intro.activities.iter().enumerate() {
         assert_eq!(
