@@ -26,6 +26,13 @@ async def main():
      result=response['result']
      if 'exceptionDetails' in result:raise RuntimeError(result['exceptionDetails'])
      return result['result'].get('value')
+  async def browser_input(method,params):
+   nonlocal sequence
+   sequence+=1
+   await ws.send(json.dumps({'id':sequence,'method':method,'params':params}))
+   while True:
+    response=json.loads(await ws.recv())
+    if response.get('id')==sequence:return response
   async def click(text):
    await js('Array.from(document.querySelectorAll("button")).find(b=>b.textContent.trim()=='+json.dumps(text)+')?.click()')
    await asyncio.sleep(.2)
@@ -42,9 +49,23 @@ async def main():
   await expect("!!document.querySelector('.markdown code.language-python .tok-string')",'Markdown Python syntax colors')
   await expect("!!document.querySelector('.markdown blockquote strong')",'Markdown emphasis and callout')
   await expect("document.querySelector('.curriculum-menu .unit.selected').getAttribute('aria-current')==='step'",'current unit marked on initial open')
-  await js("document.querySelector('.curriculum-menu summary').click()")
+  await js("document.querySelector('.curriculum-toggle').click()")
   await asyncio.sleep(.2)
   await expect("document.querySelector('.curriculum-menu').open",'curriculum opens')
+  await expect("(()=>{const r=document.querySelector('.curriculum-menu').getBoundingClientRect();return r.width>700 && Math.abs(r.x+r.width/2-document.documentElement.clientWidth/2)<3 && Math.abs(r.y+r.height/2-innerHeight/2)<3})()",'curriculum is a large centered dialog')
+  await expect("document.querySelector('.curriculum-overall').textContent.includes('0%') && document.querySelector('.unit-progress').textContent.includes('0%')",'overall and unit percentages start at zero')
+  await js("document.querySelector('.curriculum-modal-header h2').click()")
+  await expect("document.querySelector('.curriculum-menu').open",'click inside keeps curriculum open')
+  await browser_input('Input.dispatchMouseEvent',{'type':'mousePressed','x':5,'y':5,'button':'left','clickCount':1})
+  await browser_input('Input.dispatchMouseEvent',{'type':'mouseReleased','x':5,'y':5,'button':'left','clickCount':1})
+  await asyncio.sleep(.15)
+  await expect("!document.querySelector('.curriculum-menu').open",'outside click dismisses curriculum')
+  await js("document.querySelector('.curriculum-toggle').click()")
+  await browser_input('Input.dispatchKeyEvent',{'type':'keyDown','key':'Escape','code':'Escape','windowsVirtualKeyCode':27})
+  await browser_input('Input.dispatchKeyEvent',{'type':'keyUp','key':'Escape','code':'Escape','windowsVirtualKeyCode':27})
+  await asyncio.sleep(.15)
+  await expect("!document.querySelector('.curriculum-menu').open",'Escape dismisses curriculum')
+  await js("document.querySelector('.curriculum-toggle').click()")
   await expect("document.querySelector('.curriculum-menu .unit.selected .unit-current').textContent==='학습 중'",'current unit has visible badge')
   await js("document.querySelector('.curriculum-menu .unit.selected').click()")
   await asyncio.sleep(.2)
@@ -98,24 +119,26 @@ async def main():
    if index+1<len(activities):
     await expect('document.querySelectorAll(".curriculum-missions button")['+str(index+1)+'].classList.contains("selected")','correct submission automatically advances')
    if index==0:
+    await expect("document.querySelector('.unit-progress').textContent.includes('20%')",'unit percentage reflects partial mission completion')
     await expect("!!document.querySelector('.cm-editor .cm-content')",'submission opens coding editor')
     await click('← 이전')
     await expect("!!document.querySelector('.concept-flow')",'previous returns to concept')
     await click('다음 →')
   await expect('document.querySelector(".mission-heading strong").textContent.includes('+json.dumps(course['chapters'][0]['units'][1]['title'])+')','next crosses unit boundary')
-  await js("document.querySelector('.curriculum-menu summary').click()")
+  await js("document.querySelector('.curriculum-toggle').click()")
   await asyncio.sleep(.2)
   await js("document.querySelector('.curriculum-menu .unit').click()")
   await asyncio.sleep(.2)
   await expect("!document.querySelector('.curriculum-menu').open",'selecting completed unit closes curriculum')
   await expect('document.querySelector(".curriculum-menu .unit.selected").textContent.includes('+json.dumps(course['chapters'][0]['units'][0]['title'])+')','selected unit highlight follows navigation')
 
-  await js("document.querySelector('.curriculum-menu summary').click()")
+  await js("document.querySelector('.curriculum-toggle').click()")
   await asyncio.sleep(.1)
   await js("document.querySelectorAll('.curriculum-missions button')[1].click()")
   await asyncio.sleep(.2)
   await expect("!document.querySelector('.curriculum-menu').open",'mission selection closes curriculum')
   await expect("document.querySelectorAll('.curriculum-missions button')[1].getAttribute('aria-current')==='step' && !!document.querySelector('.cm-editor')",'curriculum mission selection updates current highlight and content')
+  await expect("document.querySelector('.unit-progress').textContent.includes('100%')",'completed unit shows 100 percent')
   print('ALL UI FLOW CHECKS PASSED')
 
 asyncio.run(main())

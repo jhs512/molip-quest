@@ -5,7 +5,23 @@ use molip_quest::{
     runner::{assemble, check_unit, run_python, Artifact},
     Course, Unit,
 };
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
+
+fn mission_progress<'a>(
+    units: impl Iterator<Item = &'a Unit>,
+    completed: &HashSet<String>,
+) -> String {
+    let mut total = 0;
+    let mut done = 0;
+    for unit in units {
+        for activity in &unit.activities {
+            total += 1;
+            done += usize::from(completed.contains(&activity.progress_unit(unit).id));
+        }
+    }
+    let percent = if total == 0 { 0 } else { done * 100 / total };
+    format!("{done} / {total} 미션 · {percent}%")
+}
 
 #[component]
 pub fn Learning(course: Course) -> Element {
@@ -63,10 +79,25 @@ pub fn Learning(course: Course) -> Element {
             button {disabled:active_mission+1>=active_unlocked&&!(active_mission+1==active_total&&next.is_some()),onclick:{let next=next.clone();move |_|{if active_mission+1<active_unlocked {mission_index.set(active_mission+1);}else if let Some(id)=&next {mission_index.set(usize::MAX);selected.set(id.clone());}}},"다음 →"}
         }
         span {{format!("완료 {} / {} 단원",completed.len(),course.total_units())}} DoctorPanel {}}
-        div {class:"learning", details {class:"curriculum-menu", summary {"수업 목차 ▾"} nav {class:"curriculum", h2 {"수업 목차"}
-            for chapter in &course.chapters {h3 {{format!("{} · {}/{}",chapter.title,chapter.units.iter().filter(|u|completed.contains(&u.id)).count(),chapter.units.len())}}
-                for unit in &chapter.units {div {class:"curriculum-unit",button {class:if unit.id==active_id {"unit selected"}else{"unit"},aria_current:if unit.id==active_id {"step"}else{"false"},disabled:!unlocked.contains(&unit.id),onclick:{let id=unit.id.clone();let active_id=active_id.clone();move |_|{if id!=active_id {mission_index.set(usize::MAX);}selected.set(id.clone());document::eval("document.querySelector('.curriculum-menu').open = false;");}},
-                    span {class:"unit-title",{format!("{} {}",if unit.id==active_id {"▶"}else if completed.contains(&unit.id) {"✓"} else if unlocked.contains(&unit.id) {"○"} else {"🔒"},unit.title)}}
+        div {class:"learning",
+        button {class:"curriculum-toggle",onclick:move |_|{document::eval(r#"const dialog = document.querySelector('.curriculum-menu');
+            if (!dialog.dataset.dismissBound) {
+                dialog.addEventListener('click', event => { if (event.target === dialog) {
+                    const rect = dialog.getBoundingClientRect();
+                    if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) dialog.close();
+                }});
+                dialog.dataset.dismissBound = 'true';
+            }
+            dialog.showModal();"#);},"수업 목차"}
+        dialog {class:"curriculum-menu",aria_label:"수업 목차",
+            div {class:"curriculum-modal-header",h2 {"수업 목차"}
+                button {class:"curriculum-close",aria_label:"수업 목차 닫기",autofocus:true,onclick:move |_|{document::eval("document.querySelector('.curriculum-menu').close();");},"닫기 ×"}
+            }
+            p {class:"curriculum-overall",{format!("전체 진도 {}",mission_progress(course.chapters.iter().flat_map(|c|c.units.iter()),&completed_items))}}
+            nav {class:"curriculum",
+            for chapter in &course.chapters {h3 {{format!("{} · {}",chapter.title,mission_progress(chapter.units.iter(),&completed_items))}}
+                for unit in &chapter.units {div {class:"curriculum-unit",button {class:if unit.id==active_id {"unit selected"}else{"unit"},aria_current:if unit.id==active_id {"step"}else{"false"},disabled:!unlocked.contains(&unit.id),onclick:{let id=unit.id.clone();let active_id=active_id.clone();move |_|{if id!=active_id {mission_index.set(usize::MAX);}selected.set(id.clone());document::eval("document.querySelector('.curriculum-menu').close();");}},
+                    span {class:"unit-summary",span {class:"unit-title",{format!("{} {}",if unit.id==active_id {"▶"}else if completed.contains(&unit.id) {"✓"} else if unlocked.contains(&unit.id) {"○"} else {"🔒"},unit.title)}}span {class:"unit-progress",{mission_progress(std::iter::once(unit),&completed_items)}}}
                     if unit.id==active_id {span {class:"unit-current","학습 중"}}
                 }
                 if unit.id==active_id {
@@ -74,7 +105,7 @@ pub fn Learning(course: Course) -> Element {
                         for (n,activity) in unit.activities.iter().enumerate() {
                             button {class:if n==active_mission {"curriculum-mission selected"}else{"curriculum-mission"},
                                 aria_current:if n==active_mission {"step"}else{"false"},disabled:n>=active_unlocked,
-                                onclick:move |_|{mission_index.set(n);document::eval("document.querySelector('.curriculum-menu').open = false;");},
+                                onclick:move |_|{mission_index.set(n);document::eval("document.querySelector('.curriculum-menu').close();");},
                                 span {class:"mission-kind",{format!("{} {} · {}",if n==active_mission {"▶"}else if completed_items.contains(&activity.progress_unit(unit).id){"✓"}else if n<active_unlocked {"○"}else{"🔒"},n+1,activity.label())}}
                                 span {class:"mission-title","{activity.title}"}
                             }
