@@ -235,3 +235,8 @@ body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { poi
 
 /* Thin scrollbars that match the dark practice theme instead of the default light rails. */
 .practice-shell, .practice-shell *, .prompt-guide-layer, .prompt-guide-layer *, .curriculum-menu, .speech-controls { scrollbar-width: thin; scrollbar-color: #4a6479 #1b2c3a; }
+
+.prompt-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.prompt-buttons .prompt-copy { width: auto; }
+.prompt-buttons .prompt-guide-open { grid-column: 1 / -1; margin-top: 0; }
+.prompt-guide-text pre { white-space: pre-wrap; }

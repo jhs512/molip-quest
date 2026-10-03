@@ -190,7 +190,12 @@ fn progress_unlocks_only_the_next_mission_and_prompt_requests_one_python_file() 
         input: "5".into(),
         expected: "50000".into(),
     }];
+    // Without an authored human prompt the copy button falls back to the machine prompt.
     let prompt = answer_prompt(&problem, "print(0)");
+    assert_eq!(
+        prompt,
+        molip_quest::curriculum::machine_prompt(&problem, "print(0)")
+    );
     for required in [
         "main.py",
         "설명 없이",
@@ -206,37 +211,59 @@ fn progress_unlocks_only_the_next_mission_and_prompt_requests_one_python_file() 
         assert!(prompt.contains(required), "missing {required}");
     }
     assert!(
-        molip_quest::curriculum::prompt_guide(&problem).contains("## 7. 입출력 예시와 검사 조건")
+        molip_quest::curriculum::prompt_guide(&problem).contains("## 기계 버전은 무엇이 다른가")
     );
 }
 
 #[test]
-fn every_kpc_coding_prompt_carries_its_chapter_expertise() {
-    use molip_quest::curriculum::{answer_prompt, prompt_guide, ActivityKind};
+fn every_kpc_coding_problem_has_a_human_prompt_and_a_machine_prompt() {
+    use molip_quest::curriculum::{answer_prompt, machine_prompt, prompt_guide, ActivityKind};
     let course = Course::parse(include_str!("../courses/kpc-finance.json")).unwrap();
+    let mut checked = 0;
     for chapter in &course.chapters {
         for unit in &chapter.units {
             for activity in &unit.activities {
                 if let ActivityKind::Coding { problem } = &activity.kind {
+                    // Human version: short, ends with "코드만 줘", explained in the guide.
+                    let human = answer_prompt(problem, &problem.starter_code);
+                    assert!(
+                        human.ends_with("코드만 줘"),
+                        "{}: human prompt must end with 코드만 줘",
+                        problem.id
+                    );
+                    assert!(
+                        human.lines().count() <= 8,
+                        "{}: human prompt is too long",
+                        problem.id
+                    );
+                    let why = problem.prompt_why.as_deref().expect("prompt why").trim();
+                    let guide = prompt_guide(problem);
+                    assert!(
+                        guide.contains(&human) && guide.contains(why),
+                        "{}: guide lacks prompt or why",
+                        problem.id
+                    );
+                    // Machine version: the specification with the chapter's principles.
+                    let machine = machine_prompt(problem, &problem.starter_code);
                     let expertise = problem.expertise.as_ref().expect("chapter expertise");
-                    let prompt = answer_prompt(problem, &problem.starter_code);
                     for principle in &expertise.principles {
                         assert!(
-                            prompt.contains(principle.as_str()),
-                            "{}: prompt lacks principle",
+                            machine.contains(principle.as_str()),
+                            "{}: machine prompt lacks principle",
                             problem.id
                         );
                     }
                     assert!(
-                        prompt_guide(problem).contains(expertise.why.trim()),
-                        "{}: guide lacks why",
-                        problem.id
+                        machine.contains("# 역할")
+                            && machine.contains(problem.starter_code.trim_end())
                     );
+                    checked += 1;
                 }
             }
         }
     }
-    // The vocabulary a working analyst uses must reach the student through the prompt.
+    assert_eq!(checked, 95);
+    // The vocabulary a working analyst uses reaches the student through both versions.
     let stock = course.chapters.last().unwrap().units.last().unwrap();
     let problem = stock
         .activities
@@ -246,9 +273,9 @@ fn every_kpc_coding_prompt_carries_its_chapter_expertise() {
             _ => None,
         })
         .unwrap();
-    let prompt = answer_prompt(problem, "");
+    assert!(answer_prompt(problem, "").contains("temporal split"));
     for term in ["temporal split", "naive forecast", "MAE·RMSE·R²", "누수"] {
-        assert!(prompt.contains(term), "missing {term}");
+        assert!(machine_prompt(problem, "").contains(term), "missing {term}");
     }
 }
 

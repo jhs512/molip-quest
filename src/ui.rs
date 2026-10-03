@@ -373,14 +373,23 @@ fn UnitWorkspace(course_id: String, unit: Unit, oncompleted: EventHandler<bool>)
     rsx! {article{class:"lesson",
         if guide_open() {PromptGuide {unit:unit.clone(),code:code(),onclose:move |_|guide_open.set(false)}}
         section{class:"problem-pane",h2{"{unit.title}"}h3{"문제 설명"}Markdown {text:unit.content.clone()}
-            button {class:"prompt-copy",onclick:{let unit=unit.clone();move |_|{
-                let prompt=molip_quest::curriculum::answer_prompt(&unit,&code());
-                match copy_to_clipboard(prompt) {
-                    Ok(())=>message.set("정답 구하는 프롬프트를 복사했습니다. 원하는 AI에 붙여넣고, 받은 main.py 코드를 편집기에 넣으세요.".into()),
-                    Err(e)=>message.set(format!("클립보드 복사에 실패했습니다: {e}"))
-                }
-            }},"정답 구하는 프롬프트 복사"}
-            button {class:"prompt-guide-open",onclick:move |_|guide_open.set(true),"정답 구하는 프롬프트 해설"}
+            div {class:"prompt-buttons",
+                button {class:"prompt-copy",onclick:{let unit=unit.clone();move |_|{
+                    let prompt=molip_quest::curriculum::answer_prompt(&unit,&code());
+                    match copy_to_clipboard(prompt) {
+                        Ok(())=>message.set("인간 버전 프롬프트를 복사했습니다. 원하는 AI에 붙여넣고, 받은 main.py 코드를 편집기에 넣으세요.".into()),
+                        Err(e)=>message.set(format!("클립보드 복사에 실패했습니다: {e}"))
+                    }
+                }},"프롬프트 복사 · 인간 버전"}
+                button {class:"prompt-copy",onclick:{let unit=unit.clone();move |_|{
+                    let prompt=molip_quest::curriculum::machine_prompt(&unit,&code());
+                    match copy_to_clipboard(prompt) {
+                        Ok(())=>message.set("기계 버전 프롬프트를 복사했습니다. 원하는 AI에 붙여넣고, 받은 main.py 코드를 편집기에 넣으세요.".into()),
+                        Err(e)=>message.set(format!("클립보드 복사에 실패했습니다: {e}"))
+                    }
+                }},"프롬프트 복사 · 기계 버전"}
+                button {class:"prompt-guide-open",onclick:move |_|guide_open.set(true),"프롬프트 해설"}
+            }
 
             if !unit.blanks.is_empty(){p{class:"blank-note","코드의 빈칸만 채워보세요. 나머지 코드는 수정하지 않습니다."}}
         }
@@ -451,31 +460,31 @@ fn RichResults(artifacts: Vec<Artifact>) -> Element {
 }
 
 /// "Start over" button with a confirmation step; wipes completions, attempts and drafts for the course.
-/// Full-screen explanation of the answer prompt: why each section exists, with the actual
-/// prompt for this problem underneath so students can read the two side by side.
+/// Full-screen explanation of the human prompt (which words carry the expertise and why),
+/// with the machine version of the same request beside it.
 #[component]
 fn PromptGuide(unit: Unit, code: String, onclose: EventHandler<()>) -> Element {
     let guide = molip_quest::curriculum::prompt_guide(&unit);
-    let prompt = molip_quest::curriculum::answer_prompt(&unit, &code);
+    let prompt = molip_quest::curriculum::machine_prompt(&unit, &code);
     let mut message = use_signal(String::new);
     rsx! { div { class:"prompt-guide-layer", role:"dialog", aria_modal:"true", aria_label:"정답 구하는 프롬프트 해설",
         onkeydown: move |e| { if e.key() == Key::Escape { onclose.call(()); } },
         header { class:"prompt-guide-header",
-            h2 { "정답 구하는 프롬프트 해설" }
+            h2 { "프롬프트 해설" }
             span { class:"prompt-guide-unit", "{unit.title}" }
             button { class:"prompt-guide-close", autofocus:true, onclick: move |_| onclose.call(()), "닫기 ×" }
         }
         div { class:"prompt-guide-body",
             section { class:"prompt-guide-text", Markdown { text: guide } }
             section { class:"prompt-guide-prompt",
-                h3 { "이 문제의 실제 프롬프트" }
+                h3 { "기계 버전 프롬프트" }
                 p { class:"execution-status", role:"status", "{message}" }
                 button { class:"prompt-copy", onclick: {let prompt=prompt.clone(); move |_| {
                     match copy_to_clipboard(prompt.clone()) {
                         Ok(()) => message.set("프롬프트를 복사했습니다.".into()),
                         Err(e) => message.set(format!("클립보드 복사에 실패했습니다: {e}")),
                     }
-                }}, "이 프롬프트 복사" }
+                }}, "기계 버전 복사" }
                 pre { class:"prompt-guide-source", "{prompt}" }
             }
         }

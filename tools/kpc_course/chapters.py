@@ -1,6 +1,8 @@
 """The fixed 7-chapter, 20-unit outline. Unit files are named by day and period."""
 import importlib
 
+from kpc_course.prompts import PROMPTS
+
 OUTLINE = [
     ("python", "1. 파이썬 개발 환경과 기본 문법 이해", ["d1_p1_environment", "d1_p2_structures", "d1_p3_control"]),
     ("pandas", "2. 데이터 수집 기초 및 pandas 활용", ["d1_p4_files", "d1_p5_missing", "d1_p6_html"]),
@@ -80,6 +82,10 @@ def build():
         for unit in units:
             for activity in unit["activities"]:
                 if activity["kind"] == "coding":
-                    activity["problem"]["expertise"] = dict(principles=list(expertise["principles"]), why=expertise["why"].strip())
+                    problem = activity["problem"]
+                    problem["expertise"] = dict(principles=list(expertise["principles"]), why=expertise["why"].strip())
+                    if problem["id"] not in PROMPTS:
+                        raise SystemExit(f"{unit['id']}/{problem['id']}: tools/kpc_course/prompts.py에 인간 버전 프롬프트가 없습니다.")
+                    problem["prompt"], problem["prompt_why"] = PROMPTS[problem["id"]]
         chapters.append(dict(id=chapter_id, title=title, units=units))
     return chapters
