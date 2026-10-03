@@ -1,0 +1,33 @@
+"""3일차 · 1교시 — 주가 파일과 시점"""
+from kpc_course.dsl import *
+
+UNIT = unit('stock-data', '3일차 · 1교시 — 주가 파일과 시점', [
+    concept('saved-prices', '오늘 알 수 있는 정보로 내일을 예측하기',
+        body='`data`/`stock.csv`는 교재에서 제공한 삼성전자 주가 자료입니다. 401개 행이며 `Date`·`Open`·`High`·`Low`·`Close`·`Volume`·`Change`가 있습니다. `Date`를 날짜로 읽고 인덱스로 옮기면 401행·6열입니다. 날짜 순서와 중복을 먼저 확인합니다.\n\n주가 수집 도구 `yfinance`·`FinanceDataReader`는 사이트의 가격을 표로 가져오는 역할입니다. 이 앱은 저장 `CSV`를 사용해 인터넷 없이 같은 원리를 학습합니다. 수집된 자료의 기간·조정 여부·출처는 비교할 때 함께 기록해야 합니다. 다른 파일의 결과를 같은 실험인 것처럼 섞지 마세요.\n\n오늘 장 마감 후에 알고 있는 종가로 다음 거래일 종가를 예측합니다. 다음 거래일은 다음 달력 날짜와 다를 수 있습니다. 입력 시점과 정답 시점을 먼저 정해야 미래 정보가 입력에 섞이지 않습니다. 이 수업은 가격 오차 비교이며 투자 수익을 평가하는 실험이 아닙니다.',
+        check=short('오늘 장 마감 후 다음 거래일에 예측하는 가격 열의 영어 이름은?', ['Close', '종가'], '종가는 `Close`이며 다음 거래일의 값을 정답으로 둡니다.')),
+    coding('stock-load', '날짜 순서와 크기 확인',
+        goal='`data`/`stock.csv`를 `Date` 날짜 인덱스로 읽어 `prices`에 저장하세요. `sort_index`()로 정렬하고 `n_rows`, `n_columns`에 크기를 저장하세요. 날짜 중복이 없는지 확인하세요.',
+        hint='준비 코드가 날짜를 인덱스로 바꾸고 정렬합니다. `prices.shape`를 `n_rows, n_columns`에 나누어 저장하세요. 날짜 범위는 `prices.index.min()`과 `.max()`로 확인합니다.',
+        starter='import pandas as pd\n# prices, n_rows, n_columns를 만드세요\n',
+        solution="import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\nn_rows,n_columns=prices.shape\nprint(n_rows,n_columns)\nprint(prices.index.min(),prices.index.max())\nprices.head()\n",
+        check="assert s['prices'].shape==(401,6) and s['n_rows']==401 and s['n_columns']==6\nassert s['prices'].index.is_monotonic_increasing and not s['prices'].index.has_duplicates\nassert s['prices']['Close'].iloc[0]==54100"),
+    coding('close-plot', '종가 선그래프 그리기',
+        goal="`fig, ax`를 만들고 `ax.plot(prices.index, prices['Close'])`로 종가 선그래프를 그리세요. `xlabel='Date'`, `ylabel='Close'`를 지정하고 `plt.show()`로 보세요. 선 하나에 401개 점이 있어야 합니다.",
+        hint="막대 대신 `ax.plot(x, y)`를 쓰면 점을 선으로 이어 그립니다. x에는 날짜 인덱스 `prices.index`, y에는 `prices['Close']`를 넣으세요.",
+        starter="import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\nimport matplotlib.pyplot as plt\n# fig, ax를 만들고 종가를 그리세요\n",
+        solution="import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\nimport matplotlib.pyplot as plt\nfig, ax = plt.subplots()\nax.plot(prices.index, prices['Close'])\nax.set(xlabel='Date', ylabel='Close', title='Close price')\nplt.show()\n",
+        check="assert len(s['ax'].lines)==1 and len(s['ax'].lines[0].get_ydata())==401\nassert s['ax'].get_ylabel()=='Close'"),
+    coding('price-range', '기간과 최고 종가',
+        goal='첫 날짜를 `first_date`, 마지막 날짜를 `last_date`에 저장하세요. 최고 종가를 `max_close`, 그 날짜를 `max_date`에 저장하고 모두 출력하세요. `idxmax()`는 최댓값의 인덱스(날짜)를 돌려줍니다.',
+        hint='날짜 인덱스의 `min()`·`max()`가 기간의 양 끝입니다. 종가 열의 `.max()`는 값, `.idxmax()`는 그 값이 있는 날짜입니다.',
+        starter="import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\n# first_date, last_date, max_close, max_date를 만들고 출력하세요\n",
+        solution="import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['Date']).set_index('Date').sort_index()\nfirst_date = prices.index.min()\nlast_date = prices.index.max()\nmax_close = prices['Close'].max()\nmax_date = prices['Close'].idxmax()\nprint(first_date, last_date)\nprint(max_close, max_date)\n",
+        check="import pandas as pd\nassert s['first_date']==pd.Timestamp('2025-01-13') and s['last_date']==pd.Timestamp('2026-09-04')\nassert s['max_close']==362500 and s['max_date']==pd.Timestamp('2026-06-18')"),
+    quiz('stock-data-check', '주가 자료의 기준',
+        choice('다음 거래일은 항상 다음 달력 날짜일까?', ['아니요', '네'], 0, '휴장일·주말에는 거래가 없습니다.'),
+        short('제공 파일의 행 수는?', ['401'], '이 파일은 401개 날짜를 담고 있습니다.'),
+        choice('가격 데이터 비교에 필요한 기록은?', ['파일·기간·가격 조정 기준', '모델 이름만'], 0, '자료 처리 기준이 달라지면 결과도 달라집니다.'),
+        short('최댓값이 있는 위치(날짜)를 돌려주는 메서드는?', ['idxmax', 'idxmax()'], '`max()`는 값, `idxmax()`는 그 값의 인덱스입니다.'),
+        choice('이 수업의 주가 분석 결과를 투자 수익 보장으로 해석하면?', ['잘못된 해석 — 가격 오차 비교 실습임', '올바름'], 0, '저장 자료로 예측 오차를 비교하는 학습이며 투자 조언이 아닙니다.'),
+    ),
+])

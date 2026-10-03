@@ -1,0 +1,82 @@
+"""2일차 · 2교시 — 분포와 관계 시각화"""
+from kpc_course.dsl import *
+
+UNIT = unit('distribution', '2일차 · 2교시 — 분포와 관계 시각화', [
+    concept('distribution-types', '질문이 다르면 그래프도 다르다',
+        body="""
+        막대그래프는 "그룹마다 값이 얼마인가"에 답합니다. 그런데 자료를 보다 보면 다른 종류의 질문이 생깁니다. 승객 나이는 어떻게 퍼져 있을까? 요금이 비싼 사람이 나이도 많을까? 열 여섯 개 중 어느 둘이 같이 움직일까? 질문이 다르면 그래프도 달라야 합니다. 오늘은 세 가지를 익힙니다.
+
+        **값이 어떻게 퍼져 있나 → 히스토그램.** 나이처럼 값이 연속으로 이어지는 열은 막대로 그릴 그룹이 없습니다. 그래서 값의 범위를 같은 폭의 구간(`bins`)으로 잘라 각 구간에 몇 명이 들어가는지 셉니다. 구간을 20개로 자르면 20개 막대, 5개로 자르면 5개 막대가 되고, 같은 자료라도 모양이 달라 보입니다. 그래서 히스토그램을 보고할 때는 구간 수를 함께 적습니다. 그리고 빈 나이 263명은 어느 구간에도 넣을 수 없으니 먼저 빼고 그립니다.
+
+        **둘이 같이 움직이나 → 산점도.** 승객 한 명을 점 하나로, 가로축에 나이, 세로축에 요금을 찍습니다. 점들이 오른쪽 위로 몰리면 "나이가 많을수록 요금도 비싼 경향", 아무 모양이 없으면 "관계가 안 보임"입니다.
+
+        **여러 쌍을 한눈에 → 상관계수 히트맵.** 산점도를 열 쌍마다 그리는 대신, 두 열이 얼마나 같이 움직이는지를 -1에서 1 사이 숫자 하나로 요약한 것이 상관계수입니다. 1에 가까우면 함께 오르고, -1에 가까우면 하나가 오를 때 다른 하나가 내리며, 0 근처면 관계가 약합니다. 열 여섯 개면 상관계수가 6×6 표로 나오는데, 이 표를 색으로 칠한 것이 히트맵입니다. 대각선은 자기 자신과의 상관이라 항상 1입니다.
+
+        ```python
+        import seaborn as sns
+        known_age = titanic.dropna(subset=['age'])
+        fig, ax = plt.subplots()
+        sns.histplot(data=known_age, x='age', bins=20, ax=ax)   # 히스토그램
+        ax.scatter(known['age'], known['fare'])                 # 산점도
+        sns.heatmap(corr, annot=True, vmin=-1, vmax=1, ax=ax)   # 히트맵
+        ```
+
+        `seaborn`은 `matplotlib` 위에서 표 열 이름만으로 그래프를 그려 주는 도구입니다. `ax=ax`로 어느 그래프 영역에 그릴지 알려 주면 1교시의 뼈대와 그대로 어울립니다. 마지막으로 해석의 선 하나. 요금과 생존의 상관계수가 양수라는 것은 "요금이 비싼 사람 중에 생존자가 많았다"는 관찰이지 "요금을 더 내면 산다"는 뜻이 아닙니다. 상관은 함께 변하는 경향이고, 원인은 다른 문제입니다.
+        """,
+        check=short('나이처럼 연속으로 이어지는 값을 같은 폭의 구간으로 잘라 각 구간의 개수를 막대로 그린 그래프를 무엇이라고 하나요?', ['히스토그램', 'histogram'],
+                    '히스토그램은 구간(`bins`)마다 개수를 셉니다. 구간 수를 바꾸면 같은 자료도 다르게 보이므로 구간 수를 함께 적습니다.')),
+    coding('age-hist', '나이는 어떻게 퍼져 있을까',
+        goal="""
+        나이가 기록된 승객만 `known_age`에 담고, `sns.histplot`으로 `age`를 구간 20개짜리 히스토그램으로 그리세요. 축 이름과 제목을 영어로 붙이고 `plt.show()`로 띄웁니다.
+
+        막대 20개의 높이를 전부 더하면 나이를 아는 인원 1046이 됩니다. 어느 나이대에 사람이 몰려 있는지 보세요.
+        """,
+        hint="""
+        `known_age = titanic.dropna(subset=['age'])`로 빈 나이를 뺀 뒤 `fig, ax = plt.subplots()`를 만들고 `sns.histplot(data=known_age, x='age', bins=20, ax=ax)`로 그립니다. `ax.set(xlabel='Age', ylabel='Passenger count', title='Known ages only')`로 꾸미세요.
+        """,
+        starter=TI + PLOT + "# known_age, fig, ax를 준비하세요\n",
+        solution=TI + PLOT + "known_age=titanic.dropna(subset=['age'])\nfig,ax=plt.subplots()\nsns.histplot(data=known_age,x='age',bins=20,ax=ax)\nax.set(xlabel='Age',ylabel='Passenger count',title='Known ages only')\nplt.show()\n",
+        check="assert len(s['known_age'])==1046\nassert len(s['ax'].patches)==20\nassert round(sum(p.get_height() for p in s['ax'].patches))==1046"),
+    coding('fare-scatter', '나이와 요금은 같이 움직일까',
+        goal="""
+        승객 한 명을 점 하나로 찍어 봅니다. 나이와 요금이 모두 기록된 승객만 `known`에 담고, `ax.scatter(known['age'], known['fare'])`로 산점도를 그린 뒤 x축 이름 `Age`, y축 이름 `Fare`를 붙이고 띄우세요.
+
+        1045명이 점으로 찍힙니다. 점들이 어떤 모양을 이루는지, 아니면 아무 모양도 없는지 보세요.
+        """,
+        hint="""
+        `known = titanic.dropna(subset=['age', 'fare'])`처럼 `subset`에 열 두 개를 넣으면 둘 다 값이 있는 행만 남습니다. 점이 많이 겹치면 `ax.scatter(..., alpha=0.4)`로 반투명하게 그리면 밀도가 보입니다.
+        """,
+        starter=TI + PLOT + "# known, fig, ax를 준비하세요\n",
+        solution=TI + PLOT + "known = titanic.dropna(subset=['age', 'fare'])\nfig, ax = plt.subplots()\nax.scatter(known['age'], known['fare'], alpha=0.4)\nax.set(xlabel='Age', ylabel='Fare', title='Age vs fare')\nplt.show()\n",
+        check="assert len(s['known'])==1045\nassert len(s['ax'].collections)>=1 and len(s['ax'].collections[0].get_offsets())==1045\nassert s['ax'].get_xlabel()=='Age' and s['ax'].get_ylabel()=='Fare'"),
+    coding('correlation', '여섯 열의 상관계수를 색으로',
+        goal="""
+        준비된 `columns`의 숫자 열 여섯 개로 상관계수 표를 만들어 `corr`에 저장하고, `sns.heatmap`으로 `annot=True`(칸에 숫자 표시), `vmin=-1`, `vmax=1`인 히트맵을 그려 띄우세요.
+
+        6×6 표의 대각선이 전부 1이면 맞게 만든 것입니다. `survived` 행을 따라가며 어느 열이 생존과 가장 같이 움직이는지 찾아보세요.
+        """,
+        hint="""
+        `corr = titanic[columns].corr()`가 상관계수 표입니다. `sns.heatmap(corr, annot=True, vmin=-1, vmax=1, center=0, cmap='coolwarm', ax=ax)`처럼 그리면 양수는 붉게, 음수는 푸르게 칠해져 방향이 바로 보입니다.
+        """,
+        starter=TI + PLOT + "columns=['pclass','age','sibsp','parch','fare','survived']\n# corr, fig, ax를 만드세요\n",
+        solution=TI + PLOT + "columns=['pclass','age','sibsp','parch','fare','survived']\ncorr=titanic[columns].corr()\nfig,ax=plt.subplots()\nsns.heatmap(corr,annot=True,vmin=-1,vmax=1,center=0,cmap='coolwarm',ax=ax)\nplt.show()\n",
+        check="assert s['corr'].shape==(6,6)\nassert all(abs(s['corr'].iloc[i,i]-1)<1e-9 for i in range(6))\nassert len(s['ax'].collections)>0 and s['ax'].collections[0].get_clim()==(-1,1)"),
+    quiz('distribution-check', '2일차 2교시 점검',
+        choice('"요금이 비싼 사람이 나이도 많을까?"에 답하려면 어떤 그래프가 맞나요?',
+               ['산점도. 승객마다 (나이, 요금)을 점으로 찍는다', '막대그래프. 요금별 평균 나이를 막대로', '히스토그램. 요금을 구간으로 자른다'], 0,
+               '두 숫자 열이 같이 움직이는지 보는 질문에는 산점도입니다. 막대는 그룹별 값, 히스토그램은 한 열의 퍼짐을 봅니다.'),
+        short('상관계수 히트맵의 대각선 값은 항상 얼마인가요?', ['1', '1.0'],
+              '자기 자신과의 상관은 완벽히 같이 움직이므로 1입니다. 대각선이 1이 아니면 표를 잘못 만든 것입니다.'),
+        choice('빈 나이 263명을 0살로 채우고 히스토그램을 그리면 어떻게 되나요?',
+               ['0살 구간에 없던 아기 263명이 생겨 분포가 왜곡된다', '더 정확한 전체 분포가 된다', '아무 차이가 없다'], 0,
+               '모르는 값을 0으로 바꾸면 거짓 아기들이 생깁니다. 히스토그램은 빈 값을 빼고 그리고, 뺐다는 것을 적습니다.'),
+        choice('`bins=20`을 `bins=5`로 바꾸면 무엇이 달라지나요?',
+               ['같은 자료가 더 거친 다섯 막대로 보인다', '자료 자체가 줄어든다', '그래프가 산점도가 된다'], 0,
+               '구간 수는 보는 방식일 뿐 자료는 그대로입니다. 그래서 히스토그램을 보고할 때 구간 수를 적습니다.'),
+        choice('`fare`와 `survived`의 상관계수가 양수입니다. 올바른 해석은 무엇인가요?',
+               ['이 자료에서 요금이 비쌀수록 생존자 비율이 높은 경향이 관찰된다', '요금을 더 내면 살아남는다', '요금과 생존은 무관하다'], 0,
+               '상관은 함께 변하는 경향입니다. 요금이 비싼 사람은 1등실 승객이었을 가능성이 높고, 구조 순서 같은 다른 요인이 있을 수 있습니다.'),
+        short('표의 값을 색으로 칠해 한눈에 보는 그래프를 무엇이라고 하나요?', ['히트맵', 'heatmap', 'heat map'],
+              '히트맵은 숫자 표를 색으로 바꿉니다. 상관계수 표를 보일 때 가장 흔히 씁니다.'),
+    ),
+])

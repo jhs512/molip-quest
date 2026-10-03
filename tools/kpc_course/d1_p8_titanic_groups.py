@@ -1,0 +1,100 @@
+"""1일차 · 8교시 — 그룹별 생존율"""
+from kpc_course.dsl import *
+
+UNIT = unit('titanic-groups', '1일차 · 8교시 — 그룹별 생존율', [
+    concept('denominator', '비율 뒤에는 항상 "몇 명 중"이 붙어야 한다',
+        body="""
+        7교시에서 전체 생존율을 구했습니다. 그런데 "전체 38%"라는 숫자 하나로는 아무 질문에도 답할 수 없습니다. 여성과 남성은 달랐을까? 1등실과 3등실은? 아이와 노인은? 이런 질문에 답하려면 표를 **그룹으로 나눠서** 각 그룹의 생존율을 따로 구해야 합니다. 그 도구가 `groupby`입니다.
+
+        ```python
+        titanic.groupby('sex')['survived'].mean()
+        titanic.groupby('sex')['survived'].agg(['count', 'sum', 'mean'])
+        ```
+
+        첫 줄은 "성별로 묶은 뒤, `survived` 열의 평균을 그룹마다 구해라"입니다. 두 번째 줄의 `agg`는 집계를 여러 개 한 번에 달라는 뜻으로, `count`는 그룹 인원, `sum`은 생존자 수(1의 합), `mean`은 생존율입니다. 이 셋을 같이 보는 습관이 중요합니다.
+
+        왜냐하면 비율은 분모를 숨기기 때문입니다. "A 그룹 생존율 100%"가 알고 보니 1명 중 1명일 수 있습니다. 여성과 남성도 인원이 꽤 다릅니다. 그러니 생존율을 말할 때는 **몇 명 중 몇 명**인지를 늘 붙이세요. `count`가 그 분모입니다. 다만 `count`는 빈 칸을 빼고 세기 때문에, 나이처럼 결측이 많은 열의 `count`는 "그 그룹의 인원"이 아니라 "그 그룹에서 나이를 아는 인원"입니다. 인원을 셀 때는 빈 칸이 없는 `survived` 열로 세는 것이 안전합니다.
+
+        마지막으로 해석의 선을 하나 긋고 갑니다. 여성의 생존율이 남성보다 높다는 표는 "이 자료에서 그렇게 **관찰되었다**"는 사실입니다. "여성이라서 살았다"는 원인 설명과는 다릅니다. 여성 승객 중에 1등실 비율이 높았을 수도 있고, 구조 순서 같은 다른 요인이 있었을 수도 있습니다. 한 표는 관찰이고, 원인은 다른 조건을 함께 나눠 봐야 조금씩 좁혀집니다. 내일 그래프를 그리면서 이 선을 다시 만나게 됩니다.
+        """,
+        check=short('그룹별 생존율을 보고할 때 비율과 함께 꼭 적어야 하는 것은 비율의 무엇인가요?', ['분모', 'denominator', '인원', '그룹 인원'],
+                    '분모(그룹 인원)가 있어야 "100%"가 100명 중 100명인지 1명 중 1명인지 알 수 있습니다. `agg`의 `count`가 그 역할입니다.')),
+    coding('sex-counts', '성별 인원 세기',
+        goal="""
+        비율을 구하기 전에 분모부터 셉니다. `titanic['sex'].value_counts()`를 `sex_counts`에 저장하고 출력하세요.
+
+        여성과 남성의 인원이 꽤 다르다는 것을 눈으로 확인해 두세요. 이 숫자가 다음 미션의 분모입니다.
+        """,
+        hint="""
+        7교시의 `value_counts()`와 같습니다. 열만 `sex`로 바꾸세요.
+        """,
+        starter=TI + "# sex_counts를 만들고 출력하세요\n",
+        solution=TI + "sex_counts = titanic['sex'].value_counts()\nprint(sex_counts)\n",
+        check="assert s['sex_counts']['female']==466 and s['sex_counts']['male']==843"),
+    coding('sex-mean', '성별 생존율 구하기',
+        goal="""
+        첫 `groupby`입니다. `titanic.groupby('sex')['survived'].mean()`으로 성별 생존율을 `rates`에 저장하고 출력하세요.
+
+        두 숫자가 상당히 다를 것입니다. 바로 앞에서 센 인원과 함께 읽어 보세요.
+        """,
+        hint="""
+        `groupby('sex')`로 묶고, `['survived']`로 열을 고르고, `.mean()`을 붙입니다. 0과 1의 평균이 생존율입니다.
+        """,
+        starter=TI + "# rates를 만들고 출력하세요\n",
+        solution=TI + "rates = titanic.groupby('sex')['survived'].mean()\nprint(rates)\n",
+        check="assert abs(s['rates']['female']-339/466)<1e-9 and abs(s['rates']['male']-161/843)<1e-9"),
+    coding('sex-summary', '인원·생존자·생존율을 한 표에',
+        goal="""
+        인원과 비율을 따로 구하지 말고 한 표로 봅니다. 성별로 묶은 `survived`에 `agg(['count', 'sum', 'mean'])`을 적용한 표를 `sex_summary`에 저장하고 마지막 줄에 적어 확인하세요.
+
+        `count` 열의 합이 1309이고 `sum` 열의 합이 500이면 맞게 한 것입니다.
+        """,
+        hint="""
+        `titanic.groupby('sex')['survived'].agg(['count', 'sum', 'mean'])` 한 줄입니다. 열 이름은 각각 인원, 생존자 수, 생존율입니다.
+        """,
+        starter=TI + "# sex_summary를 만드세요\n",
+        solution=TI + "sex_summary=titanic.groupby('sex')['survived'].agg(['count','sum','mean'])\nsex_summary\n",
+        check="assert list(s['sex_summary'].columns)==['count','sum','mean']\nassert s['sex_summary'].loc['female','count']==466 and s['sex_summary'].loc['male','count']==843\nassert s['sex_summary']['sum'].sum()==500"),
+    coding('pclass-summary', '객실 등급별로 같은 표 만들기',
+        goal="""
+        같은 질문을 객실 등급에 던집니다. `pclass`로 묶어 `count`, `sum`, `mean`을 구한 표를 `pclass_summary`에 저장하세요.
+
+        등급은 1, 2, 3 세 개이고 `count`의 합은 역시 1309입니다. 등급이 내려갈수록 생존율이 어떻게 변하는지 보세요.
+        """,
+        hint="""
+        앞 미션에서 `groupby('sex')`를 `groupby('pclass')`로 바꾸기만 하면 됩니다.
+        """,
+        starter=TI + "# pclass_summary를 만드세요\n",
+        solution=TI + "pclass_summary = titanic.groupby('pclass')['survived'].agg(['count','sum','mean'])\npclass_summary\n",
+        check="assert list(s['pclass_summary'].index)==[1,2,3]\nassert s['pclass_summary']['count'].sum()==1309 and s['pclass_summary']['sum'].sum()==500\nassert s['pclass_summary'].loc[1,'count']==323"),
+    coding('age-groups', '나이를 구간으로 나눠 묶기',
+        goal="""
+        나이는 값이 수십 가지라 그대로 묶으면 그룹이 너무 많습니다. 그래서 먼저 구간으로 나눕니다. `pd.cut()`으로 나이를 `0~19`, `20~39`, `40~59`, `60+` 네 구간으로 나눈 열 `age_group`을 `titanic`에 추가하고, 구간별 `count`, `sum`, `mean`을 `age_summary`에 저장하세요.
+
+        경계는 `[0, 20, 40, 60, float('inf')]`이고 `right=False`를 주면 각 구간이 왼쪽 경계를 포함합니다(20살은 `20~39`에 들어감). 나이가 비어 있는 263명은 어느 구간에도 들어가지 않으므로 `count`의 합은 1309보다 작습니다.
+        """,
+        hint="""
+        `titanic['age_group'] = pd.cut(titanic['age'], bins=[0, 20, 40, 60, float('inf')], labels=['0~19', '20~39', '40~59', '60+'], right=False)`로 구간 열을 만듭니다. 그다음 `titanic.groupby('age_group', observed=True)['survived'].agg(['count', 'sum', 'mean'])`입니다. `observed=True`는 비어 있는 구간을 표에서 빼 달라는 옵션입니다.
+        """,
+        starter=TI + "# age_group과 age_summary를 만드세요\n",
+        solution=TI + "titanic['age_group']=pd.cut(titanic['age'],bins=[0,20,40,60,float('inf')],labels=['0~19','20~39','40~59','60+'],right=False)\nage_summary=titanic.groupby('age_group',observed=True)['survived'].agg(['count','sum','mean'])\nage_summary\n",
+        check="assert s['age_summary']['count'].sum()==1046\nassert s['titanic']['age_group'].isna().sum()==263\nassert str(s['titanic'].loc[s['titanic']['age']==20,'age_group'].iloc[0])=='20~39'"),
+    quiz('groups-check', '8교시 점검',
+        choice('"여성의 생존율이 남성보다 높다"는 표에서 바로 말할 수 있는 것은 무엇인가요?',
+               ['이 자료에서 그렇게 관찰되었다', '여성이라는 것이 생존의 원인이다', '남성은 구조를 받지 못했다'], 0,
+               '한 표는 관찰입니다. 원인을 말하려면 등급·나이 같은 다른 조건을 함께 나눠 봐야 합니다.'),
+        short('나이 구간별 표에서 `count`의 합은 1309가 아니라 몇인가요?', ['1046', '1,046'],
+              '나이가 비어 있는 263명은 어느 구간에도 들어가지 않습니다. 1309에서 263을 빼면 1046입니다.'),
+        choice("`titanic.groupby('sex')['age'].count()`가 세는 것은 무엇인가요?",
+               ['성별로 나이가 기록된 사람 수', '성별 전체 인원', '성별 평균 나이'], 0,
+               '`count`는 빈 칸을 빼고 셉니다. 전체 인원이 필요하면 빈 칸이 없는 `survived` 열로 세세요.'),
+        choice('`pd.cut(..., right=False)`일 때 정확히 20살인 사람은 어느 구간에 들어가나요?',
+               ['`20~39`. 왼쪽 경계를 포함한다', '`0~19`. 오른쪽 경계를 포함한다', '어느 구간에도 안 들어간다'], 0,
+               '`right=False`는 "오른쪽 경계는 빼고 왼쪽 경계는 넣어라"입니다. 20은 `20~39` 구간의 왼쪽 경계라 포함됩니다.'),
+        choice('"A 그룹 생존율 100%"라는 숫자를 보고 가장 먼저 확인할 것은 무엇인가요?',
+               ['그 그룹이 몇 명인지', '다른 그룹의 생존율', '그래프 색'], 0,
+               '1명 중 1명도 100%입니다. 분모가 작은 비율은 우연에 크게 흔들리므로 `count`부터 봅니다.'),
+        short("성별과 생존율을 한 표로 보려고 `titanic.groupby('sex')['survived'].____(['count', 'sum', 'mean'])`을 썼습니다. 빈칸은?", ['agg', 'agg()'],
+              '`agg`는 여러 집계를 한 번에 열로 만들어 줍니다. 인원·생존자·생존율을 나란히 읽을 수 있습니다.'),
+    ),
+])
