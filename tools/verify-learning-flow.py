@@ -49,6 +49,10 @@ async def main():
   await js("document.querySelector('.curriculum-menu .unit.selected').click()")
   await asyncio.sleep(.2)
   await expect("!document.querySelector('.curriculum-menu').open",'selecting current unit closes curriculum')
+  await expect("!document.querySelector('.mission-tabs') && !document.querySelector('.mission-controls')",'old inline mission navigation removed')
+  await expect("document.querySelector('.header-navigation').closest('header')!==null",'previous and next live in the top header')
+  await expect("document.querySelectorAll('.curriculum-missions button').length==="+str(len(course['chapters'][0]['units'][0]['activities'])),'unit missions integrated into curriculum')
+  await expect("document.querySelectorAll('.curriculum-missions button')[1].disabled",'future curriculum mission remains locked')
   activities=course['chapters'][0]['units'][0]['activities']
   for index,activity in enumerate(activities):
    kind=activity['kind']
@@ -73,7 +77,7 @@ async def main():
       if not await js("Array.from(document.querySelectorAll('button')).find(b=>b.textContent.trim()==='제출').disabled"):break
       await asyncio.sleep(.1)
      await expect("!document.querySelector('[aria-label=\"정답 확인\"]')",'wrong submission has no success popup')
-     await expect('document.querySelectorAll(".mission-tabs button")['+str(index)+'].classList.contains("selected")','wrong submission stays on mission')
+     await expect('document.querySelectorAll(".curriculum-missions button")['+str(index)+'].classList.contains("selected")','wrong submission stays on mission')
     await js('(()=>{const view=document.querySelector(".cm-content").cmTile.root.view;view.dispatch({changes:{from:0,to:view.state.doc.length,insert:'+json.dumps(source)+'}});})()')
     await asyncio.sleep(.2)
     await expect('document.querySelector(".cm-content").textContent.includes('+json.dumps(source.splitlines()[0])+')','CodeMirror synchronized with code')
@@ -86,13 +90,13 @@ async def main():
       if not await js("Array.from(document.querySelectorAll('button')).find(b=>b.textContent.trim()==='코드 실행').disabled"):break
       await asyncio.sleep(.1)
      await expect('document.querySelector(".output").textContent.includes('+json.dumps(sample['expected'].strip())+')','run succeeds with sample input')
-     await expect('document.querySelectorAll(".mission-tabs button")['+str(index)+'].classList.contains("selected")','run does not submit')
+     await expect('document.querySelectorAll(".curriculum-missions button")['+str(index)+'].classList.contains("selected")','run does not submit')
     await click('제출')
    await wait_popup()
    await expect("document.querySelector('[aria-label=\"정답 확인\"]').textContent.includes('정답입니다!')",'correct-answer popup')
    await click('확인')
    if index+1<len(activities):
-    await expect('document.querySelectorAll(".mission-tabs button")['+str(index+1)+'].classList.contains("selected")','correct submission automatically advances')
+    await expect('document.querySelectorAll(".curriculum-missions button")['+str(index+1)+'].classList.contains("selected")','correct submission automatically advances')
    if index==0:
     await expect("!!document.querySelector('.cm-editor .cm-content')",'submission opens coding editor')
     await click('← 이전')
@@ -106,6 +110,12 @@ async def main():
   await expect("!document.querySelector('.curriculum-menu').open",'selecting completed unit closes curriculum')
   await expect('document.querySelector(".curriculum-menu .unit.selected").textContent.includes('+json.dumps(course['chapters'][0]['units'][0]['title'])+')','selected unit highlight follows navigation')
 
+  await js("document.querySelector('.curriculum-menu summary').click()")
+  await asyncio.sleep(.1)
+  await js("document.querySelectorAll('.curriculum-missions button')[1].click()")
+  await asyncio.sleep(.2)
+  await expect("!document.querySelector('.curriculum-menu').open",'mission selection closes curriculum')
+  await expect("document.querySelectorAll('.curriculum-missions button')[1].getAttribute('aria-current')==='step' && !!document.querySelector('.cm-editor')",'curriculum mission selection updates current highlight and content')
   print('ALL UI FLOW CHECKS PASSED')
 
 asyncio.run(main())

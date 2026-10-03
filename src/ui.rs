@@ -10,14 +10,19 @@ use std::collections::HashMap;
 #[component]
 pub fn Learning(course: Course) -> Element {
     let mut selected = use_signal(String::new);
+    let mut mission_index = use_signal(|| usize::MAX);
     let mut clear_popup = use_signal(|| false);
     let mut refresh = use_signal(|| 0u64);
     let progress_course = course.clone();
     let completed = use_memo(move || {
         let _ = refresh();
-        molip_quest::learning_store::LearningStore::user_store()?.completed(&progress_course)
+        let store = molip_quest::learning_store::LearningStore::user_store()?;
+        Ok::<_, String>((
+            store.completed(&progress_course)?,
+            store.completed_items(&progress_course)?,
+        ))
     });
-    let completed = match completed() {
+    let (completed, completed_items) = match completed() {
         Ok(completed) => completed,
         Err(error) => return rsx! {p {class:"error", "{error}"}},
     };
@@ -45,20 +50,44 @@ pub fn Learning(course: Course) -> Element {
         .map(|u| u.id.clone());
     let active_id = active.id.clone();
     let following_id = units.get(position + 1).map(|u| u.id.clone());
-    rsx! {header {class:"practice-header", h1 {"{course.title}"} span {{format!("완료 {} / {} 단원",completed.len(),course.total_units())}} DoctorPanel {}}
+    let active_unlocked = molip_quest::curriculum::unlocked_activities(&active, &completed_items);
+    let active_total = active.activities.len();
+    let active_mission = if mission_index() == usize::MAX {
+        active_unlocked.saturating_sub(1)
+    } else {
+        mission_index().min(active_unlocked.saturating_sub(1))
+    };
+    rsx! {header {class:"practice-header", h1 {"{course.title}"}
+        div {class:"header-navigation",aria_label:"학습 이동",
+            button {disabled:active_mission==0&&previous.is_none(),onclick:{let previous=previous.clone();move |_|{if active_mission>0 {mission_index.set(active_mission-1);}else if let Some(id)=&previous {mission_index.set(usize::MAX);selected.set(id.clone());}}},"← 이전"}
+            button {disabled:active_mission+1>=active_unlocked&&!(active_mission+1==active_total&&next.is_some()),onclick:{let next=next.clone();move |_|{if active_mission+1<active_unlocked {mission_index.set(active_mission+1);}else if let Some(id)=&next {mission_index.set(usize::MAX);selected.set(id.clone());}}},"다음 →"}
+        }
+        span {{format!("완료 {} / {} 단원",completed.len(),course.total_units())}} DoctorPanel {}}
         div {class:"learning", details {class:"curriculum-menu", summary {"수업 목차 ▾"} nav {class:"curriculum", h2 {"수업 목차"}
             for chapter in &course.chapters {h3 {{format!("{} · {}/{}",chapter.title,chapter.units.iter().filter(|u|completed.contains(&u.id)).count(),chapter.units.len())}}
-                for unit in &chapter.units {button {class:if unit.id==active_id {"unit selected"}else{"unit"},aria_current:if unit.id==active_id {"step"}else{"false"},disabled:!unlocked.contains(&unit.id),onclick:{let id=unit.id.clone();move |_|{selected.set(id.clone());document::eval("document.querySelector('.curriculum-menu').open = false;");}},
+                for unit in &chapter.units {div {class:"curriculum-unit",button {class:if unit.id==active_id {"unit selected"}else{"unit"},aria_current:if unit.id==active_id {"step"}else{"false"},disabled:!unlocked.contains(&unit.id),onclick:{let id=unit.id.clone();let active_id=active_id.clone();move |_|{if id!=active_id {mission_index.set(usize::MAX);}selected.set(id.clone());document::eval("document.querySelector('.curriculum-menu').open = false;");}},
                     span {class:"unit-title",{format!("{} {}",if unit.id==active_id {"▶"}else if completed.contains(&unit.id) {"✓"} else if unlocked.contains(&unit.id) {"○"} else {"🔒"},unit.title)}}
                     if unit.id==active_id {span {class:"unit-current","학습 중"}}
+                }
+                if unit.id==active_id {
+                    nav {class:"curriculum-missions",aria_label:"단원 미션",
+                        for (n,activity) in unit.activities.iter().enumerate() {
+                            button {class:if n==active_mission {"curriculum-mission selected"}else{"curriculum-mission"},
+                                aria_current:if n==active_mission {"step"}else{"false"},disabled:n>=active_unlocked,
+                                onclick:move |_|{mission_index.set(n);document::eval("document.querySelector('.curriculum-menu').open = false;");},
+                                span {class:"mission-kind",{format!("{} {} · {}",if n==active_mission {"▶"}else if completed_items.contains(&activity.progress_unit(unit).id){"✓"}else if n<active_unlocked {"○"}else{"🔒"},n+1,activity.label())}}
+                                span {class:"mission-title","{activity.title}"}
+                            }
+                        }
+                    }
+                }
                 }}
             }
         }}
-        for active in [active] {UnitFlow {key:"{active.id}-{active.revision}", course_id:course.id.clone(), unit:active, has_previous_unit:previous.is_some(),has_next_unit:next.is_some(),
-            onpreviousunit:{let previous=previous.clone();move |_|{if let Some(id)=&previous {selected.set(id.clone());}}},
-            onnextunit:{let next=next.clone();move |_|{if let Some(id)=&next {selected.set(id.clone());}}},
+        for active in [active] {UnitFlow {key:"{active.id}-{active.revision}", course_id:course.id.clone(), unit:active,index:mission_index,
             oncompleted:{let active_id=active_id.clone();let following_id=following_id.clone();let course=course.clone();move |passed|{
                 let unit_finished=passed&&molip_quest::learning_store::LearningStore::user_store().and_then(|store|store.completed(&course)).is_ok_and(|done|done.contains(&active_id));
+                if unit_finished {mission_index.set(usize::MAX);}
                 selected.set(if unit_finished {following_id.clone().unwrap_or_else(||active_id.clone())}else{active_id.clone()});refresh+=1;if passed {clear_popup.set(true);}
             }}}}
         }
@@ -73,13 +102,9 @@ pub fn Learning(course: Course) -> Element {
 fn UnitFlow(
     course_id: String,
     unit: Unit,
+    mut index: Signal<usize>,
     oncompleted: EventHandler<bool>,
-    has_previous_unit: bool,
-    has_next_unit: bool,
-    onpreviousunit: EventHandler<()>,
-    onnextunit: EventHandler<()>,
 ) -> Element {
-    let mut index = use_signal(|| usize::MAX);
     let mut refresh = use_signal(|| 0u64);
     let progress_course = course_id.clone();
     let progress_unit = unit.clone();
@@ -112,7 +137,6 @@ fn UnitFlow(
     };
     let active = unit.activities[active_index].clone();
     let progress = active.progress_unit(&unit);
-    let cleared = completed.contains(&progress.id);
     let count = unit
         .activities
         .iter()
@@ -123,17 +147,7 @@ fn UnitFlow(
         section {class:"mission-strip",
             div {class:"mission-heading",strong {"{unit.title}"} span {"클리어 {count} / {total}"}}
             progress {value:count as f64,max:total as f64,aria_label:"단원 진도"}
-            nav {class:"mission-tabs",aria_label:"단원 미션",
-                for (n,activity) in unit.activities.iter().enumerate() {
-                    button {class:if n==active_index {"selected"}else{""},disabled:n>=unlocked_count,onclick:move |_|index.set(n),
-                        {format!("{} {} · {}",if completed.contains(&activity.progress_unit(&unit).id){"✓"}else if n<unlocked_count {"○"}else{"🔒"},n+1,activity.label())}}
-                }
-            }
-            div {class:"mission-controls",
-                button {disabled:active_index==0&&!has_previous_unit,onclick:move |_|{if active_index==0 {onpreviousunit.call(());}else{index.set(active_index-1);}},"← 이전"}
-                span {if cleared {"미션 클리어!"}else{"내 속도로 읽고, 실행하고, 확인하세요."}}
-                button {disabled:active_index+1>=unlocked_count&&!(active_index+1==total&&has_next_unit),onclick:move |_|{if active_index+1<unlocked_count {index.set(active_index+1);}else if active_index+1==total&&has_next_unit {onnextunit.call(());}},"다음 →"}
-            }
+
         }
         for active in [active] {ActivityView {key:"{progress.id}-{progress.revision}",course_id:course_id.clone(),activity:active,progress:progress.clone(),oncompleted:move |passed|{index.set(if passed {(active_index+1).min(total-1)}else{active_index});refresh+=1;oncompleted.call(passed);}}}
     }
