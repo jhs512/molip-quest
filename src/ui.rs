@@ -48,7 +48,10 @@ pub fn Learning(course: Course) -> Element {
     rsx! {header {class:"practice-header", h1 {"{course.title}"} span {{format!("완료 {} / {} 단원",completed.len(),course.total_units())}} DoctorPanel {}}
         div {class:"learning", details {class:"curriculum-menu", summary {"수업 목차 ▾"} nav {class:"curriculum", h2 {"수업 목차"}
             for chapter in &course.chapters {h3 {{format!("{} · {}/{}",chapter.title,chapter.units.iter().filter(|u|completed.contains(&u.id)).count(),chapter.units.len())}}
-                for unit in &chapter.units {button {class:"unit",disabled:!unlocked.contains(&unit.id),onclick:{let id=unit.id.clone();move |_|selected.set(id.clone())}, {format!("{} {}",if completed.contains(&unit.id) {"✓"} else if unlocked.contains(&unit.id) {"○"} else {"🔒"},unit.title)}}}
+                for unit in &chapter.units {button {class:if unit.id==active_id {"unit selected"}else{"unit"},aria_current:if unit.id==active_id {"step"}else{"false"},disabled:!unlocked.contains(&unit.id),onclick:{let id=unit.id.clone();move |_|{selected.set(id.clone());document::eval("document.querySelector('.curriculum-menu').open = false;");}},
+                    span {class:"unit-title",{format!("{} {}",if unit.id==active_id {"▶"}else if completed.contains(&unit.id) {"✓"} else if unlocked.contains(&unit.id) {"○"} else {"🔒"},unit.title)}}
+                    if unit.id==active_id {span {class:"unit-current","학습 중"}}
+                }}
             }
         }}
         for active in [active] {UnitFlow {key:"{active.id}-{active.revision}", course_id:course.id.clone(), unit:active, has_previous_unit:previous.is_some(),has_next_unit:next.is_some(),

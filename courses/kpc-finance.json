@@ -105,7 +105,7 @@
                 },
                 {
                   "id": "q2",
-                  "prompt": "현재 코드 파일 이름은?",
+                  "prompt": "이전 단계에서 사용한 파이썬 파일 이름은?",
                   "type": "short_answer",
                   "accepted": [
                     "main.py"

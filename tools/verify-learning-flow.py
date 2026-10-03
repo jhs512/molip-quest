@@ -41,6 +41,14 @@ async def main():
   await expect("Array.from(document.querySelectorAll('button')).find(b=>b.textContent.trim()==='다음 →').disabled",'next locked before correct answer')
   await expect("!!document.querySelector('.markdown code.language-python .tok-string')",'Markdown Python syntax colors')
   await expect("!!document.querySelector('.markdown blockquote strong')",'Markdown emphasis and callout')
+  await expect("document.querySelector('.curriculum-menu .unit.selected').getAttribute('aria-current')==='step'",'current unit marked on initial open')
+  await js("document.querySelector('.curriculum-menu summary').click()")
+  await asyncio.sleep(.2)
+  await expect("document.querySelector('.curriculum-menu').open",'curriculum opens')
+  await expect("document.querySelector('.curriculum-menu .unit.selected .unit-current').textContent==='학습 중'",'current unit has visible badge')
+  await js("document.querySelector('.curriculum-menu .unit.selected').click()")
+  await asyncio.sleep(.2)
+  await expect("!document.querySelector('.curriculum-menu').open",'selecting current unit closes curriculum')
   activities=course['chapters'][0]['units'][0]['activities']
   for index,activity in enumerate(activities):
    kind=activity['kind']
@@ -91,8 +99,13 @@ async def main():
     await expect("!!document.querySelector('.concept-flow')",'previous returns to concept')
     await click('다음 →')
   await expect('document.querySelector(".mission-heading strong").textContent.includes('+json.dumps(course['chapters'][0]['units'][1]['title'])+')','next crosses unit boundary')
-  await click('← 이전')
-  await expect('document.querySelector(".mission-heading strong").textContent.includes('+json.dumps(course['chapters'][0]['units'][0]['title'])+')','previous crosses unit boundary')
+  await js("document.querySelector('.curriculum-menu summary').click()")
+  await asyncio.sleep(.2)
+  await js("document.querySelector('.curriculum-menu .unit').click()")
+  await asyncio.sleep(.2)
+  await expect("!document.querySelector('.curriculum-menu').open",'selecting completed unit closes curriculum')
+  await expect('document.querySelector(".curriculum-menu .unit.selected").textContent.includes('+json.dumps(course['chapters'][0]['units'][0]['title'])+')','selected unit highlight follows navigation')
+
   print('ALL UI FLOW CHECKS PASSED')
 
 asyncio.run(main())
