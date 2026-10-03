@@ -22,7 +22,9 @@ if (!window.molipCodeEditors) {
     '.cm-scroller': { overflow: 'auto', fontFamily: 'Consolas, monospace', fontSize: '15px' },
     '.cm-content': { padding: '16px 0', caretColor: '#fff' },
     '.cm-gutters': { backgroundColor: '#202d3e', color: '#8299ae', border: 'none' },
-    '.cm-activeLine, .cm-activeLineGutter': { backgroundColor: '#2b4055' },
+    // Selection is drawn behind the text; keep the active line translucent.
+    '.cm-activeLine': { backgroundColor: '#2b405555' },
+    '.cm-activeLineGutter': { backgroundColor: '#2b4055' },
     '.cm-cursor': { borderLeftColor: '#fff' },
     '.cm-selectionBackground': { backgroundColor: '#426385 !important' },
     '.cm-panels, .cm-tooltip': { backgroundColor: '#192b3c', color: '#e3edf6' },
