@@ -46,13 +46,6 @@ function mount(host) {
   const style = document.createElement('style'); style.textContent = rendered.css;
   const stage = document.createElement('div'); stage.className = 'slides-stage'; stage.innerHTML = rendered.html;
   const slides = [...stage.querySelectorAll(':scope > .marpit > svg, :scope > .marpit > section')];
-  if ('marpAll' in host.dataset) {
-    // Overview mode (PPT 모아보기): every slide visible in a grid, a click shows one fullscreen.
-    slides.forEach(s => { s.onclick = () => s.requestFullscreen?.(); });
-    host.replaceChildren(style, stage);
-    globalThis.molipSlides.count += 1;
-    return;
-  }
   const bar = document.createElement('div'); bar.className = 'slides-bar';
   const prev = document.createElement('button'); prev.type = 'button'; prev.textContent = '← 이전 장';
   const counter = document.createElement('span'); counter.className = 'slides-counter';

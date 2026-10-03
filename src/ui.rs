@@ -693,10 +693,10 @@ impl GalleryKind {
     }
     fn blurb(self) -> &'static str {
         match self {
-            GalleryKind::Slides => "수업에서 띄우는 슬라이드 전부를 한 페이지에 펼쳤습니다. 장을 누르면 전체 화면으로 커집니다.",
-            GalleryKind::Comics => "개념, 문제, 슬라이드에 들어 있는 만화 전부입니다. 더블 클릭하면 읽어 줍니다.",
-            GalleryKind::Interactive => "한 단계씩 쌓이는 시각화 전부입니다. 다음 단계 버튼과 슬라이더를 직접 움직여 보세요.",
-            GalleryKind::Concepts => "문제와 퀴즈를 뺀 개념 설명 전부입니다. 개념만 빠르게 훑고 싶을 때 쓰세요.",
+            GalleryKind::Slides => "수업에서 띄우는 슬라이드 목록입니다. 하나를 열면 이전·다음 장과 전체 화면으로 넘겨 볼 수 있습니다.",
+            GalleryKind::Comics => "개념, 문제, 슬라이드에 들어 있는 만화 목록입니다. 열어서 보고, 더블 클릭하면 읽어 줍니다.",
+            GalleryKind::Interactive => "한 단계씩 쌓이는 시각화 목록입니다. 열어서 다음 단계 버튼과 슬라이더를 직접 움직여 보세요.",
+            GalleryKind::Concepts => "문제와 퀴즈를 뺀 개념 설명 목록입니다. 개념만 빠르게 훑고 싶을 때 쓰세요.",
         }
     }
 }
@@ -756,9 +756,19 @@ fn gallery_items(course: &Course, kind: GalleryKind) -> Vec<GalleryItem> {
                             .iter()
                             .flat_map(|text| molip_quest::curriculum::fenced_blocks(text, lang))
                         {
+                            let own_title = block
+                                .lines()
+                                .find_map(|line| line.trim().strip_prefix("제목:"))
+                                .map(|t| t.trim().to_string());
                             items.push(GalleryItem {
-                                location: location.clone(),
-                                title: format!("{} · {}", activity.label(), activity.title),
+                                location: format!(
+                                    "{location} · {} · {}",
+                                    activity.label(),
+                                    activity.title
+                                ),
+                                title: own_title.unwrap_or_else(|| {
+                                    format!("{} · {}", activity.label(), activity.title)
+                                }),
                                 markdown: format!("```{lang}\n{block}\n```"),
                                 deck: false,
                             });
@@ -771,21 +781,48 @@ fn gallery_items(course: &Course, kind: GalleryKind) -> Vec<GalleryItem> {
     items
 }
 
+/// A gallery page: the list of entries first; one entry opens on click, with
+/// previous/next to walk through them and a button back to the list.
 #[component]
 pub fn Gallery(course: Course, kind: GalleryKind) -> Element {
     let items = gallery_items(&course, kind);
+    let mut selected: Signal<Option<usize>> = use_signal(|| None);
+    let total = items.len();
     rsx! { article { class:"reading-mission gallery",
         span { class:"badge", {kind.label()} } h2 { {kind.label()} }
         p { class:"slides-help", {kind.blurb()} }
-        p { class:"gallery-count", {format!("모두 {}개", items.len())} }
-        for (n, item) in items.into_iter().enumerate() {
-            section { class:"gallery-item", key:"{kind:?}-{n}",
-                p { class:"gallery-location", "{item.location}" }
-                h3 { "{item.title}" }
-                if item.deck {
-                    div { class:"slides-host slides-all", "data-marp-source": item.markdown.clone(), "data-marp-all": "true" }
-                } else {
-                    Markdown { text: item.markdown.clone() }
+        match selected() {
+            None => rsx! {
+                p { class:"gallery-count", {format!("모두 {total}개 · 제목을 누르면 열립니다")} }
+                ol { class:"gallery-list",
+                    for (n, item) in items.iter().enumerate() {
+                        li { key:"{kind:?}-{n}",
+                            button { class:"gallery-entry", onclick: move |_| selected.set(Some(n)),
+                                span { class:"gallery-entry-title", "{item.title}" }
+                                span { class:"gallery-location", "{item.location}" }
+                            }
+                        }
+                    }
+                }
+            },
+            Some(n) => {
+                let item = &items[n.min(total.saturating_sub(1))];
+                rsx! {
+                    div { class:"gallery-nav",
+                        button { onclick: move |_| selected.set(None), "← 목록" }
+                        button { disabled: n == 0, onclick: move |_| selected.set(Some(n.saturating_sub(1))), "← 이전" }
+                        span { class:"gallery-count", {format!("{} / {total}", n + 1)} }
+                        button { disabled: n + 1 >= total, onclick: move |_| selected.set(Some(n + 1)), "다음 →" }
+                    }
+                    section { class:"gallery-item", key:"{kind:?}-{n}",
+                        p { class:"gallery-location", "{item.location}" }
+                        h3 { "{item.title}" }
+                        if item.deck {
+                            div { class:"slides-host", "data-marp-source": item.markdown.clone() }
+                        } else {
+                            Markdown { text: item.markdown.clone() }
+                        }
+                    }
                 }
             }
         }

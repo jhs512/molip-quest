@@ -360,13 +360,16 @@ body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { poi
 .course-actions .reset-progress { margin: 0 0 0 auto; color: #6b7f78; border-color: #c9d6d0; }
 .gallery-link { background: #eef4f1; color: #173d36; border: 1px solid #cfdcd6; }
 .gallery-link:hover { background: #dfeae4; }
-/* Gallery pages */
+/* Gallery pages: a list of entries, one opens at a time. */
 .gallery { max-width: 1100px; }
 .gallery-count { color: #bcd7ee; font-size: 13px; margin: 0 0 8px; }
-.gallery-item { margin: 28px 0 0; padding-top: 16px; border-top: 1px solid #3b4f63; }
+.gallery-list { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 8px; }
+.practice-shell .gallery-entry { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; width: 100%; text-align: left; padding: 12px 16px; background: #1f3346; border: 1px solid #3b5468; border-radius: 8px; }
+.practice-shell .gallery-entry:hover { background: #2a4258; border-color: #5c7a94; }
+.gallery-entry-title { font-size: 16px; font-weight: 600; color: #f0f6fb; }
 .gallery-location { color: #8fa6ba; font-size: 12px; margin: 0; }
+.gallery-nav { display: flex; align-items: center; gap: 10px; margin: 8px 0 0; }
+.practice-shell .gallery-nav button { font-size: 13px; padding: 8px 12px; }
+.gallery-nav .gallery-count { margin: 0; min-width: 4em; text-align: center; }
+.gallery-item { margin: 16px 0 0; padding-top: 16px; border-top: 1px solid #3b4f63; }
 .gallery-item h3 { margin: 4px 0 12px; font-size: 18px; }
-.slides-all .slides-stage { padding: 10px; }
-.slides-all .marpit { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.slides-all .marpit > svg { width: 100%; height: auto; display: block; max-height: none; margin: 0; cursor: zoom-in; border-radius: 6px; }
-.slides-all .marpit > svg:fullscreen { background: #000; cursor: default; }
