@@ -1,8 +1,9 @@
-"""Render the 몰입 퀘스트 app icon: a quest pennant and three stars on the brand green tile.
+"""Render the 몰입 퀘스트 app icon: a bold Q (for 퀘스트) on the brand green tile.
 
-Outputs under assets/icon/: icon-1024.png (master), icon.ico (Windows), icon-foreground.png
-(Android adaptive foreground on transparent), and the sizes macOS/Android packaging scripts use.
-Pillow only; no network.
+The Q is drawn geometrically (a thick light ring with a gold tail) so no font is needed and
+every size stays crisp. Outputs under assets/icon/: icon-1024.png (master), icon.ico (Windows),
+icon-foreground.png (Android adaptive foreground on transparent), and the sizes the macOS and
+Android packaging scripts use. Pillow only; no network.
 """
 from pathlib import Path
 
@@ -15,48 +16,41 @@ OUT.mkdir(parents=True, exist_ok=True)
 GREEN = (23, 61, 54, 255)      # .sidebar background
 LIGHT = (239, 250, 245, 255)   # sidebar text
 GOLD = (242, 201, 76, 255)
+CLEAR = (0, 0, 0, 0)
 SCALE = 4
 SIZE = 1024 * SCALE
 
 
-def star(cx, cy, r, draw, fill):
-    import math
-    points = []
-    for i in range(10):
-        radius = r if i % 2 == 0 else r * 0.45
-        angle = math.radians(-90 + i * 36)
-        points.append((cx + radius * math.cos(angle), cy + radius * math.sin(angle)))
-    draw.polygon(points, fill=fill)
-
-
-def pennant(draw, scale=1.0, offset=(0, 0)):
-    """Flag pole and pennant centred in a 1024 box; `scale` shrinks it for the adaptive foreground."""
+def letter_q(draw, hole, scale=1.0, offset=(0, 0)):
+    """A Q centred in a 1024 box. `hole` is the colour inside the ring (tile green, or
+    transparent for the adaptive foreground); `scale` shrinks it for that foreground."""
     s = SCALE * scale
     ox, oy = offset
-    pole_x = 330 * s + ox
-    top, bottom = 200 * s + oy, 840 * s + oy
-    draw.rounded_rectangle([pole_x - 28 * s, top, pole_x + 28 * s, bottom], radius=28 * s, fill=LIGHT)
-    draw.ellipse([pole_x - 46 * s, top - 46 * s, pole_x + 46 * s, top + 46 * s], fill=GOLD)
-    flag = [(pole_x + 28 * s, 250 * s + oy), (770 * s + ox, 360 * s + oy), (pole_x + 28 * s, 520 * s + oy)]
-    draw.polygon(flag, fill=LIGHT)
-    draw.polygon([(pole_x + 28 * s, 250 * s + oy), (pole_x + 28 * s, 520 * s + oy), (610 * s + ox, 390 * s + oy)], fill=GOLD)
-    for i, (sx, sy, r) in enumerate([(560, 650, 42), (650, 720, 54), (750, 800, 66)]):
-        star(sx * s + ox, sy * s + oy, r * s, draw, GOLD if i == 2 else LIGHT)
+    cx, cy = 512 * s + ox, 490 * s + oy
+    outer, inner = 300 * s, 175 * s
+    draw.ellipse([cx - outer, cy - outer, cx + outer, cy + outer], fill=LIGHT)
+    draw.ellipse([cx - inner, cy - inner, cx + inner, cy + inner], fill=hole)
+    # The tail: a thick rounded stroke from inside the ring's lower right out past the rim.
+    tail = [(600 * s + ox, 600 * s + oy), (800 * s + ox, 820 * s + oy)]
+    draw.line(tail, fill=GOLD, width=int(118 * s))
+    for x, y in tail:
+        r = 59 * s
+        draw.ellipse([x - r, y - r, x + r, y + r], fill=GOLD)
 
 
 def tile():
-    image = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
+    image = Image.new("RGBA", (SIZE, SIZE), CLEAR)
     draw = ImageDraw.Draw(image)
     draw.rounded_rectangle([0, 0, SIZE - 1, SIZE - 1], radius=SIZE * 0.22, fill=GREEN)
-    pennant(draw)
+    letter_q(draw, GREEN)
     return image.resize((1024, 1024), Image.LANCZOS)
 
 
 def foreground():
-    # Android adaptive icons are cropped to a circle inside the middle 66%, so draw the motif small.
-    image = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
+    # Android adaptive icons are cropped to a circle inside the middle 66%, so draw the Q small.
+    image = Image.new("RGBA", (SIZE, SIZE), CLEAR)
     draw = ImageDraw.Draw(image)
-    pennant(draw, scale=0.6, offset=(SIZE * 0.2, SIZE * 0.2))
+    letter_q(draw, CLEAR, scale=0.6, offset=(SIZE * 0.2, SIZE * 0.2))
     return image.resize((1024, 1024), Image.LANCZOS)
 
 

@@ -34,4 +34,4 @@ xattr -cr "/Applications/몰입 퀘스트.app"
 
 ## 앱 아이콘
 
-`tools/make-icon.py`가 `assets/icon/`에 퀘스트 깃발 아이콘(1024px 원본, Windows `.ico`, Android 밀도별 PNG와 적응형 전경)을 생성합니다. Windows는 `build.rs`(winresource)로 실행 파일에 내장하고 Inno Setup 설치 프로그램에도 씁니다. macOS는 `bundle.sh`가 `sips`·`iconutil`로 `.icns`를 만듭니다. Android는 dx가 기본 아이콘을 항상 덮어쓰므로 CI가 `tools/apply-android-icon.py`로 생성된 프로젝트의 리소스를 바꾼 뒤 Gradle로 다시 조립합니다.
+`tools/make-icon.py`가 `assets/icon/`에 Q 글자 아이콘(1024px 원본, Windows `.ico`, Android 밀도별 PNG와 적응형 전경)을 생성합니다. Windows는 `build.rs`(winresource)로 실행 파일에 내장하고 Inno Setup 설치 프로그램에도 씁니다. macOS는 `bundle.sh`가 `sips`·`iconutil`로 `.icns`를 만듭니다. Android는 dx가 기본 아이콘을 항상 덮어쓰므로 CI가 `tools/apply-android-icon.py`로 생성된 프로젝트의 리소스를 바꾼 뒤 Gradle로 다시 조립합니다.
