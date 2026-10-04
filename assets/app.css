@@ -341,6 +341,8 @@ body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { poi
 .practice-shell .interactive-action { background: #43596d; color: #fff; padding: 8px 14px; font-size: 13px; }
 .interactive-toggle { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 13px; color: #bcd7ee; }
 .interactive-toggle input { width: 16px; margin: 0; accent-color: #79dcff; }
+/* Widgets hide a slider or toggle until the step that needs it; the flex display above must not defeat the hidden attribute. */
+.interactive-slider[hidden], .interactive-toggle[hidden], .interactive-action[hidden] { display: none; }
 
 .cm-editor, .cm-editor .cm-content, .cm-editor .cm-gutters { font-family: 'JetBrains Mono', 'Pretendard', Consolas, monospace !important; }
 

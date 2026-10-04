@@ -107,7 +107,7 @@
       scoreTrain.textContent = `훈련 오차 ${mae(train, predict).toFixed(3)}`;
       scoreTest.textContent = showTest ? `테스트 오차 ${mae(test, predict).toFixed(3)}` : '';
     }
-    const s = slider(f.extra, '트리 깊이 max_depth', 1, 8, 1, 1, v => { depth = v; draw(); });
+    const s = slider(f.extra, '트리 깊이 (max_depth)', 1, 8, 1, 1, v => { depth = v; draw(); });
     f.start([
       { text: '훈련 자료 24개입니다. 가로가 입력, 세로가 맞혀야 할 숫자입니다.', enter() { show(gTrain); hide(gModel); hide(gTest); s.wrap.hidden = true; showTest = false; }, reset() { depth = 1; s.set(1); } },
       { text: '깊이 1인 트리는 질문 한 번으로 두 구간을 나눕니다. 선이 모델의 답입니다.', enter() { depth = 1; s.set(1); draw(); show(gModel); } },
@@ -359,7 +359,7 @@
       counts.forEach((c, i) => { const h = c / max * (B - T - 30); el('rect', { x: L + i * w + 1, y: B - 12 - h, width: w - 2, height: h, class: 'hist' }, gBars); if (bins <= 12) text(gBars, L + i * w + w / 2, B - 16 - h, String(c), { class: 'label', 'text-anchor': 'middle' }); });
       countText.textContent = `구간 ${bins}개 · 막대 높이의 합은 늘 300명`;
     }
-    const s = slider(f.extra, '구간 수 bins', 3, 40, 1, 5, val => { bins = val; draw(); });
+    const s = slider(f.extra, '구간 수 (bins)', 3, 40, 1, 5, val => { bins = val; draw(); });
     f.start([
       { text: '승객 300명의 나이를 바닥에 눈금처럼 찍었습니다. 어디에 몰려 있는지 보이나요?', enter() { bins = 5; s.set(5); s.wrap.hidden = true; show(gRug); hide(gBars); countText.textContent = ''; } },
       { text: '나이를 다섯 구간으로 잘라 구간마다 몇 명인지 세우면 히스토그램입니다.', enter() { draw(); show(gBars); } },
