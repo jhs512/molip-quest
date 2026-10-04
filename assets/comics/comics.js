@@ -3,7 +3,8 @@
 // The Markdown renderer leaves ```comic-gen fences as `pre > code.language-comic-gen`.
 // This loader imports the vendored Comic Gen SDK (an ES module, so it is loaded
 // from a Blob URL built from `window.__molipComicGenSource`), renders each fence
-// to one SVG with every panel, and replaces the fence with a <figure>. Missions
+// to an SVG, and replaces the fence with a <figure>. Slides select one resolved
+// panel via a molip-panel marker, sharing the rendered script across slides. Missions
 // re-render on navigation, so a MutationObserver draws fences as they appear.
 (function () {
   'use strict';
@@ -29,6 +30,7 @@
   const sdk = import(url).catch(error => { console.error('comic-gen SDK failed to load', error); return null; });
   const seen = new WeakSet();
   let count = 0;
+  const slideRenders = new Map();
 
   async function render(root) {
     if (!(root instanceof Element) && root !== document) return;
@@ -45,11 +47,19 @@
       figure.setAttribute('aria-label', '설명 만화');
       try {
         if (!api) throw new Error('SDK unavailable');
-        const result = await api.renderComicAsync(code.textContent, { 너비: 720 });
+        const panelMarker = code.textContent.match(/^# molip-panel:(\d+)\n/);
+        const script = code.textContent.replace(/^# molip-panel:\d+\n/, '');
+        let pending = panelMarker && slideRenders.get(script);
+        if (!pending) {
+          pending = api.renderComicAsync(script, { 너비: 720 });
+          if (panelMarker) slideRenders.set(script, pending);
+        }
+        const result = await pending;
         if (result.diagnostics.length) throw new Error(result.diagnostics.join(' / '));
-        figure.innerHTML = result.svg;
+        const panel = panelMarker && result.panels[Number(panelMarker[1])];
+        figure.innerHTML = panel ? panel.svg : result.svg;
         const svg = figure.querySelector('svg');
-        if (svg) { svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', '설명 만화 ' + ((result.panels && result.panels.length) || 1) + '컷'); }
+        if (svg) { svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', panel ? `설명 만화 ${Number(panelMarker[1]) + 1} / ${result.panels.length}컷` : '설명 만화 ' + ((result.panels && result.panels.length) || 1) + '컷'); }
         count += 1;
       } catch (error) {
         figure.classList.add('comic-error');

@@ -2,6 +2,7 @@
   "private": true,
   "dependencies": {
     "@marp-team/marp-core": "^4.4.0",
-    "esbuild": "^0.28.2"
+    "esbuild": "^0.28.2",
+    "js-yaml": "^5.4.2"
   }
 }

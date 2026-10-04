@@ -6,6 +6,9 @@ Korean YAML syntax of [Comic Gen](https://github.com/jhs512/comic-gen)
 The Markdown renderer keeps the fence as `pre > code.language-comic-gen`;
 `comics.js` replaces each one with a `<figure class="comic-strip">` holding the
 SVG of every panel, so the strip reads inline with the surrounding paragraphs.
+Inside a slide deck, each panel gets its own slide. The complete comic script is
+rendered once so character and previous-panel inheritance are preserved, and each
+slide displays its corresponding resolved panel within the available height.
 
 `comic-gen.js` is the vendored browser SDK (v0.7.5, an ES module from
 `https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.5/cdn/comic-gen.js`). The app
