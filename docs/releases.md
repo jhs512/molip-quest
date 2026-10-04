@@ -18,11 +18,19 @@ Android 빌드는 `target_os = "android"`에서 Python을 실행하지 않습니
 
 ## macOS 첫 실행
 
-DMG를 열어 `몰입 퀘스트.app`을 Applications로 끌어 넣습니다. 공증되지 않은 앱이므로 처음에는 더블클릭 대신 **우클릭 → 열기**를 선택하거나, 터미널에서 다음을 실행합니다.
+DMG를 열어 `몰입 퀘스트.app`을 Applications로 끌어 넣습니다. 지금 배포본은 Apple 공증을 받지 않은 ad-hoc 서명이라, 처음 열면 Gatekeeper가 "'몰입 퀘스트'을(를) 열지 않음 … 악성 코드가 없음을 확인할 수 없습니다"라고 막습니다(macOS 15 Sequoia부터는 우클릭 → 열기도 통하지 않습니다). 한 번만 다음 순서로 허용하면 됩니다. 같은 안내가 DMG 안의 `먼저 읽어 주세요.txt`에도 있습니다.
+
+1. 경고 창에서 **완료**를 누릅니다(휴지통으로 이동 아님).
+2. **시스템 설정 → 개인정보 보호 및 보안 → 보안** 항목의 "'몰입 퀘스트'이(가) 차단되었습니다" 옆 **그래도 열기**를 누르고 암호로 확인합니다.
+3. 다음부터는 더블클릭으로 열립니다.
+
+터미널이 편하면 2번 대신 격리 속성을 지우면 됩니다.
 
 ```bash
-xattr -cr "/Applications/몰입 퀘스트.app"
+xattr -dr com.apple.quarantine "/Applications/몰입 퀘스트.app"
 ```
+
+이 경고를 없애려면 Apple Developer Program(연 99달러)의 **Developer ID Application** 인증서로 서명하고 공증해야 합니다. 워크플로는 준비돼 있어서 저장소 비밀 다섯 개만 넣으면 자동으로 서명·공증·스테이플까지 합니다: `APPLE_CERTIFICATE_P12_BASE64`(인증서 .p12를 base64로), `APPLE_CERTIFICATE_PASSWORD`, `APPLE_ID`, `APPLE_TEAM_ID`, `APPLE_APP_PASSWORD`(appleid.apple.com에서 만든 앱 암호). 비밀이 없으면 지금처럼 ad-hoc 서명으로 빌드합니다.
 
 학습용 Python은 `MOLIP_PYTHON` 환경 변수로 지정하거나, 지정하지 않으면 PATH의 `python3`를 사용합니다.
 

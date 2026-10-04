@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# Wrap the release binary in an .app bundle, ad-hoc sign it, and pack a .dmg.
-# Apple Silicon refuses to launch unsigned arm64 binaries, so the ad-hoc signature is
-# required even without a Developer ID. The image is not notarized: first launch needs
-# right-click → Open (or `xattr -cr`), which docs/releases.md explains to students.
+# Wrap the release binary in an .app bundle, sign it, and pack a .dmg.
+# With MACOS_SIGN_IDENTITY set (a "Developer ID Application: …" certificate in the keychain)
+# the bundle gets a hardened-runtime signature that CI can notarize. Without it the bundle is
+# ad-hoc signed, which Apple Silicon needs to launch at all; Gatekeeper then blocks the first
+# launch and the student follows "먼저 읽어 주세요.txt" in the image (System Settings → 그래도 열기).
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 
@@ -25,8 +26,13 @@ for size in 16 32 128 256 512; do
 done
 iconutil -c icns "$iconset" -o "$app/Contents/Resources/AppIcon.icns"
 
-codesign --force --deep --sign - "$app"
+if [ -n "${MACOS_SIGN_IDENTITY:-}" ]; then
+  codesign --force --deep --options runtime --timestamp --sign "$MACOS_SIGN_IDENTITY" "$app"
+else
+  codesign --force --deep --sign - "$app"
+fi
 
+cp "packaging/macos/먼저 읽어 주세요.txt" target/bundle/
 ln -s /Applications target/bundle/Applications
 hdiutil create -volname "몰입 퀘스트" -srcfolder target/bundle -ov -format UDZO \
   target/installers/molip-quest-macos-arm64.dmg

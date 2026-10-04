@@ -57,14 +57,49 @@ jobs:
     # macos-latest is an Apple Silicon runner, so this produces an arm64 build.
     runs-on: macos-latest
     timeout-minutes: 45
+    env:
+      # Developer ID signing and notarization run only when these secrets are set:
+      # APPLE_CERTIFICATE_P12_BASE64 (Developer ID Application .p12), APPLE_CERTIFICATE_PASSWORD,
+      # APPLE_ID, APPLE_TEAM_ID, APPLE_APP_PASSWORD (app-specific password). Otherwise the
+      # bundle is ad-hoc signed and the first launch needs System Settings → 그래도 열기.
+      HAS_APPLE_CERT: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 != '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: Build release executable
         run: cargo build --release --locked --bin molip-quest
+      - name: Import the Developer ID certificate
+        if: env.HAS_APPLE_CERT == 'true'
+        env:
+          CERT_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
+          CERT_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        run: |
+          set -euo pipefail
+          keychain=$RUNNER_TEMP/signing.keychain-db
+          keychain_password=$(uuidgen)
+          echo "$CERT_BASE64" | base64 -d > "$RUNNER_TEMP/cert.p12"
+          security create-keychain -p "$keychain_password" "$keychain"
+          security set-keychain-settings -lut 21600 "$keychain"
+          security unlock-keychain -p "$keychain_password" "$keychain"
+          security import "$RUNNER_TEMP/cert.p12" -P "$CERT_PASSWORD" -A -t cert -f pkcs12 -k "$keychain"
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$keychain_password" "$keychain"
+          security list-keychain -d user -s "$keychain" login.keychain-db
+          identity=$(security find-identity -v -p codesigning "$keychain" | sed -n 's/.*"\(Developer ID Application: [^"]*\)".*/\1/p' | head -n 1)
+          test -n "$identity" || { echo 'No Developer ID Application identity in the certificate'; exit 1; }
+          echo "MACOS_SIGN_IDENTITY=$identity" >> "$GITHUB_ENV"
       - name: Assemble app bundle and disk image
         run: bash packaging/macos/bundle.sh
+      - name: Notarize and staple the disk image
+        if: env.HAS_APPLE_CERT == 'true'
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+        run: |
+          set -euo pipefail
+          xcrun notarytool submit target/installers/molip-quest-macos-arm64.dmg             --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_APP_PASSWORD" --wait
+          xcrun stapler staple target/installers/molip-quest-macos-arm64.dmg
       - name: Verify the bundle launches from the disk image
         run: |
           set -euo pipefail
