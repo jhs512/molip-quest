@@ -283,7 +283,7 @@ pandas. titanic DataFrame. isna().sum()을 missing에 담고, 나이와 요금�
 pandas. titanic DataFrame. 전체 인원 n_total, 나이가 기록된 인원 n_known, 나이가 결측인 인원 n_unknown을 int로, 생존의 평균을 survival_rate에 담아 전부 출력.
 n_known + n_unknown == n_total 이어야 해.
 """, """
-- `survived의 평균` → 0/1 열의 평균이 곧 비율.
+- `생존의 평균` → 0/1 열의 평균이 곧 비율.
 - `n_known + n_unknown == n_total` → 검산식을 주면 AI가 스스로 확인한다.
 """),
     # ---- 1일차 8교시 ----
