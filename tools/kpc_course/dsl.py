@@ -111,13 +111,7 @@ def coding(id, title, goal, hint, starter, solution, check=None, tests=None, int
 
 
 # Front matter every deck starts with (Marp, the app's theme, page numbers).
-MARP_FRONT = "---
-marp: true
-theme: molip
-paginate: true
----
-
-"
+MARP_FRONT = "---\nmarp: true\ntheme: molip\npaginate: true\n---\n\n"
 
 
 def split_slides(markdown):
