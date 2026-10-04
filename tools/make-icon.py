@@ -60,4 +60,6 @@ master.save(OUT / "icon.ico", sizes=[(16, 16), (24, 24), (32, 32), (48, 48), (64
 foreground().save(OUT / "icon-foreground.png")
 for size in (48, 72, 96, 144, 192, 512):
     master.resize((size, size), Image.LANCZOS).save(OUT / f"icon-{size}.png")
+# Raw RGBA for the window icon (taskbar and title bar): src/main.rs embeds it without a decoder.
+(OUT / "icon-128.rgba").write_bytes(master.resize((128, 128), Image.LANCZOS).tobytes())
 print("icons written to", OUT)

@@ -10,11 +10,25 @@ fn main() {
     // No menu bar: the app is driven from its own screens, slides have their own fullscreen button.
     dioxus::LaunchBuilder::new()
         .with_cfg(
-            dioxus::desktop::Config::new()
-                .with_menu(None)
-                .with_window(dioxus::desktop::WindowBuilder::new().with_title("몰입 퀘스트")),
+            dioxus::desktop::Config::new().with_menu(None).with_window(
+                dioxus::desktop::WindowBuilder::new()
+                    .with_title("몰입 퀘스트")
+                    .with_window_icon(window_icon()),
+            ),
         )
         .launch(App);
+}
+
+/// The Q icon for the title bar and taskbar (the taskbar shows the window's icon, not the
+/// executable's). Raw 128×128 RGBA written by tools/make-icon.py, so no image decoder is needed.
+#[cfg(feature = "desktop")]
+fn window_icon() -> Option<dioxus::desktop::tao::window::Icon> {
+    dioxus::desktop::tao::window::Icon::from_rgba(
+        include_bytes!("../assets/icon/icon-128.rgba").to_vec(),
+        128,
+        128,
+    )
+    .ok()
 }
 
 // Mobile builds (Android view-only).
