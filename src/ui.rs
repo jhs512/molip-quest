@@ -121,6 +121,7 @@ pub fn Learning(course: Course) -> Element {
     // "AI에게 물어보기": the tutor chat knows the mission on screen.
     let mut assistant_open = use_signal(|| false);
     let mut assistant_messages = use_signal(Vec::<molip_quest::assistant::Turn>::new);
+    let mut assistant_kind = String::new();
     let (assistant_title, assistant_context) = {
         let chapter_title = course
             .chapters
@@ -130,6 +131,7 @@ pub fn Learning(course: Course) -> Element {
             .unwrap_or("");
         match active.activities.get(active_mission) {
             Some(activity) => {
+                assistant_kind = activity.label().to_string();
                 let draft_code = match &activity.kind {
                     ActivityKind::Coding { problem } => drafts::load(&format!(
                         "local:{}:{}:{}",
@@ -253,7 +255,7 @@ pub fn Learning(course: Course) -> Element {
         }
         if assistant_open() {
             aside {class:"assistant-dock",
-                AssistantPanel {title:assistant_title.clone(),context:assistant_context_signal,messages:assistant_messages,onclose:move |_|assistant_open.set(false)}
+                AssistantPanel {title:assistant_title.clone(),kind:assistant_kind.clone(),context:assistant_context_signal,messages:assistant_messages,onclose:move |_|assistant_open.set(false)}
             }
         }
         }
@@ -558,6 +560,7 @@ fn SlidesView(
 #[component]
 fn AssistantPanel(
     title: String,
+    kind: String,
     context: Signal<String>,
     messages: Signal<Vec<molip_quest::assistant::Turn>>,
     onclose: EventHandler<()>,
@@ -647,12 +650,35 @@ fn AssistantPanel(
         });
         request.call(());
     });
+    // Three suggested questions that fit the mission on screen; a tap sends one right away.
+    let suggestions: [&'static str; 3] = match kind.as_str() {
+        "슬라이드" => [
+            "이 덱을 세 줄로 요약해 줘",
+            "이 장에서 꼭 기억할 한 가지는?",
+            "다음 장으로 넘겨 줘",
+        ],
+        "개념" => [
+            "이 개념을 빵 공장 예로 설명해 줘",
+            "확인 문항 힌트만 줘, 답은 말고",
+            "핵심 용어 세 개만 정리해 줘",
+        ],
+        "퀴즈" => [
+            "1번 문제 힌트만 줘",
+            "왜 다른 보기가 틀렸는지 설명해 줘",
+            "퀴즈 전부 풀어서 채점해 줘",
+        ],
+        _ => [
+            "힌트만 줘, 답은 말고",
+            "지금 쓴 코드 어디가 틀렸어?",
+            "이 문제 풀어서 제출까지 해 줘",
+        ],
+    };
     // A failed question stays in the conversation; 다시 시도 re-sends it without duplicating it.
     let can_retry = move || messages.read().last().is_some_and(|t| t.role == "user") && !pending();
     rsx! {
         section { class:"assistant-panel", aria_label:"AI에게 물어보기",
             header { class:"assistant-head",
-                div { h2 { "AI에게 물어보기" } p { class:"assistant-scope", "항상 지금 보는 미션 「{title}」을 기준으로 답합니다. '해 줘'라고 하면 코드 넣기·실행·제출·퀴즈 답·이동까지 대신합니다 · {settings.read().provider.label()}" } }
+                div { h2 { "AI에게 물어보기" } p { class:"assistant-scope", "'해 줘'라고 하면 코드 넣기·실행·제출·퀴즈 답·이동까지 대신합니다 · {settings.read().provider.label()}" } }
                 div { class:"assistant-actions",
                     button { onclick: move |_| { let v = show_settings(); show_settings.set(!v); }, "설정" }
                     button { onclick: move |_| { messages.set(Vec::new()); error.set(String::new()); }, "대화 지우기" }
@@ -707,6 +733,14 @@ fn AssistantPanel(
                         if can_retry() { button { onclick: move |_| request.call(()), "다시 시도" } }
                     }
                 }
+            }
+            div { class:"assistant-footer",
+                div { class:"assistant-suggestions",
+                    for text in suggestions {
+                        button { class:"assistant-chip", disabled: pending(), onclick: move |_| { draft.set(text.to_string()); send.call(()); }, "{text}" }
+                    }
+                }
+                div { class:"assistant-context", span { class:"assistant-context-dot" } "「{title}」 기준으로 답하는 중" }
             }
             div { class:"assistant-compose",
                 textarea { initial_value:"", placeholder:"질문을 적고 Enter (줄 바꿈은 Shift+Enter)", rows:"2",
