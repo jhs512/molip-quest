@@ -5,9 +5,10 @@ chapters.build() via DECK_PLACEMENTS. Fences for comics (```comic-gen), pictures
 and interactive widgets (```interactive) work inside slides. Keep every slide to one idea and
 at most six lines of text; the instructor talks, the slide reminds.
 """
-from kpc_course.dsl import slides
+from kpc_course.dsl import slides, MARP_FRONT
+from kpc_course import decks_python_pandas, decks_eda_viz, decks_modeling_credit, decks_stock
 
-FRONT = "---\nmarp: true\ntheme: molip\npaginate: true\n---\n\n"
+FRONT = MARP_FRONT
 
 INTRO = slides('why-this-course', '왜 배우나 · AI 시대의 데이터 분석', FRONT + r"""
 <!-- _class: lead -->
