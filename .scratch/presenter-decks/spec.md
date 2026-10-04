@@ -1,6 +1,6 @@
 # 발표용 덱 확장과 강사 스크립트
 
-Status: in progress (2026-10-05)
+Status: done (2026-10-05) · 30 decks, 235 slides, every slide with a script; commits b8c4acc, 7d8a1bf
 
 ## 목표
 
@@ -38,7 +38,7 @@ Status: in progress (2026-10-05)
 
 ### python
 - u0 · 0 → `why-this-course` 안 배워도 됩니다, 그런데요 · 회사는 매일 숫자를 맞히고, 틀리면 돈이 든다 (기존 INTRO 앞부분)
-- u0 · 1 → `expert-ask` "해 줘"가 전문가의 "해 줘"가 되려면 · 같은 "해 줘"인데 단어를 알면 다른 코드가 온다 (기존 INTRO 뒷부분, 앱 사용법 포함)
+- u0 · 0 (둘째) → `expert-ask` "해 줘"가 전문가의 "해 줘"가 되려면 · 같은 "해 줘"인데 단어를 알면 다른 코드가 온다 (기존 INTRO 뒷부분, 앱 사용법 포함)
 - u1 · 0 → `deck-structures` 값에 이름표 붙이기 · 변수·리스트·딕셔너리는 값을 담는 세 가지 그릇
 - u2 · 0 → `deck-control` 규칙을 코드로 · 조건과 반복으로 "~이면 ~한다"를 적는다
 - u2 · 11 → `why-pandas` 표는 왜 pandas로 (기존)
@@ -59,13 +59,13 @@ Status: in progress (2026-10-05)
 
 ### modeling
 - u0 · 0 → `ml-basics` 머신러닝은 표에서 규칙 찾기 (기존, 누수 부분 제외)
-- u0 · 2 → `deck-leakage` 시험지에 답이 적혀 있으면 · 누수: 맞히는 시점에 알 수 없는 열
+- u0 · 1 → `deck-leakage` 시험지에 답이 적혀 있으면 · 누수: 맞히는 시점에 알 수 없는 열
 - u1 · 0 → `deck-split` 문제집과 모의고사 · 훈련·테스트를 나누고 테스트는 마지막 한 번
 - u1 · 5 → `deck-pipeline` fit은 훈련 자료로만 · 전처리도 학습이며 Pipeline이 실수를 막는다
-- u2 · 0 → `baseline-and-saving` → 쪼갬: `deck-baseline` 비교할 기준부터 · 기준 모델 없이는 점수에 뜻이 없다
+- u2 · 0 → `deck-baseline` 비교할 기준부터 · 기준 모델 없이는 점수에 뜻이 없다
 - u2 · 3 → `deck-overfit` 답만 외운 학생 · 훈련 점수와 테스트 점수의 차이가 과적합
-- u2 · 5 → `deck-tuning` 공부 내용과 공부법 · 파라미터·하이퍼파라미터·튜닝·AutoML
-- u2 · 7 → `deck-saving` 한 번 배운 모델은 저장해서 다시 쓴다
+- u2 · 4 → `deck-tuning` 공부 내용과 공부법 · 파라미터·하이퍼파라미터·튜닝·AutoML
+- u2 · 6 → `deck-saving` 한 번 배운 모델은 저장해서 다시 쓴다
 
 ### credit
 - u0 · 0 → `deck-credit` 부도를 정의하다 · 타깃 정의와 연체 이력이 재료
