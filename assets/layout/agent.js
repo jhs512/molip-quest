@@ -9,7 +9,8 @@
 // screen it is about to touch, shows the sentence in a caption there and reads it aloud (Web
 // Speech, Korean voice, the reading speed the 읽어주기 panel saved), and only then acts.
 // `say` {target, text} is narration alone; `type_code` {code, say, replace} types code into the
-// editor a few characters at a time while the explanation is spoken. molipAgent.stop() ends a
+// editor a few characters at a time while the explanation is spoken. The voice comes from
+// assets/layout/voice.js (neural clips) with Web Speech as the fallback. molipAgent.stop() ends a
 // narration (the sidebar's 멈춤 button), molipAgent.setVoice(false) keeps the captions but mutes.
 (function () {
   'use strict';
@@ -125,30 +126,11 @@
   }
 
   // ---- Voice: one sentence at a time, resolved when it has been read (or would have been). ----
-  let voice = true, cancelled = false, voiceName = 'ko-KR-SunHiNeural';
-  // ---- Neural voice: MP3 from the app's /tts endpoint (edge-tts), cached per sentence. ----
-  const clips = new Map();
+  let voice = true, cancelled = false;
+  // ---- Neural voice: clips come from assets/layout/voice.js (the app's /tts endpoint). ----
   let currentAudio = null;
-  function ttsUrl() {
-    // wry serves custom protocols as http://<name>.localhost on Windows (the page itself is on
-    // http://dioxus.index.html there), and as <name>://localhost on macOS and Linux.
-    return location.protocol === 'http:' || location.protocol === 'https:'
-      ? `${location.protocol}//molip.localhost/tts` : 'molip://localhost/tts';
-  }
-  function synthesize(sentence) {
-    const key = voiceName + '\n' + sentence;
-    let pending = clips.get(key);
-    if (!pending) {
-      pending = fetch(ttsUrl(), { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ text: sentence, voice: voiceName }) })
-        .then(async response => {
-          if (!response.ok) { console.warn('tts', response.status, await response.text().catch(() => '')); return null; }
-          return URL.createObjectURL(await response.blob());
-        })
-        .catch(error => { console.warn('tts', error); return null; });
-      clips.set(key, pending);
-    }
-    return pending;
-  }
+  const neural = () => (globalThis.molipVoice && globalThis.molipVoice.enabled()) ? globalThis.molipVoice : null;
+  function synthesize(sentence) { const v = neural(); return v ? v.synthesize(sentence) : Promise.resolve(null); }
   function playClip(url) {
     return new Promise(resolve => {
       const audio = new Audio(url);
@@ -162,7 +144,7 @@
   }
   function stopClip() { if (currentAudio) { try { currentAudio.pause(); } catch {} currentAudio = null; } }
   function prefetch(actions) {
-    if (!voice || voiceName === 'system') return;
+    if (!voice || !neural()) return;
     for (const action of actions) {
       const sentence = action && (action.action === 'say' ? action.text : action.say);
       if (sentence) synthesize(String(sentence));
@@ -173,7 +155,7 @@
   let current = null;
   async function speak(sentence) {
     if (!sentence) return;
-    if (voice && voiceName !== 'system' && !cancelled) {
+    if (voice && neural() && !cancelled) {
       const url = await synthesize(String(sentence));
       if (cancelled) return;
       if (url && await playClip(url)) { lastSpeech = 'neural'; return; }
@@ -356,6 +338,6 @@
   }
   function stop() { cancelled = true; stopSpeech(); clearSpot(); }
   function setVoice(on) { voice = !!on; if (!voice) stopSpeech(); return voice; }
-  function setVoiceName(name) { voiceName = String(name || 'system'); return voiceName; }
-  globalThis.molipAgent = { run, stop, setVoice, setVoiceName, get voice() { return voice; }, get voiceName() { return voiceName; }, get lastSpeech() { return lastSpeech; }, actions: Object.keys(handlers) };
+  function setVoiceName(name) { return globalThis.molipVoice ? globalThis.molipVoice.setName(name) : String(name || 'system'); }
+  globalThis.molipAgent = { run, stop, setVoice, setVoiceName, get voice() { return voice; }, get voiceName() { return globalThis.molipVoice ? globalThis.molipVoice.name : 'system'; }, get lastSpeech() { return lastSpeech; }, actions: Object.keys(handlers) };
 })();

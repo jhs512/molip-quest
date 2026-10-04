@@ -98,6 +98,15 @@ fn App() -> Element {
                 .expect("mermaid"),
             include_str!("../assets/comics/comics.js")
         ));
+        // The neural voice first, then the readers that use it; the chosen voice comes from the
+        // assistant settings so 읽어주기 speaks with it before the AI panel is ever opened.
+        document::eval(&format!(
+            "{}
+window.molipVoice && molipVoice.setName({});",
+            include_str!("../assets/layout/voice.js"),
+            serde_json::to_string(&molip_quest::assistant::Settings::load().narration_voice_name)
+                .expect("voice name")
+        ));
         document::eval(include_str!("../assets/speech/speech.js"));
         document::eval(include_str!("../assets/layout/split.js"));
         document::eval(include_str!("../assets/layout/shortcuts.js"));
@@ -153,8 +162,10 @@ fn place_on_screen(window: &dioxus::desktop::tao::window::Window) {
 }
 
 /// The `molip` protocol: `/tts` turns a sentence into speech for the narration mode. The page
-/// lives on another origin (dioxus://, or http://dioxus.localhost on Windows), so the response
+/// lives on another origin (dioxus://, or http://dioxus.index.html on Windows), so the response
 /// allows any origin; the request is a "simple" POST (text/plain body), which needs no preflight.
+/// Desktop only: the Android build has no `dioxus::desktop` and no narration.
+#[cfg(feature = "desktop")]
 fn tts_response(
     request: dioxus::desktop::wry::http::Request<Vec<u8>>,
 ) -> dioxus::desktop::wry::http::Response<std::borrow::Cow<'static, [u8]>> {

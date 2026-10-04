@@ -113,17 +113,52 @@
       this.chunks = []; this.state = 'idle'; this.index = 0; this.rate = 1; this.generation = 0;
     }
     emit(message) { this.update({ state: this.state, index: this.index, total: this.chunks.length, message }); }
-    cancel() { this.generation++; this.timers.clearTimeout(this.timer); this.utterance = null; this.synth.cancel(); }
+    cancel() {
+      this.generation++; this.timers.clearTimeout(this.timer); this.utterance = null; this.synth.cancel();
+      if (this.audio) { try { this.audio.pause(); } catch {} this.audio = null; }
+    }
+    // The neural voice (assets/layout/voice.js) when it is on; null means Web Speech.
+    neural() { const voice = globalThis.molipVoice; return voice && voice.enabled() && typeof Audio === 'function' ? voice : null; }
     start() {
       if (['starting', 'speaking'].includes(this.state)) return;
       this.voice = koreanVoice(this.synth.getVoices());
-      if (!this.voice) { this.state = 'error'; this.emit('한국어 음성을 찾지 못했습니다. 기기 설정에서 한국어 음성을 설치한 뒤 다시 더블 클릭해 주세요.'); return; }
+      if (!this.voice && !this.neural()) { this.state = 'error'; this.emit('한국어 음성을 찾지 못했습니다. 기기 설정에서 한국어 음성을 설치한 뒤 다시 더블 클릭해 주세요.'); return; }
       if (this.state !== 'paused') this.index = 0;
       this.cancel(); this.synth.resume(); this.next();
     }
     next() {
       if (this.index >= this.chunks.length) { this.state = 'ended'; this.emit('모두 읽었습니다.'); return; }
       const token = ++this.generation;
+      const neural = this.neural();
+      if (neural) { this.playClip(neural, token); return; }
+      this.speakNative(token);
+    }
+    // One sentence as an MP3 clip; the next sentence is fetched meanwhile. Any failure on the
+    // way falls back to Web Speech for that sentence, so reading never stalls.
+    playClip(neural, token) {
+      const valid = () => token === this.generation;
+      const fail = () => { if (!valid()) return; this.cancel(); this.state = 'error'; this.emit('음성 재생이 멈췄습니다. 본문을 다시 더블 클릭해 주세요.'); };
+      this.state = 'starting'; this.emit('재생 준비 중 · ' + (this.index + 1) + '/' + this.chunks.length);
+      this.timer = this.timers.setTimeout(fail, 15000);
+      neural.synthesize(this.chunks[this.index]).then(url => {
+        if (!valid()) return;
+        if (!url) { this.timers.clearTimeout(this.timer); if (this.voice) this.speakNative(token); else fail(); return; }
+        const audio = new Audio(url);
+        audio.playbackRate = this.rate;
+        this.audio = audio;
+        audio.onplay = () => {
+          if (!valid()) return;
+          this.timers.clearTimeout(this.timer);
+          this.state = 'speaking'; this.emit('읽는 중 · ' + (this.index + 1) + '/' + this.chunks.length);
+          this.timer = this.timers.setTimeout(fail, 90000);
+        };
+        audio.onended = () => { if (!valid()) return; this.timers.clearTimeout(this.timer); this.audio = null; this.index++; this.next(); };
+        audio.onerror = () => { if (!valid()) return; this.timers.clearTimeout(this.timer); if (this.voice) this.speakNative(token); else fail(); };
+        audio.play().catch(() => { if (!valid()) return; this.timers.clearTimeout(this.timer); if (this.voice) this.speakNative(token); else fail(); });
+        if (this.chunks[this.index + 1]) neural.synthesize(this.chunks[this.index + 1]);
+      });
+    }
+    speakNative(token) {
       const utterance = new this.Utterance(pronunciationText(this.chunks[this.index]));
       this.utterance = utterance; // Keep a strong reference until the utterance finishes.
       utterance.lang = 'ko-KR'; utterance.voice = this.voice; utterance.rate = this.rate;
@@ -147,11 +182,13 @@
       // Sentence-level pause: resuming native speech is unreliable across engines.
       this.cancel(); this.state = 'paused'; this.emit('일시정지 · 이어읽기는 멈춘 문장부터 시작합니다.');
     }
+    setRateLive(rate) { if (this.audio) this.audio.playbackRate = rate; }
     stop() { this.cancel(); this.index = 0; this.state = 'idle'; this.emit('정지했습니다.'); }
     setRate(rate) {
       if (!speechRates.includes(rate)) return;
       this.rate = rate;
-      this.emit(['starting', 'speaking'].includes(this.state) ? '속도는 다음 문장부터 적용됩니다.' : '읽기 속도 ' + rate + '배');
+      this.setRateLive(rate);
+      this.emit(['starting', 'speaking'].includes(this.state) ? (this.audio ? '읽기 속도 ' + rate + '배' : '속도는 다음 문장부터 적용됩니다.') : '읽기 속도 ' + rate + '배');
     }
   }
 
