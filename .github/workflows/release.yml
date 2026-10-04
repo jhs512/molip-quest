@@ -107,7 +107,19 @@ jobs:
           test -x "/Volumes/molip-check/몰입 퀘스트.app/Contents/MacOS/molip-quest"
           file "/Volumes/molip-check/몰입 퀘스트.app/Contents/MacOS/molip-quest" | grep -q arm64
           codesign --verify --deep --strict "/Volumes/molip-check/몰입 퀘스트.app"
+          # Launch it the way a student would (a copy outside the image) and require it to
+          # stay up for ten seconds: a crash on start must block the release.
+          ditto "/Volumes/molip-check/몰입 퀘스트.app" "$RUNNER_TEMP/몰입 퀘스트.app"
           hdiutil detach /Volumes/molip-check
+          "$RUNNER_TEMP/몰입 퀘스트.app/Contents/MacOS/molip-quest" > "$RUNNER_TEMP/launch.log" 2>&1 &
+          app_pid=$!
+          sleep 10
+          if ! kill -0 "$app_pid" 2>/dev/null; then
+            echo '::error::the app exited within ten seconds of launch'
+            cat "$RUNNER_TEMP/launch.log"
+            exit 1
+          fi
+          kill "$app_pid"
       - uses: actions/upload-artifact@v4
         with:
           name: release-macos-arm64

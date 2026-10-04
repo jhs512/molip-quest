@@ -50,21 +50,82 @@ pub enum Artifact {
     },
 }
 
+/// The Python that runs student code, in this order: `MOLIP_PYTHON`, the repo's own
+/// `target/ml-env` in debug builds, the managed environment the installer scripts create under
+/// the app's data folder (`ml-env`), then the first `python3` a login shell or a well-known
+/// install location knows about. The last step matters on macOS: an app opened from Finder gets
+/// only `/usr/bin:/bin:/usr/sbin:/sbin`, so Homebrew's or uv's python3 is invisible without it.
 pub fn python_executable() -> String {
-    std::env::var("MOLIP_PYTHON").unwrap_or_else(|_| {
-        let local = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(if cfg!(windows) {
-            "target/ml-env/Scripts/python.exe"
-        } else {
-            "target/ml-env/bin/python"
-        });
-        if cfg!(debug_assertions) && local.is_file() {
-            local.to_string_lossy().into_owned()
-        } else if cfg!(windows) {
-            "python".into()
-        } else {
-            "python3".into()
-        }
-    })
+    if let Ok(path) = std::env::var("MOLIP_PYTHON") {
+        return path;
+    }
+    let local = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(if cfg!(windows) {
+        "target/ml-env/Scripts/python.exe"
+    } else {
+        "target/ml-env/bin/python"
+    });
+    if cfg!(debug_assertions) && local.is_file() {
+        return local.to_string_lossy().into_owned();
+    }
+    if let Some(managed) = managed_python() {
+        return managed;
+    }
+    if cfg!(windows) {
+        "python".into()
+    } else {
+        static FOUND: std::sync::OnceLock<String> = std::sync::OnceLock::new();
+        FOUND.get_or_init(unix_python3).clone()
+    }
+}
+
+/// `<data dir>/ml-env`, created by packaging/macos/install.sh with the course packages.
+fn managed_python() -> Option<String> {
+    let python = crate::data_dir().ok()?.join("ml-env").join(if cfg!(windows) {
+        "Scripts/python.exe"
+    } else {
+        "bin/python"
+    });
+    python
+        .is_file()
+        .then(|| python.to_string_lossy().into_owned())
+}
+
+#[cfg(not(windows))]
+fn unix_python3() -> String {
+    // A login shell sees the PATH the user's .zprofile/.profile set up (Homebrew, uv, pyenv).
+    let shell = std::env::var("SHELL").unwrap_or_else(|_| "/bin/sh".into());
+    let from_shell = std::process::Command::new(&shell)
+        .args(["-lc", "command -v python3"])
+        .stdin(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .output()
+        .ok()
+        .filter(|out| out.status.success())
+        .and_then(|out| String::from_utf8(out.stdout).ok())
+        .map(|out| out.trim().to_string())
+        .filter(|path| path.starts_with('/') && std::path::Path::new(path).is_file());
+    // Apple's /usr/bin/python3 is only a stub that offers to install the developer tools,
+    // so a real installation anywhere else wins over it.
+    let home = std::env::var("HOME").unwrap_or_default();
+    let known = [
+        "/opt/homebrew/bin/python3".to_string(),
+        "/usr/local/bin/python3".to_string(),
+        format!("{home}/.local/bin/python3"),
+        "/Library/Frameworks/Python.framework/Versions/Current/bin/python3".to_string(),
+    ];
+    from_shell
+        .filter(|path| path != "/usr/bin/python3")
+        .or_else(|| {
+            known
+                .into_iter()
+                .find(|path| std::path::Path::new(path).is_file())
+        })
+        .unwrap_or_else(|| "python3".into())
+}
+
+#[cfg(windows)]
+fn unix_python3() -> String {
+    "python".into()
 }
 
 fn read_artifacts(directory: &std::path::Path) -> Vec<Artifact> {

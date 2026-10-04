@@ -44,7 +44,21 @@ main에 커밋이 올라갈 때마다 GitHub Releases에 **Windows x64 설치 EX
 
 ## 설치 및 실행
 
-현재 GitHub Releases에 macOS·Windows 설치 패키지를 배포하지 않았으므로 아래는 **소스에서 빌드하는 설치 방법**입니다. 비공개 저장소라 복제하려면 GitHub 접근 권한이 필요합니다. 최초 도구·패키지 다운로드와 빌드에는 인터넷이 필요하지만, 준비가 끝난 앱의 학습 기능은 인터넷 없이 동작합니다. uv는 Python 환경을 준비하기 위한 도구이며 앱 실행 자체의 필수 구성요소는 아닙니다.
+### 설치 파일로 설치 (학생용)
+
+main의 모든 커밋이 [GitHub Releases](https://github.com/jhs512/molip-quest/releases/latest)에 Windows·macOS·Android 설치 파일을 올립니다. 자세한 내용은 `docs/releases.md`에 있습니다.
+
+- **macOS (Apple Silicon)**: 터미널에 아래 한 줄을 붙여 넣습니다. 최신 앱을 `/Applications`에 넣고 학습용 Python 환경(pandas·scikit-learn 등)까지 만든 뒤 앱을 엽니다. 이렇게 받은 앱에는 격리 속성이 없어 Gatekeeper의 "열지 않음" 창이 뜨지 않습니다. DMG를 직접 받았다면 안에 든 `먼저 읽어 주세요.txt`를 따릅니다.
+
+  ```bash
+  curl -fsSL https://raw.githubusercontent.com/jhs512/molip-quest/main/packaging/macos/install.sh | bash
+  ```
+
+- **Windows**: `molip-quest-windows-x64-setup.exe`를 실행합니다. Python은 아래 Windows 절차의 uv 명령으로 따로 준비하고, 앱의 「환경 진단」으로 확인합니다.
+
+### 소스에서 빌드
+
+아래는 **소스에서 빌드하는 설치 방법**입니다. 비공개 저장소라 복제하려면 GitHub 접근 권한이 필요합니다. 최초 도구·패키지 다운로드와 빌드에는 인터넷이 필요하지만, 준비가 끝난 앱의 학습 기능은 인터넷 없이 동작합니다. uv는 Python 환경을 준비하기 위한 도구이며 앱 실행 자체의 필수 구성요소는 아닙니다.
 
 ### macOS (터미널)
 
@@ -82,7 +96,7 @@ export MOLIP_PYTHON="$PWD/.venv/bin/python"
 ./target/release/molip-quest
 ```
 
-다음 실행부터는 저장소 폴더에서 마지막 두 명령만 실행하면 됩니다. macOS 실제 빌드·실행은 아직 검증하지 않았습니다.
+다음 실행부터는 저장소 폴더에서 마지막 두 명령만 실행하면 됩니다. `MOLIP_PYTHON`을 두지 않으면 앱은 한 줄 설치가 만든 `ml-env`, 그다음 로그인 셸이 아는 `python3` 순으로 찾습니다.
 
 ### Windows (PowerShell)
 

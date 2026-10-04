@@ -41,8 +41,8 @@ pub async fn inspect() -> Vec<Check> {
         detail: result
             .as_ref()
             .and_then(|v| v["python"].as_str())
-            .map(|v| format!("버전 {v}"))
-            .unwrap_or_else(|| "Python을 설치하거나 실행 경로를 설정하세요.".into()),
+            .map(|v| format!("버전 {v} · {python}"))
+            .unwrap_or_else(|| format!("Python을 설치하거나 실행 경로를 설정하세요. (시도한 경로: {python})")),
     });
     for (key, name) in [
         ("pandas", "pandas · 표 분석"),
