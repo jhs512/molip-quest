@@ -348,9 +348,16 @@ body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { poi
 .slides-mission { max-width: 1100px; }
 .slides-help { color: #9ab0c2; font-size: 13px; margin: 0 0 12px; }
 .slides-host { outline: none; }
-.slides-host:fullscreen { background: #000; display: flex; flex-direction: column; justify-content: center; padding: 0 2vw; }
-/* Only the slide canvases grow in fullscreen; comics and diagrams inside a slide keep the theme size. */
-.slides-host:fullscreen .slides-stage .marpit > svg { max-height: 88vh; }
+/* Presentation mode: the deck covers the whole screen; the bar appears only while the mouse moves. */
+.slides-host.slides-presenting { position: fixed; inset: 0; z-index: 900; background: #000; display: flex; align-items: center; justify-content: center; cursor: none; }
+.slides-host.slides-presenting.slides-ui-visible { cursor: default; }
+.slides-presenting .slides-stage { border: 0; border-radius: 0; padding: 0; background: #000; width: min(100vw, calc(100vh * 16 / 9)); }
+/* Only the slide canvases grow; comics and diagrams inside a slide keep the theme size. */
+.slides-presenting .slides-stage .marpit > svg { width: 100%; max-height: 100vh; }
+.slides-presenting .slides-bar { position: fixed; left: 0; right: 0; bottom: 0; margin: 0; padding: 18px 0 20px; background: linear-gradient(transparent, rgba(0, 0, 0, 0.75)); opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+.slides-presenting.slides-ui-visible .slides-bar { opacity: 1; pointer-events: auto; }
+.shortcut-help { color: #5f7570; font-size: 13px; margin: 6px 0 0; line-height: 2; }
+.shortcut-help kbd { font-family: inherit; background: #eef2ef; border: 1px solid #c9d4ce; border-radius: 4px; padding: 1px 6px; font-size: 12px; color: #173d36; }
 .slides-stage { background: #0b141c; border: 1px solid #405970; border-radius: 10px; padding: 8px; }
 .slides-stage .marpit > svg { display: block; width: 100%; height: auto; margin: 0 auto; max-height: 70vh; }
 .slides-bar { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 10px 0 4px; }

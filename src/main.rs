@@ -25,11 +25,45 @@ fn main() {
 
 #[component]
 fn App() -> Element {
+    // The app runs fullscreen. F11 (macOS: control+command+F) toggles it through a hidden
+    // button that assets/layout/shortcuts.js clicks; slides read its state to go fullscreen.
     #[cfg(feature = "desktop")]
-    {
+    let fullscreen_toggle = {
+        use dioxus::desktop::tao::window::Fullscreen;
         let window = dioxus::desktop::use_window();
-        use_effect(move || place_on_screen(&window.window));
-    }
+        let mut fullscreen = use_signal(|| true);
+        use_effect({
+            let window = window.clone();
+            move || {
+                place_on_screen(&window.window);
+                window
+                    .window
+                    .set_fullscreen(Some(Fullscreen::Borderless(None)));
+            }
+        });
+        rsx! {
+            button {
+                id: "app-fullscreen-toggle",
+                hidden: true,
+                "aria-hidden": "true",
+                tabindex: "-1",
+                "data-fullscreen": fullscreen().to_string(),
+                onclick: move |_| {
+                    let w = &window.window;
+                    if w.fullscreen().is_some() {
+                        w.set_fullscreen(None);
+                        place_on_screen(w);
+                        fullscreen.set(false);
+                    } else {
+                        w.set_fullscreen(Some(Fullscreen::Borderless(None)));
+                        fullscreen.set(true);
+                    }
+                },
+            }
+        }
+    };
+    #[cfg(not(feature = "desktop"))]
+    let fullscreen_toggle = rsx! {};
     use_effect(|| {
         document::eval(include_str!("../assets/editor/editor.bundle.js"));
         // The comic SDK is an ES module, so the loader imports it from a Blob URL built from this string.
@@ -43,6 +77,7 @@ fn App() -> Element {
         ));
         document::eval(include_str!("../assets/speech/speech.js"));
         document::eval(include_str!("../assets/layout/split.js"));
+        document::eval(include_str!("../assets/layout/shortcuts.js"));
         document::eval(include_str!("../assets/layout/toast.js"));
         document::eval(include_str!("../assets/layout/diagrams.js"));
         document::eval(include_str!("../assets/layout/interactive.js"));
@@ -56,6 +91,7 @@ fn App() -> Element {
             style {{include_str!("../assets/fonts/fonts.css")}}
             style {{include_str!("../assets/app.css")}}
         }
+        {fullscreen_toggle}
         Workspace {}
     }
 }
@@ -130,6 +166,9 @@ fn Workspace() -> Element {
                         },
                         View::Home => rsx! {
                             h1 {"KPC 학습 여정"} p {"개념을 확인하고 코딩 미션과 퀴즈를 클리어하며 성장하세요."}
+                        p {class:"shortcut-help",
+                            "단축키 · " kbd {"F11"} " 전체 화면 전환 (맥은 " kbd {"⌃⌘F"} ") · 슬라이드에서 " kbd {"←"} " " kbd {"→"} " 넘기기, 「전체 화면」 버튼은 발표 모드, " kbd {"Esc"} " 로 해제 · 본문 더블 클릭은 읽어 주기"
+                        }
                             section {class:"card course-row", h2 {"{course.title}"} p {"{course.description}"}
                                 p {{format!("{} 단원",course.total_units())}}
                                 div {class:"course-actions",

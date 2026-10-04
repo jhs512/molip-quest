@@ -101,6 +101,34 @@ function mount(host) {
   const counter = document.createElement('span'); counter.className = 'slides-counter';
   const next = document.createElement('button'); next.type = 'button'; next.textContent = '다음 장 →';
   const full = document.createElement('button'); full.type = 'button'; full.textContent = '전체 화면'; full.className = 'slides-full';
+  // Presentation mode: the host covers the whole screen (and asks the window to go
+  // fullscreen); the control bar only shows while the mouse moves. Esc leaves it.
+  let uiTimer = 0;
+  const showUi = () => {
+    host.classList.add('slides-ui-visible');
+    clearTimeout(uiTimer);
+    uiTimer = setTimeout(() => host.classList.remove('slides-ui-visible'), 2500);
+  };
+  const present = on => {
+    host.classList.toggle('slides-presenting', on);
+    full.textContent = on ? '발표 종료 (Esc)' : '전체 화면';
+    if (on) {
+      const shortcuts = globalThis.molipShortcuts;
+      if (shortcuts && !shortcuts.isFullscreen()) shortcuts.toggleFullscreen();
+      showUi();
+      host.focus();
+    } else {
+      host.classList.remove('slides-ui-visible');
+    }
+  };
+  // Chromium also fires a mousemove when the element under a still cursor changes (the bar
+  // hiding does that), so only a cursor that actually moved reveals the bar.
+  let lastX = -1, lastY = -1;
+  host.addEventListener('mousemove', event => {
+    const moved = event.clientX !== lastX || event.clientY !== lastY;
+    lastX = event.clientX; lastY = event.clientY;
+    if (moved && host.classList.contains('slides-presenting')) showUi();
+  });
   bar.append(prev, counter, next, full);
   host.replaceChildren(style, stage, bar);
   let index = 0;
@@ -114,12 +142,14 @@ function mount(host) {
   };
   prev.onclick = () => { if (index > 0) { index--; update(); } };
   next.onclick = () => { if (index < slides.length - 1) { index++; update(); } };
-  full.onclick = () => { if (document.fullscreenElement) document.exitFullscreen(); else host.requestFullscreen?.(); };
+  full.onclick = () => present(!host.classList.contains('slides-presenting'));
   host.tabIndex = 0;
   host.addEventListener('keydown', event => {
     if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') { event.preventDefault(); next.click(); }
     if (event.key === 'ArrowLeft' || event.key === 'PageUp') { event.preventDefault(); prev.click(); }
+    if (event.key === 'Escape' && host.classList.contains('slides-presenting')) { event.preventDefault(); present(false); }
   });
+  host.molipPresent = present;
   update();
   globalThis.molipSlides.count += 1;
 }

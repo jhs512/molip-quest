@@ -467,7 +467,7 @@ fn SlidesView(
     };
     rsx! { article { class:"reading-mission slides-mission",
         span { class:"badge", "슬라이드" } h2 { "{title}" }
-        p { class:"slides-help", "← → 키나 아래 버튼으로 넘기고, 수업 때는 전체 화면으로 띄우세요. 마지막 장까지 보면 미션이 완료됩니다." }
+        p { class:"slides-help", "← → 키나 아래 버튼으로 넘기고, 수업 때는 「전체 화면」으로 발표 모드에 들어가세요(마우스를 움직이면 아래에 조작 바, Esc로 해제). 마지막 장까지 보면 미션이 완료됩니다." }
         div { class:"slides-host", "data-marp-source": markdown.clone() }
         // The slide script clicks this when the last slide is reached.
         button { class:"slides-finish", hidden: true, "aria-hidden": "true", tabindex: "-1", onclick: { let mut finish = finish.clone(); move |_| if !done() { finish(); } } }
