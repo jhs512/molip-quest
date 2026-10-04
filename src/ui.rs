@@ -65,6 +65,7 @@ pub fn Learning(course: Course) -> Element {
     let mut selected = use_signal(String::new);
     let mut mission_index = use_signal(|| usize::MAX);
     let mut clear_popup = use_signal(|| false);
+    let mut earned_xp = use_signal(|| (0usize, 0usize));
     // (unit finished, unit to show next, next mission index, current mission index) for the popup.
     let mut pending_next = use_signal(|| None::<(bool, String, usize, usize)>);
     let mut refresh = use_signal(|| 0u64);
@@ -212,6 +213,7 @@ pub fn Learning(course: Course) -> Element {
             button {disabled:!can_next,onclick:move |_|navigate.call(1),"다음 →"}
         }
         span {{format!("완료 {} / {} 단원",completed.len(),course.total_units())}}
+        span {class:"learning-xp",{format!("Lv. {} · {} XP",completed_items.len()/5+1,completed_items.len()*100)}}
         ResetProgress {course_id:course.id.clone(),onreset:move |_|{selected.set(String::new());mission_index.set(usize::MAX);clear_popup.set(false);refresh+=1;epoch+=1;}}}
         div {class:if assistant_open() {"learning-row assistant-docked"} else {"learning-row"},
         div {class:"learning",
@@ -251,9 +253,11 @@ pub fn Learning(course: Course) -> Element {
             }
         }}
         for active in [active] {UnitFlow {key:"{active.id}-{active.revision}-{epoch}", course_id:course.id.clone(), unit:active,index:mission_index,nav_prev:can_prev,nav_next:can_next,onnavigate:navigate,
-            oncompleted:{let active_id=active_id.clone();let following_id=following_id.clone();let course=course.clone();move |passed: bool|{
+            oncompleted:{let active_id=active_id.clone();let following_id=following_id.clone();let course=course.clone();let already_completed=completed_items.clone();move |passed: bool|{
                 if !passed {selected.set(active_id.clone());refresh+=1;return;}
                 let unit_finished=molip_quest::learning_store::LearningStore::user_store().and_then(|store|store.completed(&course)).is_ok_and(|done|done.contains(&active_id));
+                let total=molip_quest::learning_store::LearningStore::user_store().and_then(|store|store.completed_items(&course)).map(|items|items.len()).unwrap_or(already_completed.len());
+                earned_xp.set((already_completed.len()*100,total*100));
                 // Stay on the cleared mission: the popup's 다음 button is what moves on.
                 let target=if unit_finished {following_id.clone().unwrap_or_else(||active_id.clone())}else{active_id.clone()};
                 pending_next.set(Some((unit_finished,target,(active_mission+1).min(active_total.saturating_sub(1)),active_mission)));
@@ -267,9 +271,17 @@ pub fn Learning(course: Course) -> Element {
             }
         }
         }
-        if clear_popup() {div {class:"doctor-backdrop",section {class:"doctor-panel",role:"dialog",aria_label:"정답 확인",aria_modal:"true",
+        if clear_popup() {div {class:"doctor-backdrop victory-backdrop",section {class:"doctor-panel victory-panel",role:"dialog",aria_label:"정답 확인",aria_modal:"true",
+            "data-xp-before":earned_xp().0.to_string(),"data-xp-after":earned_xp().1.to_string(),
+            div {class:"victory-emblem",aria_hidden:"true","✦"}
+            p {class:"victory-eyebrow","MISSION COMPLETE"}
             if VIEW_ONLY {h2 {"미션 클리어!"} p {"진도를 저장했습니다."}}
-            else {h2 {"정답입니다!"} p {"제출한 답안이 정답입니다. 진도를 저장했습니다."}}
+            else {h2 {"정답입니다!"} p {"한 걸음 더 성장했어요."}}
+            div {class:"victory-reward",{if earned_xp().1>earned_xp().0 {format!("+{} XP",earned_xp().1-earned_xp().0)}else{"복습 완료!".into()}}}
+            div {class:"victory-xp",div {class:"victory-xp-label",strong {class:"victory-level",{format!("Lv. {}",earned_xp().0/500+1)}}span {class:"victory-total",{format!("{} XP",earned_xp().0)}}}
+                div {class:"victory-track",div {class:"victory-fill"}}
+                p {class:"victory-level-note","미션마다 100 XP · 500 XP마다 레벨 업"}
+            }
             div {class:"popup-actions",
                 button {class:"primary",autofocus:true,onclick:move |_|{
                     let next=pending_next();pending_next.set(None);

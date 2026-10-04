@@ -95,6 +95,7 @@ fn App() -> Element {
         document::eval(include_str!("../assets/layout/split.js"));
         document::eval(include_str!("../assets/layout/shortcuts.js"));
         document::eval(include_str!("../assets/layout/toast.js"));
+        document::eval(include_str!("../assets/layout/victory.js"));
         document::eval(include_str!("../assets/layout/diagrams.js"));
         document::eval(include_str!("../assets/layout/interactive.js"));
         document::eval(include_str!("../assets/layout/agent.js"));
