@@ -118,6 +118,42 @@ pub fn Learning(course: Course) -> Element {
     let can_prev = !(active_mission == 0 && previous.is_none());
     let can_next = !(active_mission + 1 >= active_unlocked
         && !(active_mission + 1 == active_total && next.is_some()));
+    // "AI에게 물어보기": the tutor chat knows the mission on screen.
+    let mut assistant_open = use_signal(|| false);
+    let assistant_messages = use_signal(Vec::<molip_quest::assistant::Turn>::new);
+    let (assistant_title, assistant_context) = {
+        let chapter_title = course
+            .chapters
+            .iter()
+            .find(|c| c.units.iter().any(|u| u.id == active.id))
+            .map(|c| c.title.as_str())
+            .unwrap_or("");
+        match active.activities.get(active_mission) {
+            Some(activity) => {
+                let draft_code = match &activity.kind {
+                    ActivityKind::Coding { problem } => drafts::load(&format!(
+                        "local:{}:{}:{}",
+                        course.id, problem.id, problem.revision
+                    ))
+                    .ok()
+                    .flatten()
+                    .map(|d| d.code),
+                    _ => None,
+                };
+                (
+                    activity.title.clone(),
+                    molip_quest::assistant::page_context(
+                        &course.title,
+                        chapter_title,
+                        &active,
+                        activity,
+                        draft_code.as_deref(),
+                    ),
+                )
+            }
+            None => (active.title.clone(), String::new()),
+        }
+    };
     // Shared by the header buttons and the buttons at the bottom of concept and quiz missions.
     let navigate = Callback::new(move |delta: i32| {
         if delta < 0 {
@@ -135,6 +171,7 @@ pub fn Learning(course: Course) -> Element {
         }
     });
     rsx! {header {class:"practice-header", h1 {"{course.title}"}
+        button {class:"assistant-open",onclick:move |_|assistant_open.set(true),"AI에게 물어보기"}
         div {class:"header-navigation",aria_label:"학습 이동",
             button {disabled:!can_prev,onclick:move |_|navigate.call(-1),"← 이전"}
             button {disabled:!can_next,onclick:move |_|navigate.call(1),"다음 →"}
@@ -183,6 +220,9 @@ pub fn Learning(course: Course) -> Element {
                 if unit_finished {mission_index.set(usize::MAX);}
                 selected.set(if unit_finished {following_id.clone().unwrap_or_else(||active_id.clone())}else{active_id.clone()});refresh+=1;if passed {clear_popup.set(true);}
             }}}}
+        }
+        if assistant_open() {
+            AssistantPanel {title:assistant_title.clone(),context:assistant_context.clone(),messages:assistant_messages,onclose:move |_|assistant_open.set(false)}
         }
         if clear_popup() {div {class:"doctor-backdrop",section {class:"doctor-panel",role:"dialog",aria_label:"정답 확인",aria_modal:"true",
             if VIEW_ONLY {h2 {"미션 클리어!"} p {"진도를 저장하고 다음 미션을 준비했습니다."}}
@@ -476,6 +516,115 @@ fn SlidesView(
         div { class:"quiz-actions",
             button { class:"primary", disabled: done(), onclick: { let mut finish = finish.clone(); move |_| finish() }, "다 봤어요 · 미션 완료" }
             MissionNav {nav_prev,nav_next,onnavigate}
+        }
+    } }
+}
+
+/// "AI에게 물어보기": a tutor chat over the mission on screen (src/assistant.rs). The chat
+/// history lives in the caller so closing and reopening the panel keeps it; 대화 지우기 clears it.
+#[component]
+fn AssistantPanel(
+    title: String,
+    context: String,
+    messages: Signal<Vec<molip_quest::assistant::Turn>>,
+    onclose: EventHandler<()>,
+) -> Element {
+    use molip_quest::assistant::{self, Settings, Turn};
+    let mut settings = use_signal(Settings::load);
+    let mut show_settings = use_signal(|| settings.read().api_key.trim().is_empty());
+    let mut draft = use_signal(String::new);
+    let mut pending = use_signal(|| false);
+    let mut error = use_signal(String::new);
+    const SCROLL: &str =
+        "const m=document.querySelector('.assistant-messages');if(m)m.scrollTop=m.scrollHeight;";
+    let send = {
+        let context = context.clone();
+        Callback::new(move |_: ()| {
+            let question = draft().trim().to_string();
+            if question.is_empty() || pending() {
+                return;
+            }
+            if settings.read().api_key.trim().is_empty() {
+                show_settings.set(true);
+                error.set("Gemini API 키를 먼저 넣어 주세요.".into());
+                return;
+            }
+            draft.set(String::new());
+            error.set(String::new());
+            messages.write().push(Turn {
+                role: "user".into(),
+                text: question,
+            });
+            pending.set(true);
+            document::eval(SCROLL);
+            let history = messages();
+            let settings_now = settings();
+            let context = context.clone();
+            spawn(async move {
+                match assistant::ask(&settings_now, &context, &history).await {
+                    Ok(reply) => messages.write().push(Turn {
+                        role: "model".into(),
+                        text: reply,
+                    }),
+                    Err(e) => error.set(e),
+                }
+                pending.set(false);
+                document::eval(SCROLL);
+            });
+        })
+    };
+    rsx! { div { class:"doctor-backdrop assistant-backdrop", onclick: move |_| onclose.call(()),
+        section { class:"assistant-panel", role:"dialog", aria_label:"AI에게 물어보기", aria_modal:"true", onclick: move |e| e.stop_propagation(),
+            header { class:"assistant-head",
+                div { h2 { "AI에게 물어보기" } p { class:"assistant-scope", "지금 보는 미션 「{title}」의 내용을 알고 답합니다." } }
+                div { class:"assistant-actions",
+                    button { onclick: move |_| { let v = show_settings(); show_settings.set(!v); }, "설정" }
+                    button { onclick: move |_| { messages.set(Vec::new()); error.set(String::new()); }, "대화 지우기" }
+                    button { onclick: move |_| onclose.call(()), "닫기 ×" }
+                }
+            }
+            if show_settings() { div { class:"assistant-settings",
+                label { "Gemini API 키"
+                    input { r#type:"password", value:"{settings.read().api_key}", placeholder:"AIza…", oninput: move |e| settings.write().api_key = e.value() }
+                }
+                label { "모델"
+                    input { value:"{settings.read().model}", oninput: move |e| settings.write().model = e.value() }
+                }
+                div { class:"assistant-settings-actions",
+                    button { class:"primary", onclick: move |_| {
+                        let result = settings.read().save();
+                        match result {
+                            Ok(()) => { show_settings.set(false); error.set(String::new()); }
+                            Err(e) => error.set(e),
+                        }
+                    }, "저장" }
+                    p { class:"assistant-hint", "키는 이 컴퓨터에만 저장됩니다. aistudio.google.com에서 발급받을 수 있고, GEMINI_API_KEY 환경 변수로도 줄 수 있습니다." }
+                }
+            } }
+            div { class:"assistant-messages",
+                if messages.read().is_empty() {
+                    p { class:"assistant-empty", "예: 이 장의 '기준 모델'이 왜 필요한지 다시 설명해 줘 · 지금 쓴 코드가 왜 안 되는지 봐 줘 · 이 표에서 분모가 뭐야" }
+                }
+                for (i, turn) in messages.read().iter().enumerate() {
+                    div { key:"{i}", class: if turn.role == "user" {"assistant-msg user"} else {"assistant-msg model"},
+                        if turn.role == "user" { p { "{turn.text}" } } else { Markdown { text: turn.text.clone() } }
+                    }
+                }
+                if pending() { div { class:"assistant-msg model pending", "생각하는 중…" } }
+                if !error().is_empty() { p { class:"error", "{error}" } }
+            }
+            div { class:"assistant-compose",
+                textarea { value:"{draft}", placeholder:"질문을 적고 Enter (줄 바꿈은 Shift+Enter)", rows:"2",
+                    oninput: move |e| draft.set(e.value()),
+                    onkeydown: move |e| {
+                        if e.key() == Key::Enter && !e.modifiers().contains(Modifiers::SHIFT) {
+                            e.prevent_default();
+                            send.call(());
+                        }
+                    }
+                }
+                button { class:"primary", disabled: pending(), onclick: move |_| send.call(()), "보내기" }
+            }
         }
     } }
 }

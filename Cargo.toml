@@ -19,6 +19,8 @@ tokio = { version = "1", features = ["full"] }
 tempfile = "3"
 pulldown-cmark = "0.13"
 ammonia = "4"
+# "AI에게 물어보기" calls the Gemini API over HTTPS.
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
 
 # The clipboard crate has no Android backend; the Android build is view-only anyway.
 [target.'cfg(not(target_os = "android"))'.dependencies]
