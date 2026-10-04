@@ -16,7 +16,14 @@ const SYSTEM: &str = "당신은 KPC 「머신러닝을 활용한 금융데이터
 2. 코딩 미션의 정답 코드를 통째로 주지 말고 막힌 줄만 짚어 주거나 힌트를 줍니다. 학생이 '코드만 줘'라고 분명히 말하면 코드를 줍니다.\n\
 3. 퀴즈는 정답을 바로 말하지 말고 생각할 거리를 줍니다.\n\
 4. 용어는 수업에서 쓰는 말(입력 X, 정답 y, 훈련 자료/테스트 자료, 기준 모델, 누수, 하이퍼파라미터)을 그대로 씁니다.\n\
-5. 답은 다섯 문장 이내로 하고, 코드는 코드 블록으로 보여 줍니다.";
+5. 답은 다섯 문장 이내로 하고, 코드는 코드 블록으로 보여 줍니다.\n\
+앱 조작: 학생이 '해 줘', '풀어 줘', '넣어 줘', '제출해 줘', '다음으로 가 줘'처럼 행동을 부탁하면 짧은 설명 뒤에 \
+아래 형식의 코드 블록을 답의 맨 끝에 붙입니다. 앱이 그 동작을 순서대로 실행하고 결과를 '앱:' 메시지로 돌려주니, \
+결과를 보고 필요하면 고쳐서 다시 동작을 붙이고, 끝났으면 동작 블록 없이 한 줄로 마무리합니다. \
+코딩 미션을 풀어 달라고 하면 규칙 2의 예외로 set_code에 전체 코드를 넣고 submit까지 합니다. \
+동작: set_code{code}, fill_blanks{values}, run, submit, answer_quiz{answers: {\"1\": \"보기 글자 그대로 또는 단답\"}}, \
+next, prev, goto{mission}, next_slide, finish_slides. 행동을 부탁받지 않았으면 블록을 붙이지 않습니다. 예:\n\
+```molip-actions\n[{\"action\":\"set_code\",\"code\":\"print('Hello, KPC!')\"},{\"action\":\"submit\"}]\n```";
 
 /// Which locally installed CLI answers.
 #[derive(Clone, Copy, Debug, Default, Deserialize, Serialize, PartialEq)]
@@ -197,14 +204,38 @@ pub async fn ask(settings: &Settings, context: &str, history: &[Turn]) -> Result
     }
 }
 
+/// Split an answer into the text to show and the ```molip-actions JSON array, if the
+/// assistant appended one.
+pub fn split_actions(reply: &str) -> (String, Option<serde_json::Value>) {
+    let marker = "```molip-actions";
+    let Some(start) = reply.rfind(marker) else {
+        return (reply.trim().to_string(), None);
+    };
+    let body_start = start + marker.len();
+    let rest = &reply[body_start..];
+    let end = rest.find("```").map(|i| body_start + i);
+    let json = match end {
+        Some(e) => &reply[body_start..e],
+        None => rest,
+    };
+    let actions = serde_json::from_str::<serde_json::Value>(json.trim())
+        .ok()
+        .filter(|v| v.as_array().is_some_and(|a| !a.is_empty()));
+    let after = end.map(|e| &reply[e + 3..]).unwrap_or("");
+    let text = format!("{}\n{}", reply[..start].trim_end(), after.trim())
+        .trim()
+        .to_string();
+    (text, actions)
+}
+
 /// The whole exchange as one prompt for a CLI assistant.
 fn transcript(context: &str, history: &[Turn]) -> String {
     let mut text = format!("{SYSTEM}\n\n## 현재 미션 내용\n\n{context}\n\n## 지금까지의 대화\n\n");
-    for turn in history {
-        let who = if turn.role == "user" {
-            "학생"
-        } else {
-            "조교"
+    for turn in history.iter().filter(|t| t.role != "note") {
+        let who = match turn.role.as_str() {
+            "user" => "학생",
+            "tool" => "앱",
+            _ => "조교",
         };
         text.push_str(&format!("{who}: {}\n\n", turn.text.trim()));
     }
@@ -309,6 +340,17 @@ async fn ask_cli(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn actions_block_is_split_from_the_answer() {
+        let reply = "코드를 넣고 제출할게요.\n\n```molip-actions\n[{\"action\":\"set_code\",\"code\":\"print(1)\"},{\"action\":\"submit\"}]\n```\n";
+        let (text, actions) = split_actions(reply);
+        assert_eq!(text, "코드를 넣고 제출할게요.");
+        assert_eq!(actions.unwrap().as_array().unwrap().len(), 2);
+        let (text, none) = split_actions("그냥 설명입니다.");
+        assert_eq!(text, "그냥 설명입니다.");
+        assert!(none.is_none());
+    }
 
     #[test]
     fn old_settings_files_fall_back_to_claude_code() {

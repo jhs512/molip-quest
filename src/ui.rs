@@ -120,7 +120,7 @@ pub fn Learning(course: Course) -> Element {
         && !(active_mission + 1 == active_total && next.is_some()));
     // "AI에게 물어보기": the tutor chat knows the mission on screen.
     let mut assistant_open = use_signal(|| false);
-    let assistant_messages = use_signal(Vec::<molip_quest::assistant::Turn>::new);
+    let mut assistant_messages = use_signal(Vec::<molip_quest::assistant::Turn>::new);
     let (assistant_title, assistant_context) = {
         let chapter_title = course
             .chapters
@@ -154,6 +154,35 @@ pub fn Learning(course: Course) -> Element {
             None => (active.title.clone(), String::new()),
         }
     };
+    // The chat always answers about the mission on screen: the context lives in a signal the
+    // panel reads at every call (also mid-loop, after the agent moved to another mission).
+    let mut assistant_context_signal = use_signal(|| assistant_context.clone());
+    {
+        let context = assistant_context.clone();
+        use_effect(use_reactive!(|context| {
+            if *assistant_context_signal.peek() != context {
+                assistant_context_signal.set(context.clone());
+            }
+        }));
+    }
+    // Mark a mission switch in the conversation.
+    let mut assistant_last_title = use_signal(|| assistant_title.clone());
+    {
+        let title = assistant_title.clone();
+        use_effect(use_reactive!(|title| {
+            if *assistant_last_title.peek() != title {
+                if !assistant_messages.peek().is_empty() {
+                    assistant_messages
+                        .write()
+                        .push(molip_quest::assistant::Turn {
+                            role: "note".into(),
+                            text: format!("이제 「{title}」 기준으로 답합니다."),
+                        });
+                }
+                assistant_last_title.set(title.clone());
+            }
+        }));
+    }
     // Shared by the header buttons and the buttons at the bottom of concept and quiz missions.
     let navigate = Callback::new(move |delta: i32| {
         if delta < 0 {
@@ -171,13 +200,14 @@ pub fn Learning(course: Course) -> Element {
         }
     });
     rsx! {header {class:"practice-header", h1 {"{course.title}"}
-        button {class:"assistant-open",onclick:move |_|assistant_open.set(true),"AI에게 물어보기"}
+        button {class:"assistant-open",onclick:move |_|{let v=assistant_open();assistant_open.set(!v);},{if assistant_open() {"AI 접기"} else {"AI에게 물어보기"}}}
         div {class:"header-navigation",aria_label:"학습 이동",
             button {disabled:!can_prev,onclick:move |_|navigate.call(-1),"← 이전"}
             button {disabled:!can_next,onclick:move |_|navigate.call(1),"다음 →"}
         }
         span {{format!("완료 {} / {} 단원",completed.len(),course.total_units())}}
         ResetProgress {course_id:course.id.clone(),onreset:move |_|{selected.set(String::new());mission_index.set(usize::MAX);clear_popup.set(false);refresh+=1;epoch+=1;}}}
+        div {class:if assistant_open() {"learning-row assistant-docked"} else {"learning-row"},
         div {class:"learning",
         button {class:"curriculum-toggle",onclick:move |_|{document::eval(r#"const dialog = document.querySelector('.curriculum-menu');
             if (!dialog.dataset.dismissBound) {
@@ -222,7 +252,10 @@ pub fn Learning(course: Course) -> Element {
             }}}}
         }
         if assistant_open() {
-            AssistantPanel {title:assistant_title.clone(),context:assistant_context.clone(),messages:assistant_messages,onclose:move |_|assistant_open.set(false)}
+            aside {class:"assistant-dock",
+                AssistantPanel {title:assistant_title.clone(),context:assistant_context_signal,messages:assistant_messages,onclose:move |_|assistant_open.set(false)}
+            }
+        }
         }
         if clear_popup() {div {class:"doctor-backdrop",section {class:"doctor-panel",role:"dialog",aria_label:"정답 확인",aria_modal:"true",
             if VIEW_ONLY {h2 {"미션 클리어!"} p {"진도를 저장하고 다음 미션을 준비했습니다."}}
@@ -525,7 +558,7 @@ fn SlidesView(
 #[component]
 fn AssistantPanel(
     title: String,
-    context: String,
+    context: Signal<String>,
     messages: Signal<Vec<molip_quest::assistant::Turn>>,
     onclose: EventHandler<()>,
 ) -> Element {
@@ -537,29 +570,66 @@ fn AssistantPanel(
     let mut error = use_signal(String::new);
     const SCROLL: &str =
         "const m=document.querySelector('.assistant-messages');if(m)m.scrollTop=m.scrollHeight;";
-    // Ask with the conversation as it stands (the last turn is the student's question).
-    let request = {
-        let context = context.clone();
-        Callback::new(move |_: ()| {
-            pending.set(true);
-            error.set(String::new());
-            document::eval(SCROLL);
-            let history = messages();
-            let settings_now = settings();
-            let context = context.clone();
-            spawn(async move {
-                match assistant::ask(&settings_now, &context, &history).await {
-                    Ok(reply) => messages.write().push(Turn {
-                        role: "model".into(),
-                        text: reply,
-                    }),
-                    Err(e) => error.set(e),
+    let mut running = use_signal(|| false);
+    // Ask with the conversation as it stands (the last turn is the student's question). When the
+    // assistant appends actions, run them on the screen, hand the report back and ask again,
+    // until it answers without actions (at most a few rounds).
+    let request = Callback::new(move |_: ()| {
+        pending.set(true);
+        error.set(String::new());
+        document::eval(SCROLL);
+        let settings_now = settings();
+        spawn(async move {
+            let mut rounds = 0;
+            loop {
+                let history = messages();
+                let current = context();
+                match assistant::ask(&settings_now, &current, &history).await {
+                    Err(e) => {
+                        error.set(e);
+                        break;
+                    }
+                    Ok(reply) => {
+                        let (text, actions) = assistant::split_actions(&reply);
+                        if !text.is_empty() {
+                            messages.write().push(Turn {
+                                role: "model".into(),
+                                text,
+                            });
+                        }
+                        let Some(actions) = actions else { break };
+                        rounds += 1;
+                        if rounds > 4 {
+                            messages.write().push(Turn {
+                                role: "tool".into(),
+                                text: "동작을 네 번 반복해서 여기서 멈춥니다. 필요하면 다시 부탁하세요.".into(),
+                            });
+                            break;
+                        }
+                        running.set(true);
+                        document::eval(SCROLL);
+                        let script = format!(
+                            "(async () => {{ try {{ dioxus.send(await window.molipAgent.run({})); }} catch (e) {{ dioxus.send('동작 실행 실패: ' + (e && e.message ? e.message : e)); }} }})()",
+                            serde_json::to_string(&actions).unwrap_or_else(|_| "[]".into())
+                        );
+                        let mut eval = document::eval(&script);
+                        let report: String = eval
+                            .recv()
+                            .await
+                            .unwrap_or_else(|e| format!("동작 실행 실패: {e:?}"));
+                        running.set(false);
+                        messages.write().push(Turn {
+                            role: "tool".into(),
+                            text: report,
+                        });
+                        document::eval(SCROLL);
+                    }
                 }
-                pending.set(false);
-                document::eval(SCROLL);
-            });
-        })
-    };
+            }
+            pending.set(false);
+            document::eval(SCROLL);
+        });
+    });
     let send = Callback::new(move |_: ()| {
         let question = draft().trim().to_string();
         if question.is_empty() || pending() {
@@ -579,14 +649,14 @@ fn AssistantPanel(
     });
     // A failed question stays in the conversation; 다시 시도 re-sends it without duplicating it.
     let can_retry = move || messages.read().last().is_some_and(|t| t.role == "user") && !pending();
-    rsx! { div { class:"doctor-backdrop assistant-backdrop", onclick: move |_| onclose.call(()),
-        section { class:"assistant-panel", role:"dialog", aria_label:"AI에게 물어보기", aria_modal:"true", onclick: move |e| e.stop_propagation(),
+    rsx! {
+        section { class:"assistant-panel", aria_label:"AI에게 물어보기",
             header { class:"assistant-head",
-                div { h2 { "AI에게 물어보기" } p { class:"assistant-scope", "지금 보는 미션 「{title}」의 내용을 알고 답합니다. 답하는 쪽: {settings.read().provider.label()}" } }
+                div { h2 { "AI에게 물어보기" } p { class:"assistant-scope", "항상 지금 보는 미션 「{title}」을 기준으로 답합니다. '해 줘'라고 하면 코드 넣기·실행·제출·퀴즈 답·이동까지 대신합니다 · {settings.read().provider.label()}" } }
                 div { class:"assistant-actions",
                     button { onclick: move |_| { let v = show_settings(); show_settings.set(!v); }, "설정" }
                     button { onclick: move |_| { messages.set(Vec::new()); error.set(String::new()); }, "대화 지우기" }
-                    button { onclick: move |_| onclose.call(()), "닫기 ×" }
+                    button { onclick: move |_| onclose.call(()), "접기 ×" }
                 }
             }
             if show_settings() { div { class:"assistant-settings",
@@ -620,11 +690,17 @@ fn AssistantPanel(
                     p { class:"assistant-empty", "예: 이 장의 '기준 모델'이 왜 필요한지 다시 설명해 줘 · 지금 쓴 코드가 왜 안 되는지 봐 줘 · 이 표에서 분모가 뭐야" }
                 }
                 for (i, turn) in messages.read().iter().enumerate() {
-                    div { key:"{i}", class: if turn.role == "user" {"assistant-msg user"} else {"assistant-msg model"},
-                        if turn.role == "user" { p { "{turn.text}" } } else { Markdown { text: turn.text.clone() } }
+                    if turn.role == "note" {
+                        div { key:"{i}", class:"assistant-note", "{turn.text}" }
+                    } else if turn.role == "tool" {
+                        div { key:"{i}", class:"assistant-tool", span { class:"assistant-tool-label", "앱" } pre { "{turn.text}" } }
+                    } else {
+                        div { key:"{i}", class: if turn.role == "user" {"assistant-msg user"} else {"assistant-msg model"},
+                            if turn.role == "user" { p { "{turn.text}" } } else { Markdown { text: turn.text.clone() } }
+                        }
                     }
                 }
-                if pending() { div { class:"assistant-msg model pending", "생각하는 중…" } }
+                if pending() { div { class:"assistant-msg model pending", {if running() {"앱에서 동작을 실행하는 중…"} else {"생각하는 중…"}} } }
                 if !error().is_empty() {
                     div { class:"assistant-error",
                         p { class:"error", "{error}" }
@@ -645,7 +721,7 @@ fn AssistantPanel(
                 button { class:"primary", disabled: pending(), onclick: move |_| send.call(()), "보내기" }
             }
         }
-    } }
+    }
 }
 
 /// Previous/next mission buttons for the bottom of a concept or quiz card.

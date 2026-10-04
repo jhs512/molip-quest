@@ -81,7 +81,18 @@ if (!window.molipCodeEditors) {
       }
     });
   }
-  window.molipCodeEditors = { sync };
+  // Replace the document of the editor on screen (used by the tutor agent). The update
+  // listener above then syncs the hidden textarea and tells the Rust side.
+  function setValue(source) {
+    let done = false;
+    for (const [element, view] of editors) {
+      if (!element.isConnected) continue;
+      view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: source } });
+      done = true;
+    }
+    return done;
+  }
+  window.molipCodeEditors = { sync, setValue };
   new MutationObserver(sync).observe(document.body, {
     subtree: true, childList: true, attributes: true,
     attributeFilter: ['data-editor-value', 'data-editor-reset'],

@@ -83,6 +83,7 @@ fn App() -> Element {
         document::eval(include_str!("../assets/layout/toast.js"));
         document::eval(include_str!("../assets/layout/diagrams.js"));
         document::eval(include_str!("../assets/layout/interactive.js"));
+        document::eval(include_str!("../assets/layout/agent.js"));
         document::eval(include_str!("../assets/slides/slides.bundle.js"));
     });
     rsx! {

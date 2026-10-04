@@ -417,3 +417,6 @@ body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { poi
 .assistant-model-row { display: flex; gap: 8px; align-items: center; }
 .practice-shell .assistant-settings select { padding: 8px 10px; border-radius: 6px; font-size: 14px; background: #1e2d3b; color: #e0edf5; border: 1px solid #4c6478; min-width: 220px; }
 .practice-shell .assistant-model-row button { font-size: 13px; padding: 7px 11px; }
+.assistant-tool { align-self: stretch; background: #0f1c28; border: 1px solid #2d4457; border-radius: 10px; padding: 8px 12px; display: grid; gap: 4px; }
+.assistant-tool-label { color: #79dcff; font-size: 12px; font-weight: 700; }
+.assistant-tool pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12.5px; line-height: 1.6; color: #bcd7ee; background: transparent; border: 0; padding: 0; }
