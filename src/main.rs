@@ -11,11 +11,17 @@ fn main() {
     // No menu bar: the app is driven from its own screens, slides have their own fullscreen button.
     dioxus::LaunchBuilder::new()
         .with_cfg(
-            dioxus::desktop::Config::new().with_menu(None).with_window(
-                dioxus::desktop::WindowBuilder::new()
-                    .with_title("몰입 퀘스트")
-                    .with_window_icon(window_icon()),
-            ),
+            dioxus::desktop::Config::new()
+                .with_menu(None)
+                // 해설 모드 asks for neural speech here: POST /tts with {"text","voice"} → MP3.
+                .with_asynchronous_custom_protocol("molip", |_, request, responder| {
+                    std::thread::spawn(move || responder.respond(tts_response(request)));
+                })
+                .with_window(
+                    dioxus::desktop::WindowBuilder::new()
+                        .with_title("몰입 퀘스트")
+                        .with_window_icon(window_icon()),
+                ),
         )
         .launch(App);
 }
@@ -144,6 +150,40 @@ fn place_on_screen(window: &dioxus::desktop::tao::window::Window) {
         origin.x + ((screen.width - width) / 2) as i32,
         origin.y + ((screen.height - height) / 2) as i32,
     ));
+}
+
+/// The `molip` protocol: `/tts` turns a sentence into speech for the narration mode. The page
+/// lives on another origin (dioxus://, or http://dioxus.localhost on Windows), so the response
+/// allows any origin; the request is a "simple" POST (text/plain body), which needs no preflight.
+fn tts_response(
+    request: dioxus::desktop::wry::http::Request<Vec<u8>>,
+) -> dioxus::desktop::wry::http::Response<std::borrow::Cow<'static, [u8]>> {
+    use dioxus::desktop::wry::http::Response;
+    use std::borrow::Cow;
+    let reply = |status: u16, kind: &str, body: Vec<u8>| {
+        Response::builder()
+            .status(status)
+            .header("Content-Type", kind)
+            .header("Access-Control-Allow-Origin", "*")
+            .header("Cache-Control", "no-store")
+            .body(Cow::Owned(body))
+            .expect("tts response")
+    };
+    if request.uri().path() != "/tts" {
+        return reply(404, "text/plain; charset=utf-8", b"not found".to_vec());
+    }
+    if request.method() != dioxus::desktop::wry::http::Method::POST {
+        return reply(405, "text/plain; charset=utf-8", b"POST only".to_vec());
+    }
+    let Ok(body) = serde_json::from_slice::<serde_json::Value>(request.body()) else {
+        return reply(400, "text/plain; charset=utf-8", b"bad json".to_vec());
+    };
+    let text = body["text"].as_str().unwrap_or_default();
+    let voice = body["voice"].as_str().unwrap_or_default();
+    match molip_quest::tts::synthesize(voice, text) {
+        Ok(bytes) => reply(200, "audio/mpeg", bytes),
+        Err(error) => reply(503, "text/plain; charset=utf-8", error.into_bytes()),
+    }
 }
 
 /// Which screen fills the window: the classroom home, the learning flow, or one gallery page.

@@ -103,7 +103,22 @@ if (!window.molipCodeEditors) {
     }
     return done;
   }
-  window.molipCodeEditors = { sync, setValue };
+  // The editor's text, or null when no editor is on screen (narration mode reads it first).
+  function getValue() {
+    for (const [element, view] of editors) if (element.isConnected) return view.state.doc.toString();
+    return null;
+  }
+  // Insert at the end without touching what is there: narration types code a few characters at a time.
+  function appendValue(piece) {
+    for (const [element, view] of editors) {
+      if (!element.isConnected) continue;
+      const end = view.state.doc.length;
+      view.dispatch({ changes: { from: end, to: end, insert: piece }, selection: { anchor: end + piece.length }, scrollIntoView: true });
+      return true;
+    }
+    return false;
+  }
+  window.molipCodeEditors = { sync, setValue, getValue, appendValue };
   new MutationObserver(sync).observe(document.body, {
     subtree: true, childList: true, attributes: true,
     attributeFilter: ['data-editor-value', 'data-editor-reset'],

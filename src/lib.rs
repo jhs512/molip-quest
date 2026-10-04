@@ -9,6 +9,7 @@ pub mod doctor;
 pub mod drafts;
 pub mod learning_store;
 pub mod runner;
+pub mod tts;
 
 #[derive(Clone, Deserialize, Serialize, PartialEq)]
 pub struct Course {

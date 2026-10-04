@@ -723,11 +723,22 @@ fn AssistantPanel(
             "이 문제 풀어서 제출까지 해 줘",
         ],
     };
-    let suggestions: Vec<String> = if ask.is_empty() {
+    let mut suggestions: Vec<String> = if ask.is_empty() {
         defaults.iter().map(|s| s.to_string()).collect()
     } else {
         ask.clone()
     };
+    // 해설 모드: the tutor solves on screen while explaining aloud, spotlighting what it touches.
+    const NARRATE: &str = "해설하며 풀어 줘";
+    if kind != "슬라이드" {
+        suggestions.push(NARRATE.into());
+    }
+    // The page scripts load after the first render; tell the agent whether to speak.
+    use_effect(move || {
+        let on = settings.read().narration_voice;
+        let name = serde_json::to_string(&settings.read().narration_voice_name).unwrap_or_default();
+        document::eval(&format!("window.molipAgent && (molipAgent.setVoice({on}), molipAgent.setVoiceName({name}));"));
+    });
     // A failed question stays in the conversation; 다시 시도 re-sends it without duplicating it.
     let can_retry = move || messages.read().last().is_some_and(|t| t.role == "user") && !pending();
     rsx! {
@@ -735,6 +746,15 @@ fn AssistantPanel(
             header { class:"assistant-head",
                 div { h2 { "AI에게 물어보기" } p { class:"assistant-scope", "'해 줘'라고 하면 코드 넣기·실행·제출·퀴즈 답·이동까지 대신합니다 · {settings.read().provider.label()}" } }
                 div { class:"assistant-actions",
+                    if running() {
+                        button { class:"assistant-stop", onclick: move |_| { document::eval("window.molipAgent && molipAgent.stop();"); }, "⏹ 멈춤" }
+                    }
+                    button { title:"해설 모드에서 설명을 소리 내어 읽을지", onclick: move |_| {
+                        let on = !settings.read().narration_voice;
+                        settings.write().narration_voice = on;
+                        let _ = settings.read().save();
+                        document::eval(&format!("window.molipAgent && molipAgent.setVoice({on});"));
+                    }, {if settings.read().narration_voice {"🔊 소리 켬"} else {"🔇 소리 끔"}} }
                     button { onclick: move |_| { let v = show_settings(); show_settings.set(!v); }, "설정" }
                     button { onclick: move |_| { messages.set(Vec::new()); error.set(String::new()); }, "대화 지우기" }
                     button { onclick: move |_| onclose.call(()), "접기 ×" }
@@ -756,6 +776,14 @@ fn AssistantPanel(
                     }
                 }
                 p { class:"assistant-hint", "이 컴퓨터에 설치되어 터미널에서 로그인된 CLI를 그대로 씁니다. API 키는 필요 없고, 답에 10초~1분쯤 걸립니다. 명령을 못 찾으면 전체 경로를 적으세요." }
+                label { "해설 목소리"
+                    select { onchange: move |e| settings.write().narration_voice_name = e.value(),
+                        for (id, label) in molip_quest::tts::VOICES {
+                            option { value: id, selected: settings.read().narration_voice_name == id, {label} }
+                        }
+                    }
+                }
+                p { class:"assistant-hint", "자연스러운 음성은 학습용 Python에 edge-tts 패키지가 있어야 하고 인터넷을 씁니다(환경 진단에서 확인). 없거나 끊기면 기기 음성으로 읽습니다." }
                 div { class:"assistant-settings-actions",
                     button { class:"primary", onclick: move |_| {
                         let result = settings.read().save();
@@ -792,7 +820,7 @@ fn AssistantPanel(
             div { class:"assistant-footer",
                 div { class:"assistant-suggestions",
                     for text in suggestions.clone() {
-                        button { class:"assistant-chip", disabled: pending(), onclick: { let text = text.clone(); move |_| { draft.set(text.clone()); send.call(()); } }, "{text}" }
+                        button { class: if text == NARRATE {"assistant-chip narrate"} else {"assistant-chip"}, disabled: pending(), onclick: { let text = text.clone(); move |_| { draft.set(text.clone()); send.call(()); } }, "{text}" }
                     }
                 }
                 div { class:"assistant-context", span { class:"assistant-context-dot" } "「{title}」 기준으로 답하는 중" }
