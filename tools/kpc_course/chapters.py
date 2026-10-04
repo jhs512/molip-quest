@@ -23,16 +23,25 @@ def build():
         units = [importlib.import_module(f"kpc_course.{name}").UNIT for name in modules]
         # The chapter ends with a ★ 도전 과제 that needs everything the chapter taught.
         units[-1]["activities"].append(CHALLENGES[chapter_id])
-        # Instructor decks sit where the instructor presents them.
-        for deck_chapter, unit_index, position, deck in DECK_PLACEMENTS:
-            if deck_chapter == chapter_id:
-                units[unit_index]["activities"].insert(position, deck)
+        # Instructor decks sit where the instructor presents them. A position counts the unit's
+        # own activities (before any deck): the deck goes in front of that activity, so inserting
+        # from the back keeps every position valid when a unit gets several decks.
+        placements = [p for p in DECK_PLACEMENTS if p[0] == chapter_id]
+        for _, unit_index, position, deck in sorted(placements, key=lambda p: (p[1], -p[2])):
+            units[unit_index]["activities"].insert(position, deck)
+        seen = set()
+        for _, _, _, deck in placements:
+            if deck["id"] in seen:
+                raise SystemExit(f"{chapter_id}: 덱 id '{deck['id']}'가 두 번 꽂혀 있습니다.")
+            seen.add(deck["id"])
         for unit in units:
             for activity in unit["activities"]:
-                # Every mission gets its three hand-written quick questions for the tutor panel.
-                if activity["id"] not in ASKS:
+                # Every mission gets its three hand-written quick questions for the tutor panel:
+                # from asks.py, or, for a deck, the ones written next to the deck itself.
+                if activity["id"] in ASKS:
+                    activity["ask"] = list(ASKS[activity["id"]])
+                elif not (activity["kind"] == "slides" and activity.get("ask") and not activity.get("ask_is_default")):
                     raise SystemExit(f"{unit['id']}/{activity['id']}: tools/kpc_course/asks.py에 추천 질문이 없습니다.")
-                activity["ask"] = list(ASKS[activity["id"]])
                 if activity["kind"] == "coding":
                     problem = activity["problem"]
                     if problem["id"] not in PROMPTS:

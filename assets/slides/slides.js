@@ -64,8 +64,11 @@ section .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
 `);
 
 export function renderDeck(markdown) {
-  const { html, css } = marp.render(paginateComics(markdown));
-  return { html, css };
+  const { html, css, comments } = marp.render(paginateComics(markdown));
+  // Presenter notes: every non-directive HTML comment of a slide, joined. Slides generated for
+  // comic panels carry a copy of their source slide's comments (paginateComics).
+  const notes = (comments || []).map(list => list.map(c => c.trim()).filter(Boolean).join('\n\n'));
+  return { html, css, notes };
 }
 
 function paginateComics(markdown) {
@@ -80,16 +83,21 @@ function paginateComics(markdown) {
     if (!Array.isArray(panels)) continue;
     const [start, end] = token.map;
     let heading = '';
+    let slideStart = 0, slideEnd = lines.length;
     for (let i = start - 1; i >= 0; i--) {
-      if (lines[i].trim() === '---') break;
-      if (/^#{1,3}\s/.test(lines[i])) { heading = lines[i]; break; }
+      if (lines[i].trim() === '---') { slideStart = i + 1; break; }
+      if (!heading && /^#{1,3}\s/.test(lines[i])) heading = lines[i];
     }
+    for (let i = end; i < lines.length; i++) if (lines[i].trim() === '---') { slideEnd = i; break; }
+    // The slide's presenter notes (non-directive comments) travel with every generated panel slide.
+    const notes = (lines.slice(slideStart, slideEnd).join('\n').match(/<!--[\s\S]*?-->/g) || [])
+      .filter(c => !/^<!--\s*_?[a-zA-Z]+\s*:/.test(c));
     const fence = lines[start].trim();
     // Keep the complete script so "구성: 이전" and character inheritance resolve.
     // The comic loader selects one resolved SVG panel per generated slide.
     // Every generated slide gets the `comic` class so the theme lets the strip fill the slide.
     replacements.push({ start, end, content: panels.map((_, i) =>
-      `${i ? `\n---\n\n${heading}\n\n` : ''}<!-- _class: comic -->\n${fence}\n# molip-panel:${i}\n${token.content}\`\`\``
+      `${i ? `\n---\n\n${heading}\n\n${notes.join('\n')}\n\n` : ''}<!-- _class: comic -->\n${fence}\n# molip-panel:${i}\n${token.content}\`\`\``
     ).join('\n') });
   }
   for (const item of replacements.reverse()) lines.splice(item.start, item.end - item.start, item.content);
@@ -113,6 +121,26 @@ function mount(host) {
   const counter = document.createElement('span'); counter.className = 'slides-counter';
   const next = document.createElement('button'); next.type = 'button'; next.textContent = '다음 장 →';
   const full = document.createElement('button'); full.type = 'button'; full.textContent = '전체 화면'; full.className = 'slides-full';
+  // Presenter script: the slide's notes (what the instructor says, one message per slide) and a
+  // glimpse of the next slide's line, so the flow is visible. Right-click on the slide or the
+  // 스크립트 button toggles it; it follows the current slide and works in presentation mode.
+  const notesButton = document.createElement('button'); notesButton.type = 'button'; notesButton.textContent = '스크립트'; notesButton.className = 'slides-notes-toggle';
+  const notes = document.createElement('aside'); notes.className = 'slides-notes'; notes.hidden = true; notes.setAttribute('aria-label', '강사 스크립트');
+  const notesText = document.createElement('p'); notesText.className = 'slides-notes-text';
+  const notesNext = document.createElement('p'); notesNext.className = 'slides-notes-next';
+  notes.append(notesText, notesNext);
+  let notesOpen = false;
+  const updateNotes = () => {
+    const line = rendered.notes[index] || '';
+    notesText.textContent = line || '(이 장에는 스크립트가 없습니다)';
+    const coming = rendered.notes[index + 1];
+    notesNext.textContent = coming ? '다음 → ' + coming.split(/(?<=[.!?。])\s/)[0].slice(0, 70) : (index === slides.length - 1 ? '마지막 장' : '');
+    notes.hidden = !notesOpen;
+    notesButton.classList.toggle('active', notesOpen);
+  };
+  const toggleNotes = on => { notesOpen = on === undefined ? !notesOpen : !!on; updateNotes(); };
+  stage.addEventListener('contextmenu', event => { event.preventDefault(); toggleNotes(); });
+  notesButton.onclick = () => toggleNotes();
   // Presentation mode: the host covers the whole screen (and asks the window to go
   // fullscreen); the control bar only shows while the mouse moves. Esc leaves it.
   let uiTimer = 0;
@@ -141,14 +169,15 @@ function mount(host) {
     lastX = event.clientX; lastY = event.clientY;
     if (moved && host.classList.contains('slides-presenting')) showUi();
   });
-  bar.append(prev, counter, next, full);
-  host.replaceChildren(style, stage, bar);
+  bar.append(prev, counter, next, notesButton, full);
+  host.replaceChildren(style, stage, notes, bar);
   let index = 0;
   const update = () => {
     slides.forEach((s, i) => { s.style.display = i === index ? '' : 'none'; });
     counter.textContent = `${index + 1} / ${slides.length}`;
     prev.disabled = index === 0; next.disabled = index === slides.length - 1;
     host.dataset.slideIndex = String(index);
+    updateNotes();
     // Reaching the last slide completes the mission: the Rust side listens on a hidden button.
     if (index === slides.length - 1) host.closest('.slides-mission')?.querySelector('.slides-finish')?.click();
   };
@@ -159,9 +188,12 @@ function mount(host) {
   host.addEventListener('keydown', event => {
     if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') { event.preventDefault(); next.click(); }
     if (event.key === 'ArrowLeft' || event.key === 'PageUp') { event.preventDefault(); prev.click(); }
+    if (event.key === 'Escape' && notesOpen) { event.preventDefault(); toggleNotes(false); return; }
     if (event.key === 'Escape' && host.classList.contains('slides-presenting')) { event.preventDefault(); present(false); }
+    if ((event.key === 'n' || event.key === 'N') && !event.ctrlKey && !event.metaKey && !event.altKey) { event.preventDefault(); toggleNotes(); }
   });
   host.molipPresent = present;
+  host.molipNotes = { toggle: toggleNotes, get open() { return notesOpen; }, get text() { return notesText.textContent; } };
   update();
   globalThis.molipSlides.count += 1;
 }

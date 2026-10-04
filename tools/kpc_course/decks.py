@@ -624,8 +624,9 @@ train_mask = (frame.index < test_start) & (frame['target_date'] < test_start)
 그리고 기준을 못 이기면 **못 이겼다고 그대로 씁니다.** 그것도 결과입니다.
 """)
 
-# (chapter id, unit index inside the chapter, position in the unit's activity list, deck)
-DECK_PLACEMENTS = [
+# (chapter id, unit index inside the chapter, position in the unit's own activity list, deck).
+# The deck goes in front of the activity at that position; several decks per unit are fine.
+DECK_PLACEMENTS = decks_python_pandas.PLACEMENTS + decks_eda_viz.PLACEMENTS + decks_modeling_credit.PLACEMENTS + decks_stock.PLACEMENTS + [
     ("python", 0, 0, INTRO),
     ("python", 2, 11, WHY_PANDAS),
     ("modeling", 0, 0, ML_BASICS),

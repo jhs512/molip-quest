@@ -110,10 +110,52 @@ def coding(id, title, goal, hint, starter, solution, check=None, tests=None, int
                 ask=list(ask) if ask else default_ask("coding", title, text(goal), text(hint)))
 
 
-def slides(id, title, markdown, ask=None):
-    """A Marp deck (Markdown with `---` slide breaks) the instructor presents in class."""
-    return dict(id=id, title=title, kind="slides", markdown=text(markdown),
+# Front matter every deck starts with (Marp, the app's theme, page numbers).
+MARP_FRONT = "---
+marp: true
+theme: molip
+paginate: true
+---
+
+"
+
+
+def split_slides(markdown):
+    """(front matter or None, [slide bodies]) for Marp Markdown: slides break at a line that is
+    exactly `---`, except the front matter fence at the very top."""
+    front = None
+    body = markdown
+    if body.startswith("---\n"):
+        end = body.find("\n---\n", 4)
+        if end >= 0:
+            front = body[:end + 5]
+            body = body[end + 5:]
+    return front, body.split("\n---\n")
+
+
+def slides(id, title, markdown, ask=None, script=None):
+    """A Marp deck (Markdown with `---` slide breaks) the instructor presents in class.
+
+    `script` is the presenter script: one spoken paragraph per slide, in order, in the
+    instructor's own voice. It is stored as an HTML comment at the end of each slide (Marp keeps
+    comments as presenter notes) and the app shows it on right-click. The count must match the
+    slide count, so a slide can never be presented without its line."""
+    markdown = text(markdown)
+    if script is not None:
+        front, parts = split_slides(markdown)
+        script = [text(s) for s in script]
+        if len(script) != len(parts):
+            raise SystemExit(f"{id}: 슬라이드 {len(parts)}장인데 스크립트가 {len(script)}개입니다.")
+        for n, line in enumerate(script):
+            if not line or "-->" in line:
+                raise SystemExit(f"{id}: {n + 1}번째 스크립트가 비었거나 '-->'를 담고 있습니다.")
+        parts = [f"{part.rstrip()}\n\n<!-- {line} -->\n" for part, line in zip(parts, script)]
+        markdown = (front or "") + "\n---\n".join(parts)
+    deck = dict(id=id, title=title, kind="slides", markdown=markdown,
                 ask=list(ask) if ask else default_ask("slides", title))
+    if not ask:
+        deck["ask_is_default"] = True
+    return deck
 
 
 def challenge(id, title, **kwargs):
