@@ -783,7 +783,7 @@ fn AssistantPanel(
                         }
                     }
                 }
-                p { class:"assistant-hint", "자연스러운 음성은 학습용 Python에 edge-tts 패키지가 있어야 하고 인터넷을 씁니다(환경 진단에서 확인). 없거나 끊기면 기기 음성으로 읽습니다." }
+                p { class:"assistant-hint", "자연스러운 음성은 Microsoft Edge의 읽어 주기 음성을 앱이 직접 받아 오며 인터넷을 씁니다. 끊기면 기기 음성으로 읽습니다." }
                 div { class:"assistant-settings-actions",
                     button { class:"primary", onclick: move |_| {
                         let result = settings.read().save();

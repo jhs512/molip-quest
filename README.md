@@ -131,7 +131,7 @@ $env:MOLIP_PYTHON = Join-Path (Get-Location) '.venv/Scripts/python.exe'
 
 다음 실행부터는 저장소 폴더에서 마지막 두 명령만 실행하면 됩니다. Python 경로 설정은 현재 터미널에 적용되므로 새 터미널에서는 다시 설정합니다.
 
-Python이 이미 준비돼 있다면 `MOLIP_PYTHON`을 해당 실행 파일의 경로로 설정하여 사용할 수 있습니다. 기본 입출력 문제는 Python만으로 풀 수 있고, 표·그래프·ML 수업은 `requirements-learning.txt`의 실습 패키지를 사용합니다. 이 KPC 과정은 전체 패키지를 처음 한 번에 준비하며 문제별 설치는 없습니다. 환경 진단 버튼으로 준비 상태를 확인합니다. 목록의 `edge-tts`는 AI 해설 모드가 Microsoft Edge의 자연스러운 한국어 음성(선히·인준·현수)으로 읽을 때 쓰며 인터넷이 필요합니다. 없으면 기기 음성으로 읽습니다.
+Python이 이미 준비돼 있다면 `MOLIP_PYTHON`을 해당 실행 파일의 경로로 설정하여 사용할 수 있습니다. 기본 입출력 문제는 Python만으로 풀 수 있고, 표·그래프·ML 수업은 `requirements-learning.txt`의 실습 패키지를 사용합니다. 이 KPC 과정은 전체 패키지를 처음 한 번에 준비하며 문제별 설치는 없습니다. 환경 진단 버튼으로 준비 상태를 확인합니다. AI 해설 모드의 자연스러운 한국어 음성(선히·인준·현수)은 앱이 Microsoft Edge의 읽어 주기 서비스에서 직접 받아 오므로 패키지가 필요 없고 인터넷만 있으면 됩니다. 오프라인이면 기기 음성으로 읽습니다.
 
 설치 명령 참고: [Homebrew 설치](https://brew.sh/), [Rust 설치](https://www.rust-lang.org/tools/install), [Windows Rust 빌드 도구](https://learn.microsoft.com/windows/dev-environment/rust/setup), [uv 설치](https://docs.astral.sh/uv/getting-started/installation/), [Dioxus 데스크톱 준비](https://dioxuslabs.com/learn/0.7/getting_started/).
 

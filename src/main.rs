@@ -160,29 +160,31 @@ fn tts_response(
 ) -> dioxus::desktop::wry::http::Response<std::borrow::Cow<'static, [u8]>> {
     use dioxus::desktop::wry::http::Response;
     use std::borrow::Cow;
-    let reply = |status: u16, kind: &str, body: Vec<u8>| {
+    let reply = |status: u16, kind: &str, engine: &str, body: Vec<u8>| {
         Response::builder()
             .status(status)
             .header("Content-Type", kind)
             .header("Access-Control-Allow-Origin", "*")
+            .header("Access-Control-Expose-Headers", "X-Molip-Engine")
+            .header("X-Molip-Engine", engine)
             .header("Cache-Control", "no-store")
             .body(Cow::Owned(body))
             .expect("tts response")
     };
     if request.uri().path() != "/tts" {
-        return reply(404, "text/plain; charset=utf-8", b"not found".to_vec());
+        return reply(404, "text/plain; charset=utf-8", "none", b"not found".to_vec());
     }
     if request.method() != dioxus::desktop::wry::http::Method::POST {
-        return reply(405, "text/plain; charset=utf-8", b"POST only".to_vec());
+        return reply(405, "text/plain; charset=utf-8", "none", b"POST only".to_vec());
     }
     let Ok(body) = serde_json::from_slice::<serde_json::Value>(request.body()) else {
-        return reply(400, "text/plain; charset=utf-8", b"bad json".to_vec());
+        return reply(400, "text/plain; charset=utf-8", "none", b"bad json".to_vec());
     };
     let text = body["text"].as_str().unwrap_or_default();
     let voice = body["voice"].as_str().unwrap_or_default();
     match molip_quest::tts::synthesize(voice, text) {
-        Ok(bytes) => reply(200, "audio/mpeg", bytes),
-        Err(error) => reply(503, "text/plain; charset=utf-8", error.into_bytes()),
+        Ok((bytes, engine)) => reply(200, "audio/mpeg", engine, bytes),
+        Err(error) => reply(503, "text/plain; charset=utf-8", "none", error.into_bytes()),
     }
 }
 
