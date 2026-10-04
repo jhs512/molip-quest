@@ -117,7 +117,7 @@ UNIT = unit('preprocessing', '2일차 · 5교시 — 분리와 전처리 Pipelin
         goal="""
         손질을 배우기 전에 모델이 실제로 어떻게 돌아가는지 한 번 봅니다. 빈칸이 없고 이미 숫자인 열 `객실등급`, `형제배우자`, `부모자녀` 세 개만 씁니다. `LogisticRegression(max_iter=1000)`을 `model`에 만들고 `X_train[simple]`, `y_train`으로 학습한 뒤, `X_test[simple]`을 예측해 정확도를 `accuracy`에 저장하고 출력하세요.
 
-        정확도는 0과 1 사이의 어떤 값이 나옵니다. 재료가 셋뿐이니 높지 않습니다. 이 숫자를 기억해 두세요. 오늘 남은 시간은 이 숫자를 올리는 일입니다.
+        정확도는 0과 1 사이의 어떤 값이 나옵니다. 재료가 셋뿐이니 높지 않습니다. 이 숫자를 기억해 두세요. 이 챕터의 남은 미션은 이 숫자를 올리는 일입니다.
         """,
         hint="""
         모델은 늘 세 단계입니다. 만들기 `model = LogisticRegression(max_iter=1000)`, 학습 `model.fit(X_train[simple], y_train)`, 예측 `pred = model.predict(X_test[simple])`. 그다음 `accuracy = accuracy_score(y_test, pred)`가 테스트 정답과 예측이 일치한 비율입니다.

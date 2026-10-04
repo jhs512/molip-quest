@@ -4,7 +4,7 @@ from kpc_course.dsl import *
 UNIT = unit('bar-chart', '2일차 · 1교시 — Figure·Axes와 막대그래프', [
     concept('axes', '종이 한 장과 그 위의 그래프',
         body="""
-        앞 단원에서 성별 생존율 표를 만들었습니다. 숫자 두 개를 비교하는 데는 표로 충분하지만, 그룹이 넷, 여섯으로 늘어나면 눈이 숫자를 따라가지 못합니다. 그래서 오늘은 표를 그림으로 바꿉니다. 둘째 날은 그래프로 시작해서 "누가 살아남았나"를 맞히는 모델로 끝납니다.
+        앞 단원에서 성별 생존율 표를 만들었습니다. 숫자 두 개를 비교하는 데는 표로 충분하지만, 그룹이 넷, 여섯으로 늘어나면 눈이 숫자를 따라가지 못합니다. 그래서 이제 표를 그림으로 바꿉니다. 그래프로 시작해서, 다음 챕터의 "누가 살아남았나"를 맞히는 모델까지 이어집니다.
 
         ```comic-gen
         제목: 종이와 그래프 영역
@@ -43,7 +43,7 @@ UNIT = unit('bar-chart', '2일차 · 1교시 — Figure·Axes와 막대그래프
         plt.show()                        # 앱 화면에 표시
         ```
 
-        그리는 명령은 종이가 아니라 **그래프 영역 `ax`**에 붙입니다. `ax.bar(이름들, 값들)`가 막대그래프, `ax.set(...)`이 제목·축 이름·축 범위 지정, 마지막 `plt.show()`가 "다 그렸으니 보여 줘"입니다. 이 네 줄이 오늘 모든 그래프의 뼈대입니다.
+        그리는 명령은 종이가 아니라 **그래프 영역 `ax`**에 붙입니다. `ax.bar(이름들, 값들)`가 막대그래프, `ax.set(...)`이 제목·축 이름·축 범위 지정, 마지막 `plt.show()`가 "다 그렸으니 보여 줘"입니다. 이 네 줄이 이 챕터 모든 그래프의 뼈대입니다.
 
         그래프를 그리기 전에 두 가지를 정해 두면 그림이 흔들리지 않습니다. 첫째, **y축이 무엇인가.** 인원인지 비율인지 퍼센트인지에 따라 같은 그림이 다른 말을 합니다. 생존율처럼 0~1 사이의 비율은 100을 곱해 퍼센트로 그리고 y축 범위를 `ylim=(0, 100)`으로 고정하는 것이 읽기 쉽습니다. 둘째, **축을 어디서 시작하는가.** y축을 0이 아니라 60부터 시작하게 자르면 62%와 70%의 차이가 두 배처럼 보입니다. 과장하려는 뜻이 없어도 그렇게 읽힙니다. 비율 막대는 0부터 그리세요.
 
@@ -70,10 +70,10 @@ UNIT = unit('bar-chart', '2일차 · 1교시 — Figure·Axes와 막대그래프
         막대 두 개가 각각 여성·남성 생존율 퍼센트 높이로 보이면 맞게 한 것입니다.
         """,
         hint="""
-        `rates = titanic.groupby('성별')['생존'].mean()`은 앞 단원과 같습니다. `ax.bar(rates.index, rates * 100)`로 그리고 `ax.set(xlabel='성별', ylabel='생존율 (%)', ylim=(0, 100), title='Survival by gender')`로 꾸미세요.
+        `rates = titanic.groupby('성별')['생존'].mean()`은 앞 단원과 같습니다. `ax.bar(rates.index, rates * 100)`로 그리고 `ax.set(xlabel='성별', ylabel='생존율 (%)', ylim=(0, 100), title='성별 생존율')`로 꾸미세요.
         """,
         starter=TI + PLOT + "# rates, fig, ax를 만들고 막대그래프를 그리세요\n",
-        solution=TI + PLOT + "rates=titanic.groupby('성별')['생존'].mean()\nfig,ax=plt.subplots()\nax.bar(rates.index,rates*100)\nax.set(xlabel='성별',ylabel='생존율 (%)',ylim=(0,100),title='Survival by gender')\nplt.show()\n",
+        solution=TI + PLOT + "rates=titanic.groupby('성별')['생존'].mean()\nfig,ax=plt.subplots()\nax.bar(rates.index,rates*100)\nax.set(xlabel='성별',ylabel='생존율 (%)',ylim=(0,100),title='성별 생존율')\nplt.show()\n",
         check="assert len(s['ax'].patches)==2\nassert s['ax'].get_ylim()==(0.0,100.0)\nassert s['ax'].get_ylabel()=='생존율 (%)'\nassert s['ax'].get_xlabel()=='성별'\nheights = {label.get_text(): bar.get_height() for label,bar in zip(s['ax'].get_xticklabels(),s['ax'].patches)}\nassert set(heights)=={'여성','남성'}\nassert abs(heights['여성']-339/466*100)<1e-8\nassert abs(heights['남성']-161/843*100)<1e-8"),
     coding('pclass-bar', '등급별 생존율 막대그래프',
         goal="""
@@ -103,7 +103,7 @@ UNIT = unit('bar-chart', '2일차 · 1교시 — Figure·Axes와 막대그래프
               '`plt.show()`가 "보여 줘"입니다. 이 줄이 없으면 그래프가 화면에 나오지 않습니다.'),
         choice('막대그래프를 보고 "여성 생존율이 두 배 높다"고 말하기 전에 먼저 확인할 것은 무엇인가요?',
                ['y축이 퍼센트인지 인원인지, 그리고 각 그룹이 몇 명인지', '막대 색이 예쁜지', '제목이 영어인지'], 0,
-               '같은 높이 차이도 y축 단위에 따라 뜻이 다르고, 분모가 작은 그룹의 비율은 흔들립니다. 어제 배운 "몇 명 중"이 그림에서도 그대로 적용됩니다.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「제목이 영어인지」: 언어는 해석과 무관하다.\n- 「막대 색」: 색은 비율을 바꾸지 않는다."),
+               '같은 높이 차이도 y축 단위에 따라 뜻이 다르고, 분모가 작은 그룹의 비율은 흔들립니다. 앞서 배운 "몇 명 중"이 그림에서도 그대로 적용됩니다.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「제목이 영어인지」: 언어는 해석과 무관하다.\n- 「막대 색」: 색은 비율을 바꾸지 않는다."),
         choice("""**프롬프트 고르기** · 성별 생존율을 퍼센트 막대그래프로 그려야 하고 검사기는 `ax` 객체를 읽습니다. 어떤 프롬프트가 맞을까요?""",
                ["""pandas + matplotlib. titanic DataFrame. groupby('성별')['생존'].mean()을 rates에 담고 rates*100을 ax.bar로 그려. ylim=(0,100), xlabel '성별', ylabel '생존율 (%)'. fig, ax = plt.subplots() 방식, plt.show(). 코드만""", """성별 생존율 그래프 그려 줘""", """plt.bar로 막대그래프 하나 그려 줘""", """seaborn으로 예쁜 그래프 만들어 줘"""], 0,
                """정답은 집계, 퍼센트 변환, 축 범위, 축 이름, 그리고 "fig, ax 방식"을 적었습니다. 검사기가 ax를 읽으므로 방식이 중요합니다.

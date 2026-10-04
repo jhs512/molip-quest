@@ -69,7 +69,7 @@ UNIT = unit('classifiers', '2일차 · 6교시 — 세 분류 모델과 기준 �
         goal="""
         기준 모델만 먼저 돌립니다. `DummyClassifier(strategy='most_frequent')`를 `dummy`에 만들고 `X_train`, `y_train`으로 학습한 뒤 `X_test`를 예측해 정확도를 `dummy_accuracy`에 저장하고 출력하세요.
 
-        입력을 보지 않으니 손질이 필요 없습니다. 테스트 262명 중 사망 162명이므로 162/262가 나옵니다. 이 숫자가 오늘의 기준선입니다.
+        입력을 보지 않으니 손질이 필요 없습니다. 테스트 262명 중 사망 162명이므로 162/262가 나옵니다. 이 숫자가 이 단원의 기준선입니다.
         """,
         hint="""
         `dummy.fit(X_train, y_train)` 뒤에 `accuracy_score(y_test, dummy.predict(X_test))`입니다. 예측값을 출력해 보면 전부 0입니다.

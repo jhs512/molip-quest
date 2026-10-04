@@ -373,7 +373,7 @@ pandas + matplotlib. titanic DataFrame. ['성별','객실등급'] groupby 생존
     "drop-columns": p("""
 pandas. titanic DataFrame. drop(columns=[...])으로 생존, 이름, 티켓, 선실, 구명보트, 시신번호, 출신목적지 를 빼서 candidates에 담고 열 이름 출력. 7열 남아야 해.
 """, """
-- `boat, body` 빼기 → 사고 뒤에 적히는 열. 넣으면 누수. 이 판단은 자료를 아는 사람이 한다.
+- `구명보트, 시신번호` 빼기 → 사고 뒤에 적히는 열. 넣으면 누수. 이 판단은 자료를 아는 사람이 한다.
 - `7열 남아야 해` → 검산.
 """),
     "xy-separation": p("""
@@ -385,7 +385,7 @@ pandas. titanic DataFrame. features = ['객실등급','성별','나이','형제�
     "column-types": p("""
 pandas. X DataFrame(열 객실등급, 성별, 나이, 형제배우자, 부모자녀, 요금, 탑승항구). 숫자형 열 이름 리스트를 numeric_columns, 문자(범주형) 열 이름 리스트를 category_columns에 담고 출력. select_dtypes 써.
 """, """
-- `숫자형` / `범주형` → 다음 시간에 다르게 손질할 두 종류.
+- `숫자형` / `범주형` → 다음 단원에서 다르게 손질할 두 종류.
 - `select_dtypes` → 자료형으로 열을 가르는 메서드.
 """),
     "get-dummies": p("""
@@ -467,9 +467,9 @@ pandas. credit = pd.read_csv('data/credit.csv'), target = '다음달 부도'. �
 - `target = '...'` → 열 이름에 공백이 있어 변수에 담아 둠. 말로 풀면 AI가 밑줄로 바꾼다.
 """),
     "default-summary": p("""
-pandas. credit DataFrame, target = '다음달 부도'. 부도(1) 인원을 default_count, 부도율(타깃 평균)을 default_rate에 담고, ID와 target 열을 drop한 입력 표를 X에 만들어. 셋 다 출력.
+pandas. credit DataFrame, target = '다음달 부도'. 부도(1) 인원을 default_count, 부도율(타깃 평균)을 default_rate에 담고, 고객번호와 target 열을 drop한 입력 표를 X에 만들어. 셋 다 출력.
 """, """
-- `ID … drop` → 고객 번호는 식별자. 넣으면 모델이 번호를 외운다.
+- `고객번호 … drop` → 고객 번호는 식별자. 넣으면 모델이 번호를 외운다.
 - `부도율(타깃 평균)` → 0/1 평균 = 비율.
 """),
     "limit-by-default": p("""
@@ -502,7 +502,7 @@ scikit-learn. y_true=[0,0,1,1,1,0], y_pred=[0,1,1,0,1,0]. accuracy_score, precis
 - `labels=[0,1]` → 혼동 행렬 칸 위치 고정.
 """),
     "credit-model": p("""
-scikit-learn. X_train, X_test, y_train, y_test가 있어(입력 상환_9월, 신용한도, AGE). models = {'Dummy': DummyClassifier(strategy='most_frequent'), 'Logistic': LogisticRegression(max_iter=1000)}. 각각 Pipeline([('scale', StandardScaler()), ('model', m)])로 fit/predict해서 accuracy, precision, recall, f1 네 지표를 구하고 모델 이름을 인덱스로 한 DataFrame results를 만들어. precision은 zero_division=0.
+scikit-learn. X_train, X_test, y_train, y_test가 있어(입력 상환_9월, 신용한도, 나이). models = {'Dummy': DummyClassifier(strategy='most_frequent'), 'Logistic': LogisticRegression(max_iter=1000)}. 각각 Pipeline([('scale', StandardScaler()), ('model', m)])로 fit/predict해서 accuracy, precision, recall, f1 네 지표를 구하고 모델 이름을 인덱스로 한 DataFrame results를 만들어. precision은 zero_division=0.
 """, """
 - 네 지표 함께 → 불균형 자료에서 accuracy만 보면 속는다.
 - `zero_division=0` → Dummy는 부도를 안 찍어 0으로 나누기가 난다. 미리 처리.
@@ -526,45 +526,45 @@ pandas. data/stock.csv를 parse_dates=['날짜']로 읽고 set_index('날짜').s
 - `set_index('날짜').sort_index()` → 날짜 인덱스 + 정렬. 빠지면 뒤의 shift/rolling이 엉킨다.
 """),
     "close-plot": p("""
-pandas + matplotlib. prices(Date 인덱스, 종가 열)가 있어. fig, ax = plt.subplots() 뒤 ax.plot(prices.index, prices['종가']). xlabel '날짜', ylabel '종가'. plt.show().
+pandas + matplotlib. prices(날짜 인덱스, 종가 열)가 있어. fig, ax = plt.subplots() 뒤 ax.plot(prices.index, prices['종가']). xlabel '날짜', ylabel '종가'. plt.show().
 """, """
 - `ax.plot` → 시간 자료는 선그래프. x축은 날짜 인덱스.
 """),
     "price-range": p("""
-pandas. prices(Date 인덱스, 종가 열). 첫 날짜 first_date, 마지막 날짜 last_date, 최고 종가 max_close, 그 날짜 max_date에 담고 전부 출력. 날짜는 index.min()/max(), 최고 종가 날짜는 idxmax().
+pandas. prices(날짜 인덱스, 종가 열). 첫 날짜 first_date, 마지막 날짜 last_date, 최고 종가 max_close, 그 날짜 max_date에 담고 전부 출력. 날짜는 index.min()/max(), 최고 종가 날짜는 idxmax().
 """, """
 - `idxmax()` → 최댓값이 "언제"인지. 모르면 정렬해서 첫 행 꺼내는 긴 코드가 온다.
 """),
     # ---- 3일차 2교시 ----
     "daily-return": p("""
-pandas. prices(Date 인덱스, 종가 열). prices['종가'].pct_change()를 return_1 열로 추가하고 prices.head() 출력.
+pandas. prices(날짜 인덱스, 종가 열). prices['종가'].pct_change()를 return_1 열로 추가하고 prices.head() 출력.
 """, """
 - `pct_change()` → 일별 수익률 한 줄. 말로 풀면 `diff()/shift()`가 나온다.
 """),
     "moving-average": p("""
-pandas. prices(Date 인덱스, 종가 열). prices['종가'].rolling(5).mean()을 ma5 열로 추가하고 prices.head(6) 출력.
+pandas. prices(날짜 인덱스, 종가 열). prices['종가'].rolling(5).mean()을 ma5 열로 추가하고 prices.head(6) 출력.
 """, """
 - `rolling(5).mean()` → 5거래일 이동평균. 창 크기는 숫자로.
 """),
     "lag-next": p("""
-pandas. prices(Date 인덱스, 종가 열). prices['종가'].shift(1)을 lag_close_1 열로, shift(-1)을 target_next_close 열로 추가.
+pandas. prices(날짜 인덱스, 종가 열). prices['종가'].shift(1)을 lag_close_1 열로, shift(-1)을 target_next_close 열로 추가.
 """, """
 - `shift(1)` 어제, `shift(-1)` 내일 → 부호를 틀리면 과거·미래가 바뀌어 누수.
 """),
     "stock-frame": p("""
-pandas. prices(Date 인덱스, 종가 열)와 빈 frame=pd.DataFrame(index=prices.index)가 있어. frame에 close(종가), return_1(pct_change), ma5(rolling(5).mean()), lag_close_1(shift(1)), target_next_close(shift(-1)), target_date(pd.Series(prices.index, index=prices.index).shift(-1)) 여섯 열을 만들고 frame = frame.dropna().copy(). 396행이어야 해.
+pandas. prices(날짜 인덱스, 종가 열)와 빈 frame=pd.DataFrame(index=prices.index)가 있어. frame에 close(종가), return_1(pct_change), ma5(rolling(5).mean()), lag_close_1(shift(1)), target_next_close(shift(-1)), target_date(pd.Series(prices.index, index=prices.index).shift(-1)) 여섯 열을 만들고 frame = frame.dropna().copy(). 396행이어야 해.
 """, """
 - `target_date` → 정답 날짜를 남겨 둔다. 다음 교시의 경계 누수를 막기 위해.
 - `dropna()` → 불완전한 행 제거. `396행` → 검산.
 """),
     # ---- 3일차 3교시 ----
     "test-start": p("""
-pandas. frame(Date 인덱스, 396행)이 있어. 마지막 80행의 첫 날짜를 test_start에 담고, 인덱스가 test_start 이상인 행 수를 int로 n_test에 담아 출력. frame.index[-80] 써.
+pandas. frame(날짜 인덱스, 396행)이 있어. 마지막 80행의 첫 날짜를 test_start에 담고, 인덱스가 test_start 이상인 행 수를 int로 n_test에 담아 출력. frame.index[-80] 써.
 """, """
 - `frame.index[-80]` → "마지막 80거래일을 테스트로"를 코드로. `n_test == 80` 검산.
 """),
     "time-boundary": p("""
-pandas. frame(Date 인덱스, 열 close, return_1, ma5, lag_close_1, target_next_close, target_date). test_start = frame.index[-80]. 입력 날짜와 target_date가 둘 다 test_start 전인 행을 train_mask, 입력 날짜가 test_start 이상인 행을 test_mask로 만들고, feature_columns=['close','return_1','ma5','lag_close_1']로 X_train, X_test, y_train(target_next_close), y_test 만들어. 두 쪽 행 수 출력(훈련 315, 테스트 80).
+pandas. frame(날짜 인덱스, 열 close, return_1, ma5, lag_close_1, target_next_close, target_date). test_start = frame.index[-80]. 입력 날짜와 target_date가 둘 다 test_start 전인 행을 train_mask, 입력 날짜가 test_start 이상인 행을 test_mask로 만들고, feature_columns=['close','return_1','ma5','lag_close_1']로 X_train, X_test, y_train(target_next_close), y_test 만들어. 두 쪽 행 수 출력(훈련 315, 테스트 80).
 """, """
 - `target_date도 test_start 전` → 이 조건이 없으면 테스트 첫날 정답을 훈련에서 본다(경계 누수). AI는 거의 항상 빼먹는다.
 - `훈련 315, 테스트 80` → 검산.

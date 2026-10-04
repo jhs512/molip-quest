@@ -45,7 +45,7 @@ UNIT = unit('insight', '2일차 · 3교시 — 그림에서 근거 읽기', [
 
         넓은 표를 `.plot.bar()`에 넘기면 행마다 막대 묶음을 그려 주므로 1교시처럼 `ax.bar`를 직접 쓰지 않아도 됩니다. 여섯 그룹의 분모(`count`)는 넓은 표에 없으니 긴 표에서 함께 읽어야 합니다. 어떤 그룹은 수십 명뿐이라 비율이 크게 흔들립니다.
 
-        마지막으로 제목 이야기입니다. 그림 제목에는 예쁜 말 대신 **무엇을 계산했는지**를 적습니다. "Survival rate (%) by 성별 and class"처럼요. 남이 그 그림만 보고도 무엇을 비교한 것인지 알 수 있어야 분석이 전달됩니다.
+        마지막으로 제목 이야기입니다. 그림 제목에는 예쁜 말 대신 **무엇을 계산했는지**를 적습니다. "성별·객실등급별 생존율 (%)"처럼요. 남이 그 그림만 보고도 무엇을 비교한 것인지 알 수 있어야 분석이 전달됩니다.
         """,
         check=short('"여성 생존율이 높다"는 관찰 뒤에 "등급을 나눠도 차이가 남을까?"처럼 다른 조건을 묻는 문장은 관찰·질문·한계 중 무엇인가요?', ['질문', '다음 질문', '다음질문'],
                     '관찰은 보이는 차이, 질문은 다른 조건을 더 나눠 볼 제안, 한계는 자료에 없어서 답할 수 없는 부분입니다.')),
@@ -80,10 +80,10 @@ UNIT = unit('insight', '2일차 · 3교시 — 그림에서 근거 읽기', [
         막대 여섯 개가 보이면 맞게 한 것입니다. 등급을 나눈 뒤에도 성별 차이가 남아 있는지, 그 차이가 등급마다 비슷한지 읽어 보세요.
         """,
         hint="""
-        `wide = grouped['mean'].unstack('객실등급') * 100`까지는 앞 미션과 같습니다. `ax = wide.plot.bar(ylim=(0, 100), rot=0)`이 그래프 영역을 돌려주므로 `ax.set(ylabel='생존율 (%)', title='Sex and class')`를 붙이고 `plt.show()`.
+        `wide = grouped['mean'].unstack('객실등급') * 100`까지는 앞 미션과 같습니다. `ax = wide.plot.bar(ylim=(0, 100), rot=0)`이 그래프 영역을 돌려주므로 `ax.set(ylabel='생존율 (%)', title='성별·객실등급별 생존율 (%)')`를 붙이고 `plt.show()`.
         """,
         starter=TI + PLOT + "# grouped, wide, ax를 만드세요\n",
-        solution=TI + PLOT + "grouped=titanic.groupby(['성별','객실등급'])['생존'].agg(['count','mean'])\nwide=grouped['mean'].unstack('객실등급')*100\nax=wide.plot.bar(ylim=(0,100),rot=0)\nax.set(ylabel='생존율 (%)',title='Sex and class')\nplt.show()\n",
+        solution=TI + PLOT + "grouped=titanic.groupby(['성별','객실등급'])['생존'].agg(['count','mean'])\nwide=grouped['mean'].unstack('객실등급')*100\nax=wide.plot.bar(ylim=(0,100),rot=0)\nax.set(ylabel='생존율 (%)',title='성별·객실등급별 생존율 (%)')\nplt.show()\n",
         check="assert s['grouped'].shape==(6,2) and s['grouped']['count'].sum()==1309\nassert s['wide'].shape==(2,3)\nassert len(s['ax'].patches)==6 and s['ax'].get_ylim()==(0.0,100.0)"),
     quiz('insight-check', '2일차 3교시 점검',
         choice('다음 중 "관찰"로만 이루어진 문장은 어느 것인가요?',
@@ -101,7 +101,7 @@ UNIT = unit('insight', '2일차 · 3교시 — 그림에서 근거 읽기', [
         choice('두 조건으로 묶으려면 `groupby`에 무엇을 넣나요?',
                ["열 이름 리스트 `['성별', '객실등급']`", "`'성별' + '객실등급'`", '`groupby`를 두 번 쓴다'], 0,
                '`groupby(["성별", "객실등급"])`처럼 리스트로 넣으면 두 열의 조합마다 그룹이 만들어집니다.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「groupby를 두 번」: 두 번 묶으면 중첩되어 뜻이 달라진다.\n- 「'성별' + '객실등급'」: 글자를 이어 붙인 열 이름은 없다."),
-        choice('그림 제목에 "Survival rate (%) by 성별 and class"처럼 계산 내용을 적는 이유는 무엇인가요?',
+        choice('그림 제목에 "성별·객실등급별 생존율 (%)"처럼 계산 내용을 적는 이유는 무엇인가요?',
                ['그림만 보고도 무엇을 비교한 것인지 알 수 있게 하려고', '제목이 길수록 점수가 높아서', '영어 연습을 위해'], 0,
                '그림은 혼자 돌아다닙니다. 제목에 집계와 단위가 없으면 보는 사람이 다른 뜻으로 읽습니다.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「영어 연습」: 언어와 무관하다.\n- 「길수록 점수」: 길이가 아니라 내용이 중요하다."),
         choice("""**프롬프트 고르기** · 성별 × 객실등급으로 생존율을 2행 3열 표로 펼쳐야 합니다. 어떤 프롬프트가 맞을까요?""",

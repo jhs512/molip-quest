@@ -4,7 +4,7 @@ from kpc_course.dsl import *
 UNIT = unit('distribution', '2일차 · 2교시 — 분포와 관계 시각화', [
     concept('distribution-types', '질문이 다르면 그래프도 다르다',
         body="""
-        막대그래프는 "그룹마다 값이 얼마인가"에 답합니다. 그런데 자료를 보다 보면 다른 종류의 질문이 생깁니다. 승객 나이는 어떻게 퍼져 있을까? 요금이 비싼 사람이 나이도 많을까? 열 여섯 개 중 어느 둘이 같이 움직일까? 질문이 다르면 그래프도 달라야 합니다. 오늘은 세 가지를 익힙니다.
+        막대그래프는 "그룹마다 값이 얼마인가"에 답합니다. 그런데 자료를 보다 보면 다른 종류의 질문이 생깁니다. 승객 나이는 어떻게 퍼져 있을까? 요금이 비싼 사람이 나이도 많을까? 여섯 개의 열 중 어느 둘이 같이 움직일까? 질문이 다르면 그래프도 달라야 합니다. 이 단원에서 세 가지를 익힙니다.
 
         ```comic-gen
         제목: 질문이 그래프를 고른다
@@ -38,15 +38,15 @@ UNIT = unit('distribution', '2일차 · 2교시 — 분포와 관계 시각화',
 
         **둘이 같이 움직이나 → 산점도.** 승객 한 명을 점 하나로, 가로축에 나이, 세로축에 요금을 찍습니다. 점들이 오른쪽 위로 몰리면 "나이가 많을수록 요금도 비싼 경향", 아무 모양이 없으면 "관계가 안 보임"입니다.
 
-        **여러 쌍을 한눈에 → 상관계수 히트맵.** 산점도를 열 쌍마다 그리는 대신, 두 열이 얼마나 같이 움직이는지를 -1에서 1 사이 숫자 하나로 요약한 것이 상관계수입니다. 1에 가까우면 함께 오르고, -1에 가까우면 하나가 오를 때 다른 하나가 내리며, 0 근처면 관계가 약합니다. 열 여섯 개면 상관계수가 6×6 표로 나오는데, 이 표를 색으로 칠한 것이 히트맵입니다. 대각선은 자기 자신과의 상관이라 항상 1입니다.
+        **여러 쌍을 한눈에 → 상관계수 히트맵.** 산점도를 열 쌍마다 그리는 대신, 두 열이 얼마나 같이 움직이는지를 -1에서 1 사이 숫자 하나로 요약한 것이 상관계수입니다. 1에 가까우면 함께 오르고, -1에 가까우면 하나가 오를 때 다른 하나가 내리며, 0 근처면 관계가 약합니다. 열이 여섯 개면 상관계수가 6×6 표로 나오는데, 이 표를 색으로 칠한 것이 히트맵입니다. 대각선은 자기 자신과의 상관이라 항상 1입니다.
 
         ```python
         import seaborn as sns
         known_age = titanic.dropna(subset=['나이'])
         fig, ax = plt.subplots()
         sns.histplot(data=known_age, x='나이', bins=20, ax=ax)   # 히스토그램
-        ax.scatter(known['나이'], known['요금'])                 # 산점도
-        sns.heatmap(corr, annot=True, vmin=-1, vmax=1, ax=ax)   # 히트맵
+        ax.scatter(known['나이'], known['요금'])                 # 산점도. known: 나이·요금이 모두 있는 행. known: 나이·요금이 모두 있는 행. known: 나이·요금이 모두 있는 행. known: 나이·요금이 모두 있는 행
+        sns.heatmap(corr, annot=True, vmin=-1, vmax=1, ax=ax)   # 히트맵. corr: 상관계수 표. corr: 상관계수 표. corr: 상관계수 표. corr: 상관계수 표
         ```
 
         `seaborn`은 `matplotlib` 위에서 표 열 이름만으로 그래프를 그려 주는 도구입니다. `ax=ax`로 어느 그래프 영역에 그릴지 알려 주면 1교시의 뼈대와 그대로 어울립니다. 마지막으로 해석의 선 하나. 요금과 생존의 상관계수가 양수라는 것은 "요금이 비싼 사람 중에 생존자가 많았다"는 관찰이지 "요금을 더 내면 산다"는 뜻이 아닙니다. 상관은 함께 변하는 경향이고, 원인은 다른 문제입니다.
@@ -64,7 +64,7 @@ UNIT = unit('distribution', '2일차 · 2교시 — 분포와 관계 시각화',
         막대 20개의 높이를 전부 더하면 나이를 아는 인원 1046이 됩니다. 어느 나이대에 사람이 몰려 있는지 보세요.
         """,
         hint="""
-        `known_age = titanic.dropna(subset=['나이'])`로 빈 나이를 뺀 뒤 `fig, ax = plt.subplots()`를 만들고 `sns.histplot(data=known_age, x='나이', bins=20, ax=ax)`로 그립니다. `ax.set(xlabel='나이', ylabel='Passenger count', title='Known ages only')`로 꾸미세요.
+        `known_age = titanic.dropna(subset=['나이'])`로 빈 나이를 뺀 뒤 `fig, ax = plt.subplots()`를 만들고 `sns.histplot(data=known_age, x='나이', bins=20, ax=ax)`로 그립니다. `ax.set(xlabel='나이', ylabel='승객 수', title='나이를 아는 승객')`로 꾸미세요.
         """,
         starter=TI + PLOT + "# known_age, fig, ax를 준비하세요\n",
         solution=TI + PLOT + "known_age=titanic.dropna(subset=['나이'])\nfig,ax=plt.subplots()\nsns.histplot(data=known_age,x='나이',bins=20,ax=ax)\nax.set(xlabel='나이',ylabel='Passenger count',title='Known ages only')\nplt.show()\n",
@@ -83,7 +83,7 @@ UNIT = unit('distribution', '2일차 · 2교시 — 분포와 관계 시각화',
         check="assert len(s['known'])==1045\nassert len(s['ax'].collections)>=1 and len(s['ax'].collections[0].get_offsets())==1045\nassert s['ax'].get_xlabel()=='나이' and s['ax'].get_ylabel()=='요금'"),
     coding('correlation', '여섯 열의 상관계수를 색으로',
         goal="""
-        준비된 `columns`의 숫자 열 여섯 개로 상관계수 표를 만들어 `corr`에 저장하고, `sns.heatmap`으로 `annot=True`(칸에 숫자 표시), `vmin=-1`, `vmax=1`인 히트맵을 그려 띄우세요.
+        준비된 `columns`의 여섯 개 숫자 열로 상관계수 표를 만들어 `corr`에 저장하고, `sns.heatmap`으로 `annot=True`(칸에 숫자 표시), `vmin=-1`, `vmax=1`인 히트맵을 그려 띄우세요.
 
         6×6 표의 대각선이 전부 1이면 맞게 만든 것입니다. `생존` 행을 따라가며 어느 열이 생존과 가장 같이 움직이는지 찾아보세요.
         """,

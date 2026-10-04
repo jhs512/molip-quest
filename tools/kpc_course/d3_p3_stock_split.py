@@ -80,7 +80,7 @@ UNIT = unit('stock-split', '3일차 · 3교시 — 시간 분리와 기준 모�
         X_train, X_test = X.loc[train_mask], X.loc[test_mask]
         ```
 
-        나눴으면 기준 모델입니다. 어제의 "전원 사망"에 해당하는 가장 단순한 예측은 **"내일 종가는 오늘 종가와 같다"**입니다. 우습게 들리지만 주가에서는 이 기준을 이기기가 생각보다 어렵습니다. 점수는 정확도 대신 **MAE**(평균 절대 오차)로 잽니다. 예측과 정답의 차이를 부호 없이 평균 낸 것이라 단위가 원이고, "평균적으로 몇 원 빗나갔나"로 읽으면 됩니다. 작을수록 좋습니다.
+        나눴으면 기준 모델입니다. 분류의 "전원 사망"에 해당하는 가장 단순한 예측은 **"내일 종가는 오늘 종가와 같다"**입니다. 우습게 들리지만 주가에서는 이 기준을 이기기가 생각보다 어렵습니다. 점수는 정확도 대신 **MAE**(평균 절대 오차)로 잽니다. 예측과 정답의 차이를 부호 없이 평균 낸 것이라 단위가 원이고, "평균적으로 몇 원 빗나갔나"로 읽으면 됩니다. 작을수록 좋습니다.
         """,
         check=short('"내일 종가는 오늘 종가와 같다"처럼 가장 단순한 예측을 두고 모델과 비교하는 것을 무엇이라고 하나요?', ['기준 모델', '기준모델', '기준 예측', '기준예측', 'baseline', '베이스라인'],
                     '기준(baseline)이 있어야 모델이 실제로 무엇을 배웠는지 알 수 있습니다. 주가에서는 "오늘 종가 그대로"가 생각보다 강한 기준입니다.')),
@@ -103,7 +103,7 @@ UNIT = unit('stock-split', '3일차 · 3교시 — 시간 분리와 기준 모�
         396행이 훈련 315, 경계 하루 제외 1, 테스트 80으로 나뉘면 맞게 한 것입니다. 훈련 정답의 마지막 날짜가 테스트 첫 날짜보다 앞인지도 출력해 보세요.
         """,
         hint="""
-        개념의 네 줄 그대로입니다. 두 조건을 괄호로 감싸 `&`로 잇는 것은 1일차와 같습니다. `X.loc[train_mask]`, `y.loc[train_mask]`처럼 같은 마스크로 입력과 정답을 함께 골라야 행이 어긋나지 않습니다.
+        개념의 네 줄 그대로입니다. 두 조건을 괄호로 감싸 `&`로 잇는 것은 앞서 배운 것과 같습니다. `X.loc[train_mask]`, `y.loc[train_mask]`처럼 같은 마스크로 입력과 정답을 함께 골라야 행이 어긋나지 않습니다.
         """,
         starter=ST_FRAME + "feature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\n# test_start, 마스크와 네 자료를 만드세요\n",
         solution=ST_FRAME + TIME_SPLIT + "print(len(X_train),len(X_test))\nprint(frame.loc[train_mask,'target_date'].max(),X_test.index.min())\n",
@@ -154,7 +154,7 @@ UNIT = unit('stock-split', '3일차 · 3교시 — 시간 분리와 기준 모�
         앞 미션의 `manual_mae`와 같은 숫자가 나와야 합니다. 이 값이 이 챕터의 모든 모델이 넘어야 할 선입니다.
         """,
         hint="""
-        `baseline_pred = X_test['close'].to_numpy()`, `baseline_mae = mean_absolute_error(y_test, baseline_pred)`. 지표 함수는 어제처럼 `(정답, 예측)` 순서입니다.
+        `baseline_pred = X_test['close'].to_numpy()`, `baseline_mae = mean_absolute_error(y_test, baseline_pred)`. 지표 함수는 앞서처럼 `(정답, 예측)` 순서입니다.
         """,
         starter=ST_FRAME + TIME_SPLIT + "from sklearn.metrics import mean_absolute_error\n# baseline_pred와 baseline_mae를 만드세요\n",
         solution=ST_FRAME + TIME_SPLIT + "from sklearn.metrics import mean_absolute_error\nbaseline_pred=X_test['close'].to_numpy()\nbaseline_mae=mean_absolute_error(y_test,baseline_pred)\nprint(baseline_mae)\n",
