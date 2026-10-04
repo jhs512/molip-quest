@@ -65,6 +65,8 @@ fn App() -> Element {
     #[cfg(not(feature = "desktop"))]
     let fullscreen_toggle = rsx! {};
     use_effect(|| {
+        // First, so every input created later inherits the IME-safe value setter.
+        document::eval(include_str!("../assets/layout/ime.js"));
         document::eval(include_str!("../assets/editor/editor.bundle.js"));
         // The comic SDK is an ES module, so the loader imports it from a Blob URL built from this string.
         document::eval(&format!(

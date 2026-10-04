@@ -550,6 +550,11 @@ fn AssistantPanel(
                 return;
             }
             draft.set(String::new());
+            // The textarea is uncontrolled (no value binding) so Korean IME composition survives
+            // re-renders; clear it in the DOM directly.
+            document::eval(
+                "const t=document.querySelector('.assistant-compose textarea');if(t){t.value='';}",
+            );
             error.set(String::new());
             messages.write().push(Turn {
                 role: "user".into(),
@@ -585,10 +590,10 @@ fn AssistantPanel(
             }
             if show_settings() { div { class:"assistant-settings",
                 label { "Gemini API 키"
-                    input { r#type:"password", value:"{settings.read().api_key}", placeholder:"AIza…", oninput: move |e| settings.write().api_key = e.value() }
+                    input { r#type:"password", initial_value:"{settings.read().api_key}", placeholder:"AIza…", oninput: move |e| settings.write().api_key = e.value() }
                 }
                 label { "모델"
-                    input { value:"{settings.read().model}", oninput: move |e| settings.write().model = e.value() }
+                    input { initial_value:"{settings.read().model}", oninput: move |e| settings.write().model = e.value() }
                 }
                 div { class:"assistant-settings-actions",
                     button { class:"primary", onclick: move |_| {
@@ -614,7 +619,7 @@ fn AssistantPanel(
                 if !error().is_empty() { p { class:"error", "{error}" } }
             }
             div { class:"assistant-compose",
-                textarea { value:"{draft}", placeholder:"질문을 적고 Enter (줄 바꿈은 Shift+Enter)", rows:"2",
+                textarea { initial_value:"", placeholder:"질문을 적고 Enter (줄 바꿈은 Shift+Enter)", rows:"2",
                     oninput: move |e| draft.set(e.value()),
                     onkeydown: move |e| {
                         if e.key() == Key::Enter && !e.modifiers().contains(Modifiers::SHIFT) {

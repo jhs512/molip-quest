@@ -7,7 +7,10 @@ use crate::curriculum::{Activity, ActivityKind, QuestionKind};
 use crate::Unit;
 use serde::{Deserialize, Serialize};
 
-pub const DEFAULT_MODEL: &str = "gemini-2.5-flash";
+pub const DEFAULT_MODEL: &str = "gemini-3.8-flash";
+/// Earlier defaults Google has since closed to new users; a saved settings file still naming
+/// one of them is moved to the current default.
+const RETIRED_MODELS: &[&str] = &["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
 
 const SYSTEM: &str = "당신은 KPC 「머신러닝을 활용한 금융데이터 분석」 수업의 조교입니다. 아래 '현재 미션 내용'을 기준으로, \
 코딩이 처음인 직장인 수강생의 질문에 한국어로 짧고 친절하게 답하세요.\n\
@@ -43,7 +46,7 @@ impl Settings {
                 settings.api_key = key.trim().to_string();
             }
         }
-        if settings.model.trim().is_empty() {
+        if settings.model.trim().is_empty() || RETIRED_MODELS.contains(&settings.model.trim()) {
             settings.model = DEFAULT_MODEL.to_string();
         }
         settings
@@ -161,7 +164,12 @@ pub async fn ask(settings: &Settings, context: &str, history: &[Turn]) -> Result
             .pointer("/error/message")
             .and_then(|v| v.as_str())
             .unwrap_or("알 수 없는 오류");
-        return Err(format!("Gemini 오류 ({status}): {message}"));
+        let hint = if message.contains("no longer available") || status.as_u16() == 404 {
+            " 설정에서 모델 이름을 최신 모델로 바꿔 보세요."
+        } else {
+            ""
+        };
+        return Err(format!("Gemini 오류 ({status}): {message}{hint}"));
     }
     let text = value
         .pointer("/candidates/0/content/parts")
