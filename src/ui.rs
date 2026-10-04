@@ -863,9 +863,9 @@ fn AssistantPanel(
                         settings.write().narration_voice = on;
                         let _ = settings.read().save();
                         document::eval(&format!("window.molipAgent && molipAgent.setVoice({on});"));
-                    }, {if settings.read().narration_voice {"🔊 소리 켬"} else {"🔇 소리 끔"}} }
+                    }, {if settings.read().narration_voice {"🔊 소리"} else {"🔇 무음"}} }
                     button { onclick: move |_| { let v = show_settings(); show_settings.set(!v); }, "설정" }
-                    button { onclick: move |_| { messages.set(Vec::new()); error.set(String::new()); }, "대화 지우기" }
+                    button { class:"danger-outline", onclick: move |_| { messages.set(Vec::new()); error.set(String::new()); }, "대화 지우기" }
                     button { onclick: move |_| onclose.call(()), "접기 ×" }
                 }
             }
@@ -1042,7 +1042,7 @@ fn UnitWorkspace(course_id: String, unit: Unit, oncompleted: EventHandler<bool>)
         }
         div{class:"split-handle split-col",role:"separator",aria_orientation:"vertical",aria_label:"문제와 코드 영역 너비 조절",tabindex:"0",title:"드래그로 너비 조절, 더블 클릭으로 되돌리기"}
         section{class:"coding-pane",div{class:"pane-heading",strong{"main.py"}
-        div{class:"pane-actions",button{disabled:busy(),onclick:{let unit=unit.clone();let key=key.clone();move |_|{code.set(unit.starter_code.clone());editor_reset+=1;answers.set(HashMap::new());output.set(String::new());artifacts.set(vec![]);message.set(String::new());let _=drafts::save(&key,&code(),&answers());}},"초기화"}
+        div{class:"pane-actions",button{class:"danger-outline",title:"작성 중인 코드를 지우고 준비 코드로 되돌립니다",disabled:busy(),onclick:{let unit=unit.clone();let key=key.clone();move |_|{code.set(unit.starter_code.clone());editor_reset+=1;answers.set(HashMap::new());output.set(String::new());artifacts.set(vec![]);message.set(String::new());let _=drafts::save(&key,&code(),&answers());}},"초기화"}
         button{disabled:busy(),title:if cfg!(target_os="macos") {"⌘Enter"} else {"Ctrl+Enter"},onclick:move |_|async move{busy.set(true);message.set(String::new());artifacts.set(vec![]);match run_python(&code(),&input()).await{Ok(result)=>{artifacts.set(result.artifacts);if result.stderr.contains("EOFError: EOF when reading a line") {message.set("실행 입력이 부족합니다. 실행 입력 칸에 문제에서 요구한 값을 넣어주세요.".into());}else if result.success {message.set("실행 완료. 제출하면 전체 테스트로 정답을 확인합니다.".into());}output.set(format!("{}\n{}\n{}",result.stdout,result.stderr,if result.success {"실행 완료"} else {"실행 실패"}));},Err(e)=>message.set(e)}busy.set(false);},"코드 실행"}
             button{class:"primary",disabled:busy(),title:if cfg!(target_os="macos") {"⌘Enter 직후 Enter, 또는 ⌘⇧Enter"} else {"Ctrl+Enter 직후 Enter, 또는 Ctrl+Shift+Enter"},onclick:{let unit=unit.clone();let course_id=course_id.clone();move |_|{let unit=unit.clone();let course_id=course_id.clone();async move{
                 busy.set(true);message.set(String::new());artifacts.set(vec![]);let source=code();let blank_answers=answers();

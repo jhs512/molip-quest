@@ -183,7 +183,16 @@ textarea[data-code-editor][hidden] { display: none; }
 /* Classroom sidebar: the doctor and reset buttons sit side by side, so keep a gap between them and allow wrapping. */
 .sidebar > button, .sidebar > .reset-progress { margin: 12px 10px 0 0; }
 .practice-header .reset-progress { margin-top: 0; color: #99aec1; border-color: #3f5468; }
-.danger { background: #a12828; color: #fff; }
+/* Destructive actions are red everywhere, whatever shell they sit in: solid red for the
+   irreversible step of a confirmation (모두 지우고 처음부터), a red outline for the cheaper ones
+   (editor 초기화, 대화 지우기). These selectors outrank `.practice-shell button`. */
+button.danger, .practice-shell button.danger { background: #b42a2a; color: #fff; border: 1px solid #d84a4a; }
+button.danger:hover, .practice-shell button.danger:hover { background: #d13434; }
+button.danger:focus-visible, .practice-shell button.danger:focus-visible { outline-color: #ff9c9c; }
+button.danger-outline, .practice-shell button.danger-outline { background: transparent; color: #e06464; border: 1px solid #c9474788; }
+button.danger-outline:hover, .practice-shell button.danger-outline:hover { background: #b42a2a22; color: #ff8d8d; border-color: #d84a4a; }
+.practice-shell .reset-progress, .reset-progress { color: #c9847a; border-color: #a1474766; }
+.practice-header .reset-progress { color: #d08c84; border-color: #a1474766; }
 
 /* Double-click text-to-speech: floating controls and the sentence being read. */
 .speech-controls { position: fixed; right: max(16px, env(safe-area-inset-right)); bottom: max(16px, calc(16px + var(--inset-bottom, 0px))); z-index: 900; width: min(440px, calc(100vw - 32px)); padding: 14px 16px; background: #0f1d28; color: #dce7f1; border: 1px solid #4c657a; border-radius: 12px; box-shadow: 0 12px 40px #0009; font-size: 14px; line-height: 1.6; }
@@ -399,8 +408,8 @@ body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { poi
 .assistant-head { display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; border-bottom: 1px solid #2d4457; }
 .assistant-head h2 { margin: 0 0 4px; font-size: 16px; }
 .assistant-scope { margin: 0; color: #9ab0c2; font-size: 13px; }
-.assistant-actions { display: flex; gap: 8px; flex: none; }
-.practice-shell .assistant-actions button { font-size: 13px; padding: 7px 11px; }
+.assistant-actions { display: flex; flex-wrap: wrap; gap: 6px; flex: none; align-items: center; }
+.practice-shell .assistant-actions button { font-size: 12.5px; padding: 6px 9px; white-space: nowrap; }
 .assistant-settings { display: grid; gap: 10px; padding: 14px 20px; background: #0f1c28; border-bottom: 1px solid #2d4457; }
 .assistant-settings label { display: grid; gap: 4px; font-size: 13px; color: #bcd7ee; }
 .practice-shell .assistant-settings input { padding: 8px 10px; border-radius: 6px; font-size: 14px; }
@@ -557,4 +566,4 @@ button.collection-card:hover {transform:translateY(-5px);border-color:#d5bb82;bo
 .autopilot-banner kbd { font-family: inherit; background: #ffffff22; border: 1px solid #ffffff55; border-radius: 4px; padding: 0 6px; font-size: 12px; }
 .practice-shell .autopilot-banner button { padding: 4px 10px; font-size: 12px; background: #ffffff22; border-color: #ffffff66; color: #fff; }
 @keyframes autopilot-blink { 0%, 100% { opacity: 1 } 50% { opacity: .35 } }
-.practice-shell .assistant-actions select.assistant-rate { padding: 6px 8px; border-radius: 6px; font-size: 12.5px; background: #1e2d3b; color: #e0edf5; border: 1px solid #4c6478; }
+.practice-shell .assistant-actions select.assistant-rate { width: auto; min-width: 0; height: 30px; padding: 2px 6px; border-radius: 6px; font: inherit; font-size: 12.5px; background: #1e2d3b; color: #e0edf5; border: 1px solid #4c6478; }
