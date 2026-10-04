@@ -327,7 +327,7 @@ fn kpc_units_use_varied_sequences_including_repeated_concepts_and_problem_only_u
     let course = Course::parse(include_str!("../courses/kpc-finance.json")).unwrap();
     let units: Vec<_> = course.chapters.iter().flat_map(|c| &c.units).collect();
     let intro = units.iter().find(|u| u.id == "environment").unwrap();
-    // The course opens with the instructor's deck, then concept, problem, concept.
+    // The course opens with the instructor's two decks, then concept, problem, concept.
     assert!(matches!(
         intro.activities[0].kind,
         ActivityKind::Slides { .. }
@@ -335,17 +335,30 @@ fn kpc_units_use_varied_sequences_including_repeated_concepts_and_problem_only_u
     assert_eq!(intro.activities[0].label(), "슬라이드");
     assert!(matches!(
         intro.activities[1].kind,
-        ActivityKind::Concept { .. }
+        ActivityKind::Slides { .. }
     ));
     assert!(matches!(
         intro.activities[2].kind,
-        ActivityKind::Coding { .. }
+        ActivityKind::Concept { .. }
     ));
     assert!(matches!(
         intro.activities[3].kind,
+        ActivityKind::Coding { .. }
+    ));
+    assert!(matches!(
+        intro.activities[4].kind,
         ActivityKind::Concept { .. }
     ));
+    // Every unit opens with a deck of its own.
+    for unit in &units {
+        assert!(
+            matches!(unit.activities[0].kind, ActivityKind::Slides { .. }),
+            "{}: unit must open with an instructor deck",
+            unit.id
+        );
+    }
     let practice = units.iter().find(|u| u.id == "credit-metrics").unwrap();
+    // Decks and problems only: no concept missions in this unit.
     assert!(practice
         .activities
         .iter()
@@ -387,7 +400,12 @@ fn kpc_units_use_varied_sequences_including_repeated_concepts_and_problem_only_u
 async fn incomplete_kpc_answer_is_wrong_answer_and_does_not_clear_a_mission() {
     let course = Course::parse(include_str!("../courses/kpc-finance.json")).unwrap();
     let unit = &course.chapters[0].units[1];
-    let activity = &unit.activities[1];
+    // The first coding mission of the unit (after its deck and concept).
+    let activity = unit
+        .activities
+        .iter()
+        .find(|a| matches!(a.kind, ActivityKind::Coding { .. }))
+        .unwrap();
     let ActivityKind::Coding { problem } = &activity.kind else {
         panic!("coding")
     };
