@@ -124,7 +124,18 @@ def split_slides(markdown):
         if end >= 0:
             front = body[:end + 5]
             body = body[end + 5:]
-    return front, body.split("\n---\n")
+    # A `---` inside a code fence (a prompt's "---\n코드만 줘", for one) is text, not a break.
+    parts, current, fenced = [], [], False
+    for line in body.split("\n"):
+        if line.startswith("```"):
+            fenced = not fenced
+        if line == "---" and not fenced:
+            parts.append("\n".join(current))
+            current = []
+        else:
+            current.append(line)
+    parts.append("\n".join(current))
+    return front, parts
 
 
 def slides(id, title, markdown, ask=None, script=None):
