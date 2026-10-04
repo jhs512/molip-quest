@@ -17,3 +17,6 @@ Thumbs.db
 
 # Android release signing keystore is restored from CI secrets
 /packaging/android/release.jks
+
+# Python bytecode from the course build
+__pycache__/

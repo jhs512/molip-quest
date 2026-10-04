@@ -451,6 +451,15 @@ joblib.dump로 titanic_model.joblib에 저장하고 joblib.load로 loaded에 불
 - `Pipeline으로 묶어` → 손질 기준까지 파일에 들어가게.
 - `다시 훈련하지 마` → 불러온 모델로 predict만 하는 코드를 받는다.
 """),
+    "tune-depth": p("""
+타이타닉 생존 분류. depths = [2, 3, 5, 8, 12] 후보마다 make_preprocessor()와 DecisionTreeClassifier(max_depth=깊이, random_state=42)를 Pipeline으로 묶고
+cross_val_score(cv=5) 평균을 cv_scores 딕셔너리에. 최고 깊이를 best_depth에 고르고 그 깊이로 다시 fit한 model의 테스트 정확도를 test_accuracy에 출력.
+테스트 자료는 깊이 고르는 데 쓰지 마
+""", """
+- `cross_val_score(cv=5)` → 훈련 자료 안에서 고르게 한다. 안 쓰면 테스트로 고르는 코드가 온다.
+- `random_state=42` → 후보마다 같은 조건.
+- `테스트 자료는 … 쓰지 마` → 튜닝과 채점을 분리한다.
+"""),
     # ---- 2일차 7교시 ----
     "credit-shape": p("""
 pandas. credit = pd.read_csv('data/credit.csv'), target = '다음달 부도'. 행 수 n_rows, 열 수 n_columns에 담고, credit[target].value_counts()를 target_counts에 담아 출력.

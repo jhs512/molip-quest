@@ -130,6 +130,69 @@ UNIT = unit('classifiers', '2일차 · 6교시 — 세 분류 모델과 기준 �
         starter=MODEL_PREP + "from sklearn.tree import DecisionTreeClassifier\nfrom sklearn.metrics import accuracy_score\n# model, train_accuracy, test_accuracy를 만드세요\n",
         solution=MODEL_PREP + "from sklearn.tree import DecisionTreeClassifier\nfrom sklearn.metrics import accuracy_score\nmodel = Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(random_state=42))])\nmodel.fit(X_train, y_train)\ntrain_accuracy = accuracy_score(y_train, model.predict(X_train))\ntest_accuracy = accuracy_score(y_test, model.predict(X_test))\nprint(train_accuracy, test_accuracy)\n",
         check="assert 0<=s['test_accuracy']<=1 and 0<=s['train_accuracy']<=1\nassert s['train_accuracy']>s['test_accuracy']\nassert s['train_accuracy']>0.9\nassert abs(s['train_accuracy']-(s['model'].predict(s['X_train'])==s['y_train']).mean())<1e-12"),
+    concept('hyperparameters', '공부 내용과 공부법: 파라미터와 하이퍼파라미터',
+        body="""
+        앞 미션에서 질문 횟수를 `max_depth`로 제한하면 덜 외운다고 했습니다. 그런데 이 숫자는 누가 정할까요? 모델 안에는 두 종류의 값이 있습니다. **학습하면서 기계가 스스로 찾는 값**과, **학습을 시작하기 전에 사람이 정해 주는 값**입니다. 앞엣것이 파라미터, 뒤엣것이 하이퍼파라미터입니다.
+
+        ```mapping
+        제목: 파라미터와 하이퍼파라미터
+        왼쪽: 파라미터
+        오른쪽: 하이퍼파라미터
+        학습 중에 기계가 찾는다 → 학습 전에 사람이 정한다
+        공부 내용 → 공부법
+        선형 회귀의 가중치, 나무의 질문들 → max_depth, n_estimators, alpha
+        fit()이 채운다 → 괄호 안에 적는다
+        ```
+
+        ```comic-gen
+        제목: 공부 내용과 공부법
+        등장인물:
+          민지:
+            그림: 사람
+            이름표: 민지 · 수강생
+            외형: {머리모양: 단발, 옷: 후드, 옷색: "#4f8a8b"}
+          강사:
+            그림: 사람
+            이름표: 강사
+            외형: {옷: 재킷, 옷색: "#5379a7", 안경: true}
+        컷:
+          - 인물: [{식별자: 민지, 표정: 어리둥절}, 강사]
+            대사:
+              - {화자: 민지, 상대: 강사, 내용: "max_depth도 모델이 알아서 정하면 안 돼요?"}
+              - {화자: 강사, 상대: 민지, 내용: "공부 내용은 학생이 익히죠. 그런데 하루 몇 시간, 어떤 방법으로 할지는 공부 전에 정하잖아요."}
+          - 구성: 이전
+            인물: [{식별자: 민지, 표정: 기쁨}, {식별자: 강사, 손모양: 가리키는손}]
+            대사:
+              - {화자: 강사, 상대: 민지, 내용: "그 공부법이 하이퍼파라미터예요. 몇 가지 후보를 시켜 보고 점수가 좋은 쪽을 고릅니다."}
+              - {화자: 민지, 상대: 강사, 내용: "공부법을 고르는 것도 결국 점수로 하네요."}
+        ```
+
+        ```python
+        from sklearn.model_selection import cross_val_score
+        for depth in [2, 3, 5, 8, 12]:
+            model = Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(max_depth=depth, random_state=42))])
+            score = cross_val_score(model, X_train, y_train, cv=5).mean()   # 훈련 자료 안에서 5번 나눠 채점한 평균
+            print(depth, round(score, 3))
+        ```
+
+        고르는 방법이 **튜닝**입니다. 후보를 몇 개 두고, **훈련 자료 안에서** 다시 나눠 채점한 점수(교차 검증)로 비교합니다. 테스트 자료로 고르면 안 됩니다. 그러면 테스트가 더 이상 "처음 보는 자료"가 아니라서, 시험지를 보고 공부법을 고른 셈이 됩니다. 테스트는 다 고른 뒤 마지막에 한 번만 씁니다. `GridSearchCV`는 이 반복문을 대신 돌려 주는 도구입니다.
+
+        한 가지 더. 파라미터는 처음부터 기계가 학습으로 찾는 값이었습니다. 요즘은 **하이퍼파라미터 고르기와 모델 고르기까지 기계가** 합니다. 이것을 AutoML이라고 부르고, `auto-sklearn` 같은 라이브러리나 클라우드 서비스가 후보를 돌려 가며 알아서 고릅니다. 그래도 어떤 점수로 비교할지, 후보 범위를 어디까지 둘지, 그 결과를 믿어도 되는지는 사람이 정합니다. AI에게 "해 줘"라고 할 때 **"max_depth 후보를 교차 검증으로 골라 줘"**라고 한 줄 보탤 수 있는 것, 그게 이 단원에서 가져갈 말입니다.
+        """,
+        check=short("`max_depth`처럼 학습을 시작하기 전에 사람이 정해 주는 값을 무엇이라고 부르나요?", ['하이퍼파라미터', '하이퍼 파라미터', 'hyperparameter', 'hyper parameter', '초매개변수'],
+                    '하이퍼파라미터는 공부법처럼 학습 전에 정하는 값이고, 파라미터는 공부 내용처럼 학습하면서 기계가 채우는 값입니다. 후보를 두고 훈련 자료 안의 교차 검증 점수로 고릅니다.')),
+    coding('tune-depth', '공부법 고르기: max_depth 튜닝',
+        goal="""
+        나무의 깊이 후보 `depths`가 준비되어 있습니다. 후보마다 손질기와 묶은 `DecisionTreeClassifier(max_depth=깊이, random_state=42)`를 `cross_val_score(모델, X_train, y_train, cv=5)`의 평균으로 채점해 `cv_scores`(깊이 → 평균 점수 딕셔너리)에 담으세요. 점수가 가장 높은 깊이를 `best_depth`에 고르고, 그 깊이로 다시 학습한 `model`의 테스트 정확도를 `test_accuracy`에 담아 출력하세요.
+
+        깊이를 고르는 데 테스트 자료를 쓰면 안 됩니다. 테스트는 `best_depth`를 정한 뒤 한 번만 씁니다.
+        """,
+        hint="""
+        `for depth in depths:` 안에서 `Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(max_depth=depth, random_state=42))])`를 만들고 `cv_scores[depth] = cross_val_score(model, X_train, y_train, cv=5).mean()`. 가장 큰 값의 키는 `max(cv_scores, key=cv_scores.get)`. 그다음 `best_depth`로 모델을 새로 만들어 `fit(X_train, y_train)`하고 `accuracy_score(y_test, model.predict(X_test))`.
+        """,
+        starter=MODEL_PREP + "from sklearn.tree import DecisionTreeClassifier\nfrom sklearn.model_selection import cross_val_score\nfrom sklearn.metrics import accuracy_score\ndepths = [2, 3, 5, 8, 12]\ncv_scores = {}\n# cv_scores, best_depth, model, test_accuracy를 만드세요\n",
+        solution=MODEL_PREP + "from sklearn.tree import DecisionTreeClassifier\nfrom sklearn.model_selection import cross_val_score\nfrom sklearn.metrics import accuracy_score\ndepths = [2, 3, 5, 8, 12]\ncv_scores = {}\nfor depth in depths:\n    model = Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(max_depth=depth, random_state=42))])\n    cv_scores[depth] = cross_val_score(model, X_train, y_train, cv=5).mean()\nbest_depth = max(cv_scores, key=cv_scores.get)\nmodel = Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(max_depth=best_depth, random_state=42))])\nmodel.fit(X_train, y_train)\ntest_accuracy = accuracy_score(y_test, model.predict(X_test))\nprint({depth: round(score, 3) for depth, score in cv_scores.items()})\nprint(f'고른 깊이 {best_depth}, 테스트 정확도 {test_accuracy:.3f}')\n",
+        check="assert set(s['cv_scores'])=={2,3,5,8,12}\nassert all(0<=v<=1 for v in s['cv_scores'].values())\nassert s['best_depth']==max(s['cv_scores'],key=s['cv_scores'].get)\nassert s['model'].get_params()['model__max_depth']==s['best_depth']\nassert abs(s['test_accuracy']-(s['model'].predict(s['X_test'])==s['y_test']).mean())<1e-9"),
     concept('save-model', '한 번 만든 모델은 저장해서 다시 쓴다',
         body="""
         지금까지 모든 미션은 실행할 때마다 `fit`부터 다시 했습니다. 승객 1,047명이면 1초라 괜찮지만, 회사 자료는 수백만 행이고 훈련에 몇 시간이 걸리기도 합니다. 그걸 예측할 때마다 다시 배우게 할 이유가 없습니다. 배운 모델은 **파일로 저장**해 두고, 쓸 때는 **불러와서 `predict`만** 합니다.
@@ -182,6 +245,9 @@ UNIT = unit('classifiers', '2일차 · 6교시 — 세 분류 모델과 기준 �
         solution=MODEL_PREP + "import joblib\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import accuracy_score\nmodel = Pipeline([('prepare', make_preprocessor()), ('model', LogisticRegression(max_iter=1000))])\nmodel.fit(X_train, y_train)\njoblib.dump(model, 'titanic_model.joblib')\nloaded = joblib.load('titanic_model.joblib')\ntest_accuracy = accuracy_score(y_test, loaded.predict(X_test))\nprint(f'불러온 모델의 테스트 정확도: {test_accuracy:.3f}')\n",
         check="from pathlib import Path\nassert Path('titanic_model.joblib').exists()\nassert (s['loaded'].predict(s['X_test'])==s['model'].predict(s['X_test'])).all()\nassert abs(s['test_accuracy']-(s['loaded'].predict(s['X_test'])==s['y_test']).mean())<1e-9"),
     quiz('model-check', '2일차 6교시 점검',
+        choice('`max_depth` 후보 중 하나를 고를 때 어떤 자료의 점수로 비교해야 하나요?',
+               ['훈련 자료 안에서 다시 나눠 채점한 교차 검증 점수', '테스트 자료의 정확도', '훈련 자료 전체를 그대로 다시 채점한 점수'], 0,
+               '테스트는 다 고른 뒤 한 번만 씁니다. 고르는 데 쓰면 더 이상 처음 보는 자료가 아닙니다. 훈련 자료를 그대로 채점하면 깊은 나무가 늘 이깁니다(외운 점수).' "\n\n**다른 보기는 왜 아닌가**\n\n- 「테스트 자료의 정확도」: 시험지를 보고 공부법을 고르는 셈이라 점수가 부풀려진다.\n- 「훈련 자료 전체」: 외운 점수라 깊을수록 좋아 보여 과적합을 고른다."),
         choice('내일 새벽에도 오늘 훈련한 모델로 예측하려면 어떻게 해야 하나요?',
                ['`joblib.dump`로 파이프라인째 파일에 저장하고, 쓸 때 `joblib.load`로 불러와 `predict`만 한다', '매일 새벽 `fit`부터 다시 돌린다', '오늘 예측 결과 표만 저장해 둔다'], 0,
                '저장한 파일에는 모델과 손질 기준이 함께 들어 있어 새 자료에 바로 예측할 수 있습니다. 훈련은 자료가 바뀔 때만 다시 합니다.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「매일 fit부터」: 몇 시간짜리 훈련을 매일 반복하는 삽질이다.\n- 「결과 표만 저장」: 내일 새 입력에는 쓸 수 없다."),

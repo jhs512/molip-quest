@@ -6,7 +6,7 @@ STOCK_MODEL = ST_FRAME + TIME_SPLIT + REG
 UNIT = unit('regression-project', '3일차 · 4교시 — 회귀 비교와 최종 결과', [
     concept('regression-metrics', '직선 맞추기, 그리고 기준보다 못한 결과도 그대로 보고하기',
         body="""
-        마지막 시간입니다. 입력 네 열(오늘 종가, 수익률, 5일 평균, 어제 종가)로 내일 종가를 맞히는 회귀 모델을 세 개 돌리고, 3교시의 기준과 비교해서 결론을 씁니다.
+        마지막 단원입니다. 입력 네 열(오늘 종가, 수익률, 5일 평균, 어제 종가)로 내일 종가를 맞히는 회귀 모델을 세 개 돌리고, 3교시의 기준과 비교해서 결론을 씁니다.
 
         **선형 회귀**(`LinearRegression`)는 입력마다 가중치를 곱해 더한 값으로 정답을 맞힙니다. 입력이 하나면 점들 사이에 가장 잘 맞는 직선을 긋는 것이고, 넷이면 네 방향으로 기울어진 판을 맞추는 것입니다. 학습이 끝나면 `coef_`에 가중치 네 개가 남아 어느 입력이 얼마나 영향을 줬는지 읽을 수 있습니다. **릿지**(`Ridge`)와 **라쏘**(`Lasso`)는 같은 직선 맞추기에 **브레이크**를 단 것입니다. 가중치가 너무 커지면 벌점을 매겨, 훈련 자료의 우연한 흔들림까지 외우는 것을 막습니다. 라쏘는 브레이크가 세서 쓸모없는 입력의 가중치를 아예 0으로 만들기도 합니다. 입력 크기가 제각각이면 브레이크가 공평하지 않으니 어제처럼 `StandardScaler`와 묶어 씁니다.
 
@@ -95,7 +95,7 @@ UNIT = unit('regression-project', '3일차 · 4교시 — 회귀 비교와 최�
         `linear_mae`를 3교시의 기준 MAE와 비교해 보세요. 가중치 네 개 중 어느 것이 가장 큰지도 보세요.
         """,
         hint="""
-        어제 분류와 같은 흐름입니다. `Pipeline([('scale', StandardScaler()), ('model', LinearRegression())])` → `fit(X_train, y_train)` → `predict(X_test)`. 점수는 `mean_absolute_error(y_test, prediction)`.
+        분류와 같은 흐름입니다. `Pipeline([('scale', StandardScaler()), ('model', LinearRegression())])` → `fit(X_train, y_train)` → `predict(X_test)`. 점수는 `mean_absolute_error(y_test, prediction)`.
         """,
         starter=STOCK_MODEL + "# model, prediction, linear_mae를 만들고 출력하세요\n",
         solution=STOCK_MODEL + "model = Pipeline([('scale', StandardScaler()), ('model', LinearRegression())])\nmodel.fit(X_train, y_train)\nprediction = model.predict(X_test)\nlinear_mae = mean_absolute_error(y_test, prediction)\nprint(linear_mae)\nprint(model.named_steps['model'].coef_)\n",
@@ -169,7 +169,7 @@ UNIT = unit('regression-project', '3일차 · 4교시 — 회귀 비교와 최�
         check="assert s['comparison'].shape==(80,2) and list(s['comparison'].columns)==['actual','prediction']\nassert list(s['comparison'].index)==list(s['frame'].loc[s['test_mask'],'target_date'])\nassert len(s['ax'].lines)==2 and s['ax'].get_xlabel()=='정답 날짜'\nassert s['ax'].get_legend() is not None"),
     coding('final-report', '최종 보고: 숫자 다섯 개와 결론 세 줄',
         goal="""
-        3일의 결론을 코드로 적습니다. 준비된 `models`(`Linear`, `Ridge`)를 각각 학습해 테스트 MAE를 `maes` 딕셔너리에 모으고, 기준 MAE와 비교해 `report` 딕셔너리를 만드세요. 키는 `test_days`(테스트 거래일 수), `baseline_mae`, `best_model`(MAE가 가장 작은 모델 이름), `best_mae`, `improved`(최선 모델이 기준보다 나은지) 다섯 개입니다. 그리고 결론 세 줄을 출력하세요. ① 무엇을 언제 예측했고 어떻게 나눴는지 ② 기준 MAE와 최선 모델 MAE ③ 개선했는지 못 했는지.
+        수업의 결론을 코드로 적습니다. 준비된 `models`(`Linear`, `Ridge`)를 각각 학습해 테스트 MAE를 `maes` 딕셔너리에 모으고, 기준 MAE와 비교해 `report` 딕셔너리를 만드세요. 키는 `test_days`(테스트 거래일 수), `baseline_mae`, `best_model`(MAE가 가장 작은 모델 이름), `best_mae`, `improved`(최선 모델이 기준보다 나은지) 다섯 개입니다. 그리고 결론 세 줄을 출력하세요. ① 무엇을 언제 예측했고 어떻게 나눴는지 ② 기준 MAE와 최선 모델 MAE ③ 개선했는지 못 했는지.
 
         검사는 다섯 숫자가 실제 계산과 맞는지만 봅니다. `improved`가 `False`여도 정직하게 적은 보고가 정답입니다.
         """,
@@ -181,7 +181,7 @@ UNIT = unit('regression-project', '3일차 · 4교시 — 회귀 비교와 최�
         check="import numpy as np\nr=s['report']\nassert {'test_days','baseline_mae','best_model','best_mae','improved'}<=set(r)\nassert r['test_days']==80\nassert abs(r['baseline_mae']-float(np.abs(s['y_test'].to_numpy()-s['X_test']['close'].to_numpy()).mean()))<1e-8\nassert set(s['maes'])=={'Linear','Ridge'} and all(np.isfinite(v) for v in s['maes'].values())\nassert r['best_model']==min(s['maes'],key=s['maes'].get) and abs(r['best_mae']-min(s['maes'].values()))<1e-9\nassert r['improved']==(r['best_mae']<r['baseline_mae'])"),
     quiz('final-check', '3일차 4교시 점검',
         short('예측과 정답의 차이를 부호 없이 평균 낸, 원 단위로 읽는 지표의 약어는 무엇인가요?', ['MAE', 'mae', 'mean absolute error'],
-              'MAE는 "하루 평균 몇 원 빗나갔나"입니다. 3일차 내내 기준과 모델을 비교한 잣대입니다.'),
+              'MAE는 "하루 평균 몇 원 빗나갔나"입니다. 주가 챕터 내내 기준과 모델을 비교한 잣대입니다.'),
         choice('R²가 음수로 나왔습니다. 무슨 뜻인가요?',
                ['정답의 평균값으로만 찍은 것보다도 못 맞혔다', '계산이 틀렸다', '모델이 완벽하다'], 0,
                'R²는 "평균으로 찍기"와 비교해 1을 만점으로 적은 값이라 그보다 못하면 음수가 됩니다. 비교 대상이 우리의 기준(오늘 종가)이 아니라는 점도 기억하세요.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「완벽하다」: 완벽하면 1이다.\n- 「계산이 틀렸다」: 음수는 정상적으로 나올 수 있다."),
@@ -196,7 +196,7 @@ UNIT = unit('regression-project', '3일차 · 4교시 — 회귀 비교와 최�
         short('선형 회귀가 학습한 입력별 가중치를 보는 속성은 무엇인가요? (`model.named_steps[\'model\'].____`)', ['coef_', 'coef'],
               '`coef_`에 입력 열마다 가중치가 하나씩 들어 있습니다. 표준화된 입력 기준이라 크기를 서로 비교할 수 있습니다.'),
     ),
-    quiz('course-wrap', '3일을 한 줄로 잇기',
+    quiz('course-wrap', '수업을 한 줄로 잇기',
         choice('타이타닉의 `구명보트` 열과 주가의 `target_next_close` 열의 공통점은 무엇인가요?',
                ['맞히려는 시점에 알 수 없는 정보라 입력에 넣으면 누수다', '둘 다 글자 열이다', '둘 다 빈칸이 많다'], 0,
                '하나는 사고 뒤에 적힌 정보, 하나는 내일의 값입니다. 자료가 달라도 "맞히는 시점에 아는 것만 입력"이라는 원칙은 같습니다.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「둘 다 글자 열」: 종가는 숫자다.\n- 「빈칸이 많다」: 빈칸이 문제가 아니라 시점이다."),

@@ -276,7 +276,7 @@ fn every_kpc_coding_problem_has_a_human_prompt_and_a_machine_prompt() {
             }
         }
     }
-    assert_eq!(checked, 104);
+    assert_eq!(checked, 105);
     // The vocabulary a working analyst uses reaches the student through the human version.
     let stock = course.chapters.last().unwrap().units.last().unwrap();
     let problem = stock
@@ -314,7 +314,7 @@ async fn every_kpc_coding_problem_passes_alone_with_its_reference_answer() {
             }
         }
     }
-    assert_eq!(checked, 104);
+    assert_eq!(checked, 105);
     let changed=run_python("from pathlib import Path\nPath('data/titanic.csv').write_text('corrupted')\nPath('previous.txt').write_text('state')\nprint('changed')"," ").await.unwrap();
     assert!(changed.success);
     let clean=run_python("from pathlib import Path\nimport pandas as pd\nassert not Path('previous.txt').exists()\nassert pd.read_csv('data/titanic.csv').shape==(1309,14)\nprint('fresh')","").await.unwrap();

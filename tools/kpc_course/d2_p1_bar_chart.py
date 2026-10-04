@@ -4,7 +4,7 @@ from kpc_course.dsl import *
 UNIT = unit('bar-chart', '2일차 · 1교시 — Figure·Axes와 막대그래프', [
     concept('axes', '종이 한 장과 그 위의 그래프',
         body="""
-        어제 마지막 시간에 성별 생존율 표를 만들었습니다. 숫자 두 개를 비교하는 데는 표로 충분하지만, 그룹이 넷, 여섯으로 늘어나면 눈이 숫자를 따라가지 못합니다. 그래서 오늘은 표를 그림으로 바꿉니다. 둘째 날은 그래프로 시작해서 "누가 살아남았나"를 맞히는 모델로 끝납니다.
+        앞 단원에서 성별 생존율 표를 만들었습니다. 숫자 두 개를 비교하는 데는 표로 충분하지만, 그룹이 넷, 여섯으로 늘어나면 눈이 숫자를 따라가지 못합니다. 그래서 오늘은 표를 그림으로 바꿉니다. 둘째 날은 그래프로 시작해서 "누가 살아남았나"를 맞히는 모델로 끝납니다.
 
         ```comic-gen
         제목: 종이와 그래프 영역
@@ -53,7 +53,7 @@ UNIT = unit('bar-chart', '2일차 · 1교시 — Figure·Axes와 막대그래프
                     '`Figure`가 종이 한 장, `Axes`가 그 위의 그래프 영역입니다. 막대나 선은 `ax`에 그립니다.')),
     coding('simple-bar', '리스트로 첫 막대그래프',
         goal="""
-        어제 종목 세 개의 금액으로 첫 막대그래프를 그립니다. `fig, ax = plt.subplots()`로 종이와 그래프 영역을 만들고, `ax.bar(names, amounts)`로 막대를 그린 뒤, `ax.set(title='종목별 금액', ylabel='금액')`로 제목과 y축 이름을 붙이고 `plt.show()`로 띄우세요.
+        앞서 만든 종목 세 개의 금액으로 첫 막대그래프를 그립니다. `fig, ax = plt.subplots()`로 종이와 그래프 영역을 만들고, `ax.bar(names, amounts)`로 막대를 그린 뒤, `ax.set(title='종목별 금액', ylabel='금액')`로 제목과 y축 이름을 붙이고 `plt.show()`로 띄우세요.
 
         막대 세 개가 30000, 40000, 60000 높이로 보이면 맞게 한 것입니다.
         """,
@@ -65,12 +65,12 @@ UNIT = unit('bar-chart', '2일차 · 1교시 — Figure·Axes와 막대그래프
         check="assert len(s['ax'].patches)==3\nassert [p.get_height() for p in s['ax'].patches]==[30000,40000,60000]\nassert s['ax'].get_ylabel()=='금액'"),
     coding('sex-bar', '성별 생존율을 퍼센트로 그리기',
         goal="""
-        어제의 성별 생존율 표를 그림으로 바꿉니다. `rates`에 성별 `생존` 평균을 저장하고, `rates * 100`을 막대로 그리세요. y축 범위는 `ylim=(0, 100)`, x축 이름은 `성별`, y축 이름은 `생존율 (%)`로 지정하고 `plt.show()`로 띄웁니다.
+        앞 단원의 성별 생존율 표를 그림으로 바꿉니다. `rates`에 성별 `생존` 평균을 저장하고, `rates * 100`을 막대로 그리세요. y축 범위는 `ylim=(0, 100)`, x축 이름은 `성별`, y축 이름은 `생존율 (%)`로 지정하고 `plt.show()`로 띄웁니다.
 
         막대 두 개가 각각 여성·남성 생존율 퍼센트 높이로 보이면 맞게 한 것입니다.
         """,
         hint="""
-        `rates = titanic.groupby('성별')['생존'].mean()`은 어제와 같습니다. `ax.bar(rates.index, rates * 100)`로 그리고 `ax.set(xlabel='성별', ylabel='생존율 (%)', ylim=(0, 100), title='Survival by gender')`로 꾸미세요.
+        `rates = titanic.groupby('성별')['생존'].mean()`은 앞 단원과 같습니다. `ax.bar(rates.index, rates * 100)`로 그리고 `ax.set(xlabel='성별', ylabel='생존율 (%)', ylim=(0, 100), title='Survival by gender')`로 꾸미세요.
         """,
         starter=TI + PLOT + "# rates, fig, ax를 만들고 막대그래프를 그리세요\n",
         solution=TI + PLOT + "rates=titanic.groupby('성별')['생존'].mean()\nfig,ax=plt.subplots()\nax.bar(rates.index,rates*100)\nax.set(xlabel='성별',ylabel='생존율 (%)',ylim=(0,100),title='Survival by gender')\nplt.show()\n",

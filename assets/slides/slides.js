@@ -45,7 +45,8 @@ section footer, section header { color: #8a93a0; font-size: 18px; }
 section.lead { display: flex; flex-direction: column; justify-content: center; text-align: center; background: #0f3d5e; color: #f4f8fb; }
 section.lead h1, section.lead h2 { color: #ffffff; } section.lead strong { color: #ffd37a; }
 section.lead p { font-size: 34px; color: #d6e4f0; }
-section .comic-strip { height: 430px; display: flex; align-items: center; justify-content: center; }
+section .comic-strip { height: 380px; display: flex; align-items: center; justify-content: center; }
+section .comic-strip + p { font-size: 26px; margin-top: 4px; }
 section .comic-strip svg { max-height: 100%; max-width: 100%; width: auto; height: auto; margin: 0 auto; }
 section figure { margin: 8px 0; }
 section .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
@@ -83,11 +84,13 @@ function paginateComics(markdown) {
   return lines.join('\n');
 }
 
-const seen = new WeakSet();
+// Hosts can be reused with a different deck (the PPT gallery's previous/next), so a host is
+// re-rendered whenever its source changes rather than only on first sight.
+const mountedSource = new WeakMap();
 function mount(host) {
-  if (seen.has(host)) return;
-  seen.add(host);
   const source = host.dataset.marpSource || '';
+  if (mountedSource.get(host) === source) return;
+  mountedSource.set(host, source);
   let rendered;
   try { rendered = renderDeck(source); } catch (error) { host.textContent = '슬라이드를 그리지 못했습니다: ' + error.message; return; }
   const style = document.createElement('style'); style.textContent = rendered.css;
@@ -127,5 +130,10 @@ function render(root) {
   hosts.forEach(mount);
 }
 globalThis.molipSlides = { render, renderDeck, count: 0 };
-new MutationObserver(records => { for (const r of records) for (const n of r.addedNodes) if (n instanceof Element) render(n); }).observe(document.body, { childList: true, subtree: true });
+new MutationObserver(records => {
+  for (const r of records) {
+    if (r.type === 'attributes') { render(r.target); continue; }
+    for (const n of r.addedNodes) if (n instanceof Element) render(n);
+  }
+}).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-marp-source'] });
 render(document);

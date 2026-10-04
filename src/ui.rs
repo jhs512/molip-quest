@@ -815,7 +815,7 @@ pub fn Gallery(course: Course, kind: GalleryKind) -> Element {
                         span { class:"gallery-count", {format!("{} / {total}", n + 1)} }
                         button { disabled: n + 1 >= total, onclick: move |_| selected.set(Some(n + 1)), "다음 →" }
                     }
-                    section { class:"gallery-item", key:"{kind:?}-{n}",
+                    section { class:"gallery-item",
                         p { class:"gallery-location", "{item.location}" }
                         h3 { "{item.title}" }
                         if item.deck {

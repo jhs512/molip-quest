@@ -25,6 +25,11 @@ fn main() {
 
 #[component]
 fn App() -> Element {
+    #[cfg(feature = "desktop")]
+    {
+        let window = dioxus::desktop::use_window();
+        use_effect(move || place_on_screen(&window.window));
+    }
     use_effect(|| {
         document::eval(include_str!("../assets/editor/editor.bundle.js"));
         // The comic SDK is an ES module, so the loader imports it from a Blob URL built from this string.
@@ -54,6 +59,37 @@ fn App() -> Element {
         Workspace {}
     }
 }
+/// Some Windows sessions hand a new window the off-screen placeholder position (-32000, -32000)
+/// with a tiny size, so the app seems to start minimized and only appears after maximizing.
+/// When that happens, size the window to most of the primary screen and center it.
+#[cfg(feature = "desktop")]
+fn place_on_screen(window: &dioxus::desktop::tao::window::Window) {
+    use dioxus::desktop::tao::dpi::{PhysicalPosition, PhysicalSize};
+    let off_screen = window
+        .outer_position()
+        .map(|p| p.x <= -30000 || p.y <= -30000)
+        .unwrap_or(false);
+    if !off_screen {
+        return;
+    }
+    let Some(monitor) = window
+        .primary_monitor()
+        .or_else(|| window.current_monitor())
+    else {
+        return;
+    };
+    let screen = monitor.size();
+    let origin = monitor.position();
+    let width = screen.width * 85 / 100;
+    let height = screen.height * 85 / 100;
+    window.set_minimized(false);
+    window.set_inner_size(PhysicalSize::new(width, height));
+    window.set_outer_position(PhysicalPosition::new(
+        origin.x + ((screen.width - width) / 2) as i32,
+        origin.y + ((screen.height - height) / 2) as i32,
+    ));
+}
+
 /// Which screen fills the window: the classroom home, the learning flow, or one gallery page.
 #[derive(Clone, Copy, PartialEq)]
 enum View {
