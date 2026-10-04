@@ -660,7 +660,7 @@ train_mask = (frame.index < test_start) & (frame['target_date'] < test_start)
 # decks that share a position keep this order.
 DECK_PLACEMENTS = decks_python_pandas.PLACEMENTS + decks_eda_viz.PLACEMENTS + decks_modeling_credit.PLACEMENTS + decks_stock.PLACEMENTS + [
     ("python", 0, 0, INTRO),
-    ("python", 0, 1, EXPERT_ASK),
+    ("python", 0, 0, EXPERT_ASK),
     ("python", 2, 11, WHY_PANDAS),
     ("modeling", 0, 0, ML_BASICS),
     ("modeling", 2, 0, DECK_BASELINE),
