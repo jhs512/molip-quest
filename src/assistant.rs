@@ -1,16 +1,13 @@
-//! "AI에게 물어보기": a tutor chat that knows the mission on screen, answered by the Gemini API.
+//! "AI에게 물어보기": a tutor chat that knows the mission on screen, answered by a CLI assistant
+//! installed on this computer (Claude Code or Codex).
 //!
 //! The current mission (every slide of a deck, a concept's text, a problem with its hint and the
-//! student's code, or a quiz's questions) is sent as the system context with the chat history.
-//! The API key lives in `assistant.json` next to the progress database, or in `GEMINI_API_KEY`.
+//! student's code, or a quiz's questions) and the conversation so far become one prompt that is
+//! handed to `claude -p` or `codex exec`. No API key: the CLI's own login is used. Settings live
+//! in `assistant.json` next to the progress database.
 use crate::curriculum::{Activity, ActivityKind, QuestionKind};
 use crate::Unit;
 use serde::{Deserialize, Serialize};
-
-pub const DEFAULT_MODEL: &str = "gemini-3.8-flash";
-/// Earlier defaults Google has since closed to new users; a saved settings file still naming
-/// one of them is moved to the current default.
-const RETIRED_MODELS: &[&str] = &["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
 
 const SYSTEM: &str = "당신은 KPC 「머신러닝을 활용한 금융데이터 분석」 수업의 조교입니다. 아래 '현재 미션 내용'을 기준으로, \
 코딩이 처음인 직장인 수강생의 질문에 한국어로 짧고 친절하게 답하세요.\n\
@@ -21,21 +18,21 @@ const SYSTEM: &str = "당신은 KPC 「머신러닝을 활용한 금융데이터
 4. 용어는 수업에서 쓰는 말(입력 X, 정답 y, 훈련 자료/테스트 자료, 기준 모델, 누수, 하이퍼파라미터)을 그대로 씁니다.\n\
 5. 답은 다섯 문장 이내로 하고, 코드는 코드 블록으로 보여 줍니다.";
 
-/// Who answers: the Gemini API, or a CLI assistant installed on this computer.
+/// Which locally installed CLI answers.
 #[derive(Clone, Copy, Debug, Default, Deserialize, Serialize, PartialEq)]
 #[serde(rename_all = "snake_case")]
 pub enum Provider {
-    #[default]
-    Gemini,
-    ClaudeCode,
     Codex,
+    /// Also the fallback for settings files that name a provider that no longer exists.
+    #[default]
+    #[serde(other)]
+    ClaudeCode,
 }
 
 impl Provider {
-    pub const ALL: [Provider; 3] = [Provider::Gemini, Provider::ClaudeCode, Provider::Codex];
+    pub const ALL: [Provider; 2] = [Provider::ClaudeCode, Provider::Codex];
     pub fn id(self) -> &'static str {
         match self {
-            Provider::Gemini => "gemini",
             Provider::ClaudeCode => "claude_code",
             Provider::Codex => "codex",
         }
@@ -48,7 +45,6 @@ impl Provider {
     }
     pub fn label(self) -> &'static str {
         match self {
-            Provider::Gemini => "Gemini API",
             Provider::ClaudeCode => "Claude Code (이 컴퓨터의 claude 명령)",
             Provider::Codex => "Codex CLI (이 컴퓨터의 codex 명령)",
         }
@@ -66,10 +62,6 @@ fn default_codex_command() -> String {
 pub struct Settings {
     #[serde(default)]
     pub provider: Provider,
-    #[serde(default)]
-    pub api_key: String,
-    #[serde(default)]
-    pub model: String,
     #[serde(default = "default_claude_command")]
     pub claude_command: String,
     #[serde(default = "default_codex_command")]
@@ -79,9 +71,7 @@ pub struct Settings {
 impl Default for Settings {
     fn default() -> Self {
         Settings {
-            provider: Provider::Gemini,
-            api_key: String::new(),
-            model: String::new(),
+            provider: Provider::ClaudeCode,
             claude_command: default_claude_command(),
             codex_command: default_codex_command(),
         }
@@ -93,21 +83,12 @@ impl Settings {
         Ok(crate::data_dir()?.join("assistant.json"))
     }
 
-    /// Saved settings, with `GEMINI_API_KEY` taking precedence over the saved key.
     pub fn load() -> Settings {
         let mut settings: Settings = Self::path()
             .ok()
             .and_then(|path| std::fs::read_to_string(path).ok())
             .and_then(|text| serde_json::from_str(&text).ok())
             .unwrap_or_default();
-        if let Ok(key) = std::env::var("GEMINI_API_KEY") {
-            if !key.trim().is_empty() {
-                settings.api_key = key.trim().to_string();
-            }
-        }
-        if settings.model.trim().is_empty() || RETIRED_MODELS.contains(&settings.model.trim()) {
-            settings.model = DEFAULT_MODEL.to_string();
-        }
         if settings.claude_command.trim().is_empty() {
             settings.claude_command = default_claude_command();
         }
@@ -127,7 +108,7 @@ impl Settings {
     }
 }
 
-/// One chat message; `role` is "user" or "model" as the Gemini API names them.
+/// One chat message; `role` is "user" or "model".
 #[derive(Clone, Debug, Deserialize, Serialize, PartialEq)]
 pub struct Turn {
     pub role: String,
@@ -189,13 +170,13 @@ pub fn page_context(
 
 /// Answer the latest question with the mission as context and the conversation so far.
 pub async fn ask(settings: &Settings, context: &str, history: &[Turn]) -> Result<String, String> {
+    let prompt = transcript(context, history);
     match settings.provider {
-        Provider::Gemini => ask_gemini(settings, context, history).await,
         Provider::ClaudeCode => {
             ask_cli(
                 &settings.claude_command,
                 &["-p", "--output-format", "text"],
-                &transcript(context, history),
+                &prompt,
                 true,
                 None,
             )
@@ -207,85 +188,13 @@ pub async fn ask(settings: &Settings, context: &str, history: &[Turn]) -> Result
             ask_cli(
                 &settings.codex_command,
                 &["exec", "--skip-git-repo-check", "-o", &out_arg],
-                &transcript(context, history),
+                &prompt,
                 false,
                 Some(out),
             )
             .await
         }
     }
-}
-
-/// Gemini models this key can use with generateContent, newest-looking first.
-pub async fn list_models(settings: &Settings) -> Result<Vec<String>, String> {
-    let key = settings.api_key.trim();
-    if key.is_empty() {
-        return Err("Gemini API 키가 없습니다.".into());
-    }
-    let client = reqwest::Client::builder()
-        .timeout(std::time::Duration::from_secs(30))
-        .build()
-        .map_err(|e| e.to_string())?;
-    let value: serde_json::Value = client
-        .get("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200")
-        .header("x-goog-api-key", key)
-        .send()
-        .await
-        .map_err(|e| format!("모델 목록을 받지 못했습니다: {e}"))?
-        .json()
-        .await
-        .map_err(|e| format!("모델 목록을 읽지 못했습니다: {e}"))?;
-    if let Some(message) = value.pointer("/error/message").and_then(|v| v.as_str()) {
-        return Err(format!("Gemini 오류: {message}"));
-    }
-    let names: Vec<String> = value
-        .get("models")
-        .and_then(|m| m.as_array())
-        .map(|models| {
-            models
-                .iter()
-                .filter(|m| {
-                    m.get("supportedGenerationMethods")
-                        .and_then(|v| v.as_array())
-                        .is_some_and(|v| v.iter().any(|x| x.as_str() == Some("generateContent")))
-                })
-                .filter_map(|m| m.get("name").and_then(|n| n.as_str()))
-                .map(|n| n.trim_start_matches("models/").to_string())
-                .collect()
-        })
-        .unwrap_or_default();
-    let names = chat_models(&names);
-    if names.is_empty() {
-        return Err("쓸 수 있는 모델이 없습니다.".into());
-    }
-    Ok(names)
-}
-
-/// Only text chat models (gemini-*, gemma-*), gemini first, newer versions on top.
-fn chat_models(names: &[String]) -> Vec<String> {
-    const NOT_CHAT: [&str; 7] = [
-        "robotics",
-        "tts",
-        "image",
-        "live",
-        "audio",
-        "computer-use",
-        "embedding",
-    ];
-    let mut keep: Vec<String> = names
-        .iter()
-        .filter(|n| {
-            (n.starts_with("gemini-") || n.starts_with("gemma-"))
-                && !NOT_CHAT.iter().any(|w| n.contains(w))
-        })
-        .cloned()
-        .collect();
-    keep.sort_by(|a, b| {
-        let family = |n: &str| if n.starts_with("gemini-") { 0 } else { 1 };
-        family(a).cmp(&family(b)).then_with(|| b.cmp(a))
-    });
-    keep.dedup();
-    keep
 }
 
 /// The whole exchange as one prompt for a CLI assistant.
@@ -397,126 +306,23 @@ async fn ask_cli(
     Ok(text)
 }
 
-/// Ask Gemini with the mission as system context and the whole conversation so far.
-async fn ask_gemini(
-    settings: &Settings,
-    context: &str,
-    history: &[Turn],
-) -> Result<String, String> {
-    let key = settings.api_key.trim();
-    if key.is_empty() {
-        return Err("Gemini API 키가 없습니다. 설정에서 키를 넣어 주세요.".into());
-    }
-    let model = match settings.model.trim() {
-        "" => DEFAULT_MODEL,
-        m => m,
-    };
-    let url =
-        format!("https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent");
-    let contents: Vec<serde_json::Value> = history
-        .iter()
-        .map(|turn| serde_json::json!({"role": turn.role, "parts": [{"text": turn.text}]}))
-        .collect();
-    let body = serde_json::json!({
-        "systemInstruction": {"parts": [{"text": format!("{SYSTEM}\n\n## 현재 미션 내용\n\n{context}")}]},
-        "contents": contents,
-        "generationConfig": {"temperature": 0.4}
-    });
-    let client = reqwest::Client::builder()
-        .timeout(std::time::Duration::from_secs(90))
-        .build()
-        .map_err(|e| e.to_string())?;
-    // Google answers 503/429 when the model is busy; those usually clear within seconds,
-    // so retry a few times with a growing pause before giving up.
-    let mut attempt = 0;
-    let (status, value) = loop {
-        let response = client
-            .post(&url)
-            .header("x-goog-api-key", key)
-            .json(&body)
-            .send()
-            .await
-            .map_err(|e| format!("요청을 보내지 못했습니다: {e}"))?;
-        let status = response.status();
-        let value: serde_json::Value = response
-            .json()
-            .await
-            .map_err(|e| format!("응답을 읽지 못했습니다: {e}"))?;
-        let transient = matches!(status.as_u16(), 429 | 500 | 502 | 503 | 504);
-        if transient && attempt < 3 {
-            attempt += 1;
-            tokio::time::sleep(std::time::Duration::from_millis(1500 * attempt)).await;
-            continue;
-        }
-        break (status, value);
-    };
-    if !status.is_success() {
-        let message = value
-            .pointer("/error/message")
-            .and_then(|v| v.as_str())
-            .unwrap_or("알 수 없는 오류");
-        return Err(match status.as_u16() {
-            503 | 429 => "지금 Gemini가 붐빕니다. 몇 번 다시 시도했지만 답을 못 받았어요. 잠시 뒤 「다시 시도」를 눌러 주세요.".to_string(),
-            404 => format!("Gemini 오류 ({status}): {message} 설정에서 모델 이름을 최신 모델로 바꿔 보세요."),
-            _ => format!("Gemini 오류 ({status}): {message}"),
-        });
-    }
-    let text = value
-        .pointer("/candidates/0/content/parts")
-        .and_then(|parts| parts.as_array())
-        .map(|parts| {
-            parts
-                .iter()
-                .filter_map(|part| part.get("text").and_then(|t| t.as_str()))
-                .collect::<Vec<_>>()
-                .join("")
-        })
-        .unwrap_or_default();
-    if text.trim().is_empty() {
-        return Err("빈 답이 왔습니다. 다시 물어보세요.".into());
-    }
-    Ok(text)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn model_list_keeps_only_chat_models() {
-        let raw: Vec<String> = [
-            "lyria-3.5",
-            "nano-banana-pro-preview",
-            "gemini-robotics-er-2-preview",
-            "gemini-3.8-flash",
-            "gemini-3.8-flash-lite",
-            "gemma-4-31b-it",
-            "gemini-3.5-flash-tts",
-            "gemini-pro-latest",
-        ]
-        .iter()
-        .map(|s| s.to_string())
-        .collect();
-        let kept = chat_models(&raw);
-        assert_eq!(
-            kept,
-            vec![
-                "gemini-pro-latest",
-                "gemini-3.8-flash-lite",
-                "gemini-3.8-flash",
-                "gemma-4-31b-it"
-            ]
-        );
+    fn old_settings_files_fall_back_to_claude_code() {
+        let old: Settings =
+            serde_json::from_str(r#"{"provider":"gemini","api_key":"x","model":"m"}"#).unwrap();
+        assert_eq!(old.provider, Provider::ClaudeCode);
+        assert_eq!(old.claude_command, "claude");
     }
 
     /// Needs a logged-in `claude` CLI on this machine: `cargo test -- --ignored claude_cli`.
     #[tokio::test]
     #[ignore]
     async fn claude_cli_answers_a_question() {
-        let settings = Settings {
-            provider: Provider::ClaudeCode,
-            ..Settings::default()
-        };
+        let settings = Settings::default();
         let history = vec![Turn {
             role: "user".into(),
             text: "기준 모델이 뭐야? 한 문장으로.".into(),
