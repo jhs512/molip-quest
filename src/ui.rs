@@ -61,11 +61,12 @@ fn mission_progress<'a>(
 }
 
 #[component]
-pub fn Learning(course: Course) -> Element {
-    let mut selected = use_signal(String::new);
-    let mut mission_index = use_signal(|| usize::MAX);
+pub fn Learning(course: Course, #[props(default)] start_unit: String, #[props(default = usize::MAX)] start_mission: usize) -> Element {
+    let mut selected = use_signal(|| start_unit);
+    let mut mission_index = use_signal(|| start_mission);
     let mut clear_popup = use_signal(|| false);
     let mut earned_xp = use_signal(|| (0usize, 0usize));
+    let mut earned_card = use_signal(|| None::<String>);
     // (unit finished, unit to show next, next mission index, current mission index) for the popup.
     let mut pending_next = use_signal(|| None::<(bool, String, usize, usize)>);
     let mut refresh = use_signal(|| 0u64);
@@ -259,6 +260,7 @@ pub fn Learning(course: Course) -> Element {
                 let unit_finished=molip_quest::learning_store::LearningStore::user_store().and_then(|store|store.completed(&course)).is_ok_and(|done|done.contains(&active_id));
                 let total=molip_quest::learning_store::LearningStore::user_store().and_then(|store|store.completed_items(&course)).map(|items|items.len()).unwrap_or(already_completed.len());
                 earned_xp.set((already_completed.len()*100,total*100));
+                earned_card.set(if total>already_completed.len() {course.chapters.iter().flat_map(|c|&c.units).find(|u|u.id==active_id).and_then(|u|u.activities.get(active_mission)).filter(|a|!matches!(a.kind,ActivityKind::Slides {..})).map(|a|a.title.clone())}else{None});
                 // Stay on the cleared mission: the popup's 다음 button is what moves on.
                 let target=if unit_finished {following_id.clone().unwrap_or_else(||active_id.clone())}else{active_id.clone()};
                 pending_next.set(Some((unit_finished,target,(active_mission+1).min(active_total.saturating_sub(1)),active_mission)));
@@ -285,6 +287,7 @@ pub fn Learning(course: Course) -> Element {
             if VIEW_ONLY {h2 {"미션 클리어!"} p {"진도를 저장했습니다."}}
             else {h2 {"정답입니다!"} p {"한 걸음 더 성장했어요."}}
             div {class:"victory-reward",{if earned_xp().1>earned_xp().0 {format!("+{} XP",earned_xp().1-earned_xp().0)}else{"복습 완료!".into()}}}
+            if let Some(title)=earned_card() {div {class:"victory-collection",span {class:"collection-mini-art","◈"}div {span {class:"collection-earned-label","NEW · 도감 카드 획득"}strong {"{title}"}}}}
             div {class:"victory-xp",div {class:"victory-xp-label",strong {class:"victory-level",{format!("Lv. {}",earned_xp().0/500+1)}}span {class:"victory-total",{format!("{} XP",earned_xp().0)}}}
                 div {class:"victory-track",div {class:"victory-fill"}}
                 p {class:"victory-level-note","미션마다 100 XP · 500 XP마다 레벨 업"}

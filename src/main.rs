@@ -1,6 +1,7 @@
 #![cfg_attr(all(windows, not(debug_assertions)), windows_subsystem = "windows")]
 
 mod ui;
+mod collection;
 use dioxus::prelude::*;
 use molip_quest::Course;
 use ui::Learning;
@@ -96,6 +97,7 @@ fn App() -> Element {
         document::eval(include_str!("../assets/layout/shortcuts.js"));
         document::eval(include_str!("../assets/layout/toast.js"));
         document::eval(include_str!("../assets/layout/victory.js"));
+        document::eval(include_str!("../assets/layout/collection.js"));
         document::eval(include_str!("../assets/layout/diagrams.js"));
         document::eval(include_str!("../assets/layout/interactive.js"));
         document::eval(include_str!("../assets/layout/agent.js"));
@@ -151,11 +153,13 @@ enum View {
     Learning,
     Gallery(ui::GalleryKind),
     Avatars,
+    Collection,
 }
 
 #[component]
 fn Workspace() -> Element {
     let mut view = use_signal(|| View::Home);
+    let mut study_target = use_signal(|| (String::new(), usize::MAX));
     // Bumped when progress is reset from home, so the avatar card reads the store again.
     let mut home_epoch = use_signal(|| 0u32);
     let course = use_hook(|| {
@@ -171,7 +175,7 @@ fn Workspace() -> Element {
             rsx! { main { h1 {"수업을 불러올 수 없습니다."} p {"{error}"} ui::DoctorPanel {} } }
         }
         Ok(course) => {
-            rsx! { div { class: match view() { View::Home => "shell", View::Learning => "shell practice-shell", View::Gallery(_) | View::Avatars => "shell practice-shell gallery-shell" },
+            rsx! { div { class: match view() { View::Home => "shell", View::Learning => "shell practice-shell", View::Gallery(_) | View::Avatars | View::Collection => "shell practice-shell gallery-shell" },
                 aside { class:"sidebar", div {class:"brand", "몰입 퀘스트"} h3 {"KPC 금융 데이터 분석"} p {"3일 · 20시간 · 7챕터"}
                     if ui::VIEW_ONLY { p {class:"view-only-note","Android 열람 모드 · 모든 단원과 미션이 열려 있습니다. 개념과 퀴즈를 풀고, 코딩 미션은 읽고 넘어갑니다. 코드 실행·채점은 데스크톱 앱에서 하세요."} }
                     ui::DoctorPanel {} }
@@ -179,7 +183,7 @@ fn Workspace() -> Element {
                     match view() {
                         View::Learning => rsx! {
                             button {class:"classroom-back", onclick:move |_|view.set(View::Home), "← 클래스룸"}
-                            Learning { course:course.clone() }
+                            Learning { course:course.clone(),start_unit:study_target().0,start_mission:study_target().1 }
                         },
                         View::Gallery(kind) => rsx! {
                             button {class:"classroom-back", onclick:move |_|view.set(View::Home), "← 클래스룸"}
@@ -188,6 +192,10 @@ fn Workspace() -> Element {
                         View::Avatars => rsx! {
                             button {class:"classroom-back", onclick:move |_|view.set(View::Home), "← 클래스룸"}
                             ui::AvatarGallery { course:course.clone() }
+                        },
+                        View::Collection => rsx! {
+                            button {class:"classroom-back",onclick:move |_|view.set(View::Home),"← 클래스룸"}
+                            collection::Collection {course:course.clone(),onstudy:move |target|{study_target.set(target);view.set(View::Learning);}}
                         },
                         View::Home => rsx! {
                             h1 {"KPC 학습 여정"} p {"개념을 확인하고 코딩 미션과 퀴즈를 클리어하며 성장하세요."}
@@ -208,7 +216,8 @@ fn Workspace() -> Element {
                             section {class:"card course-row", h2 {"{course.title}"} p {"{course.description}"}
                                 p {{format!("{} 단원",course.total_units())}}
                                 div {class:"course-actions",
-                                    button {class:"primary",onclick:move |_|view.set(View::Learning),"학습 시작 · 이어하기"}
+                                    button {class:"primary",onclick:move |_|{study_target.set((String::new(),usize::MAX));view.set(View::Learning);},"학습 시작 · 이어하기"}
+                                    button {class:"gallery-link",onclick:move |_|view.set(View::Collection),"분석가 도감"}
                                     for kind in ui::GalleryKind::ALL {
                                         button {class:"gallery-link",onclick:move |_|view.set(View::Gallery(kind)),{kind.label()}}
                                     }
