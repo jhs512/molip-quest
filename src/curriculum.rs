@@ -12,6 +12,9 @@ pub struct Activity {
     /// A chapter capstone that needs everything the chapter taught.
     #[serde(default)]
     pub challenge: bool,
+    /// Quick questions for the tutor panel, written for this activity (tools/kpc_course/dsl.py).
+    #[serde(default)]
+    pub ask: Vec<String>,
     #[serde(flatten)]
     pub kind: ActivityKind,
 }

@@ -65,6 +65,8 @@ pub fn Learning(course: Course) -> Element {
     let mut selected = use_signal(String::new);
     let mut mission_index = use_signal(|| usize::MAX);
     let mut clear_popup = use_signal(|| false);
+    // (unit finished, unit to show next, next mission index, current mission index) for the popup.
+    let mut pending_next = use_signal(|| None::<(bool, String, usize, usize)>);
     let mut refresh = use_signal(|| 0u64);
     // Bumped on reset so the mounted mission re-reads drafts and quiz state from scratch.
     let mut epoch = use_signal(|| 0u64);
@@ -122,6 +124,7 @@ pub fn Learning(course: Course) -> Element {
     let mut assistant_open = use_signal(|| false);
     let mut assistant_messages = use_signal(Vec::<molip_quest::assistant::Turn>::new);
     let mut assistant_kind = String::new();
+    let mut assistant_ask: Vec<String> = Vec::new();
     let (assistant_title, assistant_context) = {
         let chapter_title = course
             .chapters
@@ -132,6 +135,7 @@ pub fn Learning(course: Course) -> Element {
         match active.activities.get(active_mission) {
             Some(activity) => {
                 assistant_kind = activity.label().to_string();
+                assistant_ask = activity.ask.clone();
                 let draft_code = match &activity.kind {
                     ActivityKind::Coding { problem } => drafts::load(&format!(
                         "local:{}:{}:{}",
@@ -247,22 +251,37 @@ pub fn Learning(course: Course) -> Element {
             }
         }}
         for active in [active] {UnitFlow {key:"{active.id}-{active.revision}-{epoch}", course_id:course.id.clone(), unit:active,index:mission_index,nav_prev:can_prev,nav_next:can_next,onnavigate:navigate,
-            oncompleted:{let active_id=active_id.clone();let following_id=following_id.clone();let course=course.clone();move |passed|{
-                let unit_finished=passed&&molip_quest::learning_store::LearningStore::user_store().and_then(|store|store.completed(&course)).is_ok_and(|done|done.contains(&active_id));
-                if unit_finished {mission_index.set(usize::MAX);}
-                selected.set(if unit_finished {following_id.clone().unwrap_or_else(||active_id.clone())}else{active_id.clone()});refresh+=1;if passed {clear_popup.set(true);}
+            oncompleted:{let active_id=active_id.clone();let following_id=following_id.clone();let course=course.clone();move |passed: bool|{
+                if !passed {selected.set(active_id.clone());refresh+=1;return;}
+                let unit_finished=molip_quest::learning_store::LearningStore::user_store().and_then(|store|store.completed(&course)).is_ok_and(|done|done.contains(&active_id));
+                // Stay on the cleared mission: the popup's 다음 button is what moves on.
+                let target=if unit_finished {following_id.clone().unwrap_or_else(||active_id.clone())}else{active_id.clone()};
+                pending_next.set(Some((unit_finished,target,(active_mission+1).min(active_total.saturating_sub(1)),active_mission)));
+                clear_popup.set(true);
             }}}}
         }
         if assistant_open() {
+            div {class:"split-handle split-col assistant-handle",role:"separator",aria_orientation:"vertical",aria_label:"AI 창 너비 조절",tabindex:"0",title:"드래그로 너비 조절, 더블 클릭으로 되돌리기"}
             aside {class:"assistant-dock",
-                AssistantPanel {title:assistant_title.clone(),kind:assistant_kind.clone(),context:assistant_context_signal,messages:assistant_messages,onclose:move |_|assistant_open.set(false)}
+                AssistantPanel {title:assistant_title.clone(),kind:assistant_kind.clone(),ask:assistant_ask.clone(),context:assistant_context_signal,messages:assistant_messages,onclose:move |_|assistant_open.set(false)}
             }
         }
         }
         if clear_popup() {div {class:"doctor-backdrop",section {class:"doctor-panel",role:"dialog",aria_label:"정답 확인",aria_modal:"true",
-            if VIEW_ONLY {h2 {"미션 클리어!"} p {"진도를 저장하고 다음 미션을 준비했습니다."}}
-            else {h2 {"정답입니다!"} p {"제출한 답안이 정답입니다. 진도를 저장하고 다음 미션을 준비했습니다."}}
-            button {class:"primary",autofocus:true,onclick:move |_|clear_popup.set(false),"확인"}
+            if VIEW_ONLY {h2 {"미션 클리어!"} p {"진도를 저장했습니다."}}
+            else {h2 {"정답입니다!"} p {"제출한 답안이 정답입니다. 진도를 저장했습니다."}}
+            div {class:"popup-actions",
+                button {class:"primary",autofocus:true,onclick:move |_|{
+                    let next=pending_next();pending_next.set(None);
+                    if let Some((unit_finished,target,next_mission,_))=next {mission_index.set(if unit_finished {usize::MAX} else {next_mission});selected.set(target);}
+                    refresh+=1;clear_popup.set(false);
+                },"다음 미션 ›"}
+                button {onclick:move |_|{
+                    let next=pending_next();pending_next.set(None);
+                    if let Some((_,_,_,current))=next {mission_index.set(current);}
+                    refresh+=1;clear_popup.set(false);
+                },"여기 머물기"}
+            }
         }}}
     }
 }
@@ -563,6 +582,7 @@ fn SlidesView(
 fn AssistantPanel(
     title: String,
     kind: String,
+    ask: Vec<String>,
     context: Signal<String>,
     messages: Signal<Vec<molip_quest::assistant::Turn>>,
     onclose: EventHandler<()>,
@@ -646,6 +666,11 @@ fn AssistantPanel(
         document::eval(
             "const t=document.querySelector('.assistant-compose textarea');if(t){t.value='';}",
         );
+        if question == "/clear" {
+            messages.set(Vec::new());
+            error.set(String::new());
+            return;
+        }
         messages.write().push(Turn {
             role: "user".into(),
             text: question,
@@ -653,7 +678,8 @@ fn AssistantPanel(
         request.call(());
     });
     // Three suggested questions that fit the mission on screen; a tap sends one right away.
-    let suggestions: [&'static str; 3] = match kind.as_str() {
+    // The course supplies questions written for this mission (`ask`); these are the fallback.
+    let defaults: [&'static str; 3] = match kind.as_str() {
         "슬라이드" => [
             "이 덱을 세 줄로 요약해 줘",
             "이 장에서 꼭 기억할 한 가지는?",
@@ -674,6 +700,11 @@ fn AssistantPanel(
             "지금 쓴 코드 어디가 틀렸어?",
             "이 문제 풀어서 제출까지 해 줘",
         ],
+    };
+    let suggestions: Vec<String> = if ask.is_empty() {
+        defaults.iter().map(|s| s.to_string()).collect()
+    } else {
+        ask.clone()
     };
     // A failed question stays in the conversation; 다시 시도 re-sends it without duplicating it.
     let can_retry = move || messages.read().last().is_some_and(|t| t.role == "user") && !pending();
@@ -738,8 +769,8 @@ fn AssistantPanel(
             }
             div { class:"assistant-footer",
                 div { class:"assistant-suggestions",
-                    for text in suggestions {
-                        button { class:"assistant-chip", disabled: pending(), onclick: move |_| { draft.set(text.to_string()); send.call(()); }, "{text}" }
+                    for text in suggestions.clone() {
+                        button { class:"assistant-chip", disabled: pending(), onclick: { let text = text.clone(); move |_| { draft.set(text.clone()); send.call(()); } }, "{text}" }
                     }
                 }
                 div { class:"assistant-context", span { class:"assistant-context-dot" } "「{title}」 기준으로 답하는 중" }

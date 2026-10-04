@@ -13,7 +13,11 @@
   try { saved = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch {}
   const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch {} };
 
-  const axis = handle => handle.classList.contains('split-col')
+  // `.assistant-handle` sits left of the AI dock and sets `--assistant-width` on their parent;
+  // dragging it left makes the dock wider, so its delta is inverted.
+  const axis = handle => handle.classList.contains('assistant-handle')
+    ? { key: 'assistant', prop: '--assistant-width', container: handle.parentElement, pane: '.assistant-dock', horizontal: true, min: 280, reserve: 420, invert: true }
+    : handle.classList.contains('split-col')
     ? { key: 'problem', prop: '--problem-width', container: handle.closest('.lesson'), pane: '.problem-pane', horizontal: true, min: 260, reserve: 360 }
     : { key: 'editor', prop: '--editor-height', container: handle.closest('.coding-pane'), pane: '.editor-pane', horizontal: false, min: 120, reserve: 54 + 8 + 140 };
 
@@ -30,6 +34,9 @@
       const pane = lesson.querySelector('.coding-pane');
       if (pane && saved.editor) pane.style.setProperty('--editor-height', saved.editor + 'px');
     }
+    for (const dock of document.querySelectorAll('.assistant-dock')) {
+      if (saved.assistant && dock.parentElement) dock.parentElement.style.setProperty('--assistant-width', saved.assistant + 'px');
+    }
   }
 
   document.addEventListener('pointerdown', event => {
@@ -43,7 +50,7 @@
     const startSize = a.horizontal ? rect.width : rect.height;
     try { handle.setPointerCapture(event.pointerId); } catch {}
     handle.classList.add('dragging'); document.body.classList.add('splitting');
-    const move = ev => set(a, startSize + ((a.horizontal ? ev.clientX : ev.clientY) - start));
+    const move = ev => set(a, startSize + (a.invert ? -1 : 1) * ((a.horizontal ? ev.clientX : ev.clientY) - start));
     const stop = () => {
       handle.removeEventListener('pointermove', move); handle.removeEventListener('pointerup', stop); handle.removeEventListener('pointercancel', stop);
       handle.classList.remove('dragging'); document.body.classList.remove('splitting');
@@ -62,7 +69,7 @@
     if (!matches.test(event.key) || !a.container) return;
     event.preventDefault();
     const rect = a.container.querySelector(a.pane).getBoundingClientRect();
-    set(a, (a.horizontal ? rect.width : rect.height) + delta); persist();
+    set(a, (a.horizontal ? rect.width : rect.height) + (a.invert ? -delta : delta)); persist();
   });
   document.addEventListener('dblclick', event => {
     const handle = event.target.closest('.split-handle');
@@ -72,7 +79,7 @@
     a.container.style.removeProperty(a.prop); delete saved[a.key]; persist();
   });
   new MutationObserver(records => {
-    if (records.some(r => [...r.addedNodes].some(n => n instanceof Element && (n.matches('.lesson') || n.querySelector('.lesson'))))) applyAll();
+    if (records.some(r => [...r.addedNodes].some(n => n instanceof Element && (n.matches('.lesson, .assistant-dock') || n.querySelector('.lesson, .assistant-dock'))))) applyAll();
   }).observe(document.body, { childList: true, subtree: true });
   applyAll();
   globalThis.molipSplit = { applyAll };

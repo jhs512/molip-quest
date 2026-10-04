@@ -55,11 +55,39 @@ def io(input, expected):
     return dict(input=input, expected=expected)
 
 
-def concept(id, title, body, check):
-    return dict(id=id, title=title, kind="concept", body=text(body), check=dict(check, id="check"))
+CODE_TOKEN = re.compile(r"`([A-Za-z_][A-Za-z0-9_.]*(?:\(\))?)`")
 
 
-def coding(id, title, goal, hint, starter, solution, check=None, tests=None, intro=None):
+def first_code_term(*texts):
+    """The first inline-code identifier (e.g. `print`, `df.groupby()`) mentioned in the texts."""
+    for value in texts:
+        match = CODE_TOKEN.search(value or "")
+        if match:
+            return match.group(1)
+    return None
+
+
+def default_ask(kind, title, *texts, count=0):
+    """Three quick questions for the tutor panel that name this activity's own content."""
+    term = first_code_term(*texts)
+    if kind == "concept":
+        first = f"`{term}` 빵 공장 예로 설명해 줘" if term else f"'{title}' 빵 공장 예로 설명해 줘"
+        return [first, "확인 문항 힌트만 줘, 답은 말고", f"'{title}' 핵심 용어 세 개만 정리해 줘"]
+    if kind == "coding":
+        first = f"`{term}` 쓰는 법 힌트만 줘" if term else "힌트만 줘, 답은 말고"
+        return [first, "지금 쓴 코드 어디가 틀렸어?", f"'{title}' 풀어서 제출까지 해 줘"]
+    if kind == "quiz":
+        return ["1번 문제 힌트만 줘", f"'{title}' {count}문제에서 헷갈리기 쉬운 함정 알려 줘", "퀴즈 전부 풀어서 채점해 줘"]
+    return ["이 덱을 세 줄로 요약해 줘", f"'{title}'에서 꼭 기억할 한 가지는?", "다음 장으로 넘겨 줘"]
+
+
+def concept(id, title, body, check, ask=None):
+    body = text(body)
+    return dict(id=id, title=title, kind="concept", body=body, check=dict(check, id="check"),
+                ask=list(ask) if ask else default_ask("concept", title, body))
+
+
+def coding(id, title, goal, hint, starter, solution, check=None, tests=None, intro=None, ask=None):
     """A standalone main.py problem. `check` is assertion source over `s` (the student's globals)."""
     content = ""
     if intro:
@@ -78,12 +106,14 @@ def coding(id, title, goal, hint, starter, solution, check=None, tests=None, int
     else:
         problem["tests"] = list(tests)
     SOLUTIONS[id] = solution
-    return dict(id=id, title=title, kind="coding", problem=problem)
+    return dict(id=id, title=title, kind="coding", problem=problem,
+                ask=list(ask) if ask else default_ask("coding", title, text(goal), text(hint)))
 
 
-def slides(id, title, markdown):
+def slides(id, title, markdown, ask=None):
     """A Marp deck (Markdown with `---` slide breaks) the instructor presents in class."""
-    return dict(id=id, title=title, kind="slides", markdown=text(markdown))
+    return dict(id=id, title=title, kind="slides", markdown=text(markdown),
+                ask=list(ask) if ask else default_ask("slides", title))
 
 
 def challenge(id, title, **kwargs):
@@ -93,7 +123,7 @@ def challenge(id, title, **kwargs):
     return activity
 
 
-def quiz(id, title, *questions):
+def quiz(id, title, *questions, ask=None):
     shuffled = []
     for index, question in enumerate(questions):
         question = dict(question, id=f"q{index + 1}")
@@ -103,7 +133,8 @@ def quiz(id, title, *questions):
             question["options"] = [question["options"][i] for i in order]
             question["correct"] = order.index(question["correct"])
         shuffled.append(question)
-    return dict(id=id, title=title, kind="quiz", questions=shuffled)
+    return dict(id=id, title=title, kind="quiz", questions=shuffled,
+                ask=list(ask) if ask else default_ask("quiz", title, count=len(shuffled)))
 
 
 def unit(id, title, activities):

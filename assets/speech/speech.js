@@ -302,9 +302,22 @@
       try { localStorage.setItem(rateKey, String(rate)); } catch {}
     };
     panel.onkeydown = event => { if (event.key === 'Escape') { event.preventDefault(); dismiss(); } };
+    // A double click starts reading; a triple click (selecting a paragraph) must not. The third
+    // click arrives shortly after the dblclick event, so reading starts only after a short pause
+    // with no third click, and a third click cancels or dismisses it.
+    let pendingStart = 0;
+    document.addEventListener('click', event => {
+      if (event.detail < 3) return;
+      clearTimeout(pendingStart); pendingStart = 0;
+      dismiss();
+    }, true);
     document.addEventListener('dblclick', event => {
       const block = blockAt(event.target);
       if (!block) return;
+      clearTimeout(pendingStart);
+      pendingStart = setTimeout(() => { pendingStart = 0; startReading(block); }, 320);
+    });
+    function startReading(block) {
       const nodes = readableBlocks(scopeOf(block));
       const startIndex = nodes.indexOf(block);
       if (startIndex < 0) return;
@@ -321,7 +334,7 @@
       if (!chunks.length) return;
       controller.chunks = chunks.map(chunk => chunk.utterance);
       controller.start();
-    });
+    }
     document.addEventListener('visibilitychange', () => { if (document.hidden) dismiss(); });
     addEventListener('pagehide', dismiss);
     synth.getVoices(); // Warm the voice list; some engines fill it asynchronously.

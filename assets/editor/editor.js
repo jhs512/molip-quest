@@ -1,8 +1,10 @@
-import { EditorView, basicSetup } from 'codemirror';
+import { EditorView, lineNumbers, highlightActiveLineGutter, highlightSpecialChars, drawSelection,
+  dropCursor, rectangularSelection, crosshairCursor, highlightActiveLine, keymap } from '@codemirror/view';
+import { EditorState } from '@codemirror/state';
 import { python } from '@codemirror/lang-python';
-import { keymap } from '@codemirror/view';
-import { indentWithTab } from '@codemirror/commands';
-import { syntaxHighlighting, HighlightStyle, indentUnit } from '@codemirror/language';
+import { history, defaultKeymap, historyKeymap, indentWithTab } from '@codemirror/commands';
+import { syntaxHighlighting, HighlightStyle, indentUnit, defaultHighlightStyle, indentOnInput, bracketMatching, foldGutter, foldKeymap } from '@codemirror/language';
+import { searchKeymap, highlightSelectionMatches } from '@codemirror/search';
 import { tags, highlightCode, classHighlighter } from '@lezer/highlight';
 
 // The textarea stays as the Dioxus event bridge and accessible fallback.
@@ -18,6 +20,15 @@ if (!window.molipCodeEditors) {
     { tag: tags.function(tags.variableName), color: '#82cfff' },
     { tag: tags.operator, color: '#89dceb' },
   ]));
+  // codemirror's basicSetup minus autocompletion and auto-closing brackets: learners type
+  // every character themselves, and a popup over "pr" only distracts beginners.
+  const setup = [
+    lineNumbers(), highlightActiveLineGutter(), highlightSpecialChars(), history(), foldGutter(),
+    drawSelection(), dropCursor(), EditorState.allowMultipleSelections.of(true), indentOnInput(),
+    syntaxHighlighting(defaultHighlightStyle, { fallback: true }), bracketMatching(),
+    rectangularSelection(), crosshairCursor(), highlightActiveLine(), highlightSelectionMatches(),
+    keymap.of([...defaultKeymap, ...searchKeymap, ...historyKeymap, ...foldKeymap]),
+  ];
   const theme = EditorView.theme({
     '&': { height: '100%', backgroundColor: '#202d3e', color: '#e3edf6' },
     '.cm-scroller': { overflow: 'auto', fontFamily: 'Consolas, monospace', fontSize: '15px' },
@@ -59,7 +70,7 @@ if (!window.molipCodeEditors) {
         view = new EditorView({
           doc: source,
           parent: host,
-          extensions: [basicSetup, python(), indentUnit.of('    '), keymap.of([indentWithTab]), theme, colors,
+          extensions: [setup, python(), indentUnit.of('    '), keymap.of([indentWithTab]), theme, colors,
             EditorView.contentAttributes.of({ 'aria-label': 'Python 코드 편집기' }),
             EditorView.updateListener.of(update => {
               if (!update.docChanged || element.value === update.state.doc.toString()) return;
