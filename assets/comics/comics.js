@@ -49,15 +49,11 @@
         if (!api) throw new Error('SDK unavailable');
         const panelMarker = code.textContent.match(/^# molip-panel:(\d+)\n/);
         const script = code.textContent.replace(/^# molip-panel:\d+\n/, '');
-        let pending = panelMarker && slideRenders.get(script);
-        if (!pending) {
-          pending = api.renderComicAsync(script, { 너비: 720 });
-          if (panelMarker) slideRenders.set(script, pending);
-        }
-        const result = await pending;
+        const result = await (panelMarker ? cachedRender(api, script, 720) : api.renderComicAsync(script, { 너비: 720 }));
         if (result.diagnostics.length) throw new Error(result.diagnostics.join(' / '));
         const panel = panelMarker && result.panels[Number(panelMarker[1])];
-        figure.innerHTML = panel ? panel.svg : result.svg;
+        if (panel) await placeSlidePanel(api, script, Number(panelMarker[1]), panel, figure, !!pre.nextElementSibling);
+        else figure.innerHTML = result.svg;
         const svg = figure.querySelector('svg');
         if (svg) { svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', panel ? `설명 만화 ${Number(panelMarker[1]) + 1} / ${result.panels.length}컷` : '설명 만화 ' + ((result.panels && result.panels.length) || 1) + '컷'); }
         count += 1;
@@ -67,6 +63,67 @@
       }
       pre.replaceWith(figure);
     }
+  }
+  // Slide comics. The SDK keeps a panel's height fixed and only widens it, so a 720-wide panel
+  // 820 tall lands at 334 x 380 on a 1280 x 720 slide with the sides empty. Two fixes:
+  //  - a panel with a diagram is split: the diagram SVG the SDK drew on its board is lifted out
+  //    to the left, and the panel is drawn again without the diagram for the right;
+  //  - any other panel is rendered again at the width that makes it fill the slide box
+  //    (content width 1120; height ~400 under a caption, ~500 without one; SDK cap 2400).
+  const SLIDE_BOX_WIDTH = 1120, SLIDE_BOX_CAPTIONED = 400, SLIDE_BOX_PLAIN = 500;
+  function cachedRender(api, script, width) {
+    const key = width + '\n' + script;
+    let pending = slideRenders.get(key);
+    if (!pending) { pending = api.renderComicAsync(script, { 너비: width }); slideRenders.set(key, pending); }
+    return pending;
+  }
+  // Drops every `다이어그램:` block (its lines are indented deeper than the key).
+  function withoutDiagrams(script) {
+    const out = []; let skipDeeperThan = -1;
+    for (const line of script.split('\n')) {
+      const indent = line.match(/^ */)[0].length;
+      if (skipDeeperThan >= 0) { if (!line.trim() || indent > skipDeeperThan) continue; skipDeeperThan = -1; }
+      if (/^\s*다이어그램\s*:/.test(line)) { skipDeeperThan = indent; continue; }
+      out.push(line);
+    }
+    return out.join('\n');
+  }
+  function diagramOf(panelSvg) {
+    const holder = document.createElement('div'); holder.innerHTML = panelSvg;
+    const nested = holder.querySelectorAll('svg svg');
+    const board = nested.length ? nested[nested.length - 1] : null;
+    // The SDK inlines Mermaid's output as a nested <svg role="graphics-document"> with its
+    // classes stripped, so the role is what identifies it.
+    if (!board || !/graphics-document/.test(board.getAttribute('role') || '')) return null;
+    const svg = board.cloneNode(true);
+    svg.removeAttribute('x'); svg.removeAttribute('y');
+    for (const property of ['width', 'height', 'max-width', 'max-height']) svg.style.removeProperty(property);
+    if (!svg.getAttribute('viewBox') && svg.getAttribute('width') && svg.getAttribute('height')) svg.setAttribute('viewBox', `0 0 ${parseFloat(svg.getAttribute('width'))} ${parseFloat(svg.getAttribute('height'))}`);
+    return svg;
+  }
+  async function placeSlidePanel(api, script, index, panel, figure, captioned) {
+    const diagram = /^\s*다이어그램\s*:/m.test(script) ? diagramOf(panel.svg) : null;
+    if (diagram) {
+      try {
+        const rest = await cachedRender(api, withoutDiagrams(script), 720);
+        const own = !rest.diagnostics.length && rest.panels[index];
+        if (own) {
+          figure.classList.add('comic-split');
+          const left = document.createElement('div'); left.className = 'comic-split-diagram'; left.append(diagram);
+          const right = document.createElement('div'); right.className = 'comic-split-panel'; right.innerHTML = own.svg;
+          figure.replaceChildren(left, right);
+          return;
+        }
+      } catch (error) { console.warn('comic split failed, showing the whole panel', error); }
+    }
+    const boxHeight = captioned ? SLIDE_BOX_CAPTIONED : SLIDE_BOX_PLAIN;
+    const width = Math.min(2400, Math.max(720, Math.round(SLIDE_BOX_WIDTH * (panel.height || 0) / boxHeight)));
+    let shown = panel;
+    if (width > 720) {
+      const wide = await cachedRender(api, script, width);
+      if (!wide.diagnostics.length && wide.panels[index]) shown = wide.panels[index];
+    }
+    figure.innerHTML = shown.svg;
   }
   const observer = new MutationObserver(records => {
     for (const record of records) for (const node of record.addedNodes) if (node instanceof Element) render(node);

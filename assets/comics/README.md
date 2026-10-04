@@ -8,7 +8,9 @@ The Markdown renderer keeps the fence as `pre > code.language-comic-gen`;
 SVG of every panel, so the strip reads inline with the surrounding paragraphs.
 Inside a slide deck, each panel gets its own slide. The complete comic script is
 rendered once so character and previous-panel inheritance are preserved, and each
-slide displays its corresponding resolved panel within the available height.
+slide displays its corresponding resolved panel within the available height. Panels keep a
+fixed height and only widen, so slide comics are rendered a second time at the width that makes
+the tallest panel fill the slide box; diagrams on a panel then stay readable.
 
 `comic-gen.js` is the vendored browser SDK (v0.7.5, an ES module from
 `https://cdn.jsdelivr.net/gh/jhs512/comic-gen@v0.7.5/cdn/comic-gen.js`). The app

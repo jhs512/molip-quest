@@ -3538,6 +3538,17 @@ section.lead p { font-size: 34px; color: #d6e4f0; }
 section .comic-strip { height: 380px; display: flex; align-items: center; justify-content: center; }
 section .comic-strip + p { font-size: 26px; margin-top: 4px; }
 section .comic-strip svg { max-height: 100%; max-width: 100%; width: auto; height: auto; margin: 0 auto; }
+/* A slide that holds a comic panel stacks as a column so the strip takes every pixel the
+   heading and caption leave over, instead of a fixed 380px with the rest of the slide empty. */
+section.comic { display: flex; flex-direction: column; }
+section.comic > * { flex: none; }
+section.comic > .comic-strip { flex: 1 1 0; min-height: 0; height: auto; }
+/* A panel with a diagram is split by comics.js: the diagram alone on the left, the characters
+   and their speech on the right, so neither is squeezed under the other. */
+section .comic-split { gap: 28px; }
+section .comic-split > div { max-height: 100%; min-width: 0; display: flex; align-items: center; justify-content: center; }
+section .comic-split > .comic-split-diagram { flex: 13 1 0; padding: 16px; box-sizing: border-box; background: #ffffff; border: 1px solid #cfd8e3; border-radius: 14px; }
+section .comic-split > .comic-split-panel { flex: 7 1 0; height: 100%; }
 section figure { margin: 8px 0; }
 section .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
 `);function nY(e){let{html:t,css:r}=Ld.render(ICe(e));return{html:t,css:r}}function ICe(e){let t=e.split(`
@@ -3546,7 +3557,8 @@ section .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
 
 ${u}
 
-`:""}${c}
+`:""}<!-- _class: comic -->
+${c}
 # molip-panel:${Q}
 ${i.content}\`\`\``).join(`
 `)})}for(let i of n.reverse())t.splice(i.start,i.end-i.start,i.content);return t.join(`
