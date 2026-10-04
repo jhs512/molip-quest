@@ -535,7 +535,9 @@ fn SlidesView(
         {
             Ok(()) => {
                 done.set(true);
-                oncompleted.call(true);
+                // Record quietly: no "정답입니다" popup and no jump to the next mission, which
+                // would yank the reader off the last slide (and the tutor agent off the deck).
+                oncompleted.call(false);
             }
             Err(e) => message.set(e),
         }
