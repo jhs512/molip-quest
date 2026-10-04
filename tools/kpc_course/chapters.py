@@ -27,8 +27,12 @@ def build():
         # own activities (before any deck): the deck goes in front of that activity, so inserting
         # from the back keeps every position valid when a unit gets several decks.
         placements = [p for p in DECK_PLACEMENTS if p[0] == chapter_id]
-        for _, unit_index, position, deck in sorted(placements, key=lambda p: (p[1], -p[2])):
-            units[unit_index]["activities"].insert(position, deck)
+        by_slot = {}
+        for _, unit_index, position, deck in placements:
+            by_slot.setdefault((unit_index, position), []).append(deck)
+        for (unit_index, position), decks in sorted(by_slot.items(), key=lambda item: (item[0][0], -item[0][1])):
+            for offset, deck in enumerate(decks):
+                units[unit_index]["activities"].insert(position + offset, deck)
         seen = set()
         for _, _, _, deck in placements:
             if deck["id"] in seen:
