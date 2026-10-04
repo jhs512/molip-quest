@@ -19,6 +19,12 @@
   const RESUBMIT_WINDOW_MS = 2000;
   let armedUntil = 0;
   document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+      // /auto-all: the learning view renders a hidden stop button while it runs.
+      const stop = document.getElementById('autopilot-stop');
+      if (stop) { stop.click(); globalThis.molipToast?.('자동 진행을 해제했습니다', 'info'); }
+      return;
+    }
     if (event.key === 'F11' || (mac && event.metaKey && event.ctrlKey && event.key.toLowerCase() === 'f')) {
       event.preventDefault();
       toggleFullscreen();

@@ -550,3 +550,11 @@ button.collection-card:hover {transform:translateY(-5px);border-color:#d5bb82;bo
 .practice-shell .assistant-actions .assistant-stop { background: #6d4fd6; color: #fff; border-color: #a78bfa; font-weight: 700; }
 .practice-shell .assistant-chip.narrate { background: #2a1f52; border-color: #7c5fd6; color: #e9e2ff; }
 .practice-shell .assistant-chip.narrate:hover { background: #3a2c6e; }
+
+/* /auto-all: the banner while the tutor runs mission after mission (Esc or 해제 ends it). */
+.autopilot-banner { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 1400; display: flex; align-items: center; gap: 8px; padding: 8px 14px 8px 12px; border-radius: 999px; background: #6d4fd6; color: #fff; font-size: 13px; font-weight: 600; box-shadow: 0 10px 34px #0008, 0 0 0 2px #c4b5fd66; }
+.autopilot-dot { width: 9px; height: 9px; border-radius: 50%; background: #ffe0a0; box-shadow: 0 0 10px #ffe0a0; animation: autopilot-blink 1.2s ease-in-out infinite; }
+.autopilot-banner kbd { font-family: inherit; background: #ffffff22; border: 1px solid #ffffff55; border-radius: 4px; padding: 0 6px; font-size: 12px; }
+.practice-shell .autopilot-banner button { padding: 4px 10px; font-size: 12px; background: #ffffff22; border-color: #ffffff66; color: #fff; }
+@keyframes autopilot-blink { 0%, 100% { opacity: 1 } 50% { opacity: .35 } }
+.practice-shell .assistant-actions select.assistant-rate { padding: 6px 8px; border-radius: 6px; font-size: 12.5px; background: #1e2d3b; color: #e0edf5; border: 1px solid #4c6478; }

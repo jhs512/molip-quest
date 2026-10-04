@@ -27,12 +27,10 @@
   function workspaceReport() {
     return [text('.result-pane .execution-status'), text('.result-pane .output')].filter(Boolean).join('\n');
   }
-  function dismissClearPopup() {
-    const ok = [...document.querySelectorAll('.doctor-panel button')].find(b => b.textContent.trim() === '확인');
-    if (!ok) return false;
-    ok.click();
-    return true;
-  }
+  // The reward card (다음 미션 / 여기 머물기) is left to the student or to /auto-all; its presence
+  // is how a pass is recognised. A `next` action takes its 다음 미션 button.
+  const popupButton = text => [...document.querySelectorAll('.doctor-panel button')].find(b => b.textContent.trim() === text) || null;
+  const cleared = () => !!document.querySelector('.victory-panel');
 
   // ---- Spotlight: a purple frame over the element being talked about, with the sentence. ----
   const TARGETS = {
@@ -134,6 +132,7 @@
   function playClip(url) {
     return new Promise(resolve => {
       const audio = new Audio(url);
+      audio.playbackRate = globalThis.molipVoice ? globalThis.molipVoice.rate : 1;
       let done = false;
       const finish = ok => { if (done) return; done = true; if (currentAudio === audio) currentAudio = null; resolve(ok); };
       audio.onended = () => finish(true);
@@ -143,6 +142,7 @@
     });
   }
   function stopClip() { if (currentAudio) { try { currentAudio.pause(); } catch {} currentAudio = null; } }
+  window.addEventListener('molip:tts-rate', event => { if (currentAudio) currentAudio.playbackRate = event.detail; });
   function prefetch(actions) {
     if (!voice || !neural()) return;
     for (const action of actions) {
@@ -254,8 +254,8 @@
       button.click();
       await waitIdle(button);
       await sleep(400);
-      const passed = dismissClearPopup();
-      return (passed ? '제출 결과: 통과. 미션 클리어로 기록됐습니다.\n' : '제출 결과:\n') + (workspaceReport() || '(출력 없음)');
+      const passed = cleared();
+      return (passed ? '제출 결과: 통과. 미션 클리어로 기록됐습니다 (정답 카드가 떠 있습니다).\n' : '제출 결과:\n') + (workspaceReport() || '(출력 없음)');
     },
     async answer_quiz(a) {
       const sections = [...document.querySelectorAll('.quiz-question')];
@@ -286,12 +286,11 @@
       const button = document.querySelector('.quiz-actions .primary');
       if (button && !button.disabled) { if (a.say) spotlight('quiz_submit', a.say); button.click(); await waitIdle(button); }
       await sleep(300);
-      dismissClearPopup();
-      const status = text('.quiz-actions ~ .execution-status, .concept-flow .execution-status, .execution-status', 600);
+      const status = text('.quiz-actions ~ .execution-status, .concept-flow .execution-status, .execution-status', 600) + (cleared() ? ' · 미션 클리어 (정답 카드가 떠 있습니다)' : '');
       const banner = text('.clear-banner', 200);
       return ['채점 결과: ' + (status || '(상태 없음)'), banner, ...notes].filter(Boolean).join('\n');
     },
-    async next() { const b = byText('.header-navigation button', '다음 →'); if (!b || b.disabled) throw new Error('다음 미션으로 갈 수 없습니다'); b.click(); await sleep(600); return '다음 미션으로 이동했습니다: ' + text('.reading-mission h2, .problem-pane h2, .slides-mission h2', 120); },
+    async next() { const popup = popupButton('다음 미션 ›'); const b = popup || byText('.header-navigation button', '다음 →'); if (!b || b.disabled) throw new Error('다음 미션으로 갈 수 없습니다'); b.click(); await sleep(600); return '다음 미션으로 이동했습니다: ' + text('.reading-mission h2, .problem-pane h2, .slides-mission h2', 120); },
     async prev() { const b = byText('.header-navigation button', '← 이전'); if (!b || b.disabled) throw new Error('이전 미션으로 갈 수 없습니다'); b.click(); await sleep(600); return '이전 미션으로 이동했습니다: ' + text('.reading-mission h2, .problem-pane h2, .slides-mission h2', 120); },
     async goto(a) { const cells = document.querySelectorAll('.mission-cell'); const cell = cells[Number(a.mission) - 1]; if (!cell) throw new Error(`이 단원에는 ${a.mission}번 미션이 없습니다 (미션 ${cells.length}개)`); cell.click(); await sleep(600); return `${a.mission}번 미션으로 이동했습니다: ` + text('.reading-mission h2, .problem-pane h2, .slides-mission h2', 120); },
     async next_slide() { const b = byText('.slides-bar button', '다음 장 →'); if (!b || b.disabled) throw new Error('넘길 장이 없습니다'); b.click(); await sleep(300); return '다음 장으로 넘겼습니다: ' + text('.slides-counter', 20); },
@@ -339,5 +338,5 @@
   function stop() { cancelled = true; stopSpeech(); clearSpot(); }
   function setVoice(on) { voice = !!on; if (!voice) stopSpeech(); return voice; }
   function setVoiceName(name) { return globalThis.molipVoice ? globalThis.molipVoice.setName(name) : String(name || 'system'); }
-  globalThis.molipAgent = { run, stop, setVoice, setVoiceName, get voice() { return voice; }, get voiceName() { return globalThis.molipVoice ? globalThis.molipVoice.name : 'system'; }, get lastSpeech() { return lastSpeech; }, actions: Object.keys(handlers) };
+  globalThis.molipAgent = { run, stop, setVoice, setVoiceName, get voice() { return voice; }, get voiceName() { return globalThis.molipVoice ? globalThis.molipVoice.name : 'system'; }, get lastSpeech() { return lastSpeech; }, get playbackRate() { return currentAudio ? currentAudio.playbackRate : null; }, actions: Object.keys(handlers) };
 })();

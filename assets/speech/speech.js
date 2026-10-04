@@ -337,7 +337,15 @@
       if (!speechRates.includes(rate)) return;
       controller.setRate(rate);
       try { localStorage.setItem(rateKey, String(rate)); } catch {}
+      if (globalThis.molipVoice) globalThis.molipVoice.setRate(rate); // the AI panel's speed follows
     };
+    // The AI panel's speed control (assets/layout/voice.js) changes this reader too.
+    addEventListener('molip:tts-rate', event => {
+      const rate = Number(event.detail);
+      if (!speechRates.includes(rate) || rate === controller.rate) return;
+      controller.setRate(rate);
+      panel.querySelector('select').value = String(rate);
+    });
     panel.onkeydown = event => { if (event.key === 'Escape') { event.preventDefault(); dismiss(); } };
     // A double click starts reading; a triple click (selecting a paragraph) must not. The third
     // click arrives shortly after the dblclick event, so reading starts only after a short pause

@@ -24,13 +24,26 @@ const SYSTEM: &str = "당신은 KPC 「머신러닝을 활용한 금융데이터
 동작: set_code{code}, fill_blanks{values}, run, submit, answer_quiz{answers: {\"1\": \"보기 글자 그대로 또는 단답\"}}, \
 next, prev, goto{mission}, next_slide, finish_slides, say{target, text}, type_code{code, say, replace}. 행동을 부탁받지 않았으면 블록을 붙이지 않습니다. 예:\n\
 ```molip-actions\n[{\"action\":\"set_code\",\"code\":\"print('Hello, KPC!')\"},{\"action\":\"submit\"}]\n```\n\
-해설 모드: 학생이 '해설하며', '설명하면서', '이야기하면서', '보여 주면서' 풀어 달라고 하면 답 글은 한 줄만 쓰고 동작 블록에 단계를 순서대로 담습니다. \
+해설 모드: 학생이 '/auto'를 치거나 '해설하며', '설명하면서', '이야기하면서', '보여 주면서' 풀어 달라고 하면 답 글은 한 줄만 쓰고 동작 블록에 단계를 순서대로 담습니다. \
 모든 동작에 \"say\"를 붙일 수 있고, 앱은 그 문장을 소리 내어 읽으면서 건드리는 자리를 보라색으로 비춘 뒤에 동작합니다. say는 수강생에게 말하듯 1~2문장으로. \
 흐름: say{target:\"problem\", text:문제가 무엇을 묻는지} → say{target:\"examples\", text:예제 입력과 출력 읽기} → \
 type_code{code:첫 조각, say:설명, replace:true}(기존 코드를 지우고 시작) → type_code{code:다음 조각, say:그 줄들이 하는 일}을 2~4줄씩 여러 번 → \
 run{say:\"실행해 볼게요\"} → say{target:\"output\", text:결과 읽기} → submit{say}. 퀴즈는 say{target:\"quiz:1\", text:문항 풀이} 뒤 answer_quiz{answers, say}. \
-빈칸 문제는 say{target:\"blanks\"} 뒤 fill_blanks{values, say}. target 값: problem, examples, editor, input, output, run, submit, hint, quiz, quiz:N, option:N:M, blanks, nav. \
+빈칸 문제는 say{target:\"blanks\"} 뒤 fill_blanks{values, say}. 개념 미션은 say{target:\"problem\"}을 2~4번 이어 핵심을 짚은 뒤 확인 문항이 있으면 answer_quiz{answers, say}. \
+슬라이드 미션은 장마다 say{target:\"slides\", text:그 장의 요지}와 next_slide를 번갈아 넣고 마지막에 finish_slides. \
+target 값: problem, examples, editor, input, output, run, submit, hint, quiz, quiz:N, option:N:M, blanks, slides, nav. \
 type_code의 code는 지금까지의 전체가 아니라 덧붙일 부분만 적고, 조각을 모두 이으면 완전한 정답 코드가 되어야 합니다.";
+
+/// What the `/auto` and `/auto-all` commands ask for, in the words the system prompt expects.
+pub const AUTO_REQUEST: &str = "이 미션을 해설하며 끝까지 진행해 줘: 코딩이면 코드를 조각내어 설명하며 넣고 실행·제출까지, 퀴즈나 확인 문항이면 풀이를 말하고 채점까지, 개념이면 핵심을 짚어 주고, 슬라이드면 장마다 요지를 말하며 넘기고 끝까지. 답 글은 한 줄만.";
+
+/// `/auto` and `/auto-all` are typed as commands; the model sees the request they stand for.
+fn spoken_request(text: &str) -> &str {
+    match text.trim() {
+        "/auto" | "/auto-all" => AUTO_REQUEST,
+        other => other,
+    }
+}
 
 /// Which locally installed CLI answers.
 #[derive(Clone, Copy, Debug, Default, Deserialize, Serialize, PartialEq)]
@@ -256,7 +269,7 @@ fn transcript(context: &str, history: &[Turn]) -> String {
             "tool" => "앱",
             _ => "조교",
         };
-        text.push_str(&format!("{who}: {}\n\n", turn.text.trim()));
+        text.push_str(&format!("{who}: {}\n\n", spoken_request(&turn.text)));
     }
     text.push_str(
         "위 대화의 마지막 학생 질문에 조교로서 답하세요. 인사말이나 머리말 없이 답만 쓰세요.",
@@ -306,6 +319,8 @@ async fn ask_cli(
         .stderr(Stdio::piped());
     #[cfg(windows)]
     cmd.creation_flags(0x0800_0000); // CREATE_NO_WINDOW
+    // Cancelling the request (Esc in /auto-all) drops this future and must end the CLI with it.
+    cmd.kill_on_drop(true);
     let mut child = cmd.spawn().map_err(|e| {
         format!("'{command}' 명령을 실행하지 못했습니다: {e}. 설치되어 있고 PATH에 있는지, 설정의 명령 이름이 맞는지 확인하세요.")
     })?;
@@ -359,6 +374,18 @@ async fn ask_cli(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn auto_commands_become_the_narration_request() {
+        let history = vec![Turn { role: "user".into(), text: "/auto".into() }];
+        let text = transcript("문제", &history);
+        assert!(text.contains(AUTO_REQUEST));
+        assert!(!text.contains("학생: /auto"));
+        let history = vec![Turn { role: "user".into(), text: " /auto-all ".into() }];
+        assert!(transcript("문제", &history).contains(AUTO_REQUEST));
+        let history = vec![Turn { role: "user".into(), text: "/autobahn".into() }];
+        assert!(transcript("문제", &history).contains("학생: /autobahn"));
+    }
 
     #[test]
     fn actions_block_is_split_from_the_answer() {

@@ -124,6 +124,12 @@ pub fn Learning(course: Course, #[props(default)] start_unit: String, #[props(de
         && !(active_mission + 1 == active_total && next.is_some()));
     // "AI에게 물어보기": the tutor chat knows the mission on screen.
     let mut assistant_open = use_signal(|| false);
+    // /auto-all: the tutor narrates and clears mission after mission until the course ends or
+    // Esc. `auto_round` is bumped after every move so the panel starts the next /auto;
+    // `auto_cancel` is bumped to abandon whatever the tutor is doing right now.
+    let mut autopilot = use_signal(|| false);
+    let mut auto_round = use_signal(|| 0u32);
+    let mut auto_cancel = use_signal(|| 0u32);
     let mut assistant_messages = use_signal(Vec::<molip_quest::assistant::Turn>::new);
     let mut assistant_kind = String::new();
     let mut assistant_ask: Vec<String> = Vec::new();
@@ -175,6 +181,7 @@ pub fn Learning(course: Course, #[props(default)] start_unit: String, #[props(de
     }
     // Mark a mission switch in the conversation.
     let mut assistant_last_title = use_signal(|| assistant_title.clone());
+    let mission_marker = assistant_last_title;
     {
         let title = assistant_title.clone();
         use_effect(use_reactive!(|title| {
@@ -270,9 +277,35 @@ pub fn Learning(course: Course, #[props(default)] start_unit: String, #[props(de
         if assistant_open() {
             div {class:"split-handle split-col assistant-handle",role:"separator",aria_orientation:"vertical",aria_label:"AI 창 너비 조절",tabindex:"0",title:"드래그로 너비 조절, 더블 클릭으로 되돌리기"}
             aside {class:"assistant-dock",
-                AssistantPanel {title:assistant_title.clone(),kind:assistant_kind.clone(),ask:assistant_ask.clone(),context:assistant_context_signal,messages:assistant_messages,onclose:move |_|assistant_open.set(false)}
+                AssistantPanel {title:assistant_title.clone(),kind:assistant_kind.clone(),ask:assistant_ask.clone(),context:assistant_context_signal,messages:assistant_messages,
+                    autopilot,auto_round,auto_cancel,mission_marker,
+                    onauto_advance:move |_|{
+                        // The tutor is done with this mission: take the clear popup's 다음 미션, or the
+                        // header's 다음 →, or stop at the end of the course.
+                        if clear_popup() {
+                            let next=pending_next();pending_next.set(None);
+                            if let Some((unit_finished,target,next_mission,_))=next {mission_index.set(if unit_finished {usize::MAX} else {next_mission});selected.set(target);}
+                            refresh+=1;clear_popup.set(false);
+                            auto_round+=1;
+                        } else if can_next {
+                            navigate.call(1);
+                            auto_round+=1;
+                        } else {
+                            autopilot.set(false);
+                            toast("과정의 끝입니다. 자동 진행을 마칩니다.","success");
+                        }
+                    },
+                    onclose:move |_|{assistant_open.set(false);if autopilot() {autopilot.set(false);auto_cancel+=1;document::eval("window.molipAgent && molipAgent.stop();");}}}
             }
         }
+        }
+        if autopilot() {
+            div {class:"autopilot-banner",role:"status",
+                span {class:"autopilot-dot"} span {"자동 진행 중 · 미션이 끝나면 다음으로 넘어갑니다 · "} kbd {"Esc"} span {" 해제"}
+                button {onclick:move |_|{autopilot.set(false);auto_cancel+=1;document::eval("window.molipAgent && molipAgent.stop();");},"해제"}
+            }
+            // Esc anywhere (assets/layout/shortcuts.js) clicks this.
+            button {id:"autopilot-stop",hidden:true,tabindex:"-1",onclick:move |_|{autopilot.set(false);auto_cancel+=1;document::eval("window.molipAgent && molipAgent.stop();");}}
         }
         if clear_popup() {div {class:"doctor-backdrop victory-backdrop",section {class:"doctor-panel victory-panel",role:"dialog",aria_label:"정답 확인",aria_modal:"true",
             "data-xp-before":earned_xp().0.to_string(),"data-xp-after":earned_xp().1.to_string(),
@@ -374,7 +407,9 @@ fn UnitFlow(
             }
 
         }
-        for active in [active] {ActivityView {key:"{progress.id}-{progress.revision}",course_id:course_id.clone(),activity:active,progress:progress.clone(),nav_prev,nav_next,onnavigate,oncompleted:move |passed|{index.set(if passed {(active_index+1).min(total-1)}else{active_index});refresh+=1;oncompleted.call(passed);}}}
+        for active in [active] {ActivityView {key:"{progress.id}-{progress.revision}",course_id:course_id.clone(),activity:active,progress:progress.clone(),nav_prev,nav_next,onnavigate,// Pin the index (it may be the resume marker) so the cleared mission stays on screen under the
+        // reward card; the card's 다음 미션 is what moves on.
+        oncompleted:move |passed|{index.set(active_index);refresh+=1;oncompleted.call(passed);}}}
     }
 }
 
@@ -607,9 +642,20 @@ fn AssistantPanel(
     ask: Vec<String>,
     context: Signal<String>,
     messages: Signal<Vec<molip_quest::assistant::Turn>>,
+    autopilot: Signal<bool>,
+    auto_round: Signal<u32>,
+    auto_cancel: Signal<u32>,
+    mission_marker: Signal<String>,
+    onauto_advance: EventHandler<()>,
     onclose: EventHandler<()>,
 ) -> Element {
     use molip_quest::assistant::{self, Provider, Settings, Turn};
+    const AUTO: &str = "/auto";
+    const AUTO_ALL: &str = "/auto-all";
+    let mut current_task = use_signal(|| None::<dioxus::core::Task>);
+    // The mission a /auto round started on: if the tutor itself moved on (a `next` action), the
+    // flow must not move a second time.
+    let mut auto_started_on = use_signal(String::new);
     let mut settings = use_signal(Settings::load);
     let mut show_settings = use_signal(|| false);
     let mut draft = use_signal(String::new);
@@ -626,7 +672,7 @@ fn AssistantPanel(
         error.set(String::new());
         document::eval(SCROLL);
         let settings_now = settings();
-        spawn(async move {
+        let task = spawn(async move {
             let mut rounds = 0;
             loop {
                 let history = messages();
@@ -675,7 +721,58 @@ fn AssistantPanel(
             }
             pending.set(false);
             document::eval(SCROLL);
+            // /auto-all: a finished mission hands control back to the learning flow, which moves
+            // on and bumps auto_round; an error ends the run where it is.
+            if *autopilot.peek() {
+                if !error.peek().is_empty() {
+                    autopilot.set(false);
+                    messages.write().push(Turn { role: "note".into(), text: "오류가 나서 자동 진행을 멈췄습니다.".into() });
+                } else if *mission_marker.peek() == *auto_started_on.peek() {
+                    onauto_advance.call(());
+                } else {
+                    auto_round += 1;
+                }
+            }
         });
+        current_task.set(Some(task));
+    });
+    // The next mission's /auto, a moment after the screen has switched.
+    let mut handled_round = use_signal(|| 0u32);
+    use_effect(move || {
+        let round = auto_round();
+        if round == *handled_round.peek() {
+            return;
+        }
+        handled_round.set(round);
+        if !*autopilot.peek() {
+            return;
+        }
+        spawn(async move {
+            tokio::time::sleep(std::time::Duration::from_millis(1500)).await;
+            if !*autopilot.peek() || *pending.peek() {
+                return;
+            }
+            auto_started_on.set(mission_marker.peek().clone());
+            messages.write().push(Turn { role: "user".into(), text: AUTO.into() });
+            document::eval(SCROLL);
+            request.call(());
+        });
+    });
+    // Esc / 해제: drop the running request (which kills the CLI) and settle the panel.
+    let mut handled_cancel = use_signal(|| 0u32);
+    use_effect(move || {
+        let cancel = auto_cancel();
+        if cancel == *handled_cancel.peek() {
+            return;
+        }
+        handled_cancel.set(cancel);
+        if let Some(task) = current_task.write().take() {
+            task.cancel();
+        }
+        pending.set(false);
+        running.set(false);
+        messages.write().push(Turn { role: "note".into(), text: "자동 진행을 해제했습니다.".into() });
+        document::eval(SCROLL);
     });
     let send = Callback::new(move |_: ()| {
         let question = draft().trim().to_string();
@@ -692,6 +789,10 @@ fn AssistantPanel(
             messages.set(Vec::new());
             error.set(String::new());
             return;
+        }
+        if question == AUTO_ALL {
+            autopilot.set(true);
+            auto_started_on.set(mission_marker.peek().clone());
         }
         messages.write().push(Turn {
             role: "user".into(),
@@ -728,11 +829,14 @@ fn AssistantPanel(
     } else {
         ask.clone()
     };
-    // 해설 모드: the tutor solves on screen while explaining aloud, spotlighting what it touches.
-    const NARRATE: &str = "해설하며 풀어 줘";
-    if kind != "슬라이드" {
-        suggestions.push(NARRATE.into());
-    }
+    // 해설 모드: /auto narrates this mission on screen (purple spotlight, voice); /auto-all keeps
+    // going mission after mission until Esc.
+    suggestions.push(AUTO.into());
+    suggestions.push(AUTO_ALL.into());
+    // The speed lives in the page (shared with 읽어주기): show the saved value once mounted.
+    use_effect(|| {
+        document::eval("const s=document.querySelector('select.assistant-rate');if(s&&window.molipVoice)s.value=String(molipVoice.rate);");
+    });
     // The page scripts load after the first render; tell the agent whether to speak.
     use_effect(move || {
         let on = settings.read().narration_voice;
@@ -744,10 +848,15 @@ fn AssistantPanel(
     rsx! {
         section { class:"assistant-panel", aria_label:"AI에게 물어보기",
             header { class:"assistant-head",
-                div { h2 { "AI에게 물어보기" } p { class:"assistant-scope", "'해 줘'라고 하면 코드 넣기·실행·제출·퀴즈 답·이동까지 대신합니다 · {settings.read().provider.label()}" } }
+                div { h2 { "AI에게 물어보기" } p { class:"assistant-scope", "'해 줘'면 대신 조작 · /auto 는 이 미션을 해설하며 풀기 · /auto-all 은 끝까지 자동 진행(Esc 해제) · {settings.read().provider.label()}" } }
                 div { class:"assistant-actions",
-                    if running() {
-                        button { class:"assistant-stop", onclick: move |_| { document::eval("window.molipAgent && molipAgent.stop();"); }, "⏹ 멈춤" }
+                    if running() || autopilot() {
+                        button { class:"assistant-stop", onclick: move |_| { if autopilot() { autopilot.set(false); auto_cancel += 1; } document::eval("window.molipAgent && molipAgent.stop();"); }, "⏹ 멈춤" }
+                    }
+                    select { class:"assistant-rate", title:"해설·읽어주기 속도", onchange: move |e| { document::eval(&format!("window.molipVoice && molipVoice.setRate({});", e.value())); },
+                        for rate in ["0.75", "1", "1.25", "1.5", "1.75", "2"] {
+                            option { value: rate, {format!("{rate}배")} }
+                        }
                     }
                     button { title:"해설 모드에서 설명을 소리 내어 읽을지", onclick: move |_| {
                         let on = !settings.read().narration_voice;
@@ -820,7 +929,9 @@ fn AssistantPanel(
             div { class:"assistant-footer",
                 div { class:"assistant-suggestions",
                     for text in suggestions.clone() {
-                        button { class: if text == NARRATE {"assistant-chip narrate"} else {"assistant-chip"}, disabled: pending(), onclick: { let text = text.clone(); move |_| { draft.set(text.clone()); send.call(()); } }, "{text}" }
+                        button { class: if text == AUTO || text == AUTO_ALL {"assistant-chip narrate"} else {"assistant-chip"},
+                            title: if text == AUTO {"이 미션을 해설하며 풀어 줍니다 (보라색 표시 · 음성)"} else if text == AUTO_ALL {"지금부터 끝까지 미션마다 해설하며 진행합니다. Esc로 해제"} else {""},
+                            disabled: pending(), onclick: { let text = text.clone(); move |_| { draft.set(text.clone()); send.call(()); } }, "{text}" }
                     }
                 }
                 div { class:"assistant-context", span { class:"assistant-context-dot" } "「{title}」 기준으로 답하는 중" }

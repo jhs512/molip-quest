@@ -36,5 +36,23 @@
     return pending;
   }
   function setName(value) { name = String(value || 'system'); return name; }
-  globalThis.molipVoice = { synthesize, setName, enabled, get name() { return name; }, stats };
+  // Reading speed, shared with the 읽어주기 panel (same localStorage key) and announced to every
+  // player so a clip already playing changes pace too.
+  const RATE_KEY = 'molip:tts-rate';
+  const RATES = Object.freeze([0.75, 1, 1.25, 1.5, 1.75, 2]);
+  function getRate() {
+    try { const value = Number(localStorage.getItem(RATE_KEY)); if (RATES.includes(value)) return value; } catch {}
+    return 1;
+  }
+  function setRate(value) {
+    const rate = Number(value);
+    if (!RATES.includes(rate)) return getRate();
+    try { localStorage.setItem(RATE_KEY, String(rate)); } catch {}
+    window.dispatchEvent(new CustomEvent('molip:tts-rate', { detail: rate }));
+    return rate;
+  }
+  window.addEventListener('molip:tts-rate', event => {
+    for (const select of document.querySelectorAll('select.assistant-rate')) select.value = String(event.detail);
+  });
+  globalThis.molipVoice = { synthesize, setName, enabled, get name() { return name; }, stats, get rate() { return getRate(); }, setRate, RATES };
 })();
