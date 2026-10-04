@@ -459,3 +459,49 @@ body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { poi
 @keyframes victory-reward { from {opacity:0;transform:translateY(12px)} to {opacity:1;transform:none} }
 @media(prefers-reduced-motion:reduce) { .victory-panel,.victory-emblem,.victory-reward { animation:none; } }
 @media(max-width:520px) { .victory-panel {padding:24px;max-width:calc(100vw - 24px)} .victory-panel h2 {font-size:28px} }
+
+/* Level avatars (src/avatar.rs): the mascot 큐 beside the XP counter, on the reward card, on the home card and in the avatar gallery. */
+.learning-avatar { display: inline-flex; width: 34px; height: 34px; flex-shrink: 0; filter: drop-shadow(0 2px 4px #0006); }
+.learning-avatar svg, .victory-avatar svg, .home-avatar svg, .avatar-cell svg { width: 100%; height: 100%; display: block; }
+.learning-avatar.xp-bump { animation: avatar-bump .6s cubic-bezier(.2,1.6,.4,1); }
+.xp-float { position: fixed; z-index: 1300; pointer-events: none; font-weight: 900; font-size: 18px; color: #ffe0a0; text-shadow: 0 0 18px #f6c85b88, 0 2px 4px #000a; animation: xp-float 1.4s ease-out forwards; }
+@keyframes avatar-bump { 0% { transform: scale(1) } 40% { transform: scale(1.35) rotate(-8deg) } 100% { transform: scale(1) } }
+@keyframes xp-float { 0% { opacity: 0; transform: translateY(6px) scale(.8) } 15% { opacity: 1; transform: translateY(0) scale(1.1) } 100% { opacity: 0; transform: translateY(-46px) scale(1) } }
+.victory-avatar-stage { position: relative; width: 132px; height: 132px; margin: 0 auto 14px; }
+.victory-avatar { position: absolute; inset: 0; border-radius: 50%; box-shadow: 0 0 0 8px #e7c5790b, 0 0 50px #efcf6955; animation: victory-star .9s cubic-bezier(.16,1,.3,1) both; }
+.victory-avatar.next { opacity: 0; transform: scale(.4); animation: none; }
+.victory-panel.evolving .victory-avatar.current { animation: avatar-out .55s ease-in forwards; }
+.victory-panel.evolving .victory-avatar.next { animation: avatar-in .9s .45s cubic-bezier(.16,1,.3,1) forwards; }
+.victory-panel.evolving .victory-avatar-stage::before { content: ''; position: absolute; inset: -14px; border-radius: 50%; border: 4px solid #ffe0a0; opacity: 0; animation: avatar-ring 1s .45s ease-out forwards; }
+.victory-panel.evolving .victory-avatar-stage::after { content: ''; position: absolute; inset: -40px; border-radius: 50%; background: conic-gradient(from 0deg, #ffe0a000, #ffe0a066, #ffe0a000, #ffe0a066, #ffe0a000, #ffe0a066, #ffe0a000); opacity: 0; animation: avatar-rays 2.4s .5s linear forwards; z-index: -1; }
+@keyframes avatar-out { 0% { opacity: 1; transform: scale(1); filter: brightness(1) } 70% { opacity: 1; transform: scale(1.15); filter: brightness(2.2) } 100% { opacity: 0; transform: scale(.5); filter: brightness(3) } }
+@keyframes avatar-in { 0% { opacity: 0; transform: scale(.4) } 60% { opacity: 1; transform: scale(1.18) } 100% { opacity: 1; transform: scale(1) } }
+@keyframes avatar-ring { 0% { opacity: 1; transform: scale(.6) } 100% { opacity: 0; transform: scale(1.9) } }
+@keyframes avatar-rays { 0% { opacity: 0; transform: rotate(0deg) } 20% { opacity: 1 } 100% { opacity: 0; transform: rotate(180deg) } }
+.victory-levelup { display: none; font-size: 15px; letter-spacing: 4px; font-weight: 900; color: #ffe0a0; text-shadow: 0 0 24px #f6c85b88; margin: -4px 0 10px; }
+.victory-panel.evolving .victory-levelup { display: block; animation: levelup-pop .8s .6s cubic-bezier(.16,1,.3,1) both; }
+.victory-title { color: #e9d29b; font-size: 13px; margin: -6px 0 14px; }
+@keyframes levelup-pop { 0% { opacity: 0; transform: scale(.5) translateY(10px); letter-spacing: 12px } 100% { opacity: 1; transform: none; letter-spacing: 4px } }
+@media(prefers-reduced-motion:reduce) { .victory-avatar, .victory-panel.evolving .victory-avatar.current, .victory-panel.evolving .victory-avatar-stage::before, .victory-panel.evolving .victory-avatar-stage::after, .learning-avatar.xp-bump, .xp-float { animation: none; } .victory-panel.evolving .victory-avatar.current { opacity: 0 } .victory-panel.evolving .victory-avatar.next { opacity: 1; transform: none; animation: none } }
+
+/* Home: the student's current avatar and the road to the next level. */
+.home-progress { display: flex; align-items: center; gap: 22px; }
+.home-avatar { width: 112px; height: 112px; flex-shrink: 0; filter: drop-shadow(0 6px 14px #0003); }
+.home-progress-body { flex: 1; min-width: 0; }
+.home-progress-body h3 { margin: 0 0 4px; font-size: 20px; }
+.home-progress-body .home-title { color: #2f8a4c; font-weight: 700; margin: 0 0 8px; }
+.home-track { height: 10px; background: #e3ebe6; border-radius: 99px; overflow: hidden; }
+.home-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, #62dbcd, #f2c94c); }
+.home-progress-body .home-next { color: #5f7570; font-size: 13px; margin: 8px 0 0; }
+
+/* Avatar gallery: every level in order, the student's level highlighted and what lies ahead dimmed. */
+.avatar-grid { list-style: none; padding: 0; margin: 16px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+.avatar-cell { padding: 14px 10px 12px; border: 1px solid #263a48; border-radius: 16px; background: #0f1d28; text-align: center; }
+.avatar-cell svg { width: 96px; height: 96px; margin: 0 auto 8px; }
+.avatar-cell strong { display: block; font-size: 14px; color: #eaf5fc; }
+.avatar-cell span { display: block; font-size: 12px; color: #9fb3c3; margin-top: 2px; }
+.avatar-cell.reached { border-color: #3f5a70; }
+.avatar-cell.current { border-color: #f2c94c; box-shadow: 0 0 0 3px #f2c94c33, 0 0 30px #f2c94c22; }
+.avatar-cell.current strong { color: #ffe0a0; }
+.avatar-cell.ahead { opacity: .55; filter: saturate(.6); }
+.avatar-cell.ahead svg { filter: grayscale(.4); }

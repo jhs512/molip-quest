@@ -150,11 +150,14 @@ enum View {
     Home,
     Learning,
     Gallery(ui::GalleryKind),
+    Avatars,
 }
 
 #[component]
 fn Workspace() -> Element {
     let mut view = use_signal(|| View::Home);
+    // Bumped when progress is reset from home, so the avatar card reads the store again.
+    let mut home_epoch = use_signal(|| 0u32);
     let course = use_hook(|| {
         let source = if let Ok(path) = std::env::var("MOLIP_COURSE_PATH") {
             std::fs::read_to_string(path).map_err(|e| e.to_string())?
@@ -168,7 +171,7 @@ fn Workspace() -> Element {
             rsx! { main { h1 {"수업을 불러올 수 없습니다."} p {"{error}"} ui::DoctorPanel {} } }
         }
         Ok(course) => {
-            rsx! { div { class: match view() { View::Home => "shell", View::Learning => "shell practice-shell", View::Gallery(_) => "shell practice-shell gallery-shell" },
+            rsx! { div { class: match view() { View::Home => "shell", View::Learning => "shell practice-shell", View::Gallery(_) | View::Avatars => "shell practice-shell gallery-shell" },
                 aside { class:"sidebar", div {class:"brand", "몰입 퀘스트"} h3 {"KPC 금융 데이터 분석"} p {"3일 · 20시간 · 7챕터"}
                     if ui::VIEW_ONLY { p {class:"view-only-note","Android 열람 모드 · 모든 단원과 미션이 열려 있습니다. 개념과 퀴즈를 풀고, 코딩 미션은 읽고 넘어갑니다. 코드 실행·채점은 데스크톱 앱에서 하세요."} }
                     ui::DoctorPanel {} }
@@ -182,11 +185,26 @@ fn Workspace() -> Element {
                             button {class:"classroom-back", onclick:move |_|view.set(View::Home), "← 클래스룸"}
                             ui::Gallery { course:course.clone(), kind }
                         },
+                        View::Avatars => rsx! {
+                            button {class:"classroom-back", onclick:move |_|view.set(View::Home), "← 클래스룸"}
+                            ui::AvatarGallery { course:course.clone() }
+                        },
                         View::Home => rsx! {
                             h1 {"KPC 학습 여정"} p {"개념을 확인하고 코딩 미션과 퀴즈를 클리어하며 성장하세요."}
                         p {class:"shortcut-help",
-                            "단축키 · " kbd {"F11"} " 전체 화면 전환 (맥은 " kbd {"⌃⌘F"} ") · 슬라이드에서 " kbd {"←"} " " kbd {"→"} " 넘기기, 「전체 화면」 버튼은 발표 모드, " kbd {"Esc"} " 로 해제 · 본문 더블 클릭은 읽어 주기"
+                            "단축키 · 코딩 미션에서 " kbd {"Ctrl+Enter"} " 실행, 바로 이어 " kbd {"Enter"} " 제출 (맥은 " kbd {"⌘Enter"} ") · " kbd {"F11"} " 전체 화면 전환 (맥은 " kbd {"⌃⌘F"} ") · 슬라이드에서 " kbd {"←"} " " kbd {"→"} " 넘기기, 「전체 화면」 버튼은 발표 모드, " kbd {"Esc"} " 로 해제 · 본문 더블 클릭은 읽어 주기"
                         }
+                            {let _ = home_epoch(); let completed = ui::completed_missions(&course); let level = molip_quest::avatar::level_for(completed); let within = completed % molip_quest::avatar::MISSIONS_PER_LEVEL; let last = molip_quest::avatar::max_level(ui::total_missions(&course)); rsx!{
+                            section {class:"card home-progress",
+                                div {class:"home-avatar",dangerous_inner_html:molip_quest::avatar::svg(level)}
+                                div {class:"home-progress-body",
+                                    h3 {{format!("Lv. {level} · {}",molip_quest::avatar::title(level))}}
+                                    p {class:"home-title",{format!("미션 {completed}개 클리어 · {} XP",completed*molip_quest::avatar::XP_PER_MISSION)}}
+                                    div {class:"home-track",div {class:"home-fill",style:format!("width:{}%",if level>=last {100} else {within*100/molip_quest::avatar::MISSIONS_PER_LEVEL})}}
+                                    p {class:"home-next",{if level>=last {"마지막 레벨입니다. 큐가 다 자랐어요.".to_string()} else {format!("다음 레벨까지 미션 {}개 · 레벨 {}개마다 큐의 모습이 바뀝니다",molip_quest::avatar::MISSIONS_PER_LEVEL-within,molip_quest::avatar::LEVELS_PER_TIER)}}}
+                                    div {class:"course-actions",button {class:"gallery-link",onclick:move |_|view.set(View::Avatars),"아바타 모아보기"}}
+                                }
+                            }}}
                             section {class:"card course-row", h2 {"{course.title}"} p {"{course.description}"}
                                 p {{format!("{} 단원",course.total_units())}}
                                 div {class:"course-actions",
@@ -194,7 +212,7 @@ fn Workspace() -> Element {
                                     for kind in ui::GalleryKind::ALL {
                                         button {class:"gallery-link",onclick:move |_|view.set(View::Gallery(kind)),{kind.label()}}
                                     }
-                                    ui::ResetProgress {course_id:course.id.clone(),onreset:move |_|{}}
+                                    ui::ResetProgress {course_id:course.id.clone(),onreset:move |_|{home_epoch+=1;}}
                                 }
                             }
                         },

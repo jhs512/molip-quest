@@ -1,4 +1,5 @@
 pub mod assistant;
+pub mod avatar;
 pub mod markdown;
 use rusqlite::{params, Connection};
 use serde::{Deserialize, Serialize};

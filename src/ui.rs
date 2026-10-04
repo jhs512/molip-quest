@@ -213,7 +213,8 @@ pub fn Learning(course: Course) -> Element {
             button {disabled:!can_next,onclick:move |_|navigate.call(1),"다음 →"}
         }
         span {{format!("완료 {} / {} 단원",completed.len(),course.total_units())}}
-        span {class:"learning-xp",{format!("Lv. {} · {} XP",completed_items.len()/5+1,completed_items.len()*100)}}
+        span {class:"learning-avatar",title:molip_quest::avatar::title(molip_quest::avatar::level_for(completed_items.len())),dangerous_inner_html:molip_quest::avatar::svg(molip_quest::avatar::level_for(completed_items.len()))}
+        span {class:"learning-xp",{format!("Lv. {} · {} XP",molip_quest::avatar::level_for(completed_items.len()),completed_items.len()*molip_quest::avatar::XP_PER_MISSION)}}
         ResetProgress {course_id:course.id.clone(),onreset:move |_|{selected.set(String::new());mission_index.set(usize::MAX);clear_popup.set(false);refresh+=1;epoch+=1;}}}
         div {class:if assistant_open() {"learning-row assistant-docked"} else {"learning-row"},
         div {class:"learning",
@@ -273,8 +274,14 @@ pub fn Learning(course: Course) -> Element {
         }
         if clear_popup() {div {class:"doctor-backdrop victory-backdrop",section {class:"doctor-panel victory-panel",role:"dialog",aria_label:"정답 확인",aria_modal:"true",
             "data-xp-before":earned_xp().0.to_string(),"data-xp-after":earned_xp().1.to_string(),
-            div {class:"victory-emblem",aria_hidden:"true","✦"}
+            {let before_level=molip_quest::avatar::level_for(earned_xp().0/molip_quest::avatar::XP_PER_MISSION);let after_level=molip_quest::avatar::level_for(earned_xp().1/molip_quest::avatar::XP_PER_MISSION);rsx!{
+            div {class:"victory-avatar-stage","data-level-before":before_level.to_string(),"data-level-after":after_level.to_string(),"data-title-after":molip_quest::avatar::title(after_level),
+                div {class:"victory-avatar current",dangerous_inner_html:molip_quest::avatar::svg(before_level)}
+                if after_level>before_level {div {class:"victory-avatar next",dangerous_inner_html:molip_quest::avatar::svg(after_level)}}
+            }
+            p {class:"victory-levelup",aria_live:"polite"}
             p {class:"victory-eyebrow","MISSION COMPLETE"}
+            p {class:"victory-title",{format!("칭호 · {}",molip_quest::avatar::title(before_level))}}}}
             if VIEW_ONLY {h2 {"미션 클리어!"} p {"진도를 저장했습니다."}}
             else {h2 {"정답입니다!"} p {"한 걸음 더 성장했어요."}}
             div {class:"victory-reward",{if earned_xp().1>earned_xp().0 {format!("+{} XP",earned_xp().1-earned_xp().0)}else{"복습 완료!".into()}}}
@@ -894,8 +901,8 @@ fn UnitWorkspace(course_id: String, unit: Unit, oncompleted: EventHandler<bool>)
         div{class:"split-handle split-col",role:"separator",aria_orientation:"vertical",aria_label:"문제와 코드 영역 너비 조절",tabindex:"0",title:"드래그로 너비 조절, 더블 클릭으로 되돌리기"}
         section{class:"coding-pane",div{class:"pane-heading",strong{"main.py"}
         div{class:"pane-actions",button{disabled:busy(),onclick:{let unit=unit.clone();let key=key.clone();move |_|{code.set(unit.starter_code.clone());editor_reset+=1;answers.set(HashMap::new());output.set(String::new());artifacts.set(vec![]);message.set(String::new());let _=drafts::save(&key,&code(),&answers());}},"초기화"}
-        button{disabled:busy(),onclick:move |_|async move{busy.set(true);message.set(String::new());artifacts.set(vec![]);match run_python(&code(),&input()).await{Ok(result)=>{artifacts.set(result.artifacts);if result.stderr.contains("EOFError: EOF when reading a line") {message.set("실행 입력이 부족합니다. 실행 입력 칸에 문제에서 요구한 값을 넣어주세요.".into());}else if result.success {message.set("실행 완료. 제출하면 전체 테스트로 정답을 확인합니다.".into());}output.set(format!("{}\n{}\n{}",result.stdout,result.stderr,if result.success {"실행 완료"} else {"실행 실패"}));},Err(e)=>message.set(e)}busy.set(false);},"코드 실행"}
-            button{class:"primary",disabled:busy(),onclick:{let unit=unit.clone();let course_id=course_id.clone();move |_|{let unit=unit.clone();let course_id=course_id.clone();async move{
+        button{disabled:busy(),title:if cfg!(target_os="macos") {"⌘Enter"} else {"Ctrl+Enter"},onclick:move |_|async move{busy.set(true);message.set(String::new());artifacts.set(vec![]);match run_python(&code(),&input()).await{Ok(result)=>{artifacts.set(result.artifacts);if result.stderr.contains("EOFError: EOF when reading a line") {message.set("실행 입력이 부족합니다. 실행 입력 칸에 문제에서 요구한 값을 넣어주세요.".into());}else if result.success {message.set("실행 완료. 제출하면 전체 테스트로 정답을 확인합니다.".into());}output.set(format!("{}\n{}\n{}",result.stdout,result.stderr,if result.success {"실행 완료"} else {"실행 실패"}));},Err(e)=>message.set(e)}busy.set(false);},"코드 실행"}
+            button{class:"primary",disabled:busy(),title:if cfg!(target_os="macos") {"⌘Enter 직후 Enter, 또는 ⌘⇧Enter"} else {"Ctrl+Enter 직후 Enter, 또는 Ctrl+Shift+Enter"},onclick:{let unit=unit.clone();let course_id=course_id.clone();move |_|{let unit=unit.clone();let course_id=course_id.clone();async move{
                 busy.set(true);message.set(String::new());artifacts.set(vec![]);let source=code();let blank_answers=answers();
                 if !unit.blanks.is_empty()&&assemble(&unit,&blank_answers).as_deref()!=Ok(source.as_str()){message.set("지정된 빈칸을 모두 채워주세요.".into());busy.set(false);return;}
                 match check_unit(&unit,&source).await{Err(e)=>message.set(e),Ok(report)=>{output.set(report.cases.iter().enumerate().map(|(i,c)|format!("테스트 {} · {}\n입력: {}\n예상: {}\n결과: {}\n{}",i+1,if c.passed {"통과"} else {"실패"},c.input.trim(),c.expected.trim(),c.stdout.trim(),c.stderr.trim())).collect::<Vec<_>>().join("\n\n"));let passed=report.passed;
@@ -1147,6 +1154,43 @@ pub fn Gallery(course: Course, kind: GalleryKind) -> Element {
                             Markdown { text: item.markdown.clone() }
                         }
                     }
+                }
+            }
+        }
+    } }
+}
+
+/// Missions in the course, which is what levels count.
+pub fn total_missions(course: &Course) -> usize {
+    course.chapters.iter().flat_map(|c| c.units.iter()).map(|u| u.activities.len()).sum()
+}
+
+/// Cleared missions of this course on this computer.
+pub fn completed_missions(course: &Course) -> usize {
+    molip_quest::learning_store::LearningStore::user_store()
+        .and_then(|store| store.completed_items(course))
+        .map(|items| items.len())
+        .unwrap_or(0)
+}
+
+/// Every level's avatar in order: the levels already reached, the current one highlighted,
+/// and the ones ahead dimmed so the student sees what 큐 grows into.
+#[component]
+pub fn AvatarGallery(course: Course) -> Element {
+    use molip_quest::avatar;
+    let completed = completed_missions(&course);
+    let current = avatar::level_for(completed);
+    let last = avatar::max_level(total_missions(&course));
+    rsx! { article { class:"reading-mission gallery avatar-gallery",
+        span { class:"badge", "아바타 모아보기" } h2 { "레벨 아바타" }
+        p { class:"slides-help", {format!("미션 {}개마다 레벨이 오르고, 레벨 {}개마다 큐가 새 모습으로 자랍니다. 지금은 Lv. {current} · {}.", avatar::MISSIONS_PER_LEVEL, avatar::LEVELS_PER_TIER, avatar::title(current))} }
+        ol { class:"avatar-grid",
+            for level in 1..=last {
+                li { key:"avatar-{level}", class: if level == current {"avatar-cell current"} else if level < current {"avatar-cell reached"} else {"avatar-cell ahead"},
+                    div { dangerous_inner_html: avatar::svg(level) }
+                    strong { {format!("Lv. {level}")} }
+                    span { {avatar::title(level)} }
+                    span { {format!("{} XP", (level - 1) * avatar::MISSIONS_PER_LEVEL * avatar::XP_PER_MISSION)} }
                 }
             }
         }
