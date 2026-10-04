@@ -2,6 +2,7 @@
 import importlib
 
 from kpc_course.prompts import PROMPTS
+from kpc_course.asks import ASKS
 from kpc_course.challenges import CHALLENGES
 from kpc_course.decks import DECK_PLACEMENTS
 
@@ -28,6 +29,10 @@ def build():
                 units[unit_index]["activities"].insert(position, deck)
         for unit in units:
             for activity in unit["activities"]:
+                # Every mission gets its three hand-written quick questions for the tutor panel.
+                if activity["id"] not in ASKS:
+                    raise SystemExit(f"{unit['id']}/{activity['id']}: tools/kpc_course/asks.py에 추천 질문이 없습니다.")
+                activity["ask"] = list(ASKS[activity["id"]])
                 if activity["kind"] == "coding":
                     problem = activity["problem"]
                     if problem["id"] not in PROMPTS:
