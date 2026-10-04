@@ -411,3 +411,9 @@ body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { poi
 .assistant-msg.pending { color: #9ab0c2; font-style: italic; }
 .assistant-compose { display: flex; gap: 10px; padding: 12px 20px 16px; border-top: 1px solid #2d4457; }
 .practice-shell .assistant-compose textarea { flex: 1; resize: none; padding: 10px 12px; border-radius: 8px; font: 15px/1.5 'Pretendard', sans-serif; }
+.assistant-error { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.assistant-error .error { margin: 0; }
+.practice-shell .assistant-error button { font-size: 13px; padding: 7px 11px; }
+.assistant-model-row { display: flex; gap: 8px; align-items: center; }
+.practice-shell .assistant-settings select { padding: 8px 10px; border-radius: 6px; font-size: 14px; background: #1e2d3b; color: #e0edf5; border: 1px solid #4c6478; min-width: 220px; }
+.practice-shell .assistant-model-row button { font-size: 13px; padding: 7px 11px; }

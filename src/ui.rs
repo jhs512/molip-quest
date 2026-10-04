@@ -529,38 +529,24 @@ fn AssistantPanel(
     messages: Signal<Vec<molip_quest::assistant::Turn>>,
     onclose: EventHandler<()>,
 ) -> Element {
-    use molip_quest::assistant::{self, Settings, Turn};
+    use molip_quest::assistant::{self, Provider, Settings, Turn};
     let mut settings = use_signal(Settings::load);
-    let mut show_settings = use_signal(|| settings.read().api_key.trim().is_empty());
+    let mut show_settings = use_signal(|| {
+        let s = settings.read();
+        s.provider == Provider::Gemini && s.api_key.trim().is_empty()
+    });
+    let mut models = use_signal(|| vec![settings.read().model.clone()]);
     let mut draft = use_signal(String::new);
     let mut pending = use_signal(|| false);
     let mut error = use_signal(String::new);
     const SCROLL: &str =
         "const m=document.querySelector('.assistant-messages');if(m)m.scrollTop=m.scrollHeight;";
-    let send = {
+    // Ask with the conversation as it stands (the last turn is the student's question).
+    let request = {
         let context = context.clone();
         Callback::new(move |_: ()| {
-            let question = draft().trim().to_string();
-            if question.is_empty() || pending() {
-                return;
-            }
-            if settings.read().api_key.trim().is_empty() {
-                show_settings.set(true);
-                error.set("Gemini API 키를 먼저 넣어 주세요.".into());
-                return;
-            }
-            draft.set(String::new());
-            // The textarea is uncontrolled (no value binding) so Korean IME composition survives
-            // re-renders; clear it in the DOM directly.
-            document::eval(
-                "const t=document.querySelector('.assistant-compose textarea');if(t){t.value='';}",
-            );
-            error.set(String::new());
-            messages.write().push(Turn {
-                role: "user".into(),
-                text: question,
-            });
             pending.set(true);
+            error.set(String::new());
             document::eval(SCROLL);
             let history = messages();
             let settings_now = settings();
@@ -578,6 +564,31 @@ fn AssistantPanel(
             });
         })
     };
+    let send = Callback::new(move |_: ()| {
+        let question = draft().trim().to_string();
+        if question.is_empty() || pending() {
+            return;
+        }
+        if settings.read().provider == Provider::Gemini && settings.read().api_key.trim().is_empty()
+        {
+            show_settings.set(true);
+            error.set("Gemini API 키를 먼저 넣어 주세요.".into());
+            return;
+        }
+        draft.set(String::new());
+        // The textarea is uncontrolled (no value binding) so Korean IME composition survives
+        // re-renders; clear it in the DOM directly.
+        document::eval(
+            "const t=document.querySelector('.assistant-compose textarea');if(t){t.value='';}",
+        );
+        messages.write().push(Turn {
+            role: "user".into(),
+            text: question,
+        });
+        request.call(());
+    });
+    // A failed question stays in the conversation; 다시 시도 re-sends it without duplicating it.
+    let can_retry = move || messages.read().last().is_some_and(|t| t.role == "user") && !pending();
     rsx! { div { class:"doctor-backdrop assistant-backdrop", onclick: move |_| onclose.call(()),
         section { class:"assistant-panel", role:"dialog", aria_label:"AI에게 물어보기", aria_modal:"true", onclick: move |e| e.stop_propagation(),
             header { class:"assistant-head",
@@ -589,11 +600,50 @@ fn AssistantPanel(
                 }
             }
             if show_settings() { div { class:"assistant-settings",
-                label { "Gemini API 키"
-                    input { r#type:"password", initial_value:"{settings.read().api_key}", placeholder:"AIza…", oninput: move |e| settings.write().api_key = e.value() }
+                label { "답하는 쪽"
+                    select { onchange: move |e| settings.write().provider = Provider::from_id(&e.value()),
+                        for p in Provider::ALL {
+                            option { value: p.id(), selected: settings.read().provider == p, {p.label()} }
+                        }
+                    }
                 }
-                label { "모델"
-                    input { initial_value:"{settings.read().model}", oninput: move |e| settings.write().model = e.value() }
+                if settings.read().provider == Provider::Gemini {
+                    label { "Gemini API 키"
+                        input { r#type:"password", initial_value:"{settings.read().api_key}", placeholder:"AIza…", oninput: move |e| settings.write().api_key = e.value() }
+                    }
+                    label { "모델"
+                        div { class:"assistant-model-row",
+                            select { onchange: move |e| settings.write().model = e.value(),
+                                for m in models() {
+                                    option { value: m.clone(), selected: m == settings.read().model, "{m}" }
+                                }
+                            }
+                            button { onclick: move |_| {
+                                let now = settings();
+                                spawn(async move {
+                                    match assistant::list_models(&now).await {
+                                        Ok(mut list) => {
+                                            let current = settings.read().model.clone();
+                                            if !list.contains(&current) { list.insert(0, current); }
+                                            models.set(list);
+                                            error.set(String::new());
+                                        }
+                                        Err(e) => error.set(e),
+                                    }
+                                });
+                            }, "목록 새로고침" }
+                        }
+                    }
+                    p { class:"assistant-hint", "붐비는 모델이면 목록에서 다른 모델을 고르세요(-lite가 보통 한가합니다). 키는 이 컴퓨터에만 저장되고, aistudio.google.com에서 발급받을 수 있으며 GEMINI_API_KEY 환경 변수로도 줄 수 있습니다." }
+                } else {
+                    label { "명령"
+                        if settings.read().provider == Provider::ClaudeCode {
+                            input { initial_value:"{settings.read().claude_command}", placeholder:"claude", oninput: move |e| settings.write().claude_command = e.value() }
+                        } else {
+                            input { initial_value:"{settings.read().codex_command}", placeholder:"codex", oninput: move |e| settings.write().codex_command = e.value() }
+                        }
+                    }
+                    p { class:"assistant-hint", "이 컴퓨터에 설치되어 터미널에서 로그인된 CLI를 그대로 씁니다. API 키가 필요 없고, 답에 1~2분 걸릴 수 있습니다. 명령을 못 찾으면 전체 경로를 적으세요." }
                 }
                 div { class:"assistant-settings-actions",
                     button { class:"primary", onclick: move |_| {
@@ -603,7 +653,6 @@ fn AssistantPanel(
                             Err(e) => error.set(e),
                         }
                     }, "저장" }
-                    p { class:"assistant-hint", "키는 이 컴퓨터에만 저장됩니다. aistudio.google.com에서 발급받을 수 있고, GEMINI_API_KEY 환경 변수로도 줄 수 있습니다." }
                 }
             } }
             div { class:"assistant-messages",
@@ -616,7 +665,12 @@ fn AssistantPanel(
                     }
                 }
                 if pending() { div { class:"assistant-msg model pending", "생각하는 중…" } }
-                if !error().is_empty() { p { class:"error", "{error}" } }
+                if !error().is_empty() {
+                    div { class:"assistant-error",
+                        p { class:"error", "{error}" }
+                        if can_retry() { button { onclick: move |_| request.call(()), "다시 시도" } }
+                    }
+                }
             }
             div { class:"assistant-compose",
                 textarea { initial_value:"", placeholder:"질문을 적고 Enter (줄 바꿈은 Shift+Enter)", rows:"2",
