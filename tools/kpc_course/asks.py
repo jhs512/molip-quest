@@ -172,4 +172,9 @@ ASKS = {
     "final-check": ["1번 문제 힌트만 줘", "R²가 음수면 무슨 뜻이야?", "퀴즈 전부 풀어서 채점해 줘"],
     "course-wrap": ["1번 문제 힌트만 줘", "구명보트 열과 target_next_close의 공통점이 뭐야?", "퀴즈 전부 풀어서 채점해 줘"],
     "window-rematch": ["창을 10일로 바꾸면 왜 391행이야?", "이 도전 과제 순서를 잡아 줘", "이 문제 풀어서 제출까지 해 줘"],
+    # ---- 공식 커리큘럼의 도구 설명 (환경 구성, 웹 수집 도구, 주가 수집, 속성별 부도율) ----
+    "environment-tools": ["아나콘다가 예전엔 왜 꼭 필요했어?", "노트북의 '보이지 않는 상태'가 뭐야?", "수업 끝나고 Jupyter로 이 코드를 돌리려면 어떻게 해?"],
+    "live-web": ["requests와 Selenium 중 뭘 써야 할지 어떻게 정해?", "User-Agent는 왜 붙여?", "robots.txt가 뭐야?"],
+    "fetch-prices": ["005930.KS에서 .KS가 뭐야?", "받은 표를 왜 저장해서 써?", "FinanceDataReader와 yfinance는 뭐가 달라?"],
+    "rate-by-attribute": ["pd.cut의 right=False가 뭐야?", "지금 쓴 코드 어디가 틀렸어?", "이 문제 풀어서 제출까지 해 줘"],
 }

@@ -617,4 +617,13 @@ scikit-learn. X_train, X_test, y_train, y_test(temporal split, 테스트 80거�
 - `report` 다섯 키 → 보고서의 구조를 프롬프트에. 무엇을·언제·어떻게 나눠·기준 대비·개선 여부.
 - `False면 그대로 적어` → 못 했으면 못 했다고.
 """),
+    "rate-by-attribute": p("""
+pandas. credit 표에서 '다음달 부도' 평균을 '성별'로, '학력'으로 각각 groupby해서 rate_by_sex, rate_by_education에.
+'나이'는 pd.cut(bins=[20,30,40,50,60,80], right=False, labels=['20대','30대','40대','50대','60대 이상'])로 '나이대' 열을 만들고
+observed=True로 groupby한 평균을 rate_by_age에. 셋 다 출력.
+""", """
+- `평균` → 0/1 타깃의 평균이 곧 부도율. 비율을 따로 계산하지 않게 한다.
+- `bins, right=False, labels` → 구간의 경계와 이름을 지정하지 않으면 AI가 임의로 자른다.
+- `observed=True` → 범주형으로 묶을 때 비어 있는 구간을 빼고 경고를 막는다.
+"""),
 }

@@ -85,6 +85,31 @@ UNIT = unit('stock-data', '주가 파일과 시점', [
         """,
         check=short('오늘 저녁에 알고 있는 가격으로 맞히려는 정답, 즉 다음 거래일의 종가에 해당하는 열 이름은 무엇인가요?', ['종가', 'close'],
                     '종가 `종가`의 다음 거래일 값이 정답입니다. 다음 날이 아니라 다음 거래일이라는 점, 그리고 그 값은 입력에 넣으면 안 된다는 점을 기억하세요.')),
+    concept('fetch-prices', '주가 파일은 어디서 오나: yfinance와 FinanceDataReader',
+        body="""
+        `data/stock.csv`는 하늘에서 떨어진 파일이 아닙니다. 인터넷이 되는 컴퓨터에서는 두 줄이면 같은 표를 받습니다. 도구는 둘 중 하나입니다.
+
+        ```python
+        import yfinance as yf
+        prices = yf.download('005930.KS', start='2025-01-01', end='2026-09-05')     # Open, High, Low, Close, Volume
+
+        import FinanceDataReader as fdr
+        prices = fdr.DataReader('005930', '2025-01-01', '2026-09-04')               # Open, High, Low, Close, Volume, Change
+        ```
+
+        **yfinance**는 야후 파이낸스에서 받습니다. 종목 코드 뒤의 `.KS`는 코스피, `.KQ`는 코스닥이라는 뜻입니다. **FinanceDataReader**는 국내 종목 코드를 그대로 쓰고 거래소 자료를 받습니다. 둘 다 결과는 날짜가 인덱스인 DataFrame이고, 열은 시가·고가·저가·종가·거래량입니다. 우리 파일은 이렇게 받은 표의 열 이름을 한글로 바꿔 저장한 것입니다. `변화율`은 FinanceDataReader의 `Change`, 즉 전일 대비 수익률입니다.
+
+        받은 표를 바로 쓰지 않고 **저장해서 쓰는** 이유가 있습니다. 수업 중에는 모두가 같은 숫자를 봐야 하고, 네트워크가 끊겨도 미션이 돌아야 하고, 한 달 뒤 다시 돌려도 같은 결과가 나와야 합니다(재현). 회사에서도 순서는 같습니다. 받는 코드는 하루 한 번 돌려 파일로 저장하고, 분석 코드는 그 파일을 읽습니다. 받기와 분석을 섞어 두면 어느 날 사이트가 바뀌었을 때 분석까지 같이 멈춥니다.
+
+        ```python
+        prices.to_csv('stock.csv')                      # 받은 날 한 번
+        prices = pd.read_csv('stock.csv', parse_dates=['Date']).set_index('Date')   # 분석할 때마다
+        ```
+
+        그래서 이 단원의 모든 미션은 `data/stock.csv`에서 시작합니다. 받는 두 줄은 회사 컴퓨터에서 붙이면 됩니다.
+        """,
+        check=short('야후 파이낸스에서 주가 표를 받아 오는 yfinance의 함수 이름은 무엇인가요?', ['download', 'yf.download', 'yfinance.download', 'download()'],
+                    '`yf.download(종목, start=, end=)`입니다. FinanceDataReader는 `fdr.DataReader`입니다. 받은 표는 저장해 두고, 분석은 저장 파일로 합니다.')),
     coding('stock-load', '날짜 순서와 크기 확인',
         goal="""
         주가 파일을 읽어 `prices`에 저장하세요. `날짜`를 날짜로 읽어 인덱스로 올리고 `sort_index()`로 정렬합니다. 행 수와 열 수를 `n_rows`, `n_columns`에 담고, 첫 날짜와 마지막 날짜도 출력하세요.
@@ -122,6 +147,12 @@ UNIT = unit('stock-data', '주가 파일과 시점', [
         solution=ST + "first_date = prices.index.min()\nlast_date = prices.index.max()\nmax_close = prices['종가'].max()\nmax_date = prices['종가'].idxmax()\nprint(first_date, last_date)\nprint(max_close, max_date)\n",
         check="import pandas as pd\nassert s['first_date']==pd.Timestamp('2025-01-13') and s['last_date']==pd.Timestamp('2026-09-04')\nassert s['max_close']==362500 and s['max_date']==pd.Timestamp('2026-06-18')"),
     quiz('stock-data-check', '단원 점검',
+        choice('주가를 yfinance로 받을 수 있는데도 이 수업이 저장 파일 `data/stock.csv`로 시작하는 이유로 맞지 않는 것은 무엇인가요?',
+               ['저장 파일이 인터넷에서 받은 표보다 항상 더 정확하다',
+                '모두가 같은 숫자로 연습한다',
+                '네트워크가 끊겨도 미션이 돌아간다',
+                '한 달 뒤 다시 돌려도 같은 결과가 나온다'], 0,
+               '저장 파일은 받은 표를 그대로 둔 것이라 더 정확하지 않습니다. 같은 숫자, 네트워크 독립, 재현이 저장해 쓰는 이유입니다.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「같은 숫자」·「네트워크」·「재현」: 셋 다 받기와 분석을 나누는 진짜 이유라, 맞지 않는 것이 아니다."),
         choice('금요일 저녁에 예측하는 "다음 거래일 종가"는 언제의 종가인가요?',
                ['월요일(다음 거래일)', '토요일(다음 날)', '금요일 당일'], 0,
                '주말과 휴장일에는 가격이 없습니다. 정답은 다음 달력 날짜가 아니라 다음 거래일의 종가입니다.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「금요일 당일」: 이미 아는 값이다.\n- 「토요일」: 장이 열리지 않아 가격이 없다."),

@@ -128,4 +128,13 @@ NARRATION = {
         ("output", "992650000 744250000 0.3이 나왔죠? 0.5면 약 9억 9천만 원, 0.3이면 약 7억 4천만 원이에요. 0.3으로 낮추면 경고 FP가 153에서 545로 늘지만 놓친 부도 FN이 985에서 717로 줄어서, 2억 5천만 원 가까이 싸요. 그래서 기준값은 비용을 아는 사람이 정하는 거예요."),
         ("submit", "제출할게요. 수업 전체를 다 쓴 미션이에요."),
     ],
+    "rate-by-attribute": [
+        ("problem", "자, 이번엔 고객 속성별 부도율이에요. 성별, 학력은 코드 그대로 묶고, 나이는 다섯 구간으로 잘라서 묶어요."),
+        ("starter", "준비 코드는 credit 표와 target 이름이에요. 그대로 둘게요."),
+        ("code", "rate_by_sex = credit.groupby('성별')[target].mean()\nrate_by_education = credit.groupby('학력')[target].mean()\n", "groupby로 묶고 타깃의 평균. 0과 1의 평균이 곧 부도율이죠? 성별로 한 번, 학력으로 한 번이에요."),
+        ("code", "credit['나이대'] = pd.cut(credit['나이'], bins=[20, 30, 40, 50, 60, 80], right=False, labels=['20대', '30대', '40대', '50대', '60대 이상'])\n", "나이는 pd.cut으로 구간 열을 만들어요. right=False라 20 이상 30 미만이 20대예요. 타이타닉 나이 구간과 같은 방법이에요."),
+        ("code", "rate_by_age = credit.groupby('나이대', observed=True)[target].mean()\nprint(rate_by_sex)\nprint(rate_by_education)\nprint(rate_by_age)\n", "구간 열로 묶어 평균을 내고 셋을 출력해요. observed=True는 빈 구간을 빼라는 뜻이에요."),
+        ("output", "남성 24.2%, 여성 20.8%. 나이대는 30대가 20.3%로 가장 낮고 60대 이상이 28.3%예요. 차이가 있긴 한데, 앞 미션의 연체 이력 차이(11.7% 대 42.7%)에 비하면 작죠?"),
+        ("submit", "제출할게요. 검사는 성별 인덱스, 나이대 다섯 구간, 남성과 60대 이상 비율을 봐요."),
+    ],
 }

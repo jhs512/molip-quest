@@ -103,7 +103,46 @@ UNIT = unit('html', '저장 HTML에서 데이터 수집', [
         starter=PD + "from pathlib import Path\nfrom bs4 import BeautifulSoup\nhtml=Path('data/prices.html').read_text(encoding='utf-8')\n# soup, rows, df를 만드세요\n",
         solution=PD + "from pathlib import Path\nfrom bs4 import BeautifulSoup\nhtml=Path('data/prices.html').read_text(encoding='utf-8')\nsoup=BeautifulSoup(html,'html.parser')\nrows=[]\nfor item in soup.select('#prices li'):\n    rows.append({'code':item['data-code'],'name':item.select_one('.name').get_text(strip=True),'price':int(item.select_one('b').get_text(strip=True).replace(',',''))})\ndf=pd.DataFrame(rows)\ndf\n",
         check="assert s['df']['code'].tolist()==['A','B']\nassert s['df']['price'].tolist()==[10000,20000]\nassert s['df']['name'].tolist()==['가상A','가상B']"),
+    concept('live-web', '진짜 웹에서 받으려면: requests, 그리고 Selenium',
+        body="""
+        지금까지는 앱이 저장해 둔 `data/prices.html`을 읽었습니다. 인터넷이 되는 컴퓨터에서는 그 파일을 코드가 직접 받아 옵니다. 받는 도구가 `requests`이고, 받은 뒤는 저장 파일 때와 **한 글자도 다르지 않습니다**.
+
+        ```python
+        import requests
+        from bs4 import BeautifulSoup
+        response = requests.get('https://example.com/prices', headers={'User-Agent': 'Mozilla/5.0'}, timeout=10)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        for tag in soup.select('#prices li b'):
+            print(tag.get_text(strip=True))
+        ```
+
+        `requests.get`이 주소를 요청하면 `response.text`에 글자 덩어리가 옵니다. 그 글자가 바로 우리가 읽던 HTML입니다. `headers`의 `User-Agent`는 "브라우저입니다"라고 밝히는 명함이고(없으면 거절하는 사이트가 있습니다), `timeout`은 응답이 없을 때 무한정 기다리지 않게 합니다. 받은 글자를 `Path('prices.html').write_text(response.text)`로 저장해 두면 이 수업과 같은 방식이 됩니다. 수업이 저장 파일을 쓰는 이유도 그것입니다. 모두가 같은 숫자로 연습하고, 사이트가 바뀌어도 미션이 깨지지 않습니다.
+
+        그런데 어떤 페이지는 `requests`로 받으면 비어 있습니다. 화면이 자바스크립트로 **나중에** 그려지거나, 검색창에 글자를 넣고 버튼을 눌러야 결과가 나오는 경우입니다. 포털 검색이 그렇습니다. 이럴 때는 **Selenium**(셀레니움)으로 진짜 브라우저를 코드로 조종합니다. 주소를 열고, 검색창을 찾아 글자를 넣고, 엔터를 치고, 그려진 화면의 HTML을 가져옵니다.
+
+        ```python
+        from selenium import webdriver
+        from selenium.webdriver.common.by import By
+        browser = webdriver.Chrome()
+        browser.get('https://www.naver.com')
+        browser.find_element(By.ID, 'query').send_keys('삼성전자 주가\n')
+        soup = BeautifulSoup(browser.page_source, 'html.parser')   # 여기부터는 다시 같은 네 단계
+        browser.quit()
+        ```
+
+        고르는 기준은 하나입니다. **주소만으로 내용이 다 오면 `requests`, 클릭·입력·스크롤이 있어야 나오면 Selenium.** Selenium은 브라우저를 띄우니 느리고, 크롬과 드라이버 설치가 필요합니다. 어느 쪽이든 수집 전에 사이트의 이용 약관과 `robots.txt`를 확인하고, 요청 사이에 간격을 둡니다. 같은 서버에 초당 수십 번 요청하는 것은 수집이 아니라 공격입니다.
+
+        이 앱 안에서는 둘 다 실행하지 않습니다(네트워크와 브라우저가 필요하니까요). 받은 결과를 저장한 파일로 네 단계를 연습하고, 받는 두 줄은 회사 컴퓨터에서 붙입니다.
+        """,
+        check=short('검색창에 글자를 넣고 엔터를 치는 것까지 브라우저를 직접 조종해서 페이지를 받는 도구는 무엇인가요?', ['Selenium', '셀레니움', 'selenium'],
+                    'Selenium입니다. 주소만으로 내용이 다 오는 페이지는 `requests`로 충분하고, 자바스크립트로 그려지거나 입력이 필요한 페이지만 Selenium을 씁니다.')),
     quiz('html-check', '단원 점검',
+        choice('포털 검색 결과처럼 검색어를 입력해야 나오는 페이지를 모으려고 합니다. 맞는 도구는 무엇인가요?',
+               ['Selenium으로 브라우저를 조종해 검색어를 넣고 그려진 화면을 받는다',
+                'requests.get으로 주소만 요청한다',
+                'read_csv로 주소를 읽는다',
+                'BeautifulSoup이 알아서 검색해 준다'], 0,
+               '입력과 클릭이 있어야 나오는 화면은 브라우저를 직접 움직이는 Selenium이 맞습니다.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「requests.get」: 주소만으로 내용이 다 오는 정적 페이지에 맞는 도구라, 검색 결과는 비어 온다.\n- 「read_csv」: 표 파일을 읽는 함수이지 웹 페이지를 받는 도구가 아니다.\n- 「BeautifulSoup이 알아서」: BeautifulSoup은 받아 온 HTML을 읽을 뿐, 받아 오지는 않는다."),
         short('`id`가 `prices`인 요소를 고르는 선택자를 기호까지 포함해 쓰면 무엇인가요?', ['#prices'],
               '`#`은 id를 뜻합니다. class를 고를 때는 `.name`처럼 점을 씁니다.'),
         choice("`int('10,000')`을 실행하면 어떻게 되나요?",

@@ -112,6 +112,18 @@ UNIT = unit('credit-target', '부도 정의와 연체 이력', [
         starter=CR + "# limit_by_default를 만들고 출력하세요\n",
         solution=CR + "limit_by_default = credit.groupby(target)['신용한도'].mean()\nprint(limit_by_default)\n",
         check="assert set(s['limit_by_default'].index)=={0,1}\nassert s['limit_by_default'][0]>s['limit_by_default'][1]\nassert abs(s['limit_by_default'][1]-130109.65642)<0.01"),
+    coding('rate-by-attribute', '성별·학력·나이대별 부도율',
+        goal="""
+        고객 속성마다 부도율이 얼마나 다른지 봅니다. `성별`과 `학력`은 코드 그대로 묶어 타깃의 평균을 `rate_by_sex`, `rate_by_education`에 담으세요. `나이`는 `pd.cut`으로 20대, 30대, 40대, 50대, 60대 이상 다섯 구간의 새 열 `나이대`를 만든 뒤 묶어 `rate_by_age`에 담고, 셋을 출력하세요.
+
+        구간은 `bins=[20, 30, 40, 50, 60, 80]`, `right=False`, `labels=['20대', '30대', '40대', '50대', '60대 이상']`입니다. 속성 사이의 차이가 연체 이력의 차이보다 작은지 큰지 눈여겨보세요.
+        """,
+        hint="""
+        `credit.groupby('성별')[target].mean()`을 세 번, 묶는 열만 바꿉니다. 나이는 먼저 `credit['나이대'] = pd.cut(credit['나이'], bins=..., right=False, labels=...)`로 구간 열을 만들고, `groupby('나이대', observed=True)`로 묶습니다.
+        """,
+        starter=CR + "# rate_by_sex, rate_by_education, rate_by_age를 만들고 출력하세요\n",
+        solution=CR + "rate_by_sex = credit.groupby('성별')[target].mean()\nrate_by_education = credit.groupby('학력')[target].mean()\ncredit['나이대'] = pd.cut(credit['나이'], bins=[20, 30, 40, 50, 60, 80], right=False, labels=['20대', '30대', '40대', '50대', '60대 이상'])\nrate_by_age = credit.groupby('나이대', observed=True)[target].mean()\nprint(rate_by_sex)\nprint(rate_by_education)\nprint(rate_by_age)\n",
+        check="assert set(s['rate_by_sex'].index)=={1,2}\nassert abs(s['rate_by_sex'].loc[1]-0.2417)<0.001\nassert len(s['rate_by_education'])==7\nassert list(s['rate_by_age'].index)==['20대','30대','40대','50대','60대 이상']\nassert abs(s['rate_by_age'].loc['60대 이상']-0.2832)<0.001"),
     coding('delay-groups', '한 번이라도 연체한 적이 있는가',
         goal="""
         여섯 달 중 한 번이라도 연체(값 1 이상)한 적이 있는지를 새 열 `has_delay`로 만듭니다. `pay_columns` 여섯 열에 `>= 1` 조건을 적용하고 `.any(axis=1)`로 행마다 "하나라도 참인가"를 구해 `credit['has_delay']`에 넣으세요. 그다음 `has_delay`로 묶은 타깃의 `count`, `sum`, `mean`을 `summary`에 저장하세요.
