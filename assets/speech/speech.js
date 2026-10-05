@@ -61,10 +61,15 @@
       .replace(/[×÷−±≤≥≠≈→←↔∞√]/g, s => ' ' + symbols[s] + ' ')
       .replace(/[ \t]{2,}/g, ' ');
   }
+  // File names: "main.py" read as a word is garbled ("마이노파이"), so the dot is spoken and the
+  // extension is named. Applied to code spans too, since file names mostly sit in backticks.
+  const extensions = { py: '파이', csv: '씨에스브이', xlsx: '엑셀', xls: '엑셀', html: '에이치티엠엘', json: '제이슨', joblib: '잡립', txt: '텍스트', md: '엠디' };
+  const filePattern = /\b([A-Za-z_][\w-]*)\.(py|csv|xlsx|xls|html|json|joblib|txt|md)(?![\w.])/g;
+  const fileSpeechText = input => input.replace(filePattern, (_, stem, ext) => stem + ' 점 ' + extensions[ext]);
   function pronunciationText(text) {
     return text.split(protectedSpans).map((part, index) => {
-      if (index % 2) return part.startsWith('`') ? part.slice(1, -1) : part;
-      return mathSpeechText(part).replace(termPattern, (_, term) => pronunciations[term]);
+      if (index % 2) return fileSpeechText(part.startsWith('`') ? part.slice(1, -1) : part);
+      return fileSpeechText(mathSpeechText(part)).replace(termPattern, (_, term) => pronunciations[term]);
     }).join('');
   }
 
@@ -285,7 +290,7 @@
   }
   function scopeOf(block) { return block.closest('.reading-mission,.lesson,main') || document.body; }
 
-  globalThis.molipSpeech = { pronunciations, pronunciationText, mathSpeechText, speechSentences, splitSpeechRanges, koreanVoice, StorySpeech, speechRates };
+  globalThis.molipSpeech = { pronunciations, pronunciationText, fileSpeechText, mathSpeechText, speechSentences, splitSpeechRanges, koreanVoice, StorySpeech, speechRates };
   if (typeof document === 'undefined') return;
 
   // ---- Mount: a floating panel, and the double-click that starts reading. ----

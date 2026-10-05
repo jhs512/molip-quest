@@ -32,6 +32,28 @@ test('technical terms are pronounced in Korean while code spans stay verbatim', 
   assert.equal(speech.pronunciationText('printer'), 'printer'); // not a whole-word match
 });
 
+test('file names are read with a spoken dot and extension, in prose and in code spans', () => {
+  assert.equal(speech.pronunciationText('여러분의 main.py는 주가 파일을 읽어요'), '여러분의 메인 점 파이는 주가 파일을 읽어요');
+  assert.equal(speech.pronunciationText('`main.py` 하나'), 'main 점 파이 하나');
+  assert.equal(speech.pronunciationText("pd.read_csv('data/titanic.csv')"), "pd.리드 씨에스브이('data/타이타닉 점 씨에스브이')");
+  assert.equal(speech.pronunciationText('orders.xlsx와 model.joblib'), 'orders 점 엑셀와 model 점 잡립');
+  assert.equal(speech.pronunciationText('버전 1.2.3'), '버전 1.2.3'); // versions stay verbatim
+});
+
+test('the neural voice is sent the pronounced text, not the written one', async () => {
+  const bodies = [];
+  const voiceContext = {
+    console, URL, JSON, Map, Promise, String, Number, Object, CustomEvent: class {},
+    document: {}, window: { addEventListener() {}, dispatchEvent() {} }, location: { protocol: 'http:' },
+    molipSpeech: speech,
+    fetch: (_url, init) => { bodies.push(JSON.parse(init.body)); return Promise.resolve({ ok: false, status: 503, text: async () => 'off' }); },
+  };
+  voiceContext.globalThis = voiceContext;
+  vm.runInNewContext(readFileSync(new URL('../layout/voice.js', import.meta.url), 'utf8'), voiceContext);
+  await voiceContext.molipVoice.synthesize('main.py를 실행해요');
+  assert.deepEqual(bodies, [{ text: '메인 점 파이를 실행해요', voice: 'ko-KR-SunHiNeural' }]);
+});
+
 test('numbers and operators read naturally', () => {
   assert.equal(speech.mathSpeechText('test_size=0.2'), 'test_size 이퀄 0 점 이');
   assert.equal(speech.mathSpeechText('생존율 38%'), '생존율 38 퍼센트');

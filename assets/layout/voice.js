@@ -19,13 +19,16 @@
   }
   const enabled = () => name !== 'system' && typeof fetch === 'function';
   // Resolves to an object URL for the clip, or null when the voice is off or unreachable.
+  // The sentence is sent as it should be pronounced (assets/speech/speech.js: course terms in
+  // Korean, "main.py" as 메인 점 파이, operators as words); the caption keeps the written form.
+  const spoken = text => (globalThis.molipSpeech && globalThis.molipSpeech.pronunciationText) ? globalThis.molipSpeech.pronunciationText(text) : text;
   function synthesize(sentence) {
     const text = String(sentence || '').trim();
     if (!enabled() || !text) return Promise.resolve(null);
     const key = name + '\n' + text;
     let pending = clips.get(key);
     if (pending) { stats.cached += 1; return pending; }
-    pending = fetch(url(), { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ text, voice: name }) })
+    pending = fetch(url(), { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ text: spoken(text), voice: name }) })
       .then(async response => {
         if (!response.ok) { stats.failed += 1; console.warn('tts', response.status, await response.text().catch(() => '')); clips.delete(key); return null; }
         stats.fetched += 1; stats.lastEngine = response.headers.get('X-Molip-Engine') || '';
