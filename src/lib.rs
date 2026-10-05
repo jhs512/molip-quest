@@ -8,6 +8,7 @@ pub mod curriculum;
 pub mod doctor;
 pub mod drafts;
 pub mod learning_store;
+pub mod prefs;
 pub mod runner;
 pub mod tts;
 

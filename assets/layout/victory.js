@@ -10,6 +10,48 @@
   const seen = new WeakSet();
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const XP_PER_LEVEL = 500;
+  // ---- Effect switches (home screen toggles, persisted by src/prefs.rs) and sounds. ----
+  // Animations off: no particles, no floating XP, and CSS keyframes are stopped through the
+  // fx-still class on <html>. Sounds are synthesized with Web Audio, so nothing is downloaded.
+  const fx = { animations: true, sounds: true, lastSound: '' };
+  let audio = null;
+  function tone(at, freq, duration, type, gain) {
+    const osc = audio.createOscillator(), vol = audio.createGain();
+    osc.type = type; osc.frequency.setValueAtTime(freq, at);
+    vol.gain.setValueAtTime(0.0001, at);
+    vol.gain.exponentialRampToValueAtTime(gain, at + 0.012);
+    vol.gain.exponentialRampToValueAtTime(0.0001, at + duration);
+    osc.connect(vol).connect(audio.destination);
+    osc.start(at); osc.stop(at + duration + 0.05);
+  }
+  function play(kind) {
+    fx.lastSound = kind;
+    if (!fx.sounds || !('AudioContext' in window)) return;
+    try {
+      audio = audio || new AudioContext();
+      if (audio.state === 'suspended') audio.resume();
+      const t = audio.currentTime + 0.01;
+      if (kind === 'xp') {            // a two-note coin
+        tone(t, 1318.5, 0.09, 'square', 0.06);
+        tone(t + 0.09, 1760, 0.22, 'square', 0.06);
+      } else if (kind === 'clear') {  // the card opens: a soft rising triad
+        [523.25, 659.25, 783.99].forEach((f, i) => tone(t + i * 0.07, f, 0.25, 'triangle', 0.08));
+      } else if (kind === 'levelup') { // fanfare: arpeggio up and a held chord
+        [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(t + i * 0.11, f, 0.3, 'triangle', 0.1));
+        [783.99, 1046.5, 1318.5].forEach(f => tone(t + 0.5, f, 0.9, 'sine', 0.07));
+      }
+    } catch (error) { console.warn('sound', error); }
+  }
+  function set(values) {
+    if (values && typeof values.animations === 'boolean') fx.animations = values.animations;
+    if (values && typeof values.sounds === 'boolean') fx.sounds = values.sounds;
+    document.documentElement.classList.toggle('fx-still', !fx.animations);
+    return { animations: fx.animations, sounds: fx.sounds };
+  }
+  // The home toggle decides, not the OS hint: a student who turns animations on wants them
+  // even on a machine whose system setting asks for reduced motion.
+  const still = () => !fx.animations;
+  globalThis.molipFx = { set, play, get animations() { return fx.animations; }, get sounds() { return fx.sounds; }, get lastSound() { return fx.lastSound; } };
   function burst(particles, x, y, colors, count, delay, speedMin, speedMax) {
     for (let i = 0; i < count; i++) {
       const angle = Math.PI * 2 * i / count + Math.random() * .2;
@@ -32,7 +74,8 @@
     const start = performance.now();
     let frame, canvas, ctx, evolved = false;
     const particles = [];
-    if (!reduced.matches) {
+    play(after > before ? 'clear' : 'xp');
+    if (!still()) {
       canvas = document.createElement('canvas');
       canvas.className = 'victory-fireworks';
       canvas.setAttribute('aria-hidden', 'true');
@@ -48,6 +91,7 @@
     function evolve(now) {
       evolved = true;
       card.classList.add('evolving');
+      play('levelup');
       const nextLevel = Number(stage?.dataset.levelAfter || Math.floor(after / XP_PER_LEVEL) + 1);
       const banner = card.querySelector('.victory-levelup');
       if (banner) banner.textContent = `LEVEL UP · Lv. ${nextLevel}`;
@@ -67,7 +111,7 @@
     function update(now) {
       if (!card.isConnected) { canvas?.remove(); cancelAnimationFrame(frame); return; }
       const elapsed = now - start;
-      const t = reduced.matches ? 1 : Math.min(1, elapsed / 1500);
+      const t = still() ? 1 : Math.min(1, elapsed / 1500);
       const ease = 1 - Math.pow(1 - t, 3);
       const xp = Math.round(before + (after - before) * ease);
       total.textContent = `${xp.toLocaleString()} XP`;
@@ -89,7 +133,7 @@
         ctx.globalAlpha = 1;
       }
       const span = levelsUp ? 4200 : 2600;
-      if (elapsed < span && !reduced.matches) frame = requestAnimationFrame(update);
+      if (elapsed < span && !still()) frame = requestAnimationFrame(update);
       else { canvas?.remove(); card.dataset.celebrated = 'true'; }
     }
     frame = requestAnimationFrame(update);
@@ -102,16 +146,30 @@
     const xp = Number((counter.textContent.match(/([\d,]+)\s*XP/) || [])[1]?.replace(/,/g, ''));
     if (!Number.isFinite(xp)) return;
     if (knownXp !== null && xp > knownXp) {
+      // Every kind of mission lands here when its completion is stored: a cleared problem, a
+      // passed quiz or check question, a deck read to the end. The card (coding, quiz) plays
+      // its own sound; the quiet completions (decks) get the chime from here.
       const gain = xp - knownXp;
-      const r = counter.getBoundingClientRect();
-      const chip = document.createElement('div');
-      chip.className = 'xp-float';
-      chip.textContent = `+${gain} XP`;
-      chip.style.left = `${r.left}px`; chip.style.top = `${r.top - 6}px`;
-      document.body.append(chip);
-      setTimeout(() => chip.remove(), 1500);
-      const avatar = document.querySelector('.learning-avatar');
-      if (avatar) { avatar.classList.remove('xp-bump'); void avatar.offsetWidth; avatar.classList.add('xp-bump'); }
+      if (!document.querySelector('.victory-panel')) play('xp');
+      if (!still()) {
+        const r = counter.getBoundingClientRect();
+        const chip = document.createElement('div');
+        chip.className = 'xp-float';
+        chip.textContent = `+${gain} XP`;
+        chip.style.left = `${r.left}px`; chip.style.top = `${r.top - 6}px`;
+        document.body.append(chip);
+        setTimeout(() => chip.remove(), 1500);
+        const avatar = document.querySelector('.learning-avatar');
+        if (avatar) { avatar.classList.remove('xp-bump'); void avatar.offsetWidth; avatar.classList.add('xp-bump'); }
+      }
+      // A quiet completion can also cross a level: say so, with the fanfare.
+      if (!document.querySelector('.victory-panel') && Math.floor(xp / XP_PER_LEVEL) > Math.floor(knownXp / XP_PER_LEVEL)) {
+        play('levelup');
+        const title = document.querySelector('.learning-avatar')?.getAttribute('title');
+        globalThis.molipToast?.(`LEVEL UP! Lv. ${Math.floor(xp / XP_PER_LEVEL) + 1}${title ? ' · ' + title : ''}`, 'success');
+      } else {
+        globalThis.molipToast?.(`+${gain} XP`, 'success');
+      }
     }
     knownXp = xp;
   }

@@ -466,7 +466,7 @@ body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { poi
 @keyframes victory-enter { from {opacity:0;transform:translateY(30px) scale(.92)} to {opacity:1;transform:none} }
 @keyframes victory-star { from {opacity:0;transform:scale(.3) rotate(-80deg)} to {opacity:1;transform:none} }
 @keyframes victory-reward { from {opacity:0;transform:translateY(12px)} to {opacity:1;transform:none} }
-@media(prefers-reduced-motion:reduce) { .victory-panel,.victory-emblem,.victory-reward { animation:none; } }
+
 @media(max-width:520px) { .victory-panel {padding:24px;max-width:calc(100vw - 24px)} .victory-panel h2 {font-size:28px} }
 
 /* Level avatars (src/avatar.rs): the mascot 큐 beside the XP counter, on the reward card, on the home card and in the avatar gallery. */
@@ -491,7 +491,7 @@ body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { poi
 .victory-panel.evolving .victory-levelup { display: block; animation: levelup-pop .8s .6s cubic-bezier(.16,1,.3,1) both; }
 .victory-title { color: #e9d29b; font-size: 13px; margin: -6px 0 14px; }
 @keyframes levelup-pop { 0% { opacity: 0; transform: scale(.5) translateY(10px); letter-spacing: 12px } 100% { opacity: 1; transform: none; letter-spacing: 4px } }
-@media(prefers-reduced-motion:reduce) { .victory-avatar, .victory-panel.evolving .victory-avatar.current, .victory-panel.evolving .victory-avatar-stage::before, .victory-panel.evolving .victory-avatar-stage::after, .learning-avatar.xp-bump, .xp-float { animation: none; } .victory-panel.evolving .victory-avatar.current { opacity: 0 } .victory-panel.evolving .victory-avatar.next { opacity: 1; transform: none; animation: none } }
+
 
 /* Home: the student's current avatar and the road to the next level. */
 .home-progress { display: flex; align-items: center; gap: 22px; }
@@ -577,3 +577,13 @@ button.collection-card:hover {transform:translateY(-5px);border-color:#d5bb82;bo
 .slides-host.slides-presenting .slides-notes-text { font-size: 30px; }
 .slides-host.slides-presenting .slides-notes-next { font-size: 18px; }
 .slides-bar .slides-notes-toggle.active { background: #6d4fd6; color: #fff; }
+
+/* Effects off (home screen toggle, src/prefs.rs): rewards appear at once, nothing moves. */
+html.fx-still .victory-panel, html.fx-still .victory-emblem, html.fx-still .victory-reward, html.fx-still .victory-avatar, html.fx-still .victory-levelup, html.fx-still .learning-avatar.xp-bump, html.fx-still .xp-float, html.fx-still .autopilot-dot, html.fx-still .agent-spotlight { animation: none !important; }
+html.fx-still .victory-panel.evolving .victory-avatar.current { opacity: 0; }
+html.fx-still .victory-panel.evolving .victory-avatar.next { opacity: 1; transform: none; animation: none; }
+html.fx-still .victory-panel.evolving .victory-avatar-stage::before, html.fx-still .victory-panel.evolving .victory-avatar-stage::after { display: none; }
+html.fx-still .victory-fill { transition: none; }
+.home-fx { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.home-fx button { font-size: 13px; padding: 7px 11px; background: #eef2ef; color: #173d36; border: 1px solid #c9d4ce; }
+.home-fx button.off { color: #6b7f78; background: transparent; }

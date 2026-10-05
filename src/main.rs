@@ -112,6 +112,8 @@ window.molipVoice && molipVoice.setName({});",
         document::eval(include_str!("../assets/layout/shortcuts.js"));
         document::eval(include_str!("../assets/layout/toast.js"));
         document::eval(include_str!("../assets/layout/victory.js"));
+        // Reward effects on or off, as saved from the home screen.
+        document::eval(&molip_quest::prefs::Prefs::load().script());
         document::eval(include_str!("../assets/layout/collection.js"));
         document::eval(include_str!("../assets/layout/diagrams.js"));
         document::eval(include_str!("../assets/layout/interactive.js"));
@@ -215,6 +217,8 @@ fn Workspace() -> Element {
     let mut study_target = use_signal(|| (String::new(), usize::MAX));
     // Bumped when progress is reset from home, so the avatar card reads the store again.
     let mut home_epoch = use_signal(|| 0u32);
+    // Reward effects: animation and sound switches shown on the home card.
+    let mut prefs = use_signal(molip_quest::prefs::Prefs::load);
     let course = use_hook(|| {
         let source = if let Ok(path) = std::env::var("MOLIP_COURSE_PATH") {
             std::fs::read_to_string(path).map_err(|e| e.to_string())?
@@ -264,6 +268,12 @@ fn Workspace() -> Element {
                                     div {class:"home-track",div {class:"home-fill",style:format!("width:{}%",if level>=last {100} else {within*100/molip_quest::avatar::MISSIONS_PER_LEVEL})}}
                                     p {class:"home-next",{if level>=last {"마지막 레벨입니다. 큐가 다 자랐어요.".to_string()} else {format!("다음 레벨까지 미션 {}개 · 레벨 {}개마다 큐의 모습이 바뀝니다",molip_quest::avatar::MISSIONS_PER_LEVEL-within,molip_quest::avatar::LEVELS_PER_TIER)}}}
                                     div {class:"course-actions",button {class:"gallery-link",onclick:move |_|view.set(View::Avatars),"아바타 모아보기"}}
+                                    div {class:"home-fx",
+                                        button {class:if prefs().animations {""} else {"off"},title:"경험치·레벨업 애니메이션",onclick:move |_|{let mut p=prefs();p.animations=!p.animations;let _=p.save();prefs.set(p);document::eval(&p.script());},
+                                            {if prefs().animations {"✨ 애니메이션 켬"} else {"✨ 애니메이션 끔"}}}
+                                        button {class:if prefs().sounds {""} else {"off"},title:"경험치 효과음과 레벨업 팡파르",onclick:move |_|{let mut p=prefs();p.sounds=!p.sounds;let _=p.save();prefs.set(p);document::eval(&p.script());},
+                                            {if prefs().sounds {"🔔 효과음 켬"} else {"🔔 효과음 끔"}}}
+                                    }
                                 }
                             }}}
                             section {class:"card course-row", h2 {"{course.title}"} p {"{course.description}"}
