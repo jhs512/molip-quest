@@ -61,7 +61,7 @@ def run_solution(problem, solution):
                    "_plt.rcParams['font.family'] = ['Malgun Gothic', 'Apple SD Gothic Neo', 'AppleGothic', 'NanumGothic', 'Noto Sans KR', 'Noto Sans CJK KR', 'DejaVu Sans']; "
                    "_plt.rcParams['axes.unicode_minus'] = False\n")
         result = subprocess.run([python_executable(), "-X", "utf8", "-c", prelude + solution], input=stdin, capture_output=True,
-                                text=True, encoding="utf-8", timeout=120, cwd=str(ROOT / "courses"), env=env)
+                                text=True, encoding="utf-8", timeout=120, cwd=os.environ.get("MOLIP_RUN_CWD", str(ROOT / "courses")), env=env)
         out = (result.stdout + ("\n" + result.stderr if result.returncode else "")).strip()
     except Exception as error:  # noqa: BLE001
         out = f"(실행 실패: {error})"

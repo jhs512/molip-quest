@@ -358,13 +358,32 @@ mod tests {
             let code = materials[&unit.id]
                 .code
                 .replace("\"cafe-sales.xlsx\"", "\"data/cafe-sales.xlsx\"");
-            let assembled: String = materials[&unit.id]
-                .narration
-                .iter()
-                .filter(|a| a["action"] == "type_code")
-                .map(|a| a["code"].as_str().unwrap())
-                .collect();
-            assert_eq!(assembled, materials[&unit.id].code);
+            // Replayed as the agent plays it (set_code resets, type_code appends, a try is
+            // taken back by set_code), the editor ends as the commented solution.
+            let mut editor = String::new();
+            for action in &materials[&unit.id].narration {
+                match action["action"].as_str().unwrap() {
+                    "set_code" => editor = action["code"].as_str().unwrap().to_string(),
+                    "type_code" => {
+                        if action["replace"] == true {
+                            editor.clear();
+                        }
+                        let mut body = action["code"].as_str().unwrap().to_string();
+                        if !body.ends_with('\n') {
+                            body.push('\n');
+                        }
+                        if !editor.is_empty() && !editor.ends_with('\n') {
+                            body.insert(0, '\n');
+                        }
+                        editor.push_str(&body);
+                    }
+                    _ => {}
+                }
+            }
+            assert_eq!(editor.trim_end(), materials[&unit.id].code.trim_end(), "{}", unit.id);
+            let runs = materials[&unit.id].narration.iter().filter(|a| a["action"] == "run").count();
+            assert!(runs >= 2, "{}: the 해설 must run more than once", unit.id);
+            assert!(materials[&unit.id].code.contains('#'), "{}: the solution needs comments", unit.id);
             let report = molip_quest::runner::check_unit(unit, &code).await.unwrap();
             assert!(
                 report.passed,
