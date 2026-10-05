@@ -43,7 +43,7 @@ main에 커밋이 올라갈 때마다 GitHub Releases에 **Windows x64 설치 EX
 - 코드 실행에 예제 입력을 기본 제공, 입력값을 바꿔 연습 가능
 - Markdown 설명·문항·해설, Python 코드 블록 색상 표시
 - CodeMirror 6 코드 편집기
-- Python·수업 패키지 환경 진단
+- Python·수업 패키지 환경 진단, 그리고 「환경 설치」 한 번으로 OS에 맞는 학습 환경(uv + Python 3.13 + 수업 패키지) 재설치
 
 각 실행은 새 프로세스와 별도 작업 폴더에서 시작합니다. data/titanic.csv, data/credit.csv, data/stock.csv, data/prices.html은 매번 원본으로 준비하므로 이전 문제의 변수·파일·수정에 의존하지 않습니다. Jupyter Notebook은 사용하지 않습니다.
 

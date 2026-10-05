@@ -1600,19 +1600,65 @@ pub fn DoctorPanel() -> Element {
     let mut open = use_signal(|| false);
     let mut busy = use_signal(|| false);
     let mut checks = use_signal(Vec::<molip_quest::doctor::Check>::new);
-    rsx! { button { onclick: move |_| async move {
-        open.set(true); busy.set(true); checks.set(vec![]);
-        checks.set(molip_quest::doctor::inspect().await); busy.set(false);
-    }, "환경 진단" }
-    if open() { div { class:"doctor-backdrop", section { class:"doctor-panel", role:"dialog", aria_label:"학습 환경 진단",
-        h2 { "학습 환경 진단" }
-        p { "Python과 실습 패키지 설치 상태를 확인합니다." }
-        if busy() { p { role:"status", "검사 중입니다…" } }
-        for check in checks() { div { class:if check.ready {"doctor-check ready"} else {"doctor-check missing"},
-            strong { if check.ready {"✓ "} else {"! "} "{check.name}" } p { "{check.detail}" }
-        } }
-        button { onclick:move |_|open.set(false), "닫기" }
-    } } }
+    // 환경 설치: the installer's output, line by line, and whether it is running.
+    let mut installing = use_signal(|| false);
+    let mut install_log = use_signal(Vec::<String>::new);
+    let inspect = Callback::new(move |_: ()| {
+        spawn(async move {
+            busy.set(true);
+            checks.set(vec![]);
+            checks.set(molip_quest::doctor::inspect().await);
+            busy.set(false);
+        });
+    });
+    let install = Callback::new(move |_: ()| {
+        if installing() {
+            return;
+        }
+        open.set(true);
+        installing.set(true);
+        install_log.set(vec![
+            "학습용 Python 환경을 이 컴퓨터에 새로 설치합니다. 인터넷이 필요하고 몇 분 걸립니다."
+                .into(),
+        ]);
+        spawn(async move {
+            let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel::<String>();
+            let worker = tokio::spawn(molip_quest::doctor::install(tx));
+            while let Some(line) = rx.recv().await {
+                let mut log = install_log.write();
+                log.push(line);
+                if log.len() > 200 {
+                    log.remove(0);
+                }
+            }
+            match worker.await.unwrap_or_else(|e| Err(e.to_string())) {
+                Ok(done) => install_log.write().push(format!("✓ {done}")),
+                Err(e) => install_log.write().push(format!("! 설치 실패: {e}")),
+            }
+            installing.set(false);
+            inspect.call(());
+        });
+    });
+    rsx! {
+        button { onclick: move |_| { open.set(true); inspect.call(()); }, "환경 진단" }
+        button { title:"uv로 Python 3.13 환경을 새로 만들고 수업 패키지를 설치합니다", onclick: move |_| install.call(()), "환경 설치" }
+        if open() { div { class:"doctor-backdrop", section { class:"doctor-panel", role:"dialog", aria_label:"학습 환경 진단",
+            h2 { "학습 환경" }
+            p { "Python과 실습 패키지 설치 상태를 확인합니다. 「환경 설치」는 이 컴퓨터에 맞는 환경을 처음부터 다시 만듭니다." }
+            if busy() { p { role:"status", "검사 중입니다…" } }
+            for check in checks() { div { class:if check.ready {"doctor-check ready"} else {"doctor-check missing"},
+                strong { if check.ready {"✓ "} else {"! "} "{check.name}" } p { "{check.detail}" }
+            } }
+            if !install_log().is_empty() {
+                h3 { class:"doctor-install-title", {if installing() {"환경 설치 중…"} else {"환경 설치"}} }
+                pre { class:"doctor-install-log", {install_log().iter().rev().take(14).rev().cloned().collect::<Vec<_>>().join("\n")} }
+            }
+            div { class:"actions",
+                button { disabled: installing() || busy(), onclick: move |_| inspect.call(()), "다시 검사" }
+                button { disabled: installing(), onclick: move |_| install.call(()), {if installing() {"설치 중…"} else {"환경 설치 (다시)"}} }
+                button { onclick:move |_|open.set(false), "닫기" }
+            }
+        } } }
     }
 }
 

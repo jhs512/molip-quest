@@ -670,3 +670,7 @@ html.fx-still .assistant-tts-dot { animation: none; }
 /* A failed run or submission: the result pane and its status line turn red. */
 .output.failed { color: #ffb4b4; border-left: 4px solid #e5484d; background: #2a1b1f; }
 .execution-status.failed { color: #ff8e8e; font-weight: 700; }
+
+/* 환경 설치 log inside the doctor panel. */
+.doctor-install-title { margin: 14px 0 6px; font-size: 14px; color: #2f4a63; }
+.doctor-install-log { max-height: 220px; overflow: auto; font-size: 12px; line-height: 1.5; background: #16283a; color: #dce8f4; border-radius: 8px; padding: 10px 12px; white-space: pre-wrap; }
