@@ -235,6 +235,9 @@ pub fn Learning(
             }
         }));
     }
+    // Unit moves for the keyboard (Ctrl/⌘ + ↑/↓, assets/layout/shortcuts.js).
+    let previous_unit = previous.clone();
+    let next_unit = next.clone();
     // Shared by the header buttons and the buttons at the bottom of concept and quiz missions.
     let navigate = Callback::new(move |delta: i32| {
         if delta < 0 {
@@ -352,6 +355,15 @@ pub fn Learning(
                     },
                     onclose:move |_|assistant_open.set(false)}
         }
+        }
+        // Keyboard shortcuts (assets/layout/shortcuts.js) click these: Ctrl/⌘+←→ steps missions,
+        // Ctrl/⌘+↑↓ units, Ctrl/⌘+I opens or folds the AI panel.
+        div {class:"shortcut-targets",hidden:true,"aria-hidden":"true",
+            button {id:"shortcut-prev-mission",tabindex:"-1",disabled:!can_prev,onclick:move |_|navigate.call(-1)}
+            button {id:"shortcut-next-mission",tabindex:"-1",disabled:!can_next,onclick:move |_|navigate.call(1)}
+            button {id:"shortcut-prev-unit",tabindex:"-1",disabled:previous_unit.is_none(),onclick:{let previous_unit=previous_unit.clone();move |_|{if let Some(id)=previous_unit.clone(){mission_index.set(usize::MAX);selected.set(id);}}}}
+            button {id:"shortcut-next-unit",tabindex:"-1",disabled:next_unit.is_none(),onclick:{let next_unit=next_unit.clone();move |_|{if let Some(id)=next_unit.clone(){mission_index.set(usize::MAX);selected.set(id);}}}}
+            button {id:"shortcut-assistant",tabindex:"-1",onclick:move |_|{let v=assistant_open();assistant_open.set(!v);}}
         }
         if autopilot() {
             div {class:"autopilot-banner",role:"status",

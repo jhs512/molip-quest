@@ -1,4 +1,18 @@
-// Keyboard shortcuts for the whole app.
+// Keyboard shortcuts for the whole app. The scheme (Ctrl on Windows, ⌘ on macOS = "mod"):
+//
+//   mod+← / mod+→      previous / next mission        mod+↑ / mod+↓   previous / next unit
+//   mod+K              curriculum menu                mod+I           AI panel open / fold
+//   mod+/              this cheat sheet               F11 (⌃⌘F)       fullscreen
+//   mod+Enter          run code; twice = submit       mod+Shift+Enter submit at once
+//   Enter              grade a short answer; take a modal card's primary button
+//   Space              pause / resume a running 해설 (in a deck: next slide)
+//   Esc                stop autopilot or reading, close sheets and menus, leave presentation
+//   ← → N              inside a deck: slides and the presenter script (assets/slides/slides.js)
+//   mod+double-click   read aloud from that paragraph (assets/speech/speech.js)
+//
+// mod+letter/arrow shortcuts stay out of text fields and the code editor, where those keys
+// keep their editing meaning. The learning view renders hidden #shortcut-* buttons that the
+// moves click, so the Rust side keeps the navigation rules.
 //
 // F11 (macOS: control+command+F) toggles the OS window fullscreen by clicking the hidden
 // button the Rust side renders (#app-fullscreen-toggle), whose data-fullscreen attribute
@@ -18,7 +32,72 @@
   const paneButton = text => [...document.querySelectorAll('.pane-actions button')].find(b => b.textContent.trim() === text && !b.disabled) || null;
   const RESUBMIT_WINDOW_MS = 2000;
   let armedUntil = 0;
+  const MOD = mac ? '⌘' : 'Ctrl';
+  const inEditable = target => target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement
+    || (target instanceof Element && (target.isContentEditable || !!target.closest('.cm-editor')));
+  const clickId = id => { const b = document.getElementById(id); if (!b || b.disabled) return false; b.click(); return true; };
+  function toggleCurriculum() {
+    const dialog = document.querySelector('.curriculum-menu');
+    if (!dialog) return false;
+    if (dialog.open) dialog.close(); else document.querySelector('.curriculum-toggle')?.click();
+    return true;
+  }
+  // ---- Cheat sheet (mod+/): every shortcut, with this platform's keys. ----
+  const SHEET = [
+    ['이동', [[`${MOD}+←  ${MOD}+→`, '이전 · 다음 단계'], [`${MOD}+↑  ${MOD}+↓`, '이전 · 다음 단원'], [`${MOD}+K`, '수업 목차 열기 · 닫기'], [`${MOD}+I`, 'AI에게 물어보기 열기 · 접기']]],
+    ['코딩 미션', [[`${MOD}+Enter`, '코드 실행'], [`${MOD}+Enter 두 번`, '실행하고 바로 제출'], [`${MOD}+Shift+Enter`, '바로 제출'], ['Enter', '주관식 답 칸에서 채점 · 정답 카드에서 다음 미션']]],
+    ['슬라이드', [['←  →  Space', '이전 · 다음 장 (마지막 장에서 →는 다음 단계, 첫 장에서 ←는 이전 단계)'], ['N', '강사 스크립트'], ['전체 화면 버튼', '발표 모드 · Esc로 해제']]],
+    ['소리', [[`${MOD}+더블 클릭`, '그 문단부터 읽어 주기 · Esc로 정지'], ['Space', '해설 일시정지 · 재개'], ['Esc', '자동 진행 해제']]],
+    ['화면', [[mac ? '⌃⌘F' : 'F11', '전체 화면'], [`${MOD}+/`, '이 안내 열기 · 닫기']]],
+  ];
+  let sheet = null;
+  function toggleSheet(on) {
+    if (!sheet) {
+      sheet = document.createElement('div'); sheet.className = 'shortcut-sheet'; sheet.setAttribute('role', 'dialog'); sheet.setAttribute('aria-label', '단축키');
+      const panel = document.createElement('div'); panel.className = 'shortcut-panel';
+      const head = document.createElement('div'); head.className = 'shortcut-head';
+      const title = document.createElement('h2'); title.textContent = '단축키';
+      const close = document.createElement('button'); close.type = 'button'; close.textContent = '닫기 ×'; close.onclick = () => toggleSheet(false);
+      head.append(title, close); panel.append(head);
+      for (const [group, rows] of SHEET) {
+        const section = document.createElement('section');
+        const h = document.createElement('h3'); h.textContent = group; section.append(h);
+        const table = document.createElement('table');
+        for (const [keys, what] of rows) {
+          const tr = document.createElement('tr');
+          const k = document.createElement('td'); k.className = 'shortcut-keys';
+          for (const [i, key] of keys.split('  ').entries()) { if (i) k.append(' '); const kbd = document.createElement('kbd'); kbd.textContent = key; k.append(kbd); }
+          const w = document.createElement('td'); w.textContent = what;
+          tr.append(k, w); table.append(tr);
+        }
+        section.append(table); panel.append(section);
+      }
+      sheet.append(panel);
+      sheet.addEventListener('click', event => { if (event.target === sheet) toggleSheet(false); });
+      document.body.append(sheet);
+    }
+    const show = on === undefined ? sheet.hidden !== false || !sheet.isConnected : !!on;
+    sheet.hidden = !show;
+    return true;
+  }
   document.addEventListener('keydown', event => {
+    // Navigation and panels: mod + key, outside text fields and the code editor so editing
+    // keys (word jumps, line start/end) keep their meaning there.
+    const mod = mac ? event.metaKey : event.ctrlKey;
+    if (mod && !event.altKey && !event.shiftKey && !inEditable(event.target)) {
+      let handled = false;
+      switch (event.key) {
+        case 'ArrowLeft': handled = clickId('shortcut-prev-mission'); break;
+        case 'ArrowRight': handled = clickId('shortcut-next-mission'); break;
+        case 'ArrowUp': handled = clickId('shortcut-prev-unit'); break;
+        case 'ArrowDown': handled = clickId('shortcut-next-unit'); break;
+        case 'k': case 'K': handled = toggleCurriculum(); break;
+        case 'i': case 'I': handled = clickId('shortcut-assistant'); break;
+        case '/': handled = toggleSheet(); break;
+      }
+      if (handled) { event.preventDefault(); event.stopPropagation(); return; }
+    }
+    if (event.key === 'Escape' && sheet && !sheet.hidden) { event.preventDefault(); toggleSheet(false); return; }
     // A modal card on screen (정답 카드, 확인 대화상자): Enter takes its primary button. Only
     // primary buttons, so a destructive confirmation never fires from a stray Enter.
     const card = document.querySelector('.doctor-panel');
@@ -87,5 +166,5 @@
       await new Promise(resolve => setTimeout(resolve, 120));
     }
   }
-  globalThis.molipShortcuts = { toggleFullscreen, isFullscreen, runKey: mac ? '⌘Enter' : 'Ctrl+Enter', submitKey: mac ? '⌘⇧Enter' : 'Ctrl+Shift+Enter' };
+  globalThis.molipShortcuts = { toggleFullscreen, isFullscreen, toggleSheet, toggleCurriculum, runKey: mac ? '⌘Enter' : 'Ctrl+Enter', submitKey: mac ? '⌘⇧Enter' : 'Ctrl+Shift+Enter', mod: MOD };
 })();
