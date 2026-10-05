@@ -1257,6 +1257,16 @@ pub(crate) fn UnitWorkspace(
     oncompleted: EventHandler<bool>,
 ) -> Element {
     let key = format!("local:{course_id}:{}:{}", unit.id, unit.revision);
+    // Already passed at this revision: 제출 reads 다시 제출 and turns green, and stays so.
+    let mut solved = use_signal({
+        let course_id = course_id.clone();
+        let unit = unit.clone();
+        move || {
+            molip_quest::learning_store::LearningStore::user_store()
+                .and_then(|store| store.unit_completed(&course_id, &unit))
+                .unwrap_or(false)
+        }
+    });
     let initial = use_hook(|| {
         drafts::load(&key)
             .ok()
@@ -1339,16 +1349,16 @@ pub(crate) fn UnitWorkspace(
         section{class:"coding-pane",div{class:"pane-heading",strong{"main.py"}
         div{class:"pane-actions",button{class:"danger-outline",title:"작성 중인 코드를 지우고 준비 코드로 되돌립니다",disabled:busy(),onclick:{let unit=unit.clone();let key=key.clone();move |_|{code.set(unit.starter_code.clone());editor_reset+=1;answers.set(HashMap::new());output.set(String::new());output_failed.set(false);artifacts.set(vec![]);message.set(String::new());let _=drafts::save(&key,&code(),&answers());}},"초기화"}
         button{disabled:busy(),title:if cfg!(target_os="macos") {"⌘Enter"} else {"Ctrl+Enter"},onclick:move |_|async move{busy.set(true);message.set(String::new());artifacts.set(vec![]);match run_python(&code(),&input()).await{Ok(result)=>{artifacts.set(result.artifacts);if result.stderr.contains("EOFError: EOF when reading a line") {message.set("실행 입력이 부족합니다. 실행 입력 칸에 문제에서 요구한 값을 넣어주세요.".into());}else if result.success {message.set("실행 완료. 제출하면 전체 테스트로 정답을 확인합니다.".into());}output_failed.set(!result.success);output.set(format!("{}\n{}\n{}",result.stdout,result.stderr,if result.success {"실행 완료"} else {"실행 실패"}));},Err(e)=>message.set(e)}busy.set(false);},"코드 실행"}
-            button{class:"primary",disabled:busy(),title:if cfg!(target_os="macos") {"⌘Enter 두 번 연타, 또는 ⌘⇧Enter"} else {"Ctrl+Enter 두 번 연타, 또는 Ctrl+Shift+Enter"},onclick:{let unit=unit.clone();let course_id=course_id.clone();move |_|{let unit=unit.clone();let course_id=course_id.clone();async move{
+            button{class:if solved() {"primary resubmit"} else {"primary"},disabled:busy(),title:if cfg!(target_os="macos") {"⌘Enter 두 번 연타, 또는 ⌘⇧Enter"} else {"Ctrl+Enter 두 번 연타, 또는 Ctrl+Shift+Enter"},onclick:{let unit=unit.clone();let course_id=course_id.clone();move |_|{let unit=unit.clone();let course_id=course_id.clone();async move{
                 busy.set(true);message.set(String::new());artifacts.set(vec![]);let source=code();let blank_answers=answers();
                 if !unit.blanks.is_empty()&&assemble(&unit,&blank_answers).as_deref()!=Ok(source.as_str()){message.set("지정된 빈칸을 모두 채워주세요.".into());busy.set(false);return;}
                 match check_unit(&unit,&source).await{Err(e)=>message.set(e),Ok(report)=>{output.set(report.cases.iter().enumerate().map(|(i,c)|format!("테스트 {} · {}\n입력: {}\n예상: {}\n결과: {}\n{}",i+1,if c.passed {"통과"} else {"실패"},c.input.trim(),c.expected.trim(),c.stdout.trim(),c.stderr.trim())).collect::<Vec<_>>().join("\n\n"));let passed=report.passed;output_failed.set(!passed);
                     match molip_quest::learning_store::LearningStore::user_store().and_then(|mut store|store.save(&course_id,&unit,&source,&report)) {
-                        Ok(())=>{message.set(if passed {"통과했습니다. 완료 기록을 이 컴퓨터에 저장했습니다."} else {"검사를 통과하지 못했습니다. 결과를 이 컴퓨터에 저장했습니다."}.into());oncompleted.call(passed);},
+                        Ok(())=>{message.set(if passed {"통과했습니다. 완료 기록을 이 컴퓨터에 저장했습니다."} else {"검사를 통과하지 못했습니다. 결과를 이 컴퓨터에 저장했습니다."}.into());if passed {solved.set(true);}oncompleted.call(passed);},
                         Err(e)=>message.set(e)
                     }
                 }}busy.set(false);
-            }}},"제출"}
+            }}},{if solved() {"다시 제출"} else {"제출"}}}
         }
         }
         div{class:"editor-pane",

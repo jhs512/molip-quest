@@ -80,6 +80,9 @@ progress { width: 100%; height: 14px; accent-color: #2c7662; margin: 12px 0 32px
 .pane-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 22px; border-bottom: 1px solid #182a38; font-size: 14px; }
 .pane-actions { display: flex; gap: 8px; }
 .practice-shell .pane-actions button { font-size: 13px; padding: 8px 12px; }
+/* A problem already passed: 다시 제출, green. */
+.practice-shell .pane-actions .primary.resubmit { background: #1f9d6a; }
+.practice-shell .pane-actions .primary.resubmit:hover { background: #178457; }
 .editor-pane { min-height: 0; overflow: auto; padding: 16px; }
 .practice-shell .code-editor { background: #202d3e; color: #dce8f4; border: 0; border-radius: 3px; margin: 0; min-height: 100%; height: 100%; resize: none; padding: 18px 20px; font: 15px/1.8 'JetBrains Mono', 'Pretendard', Consolas, monospace; }
 .inline-code { background: #202d3e; padding: 16px 0; min-height: 100%; font: 15px/1.8 'JetBrains Mono', 'Pretendard', Consolas, monospace; }

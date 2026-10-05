@@ -1,4 +1,5 @@
 use crate::{runner::TestReport, Unit};
+use rusqlite::OptionalExtension;
 use rusqlite::{params, Connection};
 use std::{collections::HashSet, path::Path};
 
@@ -124,6 +125,20 @@ impl LearningStore {
             })
             .map(|u| u.id.clone())
             .collect())
+    }
+    /// Whether this unit (a coding problem, or a mission's progress unit) has been passed at
+    /// its current revision: what the 제출 button turns into 다시 제출 on.
+    pub fn unit_completed(&self, course: &str, unit: &Unit) -> Result<bool, String> {
+        let revision: Option<i64> = self
+            .0
+            .query_row(
+                "SELECT revision FROM completed WHERE course=?1 AND unit=?2",
+                params![course, unit.id],
+                |r| r.get(0),
+            )
+            .optional()
+            .map_err(|e| e.to_string())?;
+        Ok(revision == Some(unit.revision))
     }
     pub fn completed_items(&self, course: &crate::Course) -> Result<HashSet<String>, String> {
         let mut statement = self

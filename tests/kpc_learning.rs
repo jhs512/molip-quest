@@ -51,6 +51,33 @@ fn concept_requires_one_answer_and_accepts_korean_or_english() {
     assert!(Course::parse(&invalid.to_string()).is_err());
 }
 
+/// The 제출 button turns into 다시 제출 once the unit passed at its current revision, and goes
+/// back to 제출 after a reset or a revision bump.
+#[test]
+fn unit_completed_follows_a_pass_the_revision_and_a_reset() {
+    let course = concept_course();
+    let unit = &course.chapters[0].units[0];
+    let activity = &unit.activities[0];
+    let ActivityKind::Concept { check, .. } = &activity.kind else {
+        panic!("concept")
+    };
+    let directory = tempfile::tempdir().unwrap();
+    let mut store = LearningStore::open(&directory.path().join("learning.sqlite3")).unwrap();
+    let progress = activity.progress_unit(unit);
+    assert!(!store.unit_completed(&course.id, &progress).unwrap());
+    let wrong = grade_quiz(std::slice::from_ref(check), &HashMap::from([("term".into(), "Series".into())]));
+    store.save(&course.id, &progress, "Series", &wrong).unwrap();
+    assert!(!store.unit_completed(&course.id, &progress).unwrap(), "a failed attempt is not a pass");
+    let right = grade_quiz(std::slice::from_ref(check), &HashMap::from([("term".into(), "DataFrame".into())]));
+    store.save(&course.id, &progress, "DataFrame", &right).unwrap();
+    assert!(store.unit_completed(&course.id, &progress).unwrap());
+    let mut bumped = progress.clone();
+    bumped.revision += 1;
+    assert!(!store.unit_completed(&course.id, &bumped).unwrap(), "a new revision asks again");
+    store.reset(&course.id).unwrap();
+    assert!(!store.unit_completed(&course.id, &progress).unwrap());
+}
+
 #[test]
 fn reset_forgets_completions_for_the_course_only() {
     let course = concept_course();
