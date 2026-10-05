@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>첫날 오전 실습 · KPC 금융 데이터 분석</title><meta name="description" content="카페 매출 Excel 하나로 메뉴별 매출, 전체 매출, 가장 매출이 큰 메뉴를 찾는 Python 기초 실습입니다."><link rel="stylesheet" href="style.css"></head>
+<body>
+<header><a class="brand" href="./">KPC <span>FINANCE × DATA</span></a><nav aria-label="주요 메뉴"><a href="./#journey">수업 일정</a><a href="./#install">설치 안내</a></nav></header>
+<main class="practice">
+<section class="practice-intro"><p class="eyebrow">DAY 01 · MORNING PRACTICE</p><h1>카페 매출을<br><em>직접 계산해 봅시다.</em></h1><p class="intro">오전 설명 3시간 뒤, 실습 1시간.<br>같은 Excel 자료에서 서로 다른 질문 세 개에 답합니다.</p><div class="actions"><a class="primary" href="data/cafe-sales.xlsx" download>매출 Excel 다운로드 ↓</a><button class="text-button" id="lock-instructor" type="button" hidden>강사용 자료 잠그기</button></div>
+<div class="practice-setup"><h2>시작하기</h2><ol><li>다운로드한 <code>cafe-sales.xlsx</code>와 작성할 <code>main.py</code>를 <strong>같은 폴더</strong>에 두세요.</li><li>준비 코드를 복사하고, 주석 아래에 코드를 작성하세요. 각 문제는 새 <code>main.py</code>에서 시작해도 풀 수 있습니다.</li><li>수업용 Python 환경에서 실행한 뒤, 예상 결과와 비교하세요. <code>pandas</code>와 <code>openpyxl</code>이 필요합니다. <a href="./#install">환경 설치 안내</a></li></ol><p>이 자료는 실습용 가상 데이터입니다. 가격은 원, 판매수량은 개입니다. 메뉴는 행마다 한 번씩 나옵니다.</p><div class="table-scroll"><table><caption>매출 자료 · 시트 이름: 매출</caption><thead><tr><th>메뉴</th><th>가격 (원)</th><th>판매수량 (개)</th></tr></thead><tbody><tr><td>아메리카노</td><td>4,000</td><td>30</td></tr><tr><td>카페라테</td><td>5,000</td><td>20</td></tr><tr><td>바닐라라테</td><td>5,500</td><td>10</td></tr><tr><td>크루아상</td><td>3,500</td><td>25</td></tr><tr><td>샌드위치</td><td>6,500</td><td>15</td></tr></tbody></table></div><p class="setup-note">파일 읽는 부분은 이미 준비했습니다. <code>menus</code>는 각 메뉴의 이름·가격·판매수량이 든 딕셔너리들을 모은 리스트입니다.</p></div></section>
+
+<section class="exercise" id="sales"><p class="eyebrow">문제 01 · 15분</p><h2>각 메뉴는 얼마를 팔았을까요?</h2><p>모든 메뉴에 대해 <strong>가격 × 판매수량</strong>으로 매출을 계산하고, 메뉴 이름과 매출을 한 줄씩 출력하세요.</p><p class="hint"><strong>힌트</strong> <code>for menu in menus:</code>로 메뉴를 하나씩 꺼내세요. 가격은 <code>menu["가격"]</code>, 수량은 <code>menu["판매수량"]</code>으로 읽습니다.</p><h3>준비 코드</h3><div class="command"><button type="button" class="copy" aria-label="1번 준비 코드 복사">복사</button><pre><code>import pandas as pd
+
+df = pd.read_excel("cafe-sales.xlsx")
+menus = df.to_dict("records")
+
+# 메뉴별 매출을 계산하고 출력하세요.
+</code></pre></div><h3>예상 출력</h3><pre class="expected">아메리카노 120000
+카페라테 100000
+바닐라라테 55000
+크루아상 87500
+샌드위치 97500</pre><div class="instructor-actions"><span>강사용</span><button type="button" data-problem="sales" data-kind="code">정답 보기</button><button type="button" data-problem="sales" data-kind="explanation">해설 보기</button></div><div class="instructor-result" hidden></div></section>
+
+<section class="exercise" id="total"><p class="eyebrow">문제 02 · 20분</p><h2>오늘의 전체 매출은 얼마일까요?</h2><p>다섯 메뉴의 매출을 모두 더한 금액을 <code>total_sales</code>에 저장하고, <strong>전체 매출만 한 줄</strong>로 출력하세요.</p><p class="hint"><strong>힌트</strong> 반복문 앞에서 합계를 <code>0</code>으로 시작하세요. 메뉴를 하나 꺼낼 때마다 그 메뉴의 매출을 합계에 더합니다. 최종 출력은 반복문이 끝난 뒤에 합니다.</p><h3>준비 코드</h3><div class="command"><button type="button" class="copy" aria-label="2번 준비 코드 복사">복사</button><pre><code>import pandas as pd
+
+df = pd.read_excel("cafe-sales.xlsx")
+menus = df.to_dict("records")
+
+# 전체 매출을 total_sales에 저장하고 출력하세요.
+</code></pre></div><h3>예상 출력</h3><pre class="expected">460000</pre><div class="instructor-actions"><span>강사용</span><button type="button" data-problem="total" data-kind="code">정답 보기</button><button type="button" data-problem="total" data-kind="explanation">해설 보기</button></div><div class="instructor-result" hidden></div></section>
+
+<section class="exercise" id="best"><p class="eyebrow">문제 03 · 25분</p><h2>매출이 가장 큰 메뉴는 무엇일까요?</h2><p>메뉴별 매출을 비교해 가장 큰 매출의 메뉴를 찾으세요. 이름을 <code>best_name</code>, 매출을 <code>best_sales</code>에 저장하고 두 값을 한 줄로 출력하세요.</p><p class="hint"><strong>힌트</strong> 지금까지의 1위 이름과 금액을 기억하세요. 새 메뉴의 매출이 더 크면 <code>if</code> 안에서 두 값을 함께 바꿉니다. 이 자료에는 공동 1위가 없습니다.</p><h3>준비 코드</h3><div class="command"><button type="button" class="copy" aria-label="3번 준비 코드 복사">복사</button><pre><code>import pandas as pd
+
+df = pd.read_excel("cafe-sales.xlsx")
+menus = df.to_dict("records")
+
+# 매출 1위의 이름과 금액을 찾고 출력하세요.
+</code></pre></div><h3>예상 출력</h3><pre class="expected">아메리카노 120000</pre><div class="instructor-actions"><span>강사용</span><button type="button" data-problem="best" data-kind="code">정답 보기</button><button type="button" data-problem="best" data-kind="explanation">해설 보기</button></div><div class="instructor-result" hidden></div></section>
+<section class="practice-wrap"><h2>계산 뒤에 생각해 볼 질문</h2><p>매출 1위 메뉴를 더 많이 준비하면 될까요? 재료비, 품절, 남은 재고를 알아야 이익과 다음날 준비량까지 판단할 수 있습니다.</p><a class="text-link" href="./">수업 안내로 돌아가기 →</a></section>
+</main>
+<dialog id="instructor-dialog" aria-labelledby="unlock-title"><form id="unlock-form"><button type="button" class="dialog-close" aria-label="닫기">×</button><p class="eyebrow">INSTRUCTOR</p><h2 id="unlock-title">강사용 자료 열기</h2><p>강사 비밀번호를 입력하세요.</p><label for="instructor-password">비밀번호</label><input id="instructor-password" type="password" autocomplete="off" required><p id="unlock-status" role="status" aria-live="polite"></p><button class="primary" type="submit">확인</button></form></dialog>
+<p id="copy-status" class="sr-only" role="status" aria-live="polite"></p><script src="guide.js"></script><script src="practice.js"></script>
+</body></html>

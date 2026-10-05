@@ -5,7 +5,7 @@ document.querySelectorAll('.copy').forEach((button) => {
     try {
       await navigator.clipboard.writeText(code);
       button.textContent = '복사 완료 ✓';
-      status.textContent = '설치 명령을 복사했습니다.';
+      status.textContent = '내용을 복사했습니다.';
       setTimeout(() => { button.textContent = '복사'; }, 2000);
     } catch {
       const selection = window.getSelection();
