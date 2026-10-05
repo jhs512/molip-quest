@@ -204,6 +204,24 @@ def _option_index(question, label):
     return None
 
 
+def topic_particle(text):
+    """은 or 는 after `text`, by the final sound: Hangul batchim, a digit's Korean reading, or a
+    Latin letter that ends in a consonant sound (l, m, n). Trailing marks are skipped."""
+    stripped = text.rstrip(" .,!?)]}'\"」』")
+    if not stripped:
+        return "은"
+    last = stripped[-1]
+    if "가" <= last <= "힣":
+        return "은" if (ord(last) - 0xAC00) % 28 else "는"
+    if last.isdigit():
+        return "은" if last in "013678" else "는"
+    if last.lower() in "lmn":
+        return "은"
+    if last.lower() == "t" and len(stripped) > 1 and stripped[-2].lower() in "aeiou":
+        return "은"  # fit → 핏, get → 겟 (but test → 테스트)
+    return "는"
+
+
 def explanation_lines(n, question):
     """The spoken lines of a question's explanation: the reasoning at the question, then one
     line per wrong option at that option (the 「…」 bullets under 다른 보기는 왜 아닌가)."""
@@ -218,7 +236,8 @@ def explanation_lines(n, question):
                 continue
             label, reason = match.groups()
             index = _option_index(question, label) if question["type"] == "choice" else None
-            text = f"{spoken(label)}은 아니에요. {spoken(reason)}"
+            name = spoken(label)
+            text = f"{name}{topic_particle(name)} 아니에요. {spoken(reason)}"
             lines.append(_say(f"option:{n}:{index}" if index else f"quiz:{n}", text))
     return lines
 
