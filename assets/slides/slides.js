@@ -8,7 +8,7 @@
 import { Marp } from '@marp-team/marp-core';
 import { load } from 'js-yaml';
 
-const marp = new Marp({ html: false, inlineSVG: true, minifyCSS: false });
+const marp = new Marp({ html: false, inlineSVG: false, minifyCSS: false });
 // Course prose also uses spaced markers and Korean words next to emphasis.
 // Handle those as inline tokens; fenced and inline code never enter this rule.
 marp.markdown.inline.ruler.before('emphasis', 'course_strong', (state, silent) => {
@@ -122,6 +122,24 @@ function mount(host) {
   const progress = document.createElement('div'); progress.className = 'slides-progress'; progress.setAttribute('aria-hidden', 'true');
   const progressFill = document.createElement('div'); progressFill.className = 'slides-progress-fill'; progress.append(progressFill);
   const slides = [...stage.querySelectorAll(':scope > .marpit > svg, :scope > .marpit > section')];
+  // Fit: the deck is laid out at 1280×720 and scaled with a transform to the stage's width (and,
+  // outside presentation, to 70% of the window height), so every engine shows the same thing.
+  const deck = stage.querySelector(':scope > .marpit');
+  const scaler = document.createElement('div'); scaler.className = 'slides-scaler';
+  if (deck) { deck.replaceWith(scaler); scaler.append(deck); }
+  const fit = () => {
+    if (!deck) return;
+    const style = getComputedStyle(stage);
+    const inner = stage.clientWidth - parseFloat(style.paddingLeft || '0') - parseFloat(style.paddingRight || '0');
+    const presenting = host.classList.contains('slides-presenting');
+    const byHeight = (presenting ? innerHeight : innerHeight * 0.7) / 720;
+    const k = Math.max(0.05, Math.min(inner / 1280, byHeight));
+    deck.style.transform = `scale(${k})`;
+    scaler.style.width = `${Math.round(1280 * k)}px`;
+    scaler.style.height = `${Math.round(720 * k)}px`;
+  };
+  if (typeof ResizeObserver !== 'undefined') new ResizeObserver(fit).observe(stage);
+  window.addEventListener('resize', fit);
   const bar = document.createElement('div'); bar.className = 'slides-bar';
   const prev = document.createElement('button'); prev.type = 'button'; prev.textContent = '← 이전 장';
   const counter = document.createElement('span'); counter.className = 'slides-counter';
@@ -157,6 +175,7 @@ function mount(host) {
   };
   const present = on => {
     host.classList.toggle('slides-presenting', on);
+    requestAnimationFrame(fit);
     full.textContent = on ? '발표 종료 (Esc)' : '전체 화면';
     if (on) {
       const shortcuts = globalThis.molipShortcuts;
@@ -177,6 +196,7 @@ function mount(host) {
   });
   bar.append(prev, counter, next, notesButton, full);
   host.replaceChildren(style, progress, stage, notes, bar);
+  fit(); requestAnimationFrame(fit);
   let index = 0;
   const update = () => {
     slides.forEach((s, i) => { s.style.display = i === index ? '' : 'none'; });

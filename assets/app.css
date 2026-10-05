@@ -394,17 +394,17 @@ body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { poi
 .slides-host.slides-presenting.slides-ui-visible { cursor: default; }
 .slides-presenting .slides-stage { border: 0; border-radius: 0; padding: 0; background: #000; width: min(100vw, calc(100vh * 16 / 9)); }
 /* Only the slide canvases grow; comics and diagrams inside a slide keep the theme size. */
-.slides-presenting .slides-stage .marpit > svg { width: 100%; height: auto; aspect-ratio: 16 / 9; max-height: 100vh; max-width: calc(100vh * 16 / 9); }
+.slides-presenting .slides-stage .slides-scaler { margin: 0 auto; }
 .slides-presenting .slides-bar { position: fixed; left: 0; right: 0; bottom: 0; margin: 0; padding: 18px 0 20px; background: linear-gradient(transparent, rgba(0, 0, 0, 0.75)); opacity: 0; pointer-events: none; transition: opacity 0.25s; }
 .slides-presenting.slides-ui-visible .slides-bar { opacity: 1; pointer-events: auto; }
 .shortcut-help { color: #5f7570; font-size: 13px; margin: 6px 0 0; line-height: 2; }
 .shortcut-help kbd { font-family: inherit; background: #eef2ef; border: 1px solid #c9d4ce; border-radius: 4px; padding: 1px 6px; font-size: 12px; color: #173d36; }
 .slides-stage { background: #0b141c; border: 1px solid #405970; border-radius: 10px; padding: 8px; overflow: hidden; }
-/* The deck is a 16:9 inline SVG. An explicit aspect ratio and a max-width tied to the max-height keep
-   the box 16:9 in every engine (WebKit does not shrink the width when max-height clamps a
-   height:auto SVG, so the slide spilled right and below on macOS). */
-.slides-stage .marpit { width: 100%; }
-.slides-stage .marpit > svg { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; margin: 0 auto; max-height: 70vh; max-width: calc(70vh * 16 / 9); }
+/* The deck is laid out at 1280×720 and scaled by slides.js (a transform on .marpit inside
+   .slides-scaler, which reserves the scaled size), so no engine has to scale an SVG. */
+.slides-scaler { position: relative; margin: 0 auto; overflow: hidden; }
+.slides-stage .marpit { width: 1280px; height: 720px; transform-origin: top left; }
+.slides-stage .marpit > section { width: 1280px; height: 720px; margin: 0; }
 .slides-bar { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 10px 0 4px; }
 .slides-counter { color: #bcd7ee; font-size: 14px; min-width: 4em; text-align: center; }
 .practice-shell .slides-bar button { font-size: 13px; padding: 8px 14px; }
