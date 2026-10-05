@@ -95,9 +95,11 @@ function paginateComics(markdown) {
     const fence = lines[start].trim();
     // Keep the complete script so "구성: 이전" and character inheritance resolve.
     // The comic loader selects one resolved SVG panel per generated slide.
-    // Every generated slide gets the `comic` class so the theme lets the strip fill the slide.
+    // Every generated slide gets the `comic` class so the theme lets the strip fill the slide;
+    // the panels after the first are `continued`: the same source slide, shown one panel at a
+    // time, so anything that counts slides the way the Markdown does can step over them.
     replacements.push({ start, end, content: panels.map((_, i) =>
-      `${i ? `\n---\n\n${heading}\n\n${notes.join('\n')}\n\n` : ''}<!-- _class: comic -->\n${fence}\n# molip-panel:${i}\n${token.content}\`\`\``
+      `${i ? `\n---\n\n${heading}\n\n${notes.join('\n')}\n\n` : ''}<!-- _class: ${i ? 'comic continued' : 'comic'} -->\n${fence}\n# molip-panel:${i}\n${token.content}\`\`\``
     ).join('\n') });
   }
   for (const item of replacements.reverse()) lines.splice(item.start, item.end - item.start, item.content);
@@ -194,6 +196,24 @@ function mount(host) {
   });
   host.molipPresent = present;
   host.molipNotes = { toggle: toggleNotes, get open() { return notesOpen; }, get text() { return notesText.textContent; } };
+  // For the tutor agent, which counts slides as the Markdown does: a comic's extra panels are
+  // `continued` slides. nextSource() shows any remaining panels of the current source slide for
+  // `dwell` ms each, then lands on the next source slide; it resolves false at the end of the deck.
+  const isContinued = i => !!slides[i]?.querySelector('section.continued');
+  host.molipSlides = {
+    get index() { return index; }, get count() { return slides.length; }, isContinued,
+    sourceIndex(i) { let n = 0; for (let k = 0; k <= i; k++) if (!isContinued(k)) n++; return n; },
+    async nextSource(dwell = 1500) {
+      if (index >= slides.length - 1) return false;
+      while (index < slides.length - 1 && isContinued(index + 1)) {
+        index++; update();
+        await new Promise(resolve => setTimeout(resolve, dwell));
+      }
+      if (index >= slides.length - 1) return false;
+      index++; update();
+      return true;
+    },
+  };
   update();
   globalThis.molipSlides.count += 1;
 }

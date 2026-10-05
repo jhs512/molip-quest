@@ -293,7 +293,17 @@
     async next() { const popup = popupButton('다음 미션 ›'); const b = popup || byText('.header-navigation button', '다음 →'); if (!b || b.disabled) throw new Error('다음 미션으로 갈 수 없습니다'); b.click(); await sleep(600); return '다음 미션으로 이동했습니다: ' + text('.reading-mission h2, .problem-pane h2, .slides-mission h2', 120); },
     async prev() { const b = byText('.header-navigation button', '← 이전'); if (!b || b.disabled) throw new Error('이전 미션으로 갈 수 없습니다'); b.click(); await sleep(600); return '이전 미션으로 이동했습니다: ' + text('.reading-mission h2, .problem-pane h2, .slides-mission h2', 120); },
     async goto(a) { const cells = document.querySelectorAll('.mission-cell'); const cell = cells[Number(a.mission) - 1]; if (!cell) throw new Error(`이 단원에는 ${a.mission}번 미션이 없습니다 (미션 ${cells.length}개)`); cell.click(); await sleep(600); return `${a.mission}번 미션으로 이동했습니다: ` + text('.reading-mission h2, .problem-pane h2, .slides-mission h2', 120); },
-    async next_slide() { const b = byText('.slides-bar button', '다음 장 →'); if (!b || b.disabled) throw new Error('넘길 장이 없습니다'); b.click(); await sleep(300); return '다음 장으로 넘겼습니다: ' + text('.slides-counter', 20); },
+    async next_slide() {
+      // Steps by source slide (the Markdown's `---` count the model sees): a comic's extra panels
+      // are shown briefly on the way, so the narration and the deck stay in step.
+      const host = document.querySelector('.slides-host');
+      if (host && host.molipSlides) {
+        if (!(await host.molipSlides.nextSource(1500))) throw new Error('넘길 장이 없습니다');
+        await sleep(300);
+        return '다음 장으로 넘겼습니다 (' + host.molipSlides.sourceIndex(host.molipSlides.index) + '번째 장): ' + text('.slides-counter', 20);
+      }
+      const b = byText('.slides-bar button', '다음 장 →'); if (!b || b.disabled) throw new Error('넘길 장이 없습니다'); b.click(); await sleep(300); return '다음 장으로 넘겼습니다: ' + text('.slides-counter', 20);
+    },
     async finish_slides() { const b = byText('button', '다 봤어요 · 미션 완료'); if (!b) throw new Error('슬라이드 미션이 아닙니다'); if (!b.disabled) b.click(); await sleep(400); return '슬라이드 미션을 완료로 표시했습니다.'; },
   };
   // Where each action's spotlight goes when it carries "say" (type_code places its own).

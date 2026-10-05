@@ -829,10 +829,10 @@ fn AssistantPanel(
     } else {
         ask.clone()
     };
-    // 해설 모드: /auto narrates this mission on screen (purple spotlight, voice); /auto-all keeps
-    // going mission after mission until Esc.
-    suggestions.push(AUTO.into());
-    suggestions.push(AUTO_ALL.into());
+    // /auto (narrate this mission) and /auto-all (run to the end) are typed by the instructor
+    // and not shown; students see /clear.
+    const CLEAR: &str = "/clear";
+    suggestions.push(CLEAR.into());
     // The speed lives in the page (shared with 읽어주기): show the saved value once mounted.
     use_effect(|| {
         document::eval("const s=document.querySelector('select.assistant-rate');if(s&&window.molipVoice)s.value=String(molipVoice.rate);");
@@ -848,7 +848,7 @@ fn AssistantPanel(
     rsx! {
         section { class:"assistant-panel", aria_label:"AI에게 물어보기",
             header { class:"assistant-head",
-                div { h2 { "AI에게 물어보기" } p { class:"assistant-scope", "'해 줘'면 대신 조작 · /auto 는 이 미션을 해설하며 풀기 · /auto-all 은 끝까지 자동 진행(Esc 해제) · {settings.read().provider.label()}" } }
+                div { h2 { "AI에게 물어보기" } p { class:"assistant-scope", "'해 줘'라고 하면 코드 넣기·실행·제출·퀴즈 답·이동까지 대신합니다 · /clear 로 대화 지우기 · {settings.read().provider.label()}" } }
                 div { class:"assistant-actions",
                     if running() || autopilot() {
                         button { class:"assistant-stop", onclick: move |_| { if autopilot() { autopilot.set(false); auto_cancel += 1; } document::eval("window.molipAgent && molipAgent.stop();"); }, "⏹ 멈춤" }
@@ -929,8 +929,8 @@ fn AssistantPanel(
             div { class:"assistant-footer",
                 div { class:"assistant-suggestions",
                     for text in suggestions.clone() {
-                        button { class: if text == AUTO || text == AUTO_ALL {"assistant-chip narrate"} else {"assistant-chip"},
-                            title: if text == AUTO {"이 미션을 해설하며 풀어 줍니다 (보라색 표시 · 음성)"} else if text == AUTO_ALL {"지금부터 끝까지 미션마다 해설하며 진행합니다. Esc로 해제"} else {""},
+                        button { class: if text == CLEAR {"assistant-chip narrate"} else {"assistant-chip"},
+                            title: if text == CLEAR {"대화를 지웁니다"} else {""},
                             disabled: pending(), onclick: { let text = text.clone(); move |_| { draft.set(text.clone()); send.call(()); } }, "{text}" }
                     }
                 }
