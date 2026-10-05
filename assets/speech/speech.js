@@ -122,7 +122,7 @@
     start() {
       if (['starting', 'speaking'].includes(this.state)) return;
       this.voice = koreanVoice(this.synth.getVoices());
-      if (!this.voice && !this.neural()) { this.state = 'error'; this.emit('한국어 음성을 찾지 못했습니다. 기기 설정에서 한국어 음성을 설치한 뒤 다시 더블 클릭해 주세요.'); return; }
+      if (!this.voice && !this.neural()) { this.state = 'error'; this.emit('한국어 음성을 찾지 못했습니다. 기기 설정에서 한국어 음성을 설치한 뒤 다시 Ctrl+더블 클릭해 주세요.'); return; }
       if (this.state !== 'paused') this.index = 0;
       this.cancel(); this.synth.resume(); this.next();
     }
@@ -137,7 +137,7 @@
     // way falls back to Web Speech for that sentence, so reading never stalls.
     playClip(neural, token) {
       const valid = () => token === this.generation;
-      const fail = () => { if (!valid()) return; this.cancel(); this.state = 'error'; this.emit('음성 재생이 멈췄습니다. 본문을 다시 더블 클릭해 주세요.'); };
+      const fail = () => { if (!valid()) return; this.cancel(); this.state = 'error'; this.emit('음성 재생이 멈췄습니다. 본문을 다시 Ctrl+더블 클릭해 주세요.'); };
       this.state = 'starting'; this.emit('재생 준비 중 · ' + (this.index + 1) + '/' + this.chunks.length);
       this.timer = this.timers.setTimeout(fail, 15000);
       neural.synthesize(this.chunks[this.index]).then(url => {
@@ -163,7 +163,7 @@
       this.utterance = utterance; // Keep a strong reference until the utterance finishes.
       utterance.lang = 'ko-KR'; utterance.voice = this.voice; utterance.rate = this.rate;
       const valid = () => token === this.generation;
-      const fail = () => { if (!valid()) return; this.cancel(); this.state = 'error'; this.emit('음성 재생이 멈췄습니다. 본문을 다시 더블 클릭해 주세요.'); };
+      const fail = () => { if (!valid()) return; this.cancel(); this.state = 'error'; this.emit('음성 재생이 멈췄습니다. 본문을 다시 Ctrl+더블 클릭해 주세요.'); };
       utterance.onstart = () => {
         if (!valid()) return;
         this.timers.clearTimeout(this.timer);
@@ -297,7 +297,7 @@
     panel.className = 'speech-controls'; panel.dataset.speechControls = ''; panel.hidden = true; panel.setAttribute('aria-label', '텍스트 읽어주기');
     panel.innerHTML = '<div class="speech-buttons"><button type="button" data-action="play" disabled>이어읽기</button><button type="button" data-action="pause" disabled>일시정지</button><button type="button" data-action="stop" disabled>정지</button><label>속도 <select aria-label="읽기 속도">'
       + speechRates.map(rate => '<option value="' + rate + '"' + (rate === savedRate ? ' selected' : '') + '>' + rate + '배</option>').join('')
-      + '</select></label><button type="button" class="speech-close" aria-label="읽어주기 닫기 및 정지">닫기 ×</button></div><p class="speech-status" role="status"></p><p class="speech-help">더블 클릭한 문단부터 미션 끝까지 읽습니다. 다른 문단을 더블 클릭하면 그 자리부터 다시 읽습니다.</p>';
+      + '</select></label><button type="button" class="speech-close" aria-label="읽어주기 닫기 및 정지">닫기 ×</button></div><p class="speech-status" role="status"></p><p class="speech-help">Ctrl(맥은 ⌘)을 누른 채 문단을 더블 클릭하면 거기부터 미션 끝까지 읽습니다. Esc로 정지, 한 번 더 누르면 닫힙니다.</p>';
     document.body.append(panel);
     const status = panel.querySelector('.speech-status');
     const play = panel.querySelector('[data-action="play"]'), pause = panel.querySelector('[data-action="pause"]'), stop = panel.querySelector('[data-action="stop"]');
@@ -305,7 +305,7 @@
     let hideTimer;
     const flash = message => { panel.hidden = false; panel.dataset.state = 'error'; status.textContent = message; play.disabled = pause.disabled = stop.disabled = true; clearTimeout(hideTimer); hideTimer = setTimeout(() => { panel.hidden = true; }, 6000); };
     if (!supported) {
-      document.addEventListener('dblclick', event => { if (blockAt(event.target)) flash('이 기기는 읽어주기를 지원하지 않습니다. 데스크톱 앱에서 본문을 더블 클릭해 보세요.'); });
+      document.addEventListener('dblclick', event => { if ((event.ctrlKey || event.metaKey) && blockAt(event.target)) flash('이 기기는 읽어주기를 지원하지 않습니다. 데스크톱 앱에서 해 보세요.'); });
       return;
     }
     const synth = window.speechSynthesis, highlight = createHighlight();
@@ -320,7 +320,8 @@
       if (state === 'speaking' && chunk) highlight.show(speechRanges(chunk.mapping, chunk.sentenceStart, chunk.sentenceEnd));
       else if (state !== 'paused') highlight.clear();
       clearTimeout(hideTimer);
-      panel.hidden = !['starting', 'speaking', 'paused', 'error', 'ended'].includes(state);
+      // A stop asked for with Esc leaves the panel up (a second Esc closes it).
+      panel.hidden = !['starting', 'speaking', 'paused', 'error', 'ended'].includes(state) && !(state === 'idle' && stoppedByKey);
       panel.dataset.state = state;
       play.disabled = state !== 'paused'; pause.disabled = !['starting', 'speaking'].includes(state); stop.disabled = !['starting', 'speaking', 'paused'].includes(state);
       status.textContent = message;
@@ -328,7 +329,8 @@
       if (state === 'ended') hideTimer = setTimeout(() => { panel.hidden = true; }, 4000);
     });
     controller.rate = savedRate;
-    const dismiss = () => { controller.stop(); if (active) active.classList.remove('speech-active'); active = null; panel.hidden = true; };
+    let stoppedByKey = false;
+    const dismiss = () => { stoppedByKey = false; controller.stop(); if (active) active.classList.remove('speech-active'); active = null; panel.hidden = true; };
     play.onclick = () => { if (active && active.isConnected && visible(active)) controller.start(); else dismiss(); };
     pause.onclick = () => controller.pause(); stop.onclick = dismiss;
     panel.querySelector('.speech-close').onclick = dismiss;
@@ -346,21 +348,29 @@
       controller.setRate(rate);
       panel.querySelector('select').value = String(rate);
     });
-    panel.onkeydown = event => { if (event.key === 'Escape') { event.preventDefault(); dismiss(); } };
-    // A double click starts reading; a triple click (selecting a paragraph) must not. The third
-    // click arrives shortly after the dblclick event, so reading starts only after a short pause
-    // with no third click, and a third click cancels or dismisses it.
-    let pendingStart = 0;
-    document.addEventListener('click', event => {
-      if (event.detail < 3) return;
-      clearTimeout(pendingStart); pendingStart = 0;
-      dismiss();
+    // Esc, anywhere: a first press stops the reading and keeps the panel (it says so), a second
+    // press closes the panel. Captured before the slide host sees it, so a presentation stays.
+    document.addEventListener('keydown', event => {
+      if (event.key !== 'Escape') return;
+      if (['starting', 'speaking', 'paused'].includes(controller.state)) {
+        event.preventDefault(); event.stopPropagation();
+        stoppedByKey = true;
+        controller.stop();
+        status.textContent = '정지했습니다 · Esc를 한 번 더 누르면 닫힙니다';
+      } else if (!panel.hidden) {
+        event.preventDefault(); event.stopPropagation();
+        dismiss();
+      }
     }, true);
+    // Ctrl (⌘ on macOS) + double click on a paragraph starts reading there. A plain double click
+    // is left to the browser, so selecting a word never starts a voice.
     document.addEventListener('dblclick', event => {
+      if (!(event.ctrlKey || event.metaKey)) return;
       const block = blockAt(event.target);
       if (!block) return;
-      clearTimeout(pendingStart);
-      pendingStart = setTimeout(() => { pendingStart = 0; startReading(block); }, 320);
+      event.preventDefault();
+      stoppedByKey = false;
+      startReading(block);
     });
     function startReading(block) {
       const nodes = readableBlocks(scopeOf(block));

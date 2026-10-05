@@ -45,25 +45,38 @@
     if (event.key !== 'Enter') { armedUntil = 0; return; }
     const chord = mac ? event.metaKey : event.ctrlKey;
     if (chord && !event.altKey) {
-      const button = paneButton(event.shiftKey ? '제출' : '코드 실행');
-      if (!button) return;
+      // Ctrl+Enter runs. Ctrl+Enter again right away (Ctrl held, Enter twice) submits; the
+      // submit waits for the run to finish if it is still going. Ctrl+Shift+Enter submits at once.
       event.preventDefault(); event.stopPropagation();
+      if (event.shiftKey || performance.now() < armedUntil) {
+        armedUntil = 0;
+        submitWhenIdle();
+        return;
+      }
+      const button = paneButton('코드 실행');
+      if (!button) return;
       button.click();
-      if (event.shiftKey) { armedUntil = 0; return; }
       armedUntil = performance.now() + RESUBMIT_WINDOW_MS;
-      globalThis.molipToast?.('실행 중 · 지금 Enter를 누르면 제출합니다', 'info');
+      globalThis.molipToast?.('실행 중 · Ctrl+Enter를 한 번 더 누르면 제출합니다', 'info');
       return;
     }
-    if (!event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey && performance.now() < armedUntil) {
-      armedUntil = 0;
-      const button = paneButton('제출');
-      if (!button) return;
-      event.preventDefault(); event.stopPropagation();
-      button.click();
-      globalThis.molipToast?.('제출했습니다', 'info');
+    // Enter in a short-answer box grades the question.
+    if (!event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey && event.target instanceof HTMLInputElement
+        && event.target.closest('.quiz-question')) {
+      const grade = document.querySelector('.quiz-actions button.primary');
+      if (grade && !grade.disabled) { event.preventDefault(); event.stopPropagation(); grade.click(); }
       return;
     }
     armedUntil = 0;
   }, { capture: true });
+  async function submitWhenIdle() {
+    const started = performance.now();
+    while (performance.now() - started < 8000) {
+      const button = paneButton('제출');
+      if (button) { button.click(); globalThis.molipToast?.('제출했습니다', 'info'); return; }
+      if (![...document.querySelectorAll('.pane-actions button')].some(b => b.textContent.trim() === '제출')) return;
+      await new Promise(resolve => setTimeout(resolve, 120));
+    }
+  }
   globalThis.molipShortcuts = { toggleFullscreen, isFullscreen, runKey: mac ? '⌘Enter' : 'Ctrl+Enter', submitKey: mac ? '⌘⇧Enter' : 'Ctrl+Shift+Enter' };
 })();

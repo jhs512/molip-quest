@@ -257,7 +257,7 @@ fn Workspace() -> Element {
                         View::Home => rsx! {
                             h1 {"KPC 학습 여정"} p {"개념을 확인하고 코딩 미션과 퀴즈를 클리어하며 성장하세요."}
                         p {class:"shortcut-help",
-                            "단축키 · 코딩 미션에서 " kbd {"Ctrl+Enter"} " 실행, 바로 이어 " kbd {"Enter"} " 제출 (맥은 " kbd {"⌘Enter"} ") · " kbd {"F11"} " 전체 화면 전환 (맥은 " kbd {"⌃⌘F"} ") · 슬라이드에서 " kbd {"←"} " " kbd {"→"} " 넘기기, 「전체 화면」 버튼은 발표 모드, " kbd {"Esc"} " 로 해제 · 본문 더블 클릭은 읽어 주기"
+                            "단축키 · 코딩 미션에서 " kbd {"Ctrl+Enter"} " 실행, Ctrl을 누른 채 Enter 두 번 연타 제출 (맥은 " kbd {"⌘Enter"} ") · 주관식 답 칸에서 " kbd {"Enter"} " 채점 · " kbd {"F11"} " 전체 화면 전환 (맥은 " kbd {"⌃⌘F"} ") · 슬라이드에서 " kbd {"←"} " " kbd {"→"} " 넘기기, 「전체 화면」 버튼은 발표 모드, " kbd {"Esc"} " 로 해제 · 본문은 " kbd {"Ctrl"} "+더블 클릭으로 읽어 주기 (맥은 " kbd {"⌘"} "), " kbd {"Esc"} " 로 정지"
                         }
                             {let _ = home_epoch(); let completed = ui::completed_missions(&course); let level = molip_quest::avatar::level_for(completed); let within = completed % molip_quest::avatar::MISSIONS_PER_LEVEL; let last = molip_quest::avatar::max_level(ui::total_missions(&course)); rsx!{
                             section {class:"card home-progress",

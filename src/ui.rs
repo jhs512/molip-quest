@@ -1044,7 +1044,7 @@ fn UnitWorkspace(course_id: String, unit: Unit, oncompleted: EventHandler<bool>)
         section{class:"coding-pane",div{class:"pane-heading",strong{"main.py"}
         div{class:"pane-actions",button{class:"danger-outline",title:"작성 중인 코드를 지우고 준비 코드로 되돌립니다",disabled:busy(),onclick:{let unit=unit.clone();let key=key.clone();move |_|{code.set(unit.starter_code.clone());editor_reset+=1;answers.set(HashMap::new());output.set(String::new());artifacts.set(vec![]);message.set(String::new());let _=drafts::save(&key,&code(),&answers());}},"초기화"}
         button{disabled:busy(),title:if cfg!(target_os="macos") {"⌘Enter"} else {"Ctrl+Enter"},onclick:move |_|async move{busy.set(true);message.set(String::new());artifacts.set(vec![]);match run_python(&code(),&input()).await{Ok(result)=>{artifacts.set(result.artifacts);if result.stderr.contains("EOFError: EOF when reading a line") {message.set("실행 입력이 부족합니다. 실행 입력 칸에 문제에서 요구한 값을 넣어주세요.".into());}else if result.success {message.set("실행 완료. 제출하면 전체 테스트로 정답을 확인합니다.".into());}output.set(format!("{}\n{}\n{}",result.stdout,result.stderr,if result.success {"실행 완료"} else {"실행 실패"}));},Err(e)=>message.set(e)}busy.set(false);},"코드 실행"}
-            button{class:"primary",disabled:busy(),title:if cfg!(target_os="macos") {"⌘Enter 직후 Enter, 또는 ⌘⇧Enter"} else {"Ctrl+Enter 직후 Enter, 또는 Ctrl+Shift+Enter"},onclick:{let unit=unit.clone();let course_id=course_id.clone();move |_|{let unit=unit.clone();let course_id=course_id.clone();async move{
+            button{class:"primary",disabled:busy(),title:if cfg!(target_os="macos") {"⌘Enter 두 번 연타, 또는 ⌘⇧Enter"} else {"Ctrl+Enter 두 번 연타, 또는 Ctrl+Shift+Enter"},onclick:{let unit=unit.clone();let course_id=course_id.clone();move |_|{let unit=unit.clone();let course_id=course_id.clone();async move{
                 busy.set(true);message.set(String::new());artifacts.set(vec![]);let source=code();let blank_answers=answers();
                 if !unit.blanks.is_empty()&&assemble(&unit,&blank_answers).as_deref()!=Ok(source.as_str()){message.set("지정된 빈칸을 모두 채워주세요.".into());busy.set(false);return;}
                 match check_unit(&unit,&source).await{Err(e)=>message.set(e),Ok(report)=>{output.set(report.cases.iter().enumerate().map(|(i,c)|format!("테스트 {} · {}\n입력: {}\n예상: {}\n결과: {}\n{}",i+1,if c.passed {"통과"} else {"실패"},c.input.trim(),c.expected.trim(),c.stdout.trim(),c.stderr.trim())).collect::<Vec<_>>().join("\n\n"));let passed=report.passed;
@@ -1166,7 +1166,7 @@ impl GalleryKind {
     fn blurb(self) -> &'static str {
         match self {
             GalleryKind::Slides => "수업에서 띄우는 슬라이드 목록입니다. 하나를 열면 이전·다음 장과 전체 화면으로 넘겨 볼 수 있습니다.",
-            GalleryKind::Comics => "개념, 문제, 슬라이드에 들어 있는 만화 목록입니다. 열어서 보고, 더블 클릭하면 읽어 줍니다.",
+            GalleryKind::Comics => "개념, 문제, 슬라이드에 들어 있는 만화 목록입니다. 열어서 보고, Ctrl을 누른 채 더블 클릭하면 읽어 줍니다.",
             GalleryKind::Interactive => "한 단계씩 쌓이는 시각화 목록입니다. 열어서 다음 단계 버튼과 슬라이더를 직접 움직여 보세요.",
             GalleryKind::Concepts => "문제와 퀴즈를 뺀 개념 설명 목록입니다. 개념만 빠르게 훑고 싶을 때 쓰세요.",
         }
