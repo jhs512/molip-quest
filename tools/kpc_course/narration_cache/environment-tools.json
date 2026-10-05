@@ -1,6 +1,52 @@
 {
+ "format": 2,
  "hash": "f2e564b4146c95dd",
  "by": "claude",
+ "blocks": {
+  "title": "664ed836ecc5",
+  "p1": "f8f80851ab29",
+  "p2": "6b9581083ce4",
+  "p3": "a3c5c7231b9e",
+  "p4": "bf8ebf761e14",
+  "p5": "d0994b4d527e",
+  "p6": "326d66809345",
+  "p7": "78586346bbf8",
+  "check": "ebcfbff82e06"
+ },
+ "sources": [
+  {
+   "block": "p1",
+   "hash": "f8f80851ab29"
+  },
+  {
+   "block": "p2",
+   "hash": "6b9581083ce4"
+  },
+  {
+   "block": "p3",
+   "hash": "a3c5c7231b9e"
+  },
+  {
+   "block": "p4",
+   "hash": "bf8ebf761e14"
+  },
+  {
+   "block": "p5",
+   "hash": "d0994b4d527e"
+  },
+  {
+   "block": "p6",
+   "hash": "326d66809345"
+  },
+  {
+   "block": "p7",
+   "hash": "78586346bbf8"
+  },
+  {
+   "block": "check",
+   "hash": "ebcfbff82e06"
+  }
+ ],
  "entry": [
   [
    "파이썬 수업은 보통",

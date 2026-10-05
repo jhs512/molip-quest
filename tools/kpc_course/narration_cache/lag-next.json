@@ -1,6 +1,52 @@
 {
+ "format": 2,
  "hash": "4da681dfb918b5a4",
  "by": "claude",
+ "blocks": {
+  "title": "4a2bd78e46e3",
+  "problem": "5bf39383837f",
+  "starter": "097f03cad0bc",
+  "example": "e3b0c44298fc",
+  "solution": "db8577ee41ac"
+ },
+ "sources": [
+  {
+   "block": "problem",
+   "hash": "5bf39383837f"
+  },
+  {
+   "block": "problem",
+   "hash": "5bf39383837f"
+  },
+  {
+   "block": "starter",
+   "hash": "097f03cad0bc"
+  },
+  {
+   "block": "solution",
+   "hash": "db8577ee41ac"
+  },
+  {
+   "block": "solution",
+   "hash": "db8577ee41ac"
+  },
+  {
+   "block": "solution",
+   "hash": "db8577ee41ac"
+  },
+  {
+   "block": "solution",
+   "hash": "db8577ee41ac"
+  },
+  {
+   "block": "solution",
+   "hash": "db8577ee41ac"
+  },
+  {
+   "block": "solution",
+   "hash": "db8577ee41ac"
+  }
+ ],
  "entry": [
   [
    "problem",

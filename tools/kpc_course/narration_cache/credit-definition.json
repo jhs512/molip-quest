@@ -1,6 +1,54 @@
 {
+ "format": 2,
  "hash": "aa07737c718e1f1d",
  "by": "claude",
+ "blocks": {
+  "title": "109e5e75ce0d",
+  "p1": "8724087af7f6",
+  "p2": "8e629e349268",
+  "p3": "4ff89fd1d4c0",
+  "p4": "d685bafffbc9",
+  "p5": "9d49979ff097",
+  "p6": "68d585e7d918",
+  "p7": "30d5f7c34f93",
+  "p8": "c1ee862b876b",
+  "p9": "47bb2f00a98a",
+  "check": "0c7b49da9bef"
+ },
+ "sources": [
+  {
+   "block": "p1",
+   "hash": "8724087af7f6"
+  },
+  {
+   "block": "p2",
+   "hash": "8e629e349268"
+  },
+  {
+   "block": "p3",
+   "hash": "4ff89fd1d4c0"
+  },
+  {
+   "block": "p4",
+   "hash": "d685bafffbc9"
+  },
+  {
+   "block": "p6",
+   "hash": "68d585e7d918"
+  },
+  {
+   "block": "p7",
+   "hash": "30d5f7c34f93"
+  },
+  {
+   "block": "p8",
+   "hash": "c1ee862b876b"
+  },
+  {
+   "block": "check",
+   "hash": "0c7b49da9bef"
+  }
+ ],
  "entry": [
   [
    "자, 타이타닉으로 분류의 흐름을 익혔죠?",

@@ -1,6 +1,53 @@
 {
+ "format": 2,
  "hash": "c1e45ccbf1deceb4",
  "by": "claude",
+ "blocks": {
+  "title": "bae2d640af1b",
+  "p1": "096d94273f7a",
+  "p2": "551703677bbb",
+  "p3": "823d56c959e9",
+  "p4": "4ea6847bf362",
+  "p5": "e7de0ecc2598",
+  "p6": "5e021a241ced",
+  "p7": "e8fd3c1fe221",
+  "p8": "85b09ac0b981",
+  "check": "94cf4d4b9ba8"
+ },
+ "sources": [
+  {
+   "block": "p1",
+   "hash": "096d94273f7a"
+  },
+  {
+   "block": "p2",
+   "hash": "551703677bbb"
+  },
+  {
+   "block": "p3",
+   "hash": "823d56c959e9"
+  },
+  {
+   "block": "p4",
+   "hash": "4ea6847bf362"
+  },
+  {
+   "block": "p5",
+   "hash": "e7de0ecc2598"
+  },
+  {
+   "block": "p7",
+   "hash": "e8fd3c1fe221"
+  },
+  {
+   "block": "p8",
+   "hash": "85b09ac0b981"
+  },
+  {
+   "block": "check",
+   "hash": "94cf4d4b9ba8"
+  }
+ ],
  "entry": [
   [
    "삼성전자 주가 파일을 읽어요",

@@ -51,20 +51,79 @@ def cache_path(activity_id):
 
 
 def read_cache(activity_id):
-    """{"hash", "entry", "by"} or None."""
+    """{"hash", "entry", "by", "sources"} or None. `sources` (cache format 2) records, line by
+    line, the source block each line was written for: [{"block": "p3", "hash": "…"}, …]."""
     path = cache_path(activity_id)
     if not path.exists():
         return None
     data = json.loads(path.read_text(encoding="utf-8"))
     data["entry"] = [tuple(item) for item in data["entry"]]
+    data.setdefault("sources", None)
     return data
 
 
-def write_cache(activity_id, hash_, entry, by):
+def write_cache(activity_id, hash_, entry, by, sources, blocks=None):
+    """`sources`: the block each line is written for; `blocks`: every block of the mission at
+    that time ({key: hash}), so a block that appears or vanishes later is reported as such."""
     CACHE_DIR.mkdir(exist_ok=True)
-    data = {"hash": hash_, "by": by, "entry": [list(item) for item in entry]}
+    data = {"format": 2, "hash": hash_, "by": by, "blocks": blocks or {}, "sources": sources, "entry": [list(item) for item in entry]}
     cache_path(activity_id).write_text(json.dumps(data, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
 
+
+# Which source block each kind of coding step is written for (sources.py keys).
+CODING_STEP_BLOCK = {"problem": "problem", "examples": "example", "hint": "problem", "starter": "starter",
+                     "code": "solution", "run": "solution", "input": "example", "output": "solution", "submit": "solution"}
+
+
+def line_sources(activity, entry, solution=None):
+    """For each line of a narration entry, the block it is written for and that block's hash
+    now: [{"block": key, "hash": hash}]. A concept line points at the block its anchor phrase
+    sits in; a coding step at the problem, example, starter or solution."""
+    index = sources.index(activity, solution)
+    out = []
+    for item in entry:
+        if activity["kind"] == "concept":
+            anchor = spoken(item[0])
+            key = "title" if anchor == "title" else "check" if anchor == "check" else sources.find_block(activity, anchor, spoken)
+        else:
+            key = CODING_STEP_BLOCK.get(item[0])
+        if key is None or key not in index:
+            raise SystemExit(f"{activity['id']}: 해설 줄 {item[0]!r}가 가리키는 원본 블록을 찾지 못했습니다.")
+        out.append({"block": key, "hash": index[key]})
+    return out
+
+
+def stale_report(activity, cached, solution=None):
+    """Why a cached entry is stale, block by block: which blocks changed, appeared or vanished,
+    and which lines of the entry are written for a changed block. Lines whose block is unchanged
+    can be kept as they are. Returns (changed_keys, kept_line_indexes, text)."""
+    number = sources.mission_number(activity)
+    now = dict(sources.blocks(activity, solution))
+    index = {key: sources.content_hash(text) for key, text in now.items()}
+    recorded = cached.get("sources")
+    if not recorded:
+        return list(index), [], f"{number}: 해설이 원본 블록 기록 없이 저장돼 있습니다 (python tools/narrate.py --migrate)."
+    before = dict(cached.get("blocks") or {})
+    for line in recorded:
+        before.setdefault(line["block"], line["hash"])
+    changed = [key for key in index if key in before and before[key] != index[key]]
+    added = [key for key in index if key not in before]
+    gone = [key for key in before if key not in index]
+    kept = [i for i, line in enumerate(recorded) if line["block"] in index and index[line["block"]] == line["hash"]]
+    affected = [i for i in range(len(recorded)) if i not in kept]
+    parts = []
+    for key in changed:
+        parts.append(f"{number}/{key} 바뀜 「{sources.excerpt(now[key])}」")
+    for key in added:
+        parts.append(f"{number}/{key} 새 블록 「{sources.excerpt(now[key])}」")
+    for key in gone:
+        parts.append(f"{number}/{key} 없어짐")
+    lines = ", ".join(str(i + 1) for i in affected) or "없음"
+    text = "; ".join(parts) + f" → 다시 쓸 해설 줄: {lines} (전체 {len(recorded)}줄 중 {len(kept)}줄은 그대로)"
+    return changed + added + gone, kept, text
+
+
+from kpc_course import sources
 from kpc_course.dsl import split_slides
 
 def load():
@@ -83,10 +142,11 @@ def load():
 
 def entry_for(activity, solution):
     """The narration entry for a concept or coding mission: the cache file when it is fresh,
-    a module entry otherwise. Returns (entry, status) with status fresh / stale / module / none."""
+    a module entry otherwise. Returns (entry, status) with status fresh / stale / module / none.
+    A cache file without block sources (format 1) counts as stale until --migrate records them."""
     cached = read_cache(activity["id"])
     if cached is not None:
-        fresh = cached["hash"] == source_hash(activity, solution)
+        fresh = cached["hash"] == source_hash(activity, solution) and bool(cached.get("sources"))
         return cached["entry"], ("fresh" if fresh else "stale")
     entry = load().get(activity["id"])
     return entry, ("module" if entry is not None else "none")
@@ -442,7 +502,8 @@ def attach(chapters, solutions):
                     if status == "stale":
                         stale_entries.append(where)
                         if not os.environ.get("KPC_LENIENT"):
-                            raise SystemExit(f"{where}: 본문이나 정답이 바뀌어 해설이 낡았습니다. python tools/narrate.py 를 실행하세요 (바뀐 미션만 다시 씁니다).")
+                            _, _, why = stale_report(activity, read_cache(activity["id"]), solution)
+                            raise SystemExit(f"{where}: 원본이 바뀌어 해설이 낡았습니다. {why}\npython tools/narrate.py 를 실행하세요 (바뀐 줄만 다시 씁니다).")
                     used.add(activity["id"])
                     if kind == "concept":
                         activity["narration"] = compile_concept(activity, entry, where)

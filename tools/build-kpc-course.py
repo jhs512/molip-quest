@@ -7,7 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
-from kpc_course import chapters as outline, checks, dsl, narration  # noqa: E402
+from kpc_course import chapters as outline, checks, dsl, narration, sources  # noqa: E402
 
 chapters = narration.attach(outline.build(), dsl.SOLUTIONS)
 
@@ -24,6 +24,9 @@ course = dict(
 )
 (ROOT / "courses/kpc-finance.json").write_text(json.dumps(course, ensure_ascii=False, indent=2), encoding="utf-8")
 (ROOT / "courses/kpc-solutions.json").write_text(json.dumps(dsl.SOLUTIONS, ensure_ascii=False, indent=2), encoding="utf-8")
+# Every source block's key, hash and opening words: its diff shows what a commit changed.
+(ROOT / "courses/kpc-finance.sources.json").write_text(
+    json.dumps(sources.course_index(chapters, dsl.SOLUTIONS), ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
 
 units = [u for c in chapters for u in c["units"]]
 

@@ -1,6 +1,52 @@
 {
+ "format": 2,
  "hash": "0decf3660d087827",
  "by": "claude",
+ "blocks": {
+  "title": "6fdd4d236963",
+  "p1": "dcfd64545ef8",
+  "p2": "319b0511d4bb",
+  "p3": "d942e82bada3",
+  "p4": "30f086c78c53",
+  "p5": "1d588ba13bcc",
+  "p6": "41959a7e5f0c",
+  "p7": "10e17bc8bef1",
+  "check": "0e50a4865b38"
+ },
+ "sources": [
+  {
+   "block": "title",
+   "hash": "6fdd4d236963"
+  },
+  {
+   "block": "p1",
+   "hash": "dcfd64545ef8"
+  },
+  {
+   "block": "p2",
+   "hash": "319b0511d4bb"
+  },
+  {
+   "block": "p3",
+   "hash": "d942e82bada3"
+  },
+  {
+   "block": "p4",
+   "hash": "30f086c78c53"
+  },
+  {
+   "block": "p5",
+   "hash": "1d588ba13bcc"
+  },
+  {
+   "block": "p7",
+   "hash": "10e17bc8bef1"
+  },
+  {
+   "block": "check",
+   "hash": "0e50a4865b38"
+  }
+ ],
  "entry": [
   [
    "title",

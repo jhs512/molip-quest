@@ -5,13 +5,17 @@ changed since its script was written, with the Claude CLI installed on this comp
     python tools/narrate.py --all        # every concept and coding mission
     python tools/narrate.py --ids hello numbers-text
     python tools/narrate.py --import     # move the hand-written narration_*.py entries into the cache
-    python tools/narrate.py --check      # list what is stale, write nothing
-    python tools/narrate.py --stamp hello   # keep a hand-edited entry, re-record its hash
+    python tools/narrate.py --check      # list what is stale, block by block, write nothing
+    python tools/narrate.py --stamp hello   # keep a hand-edited entry, re-record its hash and sources
+    python tools/narrate.py --migrate    # record block sources for fresh entries saved without them
 
 Each mission's script lives in tools/kpc_course/narration_cache/<id>.json with the hash of the
-content it was written for (narration.source_hash). The build (tools/build-kpc-course.py)
-refuses a stale entry, so "content changed → narration rewritten" is enforced, and nothing
-is recomputed when nothing changed. A generated entry must pass the same compile checks the
+content it was written for (narration.source_hash) and, line by line, the source block each
+line was written for (kpc_course/sources.py: 1-4-1/p3, 1-4-2/solution …). The build
+(tools/build-kpc-course.py) refuses a stale entry, so "content changed → narration rewritten"
+is enforced, and nothing is recomputed when nothing changed. When one block changed, only the
+lines written for it are rewritten: the other lines are handed to the model to keep verbatim
+and are restored afterwards whatever it answered. A generated entry must pass the same compile checks the
 build runs (anchors present in the body, code chunks joining into the solution); the model
 gets the error and tries again, up to three times. Coding missions include the solution's real
 output so the 결과 line states what the student will actually see. No network of its own:
@@ -29,7 +33,7 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
-from kpc_course import chapters as outline, dsl, narration  # noqa: E402
+from kpc_course import chapters as outline, dsl, narration, sources  # noqa: E402
 
 RULES = (ROOT / "docs" / "agents" / "narration.md").read_text(encoding="utf-8")
 
@@ -64,9 +68,21 @@ def run_solution(problem, solution):
     return out[:1500]
 
 
-def concept_prompt(activity):
+def keep_section(entry, kept):
+    """The existing script with the lines to keep marked, for a rewrite after a partial change."""
+    if not kept:
+        return ""
+    rows = []
+    for i, item in enumerate(entry):
+        mark = "유지" if i in kept else "다시 씀"
+        rows.append(f"- [{mark}] {json.dumps(list(item), ensure_ascii=False)}")
+    return ("\n\n### 기존 대본\n원본이 바뀌지 않은 줄은 [유지]: 글자 그대로 다시 답한다. [다시 씀] 줄만 지금 본문에 맞게 새로 쓴다. "
+            "본문 블록이 늘거나 줄었으면 줄을 더하거나 빼도 된다.\n" + "\n".join(rows))
+
+
+def concept_prompt(activity, keep=""):
     check = activity["check"]
-    return f"""{RULES}
+    return keep + f"""{RULES}
 
 {VOICE}
 
@@ -86,10 +102,10 @@ def concept_prompt(activity):
 """
 
 
-def coding_prompt(activity, solution, output, prefix):
+def coding_prompt(activity, solution, output, prefix, keep=""):
     problem = activity["problem"]
     rest = solution[len(prefix):] if prefix and solution.startswith(prefix) else solution
-    return f"""{RULES}
+    return keep + f"""{RULES}
 
 {VOICE}
 
@@ -153,14 +169,28 @@ def validate(activity, entry, solution):
     return None
 
 
-def generate(activity, solution, attempts=3):
+def restore_kept(entry, previous, kept):
+    """Put the kept lines back exactly as they were: a concept line by its anchor, a coding
+    step by its name (code chunks by their code)."""
+    kept_items = [previous[i] for i in kept]
+    out = []
+    for item in entry:
+        match = next((k for k in kept_items if k[0] == item[0] and (k[0] != "code" or k[1] == item[1])), None)
+        out.append(match if match is not None else item)
+    return out
+
+
+def generate(activity, solution, attempts=3, previous=None, kept=()):
+    """A new entry; with `previous` and `kept` (line indexes whose source did not change), a
+    rewrite of the other lines only."""
+    keep = keep_section(previous, kept) if previous else ""
     if activity["kind"] == "coding":
         problem = activity["problem"]
         output = run_solution(problem, solution)
         prefix = narration._starter_prefix(problem, solution.rstrip("\n") + "\n")
-        prompt = coding_prompt(activity, solution.rstrip("\n") + "\n", output, prefix)
+        prompt = coding_prompt(activity, solution.rstrip("\n") + "\n", output, prefix, keep)
     else:
-        prompt = concept_prompt(activity)
+        prompt = concept_prompt(activity, keep)
     feedback = ""
     last_error = None
     for _ in range(attempts):
@@ -170,6 +200,8 @@ def generate(activity, solution, attempts=3):
             last_error = f"응답 해석 실패: {error}"
             feedback = f"\n\n이전 답은 JSON으로 읽히지 않았습니다 ({error}). JSON 목록만 다시 답하세요."
             continue
+        if previous and kept:
+            entry = restore_kept(entry, previous, kept)
         error = validate(activity, entry, solution)
         if error is None:
             return entry
@@ -193,6 +225,7 @@ def main():
     parser.add_argument("--import", dest="import_modules", action="store_true", help="narration_*.py의 손글 항목을 캐시로 옮긴다")
     parser.add_argument("--check", action="store_true", help="낡은 항목만 나열한다")
     parser.add_argument("--stamp", nargs="*", help="손으로 고친 해설을 그대로 두고 해시만 지금 내용으로 다시 찍는다 (미션 id들)")
+    parser.add_argument("--migrate", action="store_true", help="원본 블록 기록이 없는 해설에 지금 블록을 기록한다 (내용이 바뀌지 않은 것만)")
     parser.add_argument("--jobs", type=int, default=4)
     args = parser.parse_args()
 
@@ -203,6 +236,15 @@ def main():
         solution = solutions[activity["problem"]["id"]] if activity["kind"] == "coding" else None
         hash_ = narration.source_hash(activity, solution)
         entry, status = narration.entry_for(activity, solution)
+        cached = narration.read_cache(activity["id"])
+        if args.migrate:
+            incomplete = cached is not None and (not cached.get("sources") or not cached.get("blocks"))
+            if incomplete and cached["hash"] == hash_:
+                narration.write_cache(activity["id"], hash_, entry, cached.get("by", "claude"), narration.line_sources(activity, entry, solution), sources.index(activity, solution))
+                print(f"  → {activity['id']} (원본 블록 기록)")
+            elif incomplete:
+                print(f"  ! {activity['id']}: 내용이 바뀌어 기록할 수 없습니다. python tools/narrate.py 로 다시 쓰세요.")
+            continue
         if args.stamp is not None:
             if activity["id"] in args.stamp:
                 if entry is None:
@@ -212,8 +254,8 @@ def main():
                 if error:
                     print(f"  ! {activity['id']}: {error}")
                     continue
-                narration.write_cache(activity["id"], hash_, entry, "hand")
-                print(f"  → {activity['id']} (해시 갱신)")
+                narration.write_cache(activity["id"], hash_, entry, "hand", narration.line_sources(activity, entry, solution), sources.index(activity, solution))
+                print(f"  → {activity['id']} (해시·원본 블록 갱신)")
             continue
         if args.import_modules:
             if status == "module":
@@ -221,30 +263,37 @@ def main():
                 if error:
                     print(f"  ! {activity['id']}: {error}")
                     continue
-                narration.write_cache(activity["id"], hash_, entry, "hand")
+                narration.write_cache(activity["id"], hash_, entry, "hand", narration.line_sources(activity, entry, solution), sources.index(activity, solution))
                 print(f"  → {activity['id']} (캐시로 옮김)")
             continue
         wanted = args.all or activity["id"] in args.ids or status in ("stale", "none", "module")
         if args.ids and activity["id"] not in args.ids:
             wanted = False
+        # A stale entry keeps the lines whose source block did not change.
+        kept = []
+        if status == "stale" and cached is not None and cached.get("sources") and not args.all:
+            _, kept, why = narration.stale_report(activity, cached, solution)
+        else:
+            why = ""
         if args.check:
             if status != "fresh":
-                print(f"  {status:6} {unit['id']}/{activity['id']}")
+                print(f"  {status:6} {unit['id']}/{activity['id']}" + (f"\n         {why}" if why else ""))
             continue
         if wanted:
-            todo.append((unit, activity, solution, hash_, status))
-    if args.import_modules or args.check or args.stamp is not None:
+            todo.append((unit, activity, solution, hash_, status, entry if kept else None, kept))
+    if args.import_modules or args.check or args.stamp is not None or args.migrate:
         return
     print(f"{len(todo)}개 미션의 해설을 다시 씁니다 (Claude CLI, 동시 {args.jobs})")
 
     def work(item):
-        unit, activity, solution, hash_, status = item
+        unit, activity, solution, hash_, status, previous, kept = item
         try:
-            entry = generate(activity, solution)
+            entry = generate(activity, solution, previous=previous, kept=kept)
         except Exception as error:  # noqa: BLE001
             return f"  ! {unit['id']}/{activity['id']}: {error}"
-        narration.write_cache(activity["id"], hash_, entry, "claude")
-        return f"  ✓ {unit['id']}/{activity['id']} ({status} → 새 해설 {len(entry)}줄)"
+        narration.write_cache(activity["id"], hash_, entry, "claude", narration.line_sources(activity, entry, solution), sources.index(activity, solution))
+        how = f"{len(kept)}줄 유지, 나머지 새로" if kept else f"새 해설 {len(entry)}줄"
+        return f"  ✓ {unit['id']}/{activity['id']} ({status} → {how})"
 
     failed = 0
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.jobs) as pool:

@@ -1,6 +1,52 @@
 {
+ "format": 2,
  "hash": "8f2702ac9ab7e767",
  "by": "claude",
+ "blocks": {
+  "title": "1cd131c0d4c2",
+  "p1": "bdcf311dcda1",
+  "p2": "e702351a9827",
+  "p3": "5ddae8bbaed0",
+  "p4": "e05ae6264940",
+  "p5": "73b6e84855e0",
+  "p6": "2692ce88e96f",
+  "p7": "d73d589fd2ea",
+  "check": "249386b8cd6b"
+ },
+ "sources": [
+  {
+   "block": "p1",
+   "hash": "bdcf311dcda1"
+  },
+  {
+   "block": "p2",
+   "hash": "e702351a9827"
+  },
+  {
+   "block": "p3",
+   "hash": "5ddae8bbaed0"
+  },
+  {
+   "block": "p4",
+   "hash": "e05ae6264940"
+  },
+  {
+   "block": "p5",
+   "hash": "73b6e84855e0"
+  },
+  {
+   "block": "p6",
+   "hash": "2692ce88e96f"
+  },
+  {
+   "block": "p7",
+   "hash": "d73d589fd2ea"
+  },
+  {
+   "block": "check",
+   "hash": "249386b8cd6b"
+  }
+ ],
  "entry": [
   [
    "앞 단원에서는 값 하나에 이름 하나를 붙였어요",
