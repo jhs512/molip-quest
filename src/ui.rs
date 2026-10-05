@@ -276,7 +276,9 @@ pub fn Learning(course: Course, #[props(default)] start_unit: String, #[props(de
         }
         if assistant_open() {
             div {class:"split-handle split-col assistant-handle",role:"separator",aria_orientation:"vertical",aria_label:"AI 창 너비 조절",tabindex:"0",title:"드래그로 너비 조절, 더블 클릭으로 되돌리기"}
-            aside {class:"assistant-dock",
+        }
+        // 접기 hides the dock; the panel stays mounted so a running request or /auto-all continues.
+        aside {class:"assistant-dock",hidden:!assistant_open(),
                 AssistantPanel {title:assistant_title.clone(),kind:assistant_kind.clone(),ask:assistant_ask.clone(),context:assistant_context_signal,messages:assistant_messages,
                     autopilot,auto_round,auto_cancel,mission_marker,
                     onauto_advance:move |_|{
@@ -295,8 +297,7 @@ pub fn Learning(course: Course, #[props(default)] start_unit: String, #[props(de
                             toast("과정의 끝입니다. 자동 진행을 마칩니다.","success");
                         }
                     },
-                    onclose:move |_|{assistant_open.set(false);if autopilot() {autopilot.set(false);auto_cancel+=1;document::eval("window.molipAgent && molipAgent.stop();");}}}
-            }
+                    onclose:move |_|assistant_open.set(false)}
         }
         }
         if autopilot() {

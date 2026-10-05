@@ -401,6 +401,7 @@ body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { poi
 .practice-shell .learning-row { flex: 1; min-height: 0; display: flex; }
 .practice-shell .learning-row > .learning { flex: 1; min-width: 0; }
 .assistant-dock { flex: none; width: var(--assistant-width, min(440px, 45vw)); min-height: 0; border-left: 1px solid #2d4457; display: flex; }
+.assistant-dock[hidden] { display: none; } /* 접기: hidden, not unmounted, so the tutor keeps working */
 .assistant-handle { flex: none; width: 8px; }
 .popup-actions { display: flex; gap: 8px; margin-top: 12px; }
 .assistant-panel { background: #132231; color: #dce7f1; width: 100%; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
