@@ -208,7 +208,30 @@ pub(crate) fn PracticeView() -> Element {
         });
     }
     let last = units.len().saturating_sub(1);
+    // Where each chapter starts in the flattened problem list, for Ctrl/⌘+↑↓.
+    let chapter_starts: Vec<usize> = course
+        .chapters
+        .iter()
+        .scan(0usize, |offset, chapter| {
+            let start = *offset;
+            *offset += chapter.units.len();
+            Some(start)
+        })
+        .collect();
+    let current_chapter = chapter_starts.iter().rposition(|&start| start <= selected()).unwrap_or(0);
+    let prev_chapter_start = current_chapter.checked_sub(1).map(|i| chapter_starts[i]);
+    let next_chapter_start = chapter_starts.get(current_chapter + 1).copied();
     rsx! {
+        // Keyboard shortcuts (assets/layout/shortcuts.js) click these, as in the learning view:
+        // Ctrl/⌘+←→ steps problems, Ctrl/⌘+↑↓ chapters, Ctrl/⌘+I opens or folds the AI panel
+        // (Ctrl/⌘+K finds the 도전 과제 목록 dialog by its curriculum-menu class).
+        div {class:"shortcut-targets",hidden:true,"aria-hidden":"true",
+            button {id:"shortcut-prev-mission",tabindex:"-1",disabled:selected()==0,onclick:move |_|{if selected()>0 {selected-=1;}}}
+            button {id:"shortcut-next-mission",tabindex:"-1",disabled:selected()>=last,onclick:move |_|{if selected()<last {selected+=1;}}}
+            button {id:"shortcut-prev-unit",tabindex:"-1",disabled:prev_chapter_start.is_none(),onclick:move |_|{if let Some(start)=prev_chapter_start {selected.set(start);}}}
+            button {id:"shortcut-next-unit",tabindex:"-1",disabled:next_chapter_start.is_none(),onclick:move |_|{if let Some(start)=next_chapter_start {selected.set(start);}}}
+            button {id:"shortcut-assistant",tabindex:"-1",onclick:move |_|{let v=assistant_open();assistant_open.set(!v);}}
+        }
         header {class:"practice-header",h1 {"도전 과제"}
         nav {class:"header-course-actions",aria_label:"실습 문제",
             button {class:"curriculum-toggle",onclick:move |_|{document::eval(r#"const dialog = document.querySelector('.practice-list');
