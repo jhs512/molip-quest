@@ -61,4 +61,8 @@
 python tools/build-kpc-course.py
 ```
 
-통과하면 `courses/kpc-finance.json`이 다시 쓰인다. 앱에서는 해당 미션을 열고 AI 패널에 `/auto`를 쳐서 대본과 동작을 확인한다.
+통과하면 `courses/kpc-finance.json`이 다시 쓰인다. 한 챕터만 고치는 중이면 그 모듈만 먼저 검사할 수 있다(해설 anchor·코드 조각·편집 검사를 같은 규칙으로 돌린다).
+
+```bash
+python tools/verify-kpc-module.py d1_p1_environment narration_python
+``` 앱에서는 해당 미션을 열고 AI 패널에 `/auto`를 쳐서 대본과 동작을 확인한다.
