@@ -50,8 +50,10 @@ def run_solution(problem, solution):
     """The reference solution's real output (first test input when there is one), for the 결과 line."""
     stdin = problem["tests"][0]["input"] if problem.get("tests") else ""
     try:
+        # No windows: plots render to the Agg backend, as in the app's runner.
+        env = dict(os.environ, MPLBACKEND="Agg")
         result = subprocess.run([python_executable(), "-X", "utf8", "-c", solution], input=stdin, capture_output=True,
-                                text=True, encoding="utf-8", timeout=120, cwd=str(ROOT / "courses"))
+                                text=True, encoding="utf-8", timeout=120, cwd=str(ROOT / "courses"), env=env)
         out = (result.stdout + ("\n" + result.stderr if result.returncode else "")).strip()
     except Exception as error:  # noqa: BLE001
         out = f"(실행 실패: {error})"
