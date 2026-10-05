@@ -858,14 +858,19 @@ fn AssistantPanel(
         pending.set(true);
         error.set(String::new());
         let lines = assistant::narration_lines(&actions);
+        // Spoken lines when the script has them, else the actions themselves (정답 입력 is silent).
+        let steps = if lines.is_empty() {
+            serde_json::from_str::<Vec<serde_json::Value>>(&actions).map_or(0, |a| a.len())
+        } else {
+            lines.len()
+        };
         narrating.set(true);
         paused.set(false);
         document::eval("window.molipAgent && molipAgent.stop();");
         messages.write().push(Turn {
             role: "model".into(),
             text: format!(
-                "▶ {heading} · {}단계\n\n{}",
-                lines.len(),
+                "▶ {heading} · {steps}단계\n\n{}",
                 lines
                     .iter()
                     .map(|l| format!("- {l}"))
