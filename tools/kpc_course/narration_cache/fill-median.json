@@ -46,26 +46,26 @@
  "entry": [
   [
    "problem",
-   "자, 결측을 다루는 첫 번째 길, 채우기예요. 빈칸을 중앙값으로 메우는 거죠."
+   "자, 결측을 다루는 첫 번째 길, 채우기예요. price 열의 중앙값을 median_price에 담고, 빈칸을 그 값으로 채운 열은 filled_price에 담아요. 원본 orders는 그대로 둬야 해요."
   ],
   [
    "starter",
-   "orders 표는 준비되어 있어요. price 열 마지막 칸이 None, 빈칸이거든요."
+   "준비 코드엔 orders가 들어 있어요. price 열 네 번째 칸이 None, 그러니까 빈칸이거든요."
   ],
   [
    "code",
    "median_price = orders['price'].median()\n",
-   "median()은 빈칸을 빼고 중앙값을 구해요. 그 값을 median_price에 담아요."
+   "median()은 빈칸을 빼고 가운데 값을 구해요. 그 값을 median_price에 넣어 둬요."
   ],
   [
    "code",
    "filled_price = orders['price'].fillna(median_price)\n",
-   "fillna는 빈칸만 그 값으로 바꾼 새 열을 돌려줘요. 원본은 그대로니까 변수에 받아야 해요."
+   "fillna는 빈칸만 그 값으로 바꾼 새 열을 돌려줘요. 원본은 안 건드리니까 변수에 받아야 하죠?"
   ],
   [
    "code",
    "print(median_price)\nprint(filled_price)\n",
-   "둘 다 출력해서 확인하면 돼요."
+   "둘 다 출력하면 돼요."
   ],
   [
    "run",
@@ -73,7 +73,7 @@
   ],
   [
    "output",
-   "중앙값 12000.0이 먼저 나왔죠? 채운 열은 10000, 20000, 12000, 12000이에요. 마지막 빈칸이 12000으로 채워졌거든요."
+   "중앙값은 12000.0이에요. 채운 열을 보세요. 3번 칸이 12000.0으로 채워졌죠? 10000, 20000, 12000, 12000이에요."
   ],
   [
    "submit",

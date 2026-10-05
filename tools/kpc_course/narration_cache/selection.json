@@ -46,26 +46,26 @@
  "entry": [
   [
    "problem",
-   "자, 표에서 필요한 부분만 잘라 내 볼게요. product와 price 두 열만 고른 표를 selected에 담고, 자리 번호로 첫 두 행만 고른 표는 first_two에 담으면 돼요."
+   "자, 표에서 필요한 부분만 잘라 내요. product와 price 두 열만 고른 표는 selected에, 자리 번호로 첫 두 행만 고른 표는 first_two에 담으면 돼요."
   ],
   [
    "starter",
-   "준비 코드엔 orders 표가 이미 만들어져 있어요. product, price, quantity 세 열에 네 행이거든요. 이건 그대로 둘게요."
+   "준비 코드엔 pandas와 orders 표가 들어 있어요. 제품 네 줄에 price와 quantity가 붙어 있죠? 그대로 둘게요."
   ],
   [
    "code",
    "selected = orders[['product', 'price']]\n",
-   "열 여러 개는 이름 리스트로 골라요. 대괄호 안에 리스트를 넣으니 대괄호가 두 겹이죠? 그 표를 selected에 담아요."
+   "열 여러 개는 이름 리스트로 골라요. 대괄호 안에 리스트가 한 번 더 들어가거든요."
   ],
   [
    "code",
    "first_two = orders.iloc[:2]\n",
-   "행을 자리 번호로 고를 때는 iloc이에요. 리스트와 같은 규칙이라 끝 번호 2는 안 들어가요. 0번과 1번 행만 남거든요."
+   "행을 자리 번호로 고를 땐 iloc이에요. 리스트와 같은 규칙이라 끝 번호 2는 안 들어가요."
   ],
   [
    "code",
    "print(selected.shape, first_two.shape)\nselected\n",
-   "shape로 행과 열 개수를 찍어 확인해요. 마지막 줄에 selected만 적으면 표가 화면에 나와요."
+   "shape로 몇 행 몇 열인지 찍고, selected를 마지막 줄에 두면 표가 보여요."
   ],
   [
    "run",
@@ -73,7 +73,7 @@
   ],
   [
    "output",
-   "(4, 2)와 (2, 3)이 나왔죠? selected는 4행 2열, first_two는 2행 3열이에요. 아래 표엔 product와 price 열만 보이고요."
+   "(4, 2)와 (2, 3)이 나왔죠? selected는 4행 2열, first_two는 두 행에 열은 셋 그대로예요. 아래 표엔 product와 price만 남았고요."
   ],
   [
    "submit",

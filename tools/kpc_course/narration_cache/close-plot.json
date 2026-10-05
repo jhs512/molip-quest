@@ -54,25 +54,25 @@
  "entry": [
   [
    "problem",
-   "자, 날짜순 자료는 선그래프가 어울려요. 종가가 1년 8개월 동안 어떻게 움직였는지 선 하나로 볼 거예요."
+   "자, 날짜순 자료는 선그래프가 어울려요. fig, ax를 만들고 ax.plot으로 종가를 선으로 그려서, x축 이름 날짜, y축 이름 종가를 붙여 띄우면 돼요."
   ],
   [
    "hint",
-   "막대그래프 뼈대에서 ax.bar를 ax.plot으로 바꾸면 돼요. x엔 날짜 인덱스, y엔 종가예요."
+   "막대그래프 뼈대에서 ax.bar를 ax.plot으로 바꾸면 돼요. x에는 날짜 인덱스 prices.index, y에는 prices['종가']를 넣고요."
   ],
   [
    "starter",
-   "준비 코드는 그대로 둘게요. stock.csv를 날짜 인덱스로 읽어 정렬한 prices와 plt가 준비돼 있어요."
+   "준비 코드에서 stock.csv를 읽어 날짜를 인덱스로 두고 정렬한 prices가 있어요. matplotlib도 plt로 불러 뒀고요."
   ],
   [
    "code",
    "\nfig, ax = plt.subplots()\n",
-   "자, 먼저 도화지 fig와 축 ax를 만들어요. 막대그래프 때와 같은 뼈대죠?"
+   "자, 먼저 plt.subplots()로 도화지 fig와 그릴 칸 ax를 만들어요."
   ],
   [
    "code",
    "ax.plot(prices.index, prices['종가'])\n",
-   "ax.plot에 x로 날짜 인덱스 prices.index, y로 prices['종가']를 넣어요. 점 401개를 선으로 이어 주거든요."
+   "ax.plot에 x로 날짜 인덱스 prices.index, y로 prices['종가']를 넣으면 종가를 선으로 잇거든요."
   ],
   [
    "code",
@@ -90,7 +90,7 @@
   ],
   [
    "output",
-   "선 하나가 그려졌죠? x축이 날짜, y축이 종가인지 보세요. 1년 8개월 동안 가격이 어떻게 오르고 내렸는지 흐름을 따라가 보세요."
+   "401개 점을 이은 선 하나가 보이죠? 1년 8개월 동안 가격이 어떻게 움직였는지 보세요."
   ],
   [
    "submit",

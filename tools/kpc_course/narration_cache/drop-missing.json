@@ -15,10 +15,6 @@
    "hash": "02882ffa0ba9"
   },
   {
-   "block": "example",
-   "hash": "e3b0c44298fc"
-  },
-  {
    "block": "starter",
    "hash": "2d44aba23313"
   },
@@ -50,20 +46,16 @@
  "entry": [
   [
    "problem",
-   "자, 두 번째 길은 빼기예요. 가격이 빈 행을 뺀 표를 dropped에 담고, 남은 행 수를 n_left에 담아 출력해요."
-  ],
-  [
-   "examples",
-   "3행이 남으면 맞게 한 거예요."
+   "자, 두 번째 길, 빼기예요. 가격이 빈 행을 뺀 표를 dropped에 담고, 남은 행 수를 n_left에 담아 출력해요."
   ],
   [
    "starter",
-   "준비 코드에 orders 표가 들어 있어요. 네 번째 행의 price가 None으로 비어 있죠?"
+   "준비 코드엔 orders 표가 들어 있어요. 네 행 중 C 상품의 price가 None이거든요."
   ],
   [
    "code",
    "dropped = orders.dropna(subset=['price'])\n",
-   "dropna에 subset으로 price를 주면요. price가 빈 행만 빼서 dropped에 담아요."
+   "dropna에 subset으로 price를 주면, price가 빈 행만 빼요. 그 결과를 dropped에 담아요."
   ],
   [
    "code",
@@ -81,7 +73,7 @@
   ],
   [
    "output",
-   "3이 나왔죠? 네 행 중 가격이 빈 C 행이 빠져서 3행이 남은 거예요."
+   "3이 나왔죠? 네 행에서 가격이 빈 C 행 하나가 빠진 거예요."
   ],
   [
    "submit",

@@ -45,45 +45,36 @@
   {
    "block": "solution",
    "hash": "7c5b42e8a382"
-  },
-  {
-   "block": "solution",
-   "hash": "7c5b42e8a382"
   }
  ],
  "entry": [
   [
    "problem",
-   "자, 수업의 결론을 코드로 적어요. 준비된 models를 각각 학습해 테스트 MAE를 모으고, 기준 MAE와 비교해 report 딕셔너리를 만들어요. 그리고 결론 세 줄을 출력하면 돼요."
+   "자, 수업의 결론을 코드로 적어요. 모델 둘을 학습해 테스트 MAE를 모으고, 기준과 비교해 보고를 만들어요."
   ],
   [
    "starter",
-   "준비 코드는 그대로 둘게요. stock.csv를 읽어 입력 X와 정답 y를 만들고, 마지막 80거래일을 테스트 자료로 나눠 두었어요. models에는 Linear와 Ridge가 들어 있고요."
+   "준비 코드엔 자료 읽기와 특징, 시간순 나누기, 그리고 models 딕셔너리까지 들어 있어요. 그대로 둘게요."
   ],
   [
    "code",
-   "baseline_mae = mean_absolute_error(y_test, X_test['close'])\n",
-   "먼저 기준 모델이에요. 오늘 종가를 그대로 내일 예측으로 쓰면 MAE가 얼마인지 baseline_mae에 담아요."
+   "baseline_mae = mean_absolute_error(y_test, X_test['close'])\nmaes = {}\n",
+   "기준 MAE부터요. 오늘 종가를 그대로 내일 예측으로 쓰면 얼마나 틀리는지죠. 점수를 모을 빈 딕셔너리 maes도 만들어요."
   ],
   [
    "code",
-   "maes = {}\nfor name, estimator in models.items():\n    model = Pipeline([('scale', StandardScaler()), ('model', estimator)])\n    model.fit(X_train, y_train)\n    maes[name] = mean_absolute_error(y_test, model.predict(X_test))\n",
-   "models를 돌면서 파이프라인을 만들고 훈련 자료로 학습해요. 테스트 MAE는 이름을 키로 maes에 모으면 돼요."
+   "for name, estimator in models.items():\n    model = Pipeline([('scale', StandardScaler()), ('model', estimator)])\n    model.fit(X_train, y_train)\n    maes[name] = mean_absolute_error(y_test, model.predict(X_test))\n",
+   "models를 돌면서 모델마다 파이프라인을 만들어요. 훈련 자료로 학습하고, 테스트 MAE를 이름으로 maes에 넣어요."
   ],
   [
    "code",
-   "best_model = min(maes, key=maes.get)\n",
-   "MAE가 가장 작은 모델 이름을 고르는 줄이에요. key=maes.get이 값 기준으로 비교하게 해 주거든요."
-  ],
-  [
-   "code",
-   "report = {'test_days': len(X_test), 'baseline_mae': baseline_mae, 'best_model': best_model, 'best_mae': maes[best_model], 'improved': bool(maes[best_model] < baseline_mae)}\n",
-   "숫자 다섯 개를 report에 모아요. improved는 최선 모델 MAE가 기준보다 작은지를 bool로 적으면 돼요."
+   "best_model = min(maes, key=maes.get)\nreport = {'test_days': len(X_test), 'baseline_mae': baseline_mae, 'best_model': best_model, 'best_mae': maes[best_model], 'improved': bool(maes[best_model] < baseline_mae)}\n",
+   "min에 key=maes.get을 주면 MAE가 가장 작은 이름이 나와요. 그걸로 다섯 키짜리 report를 만들어요. improved는 기준보다 작은지를 bool로 적어요."
   ],
   [
    "code",
    "print(f\"다음 거래일 종가를 예측했고, 마지막 {report['test_days']}거래일을 테스트로 두었으며 훈련 정답은 모두 테스트 시작 전이다.\")\nprint(f\"기준 예측(오늘 종가 그대로) MAE {baseline_mae:.0f}원, 최선 모델 {best_model} MAE {maes[best_model]:.0f}원.\")\nprint('최선 모델이 기준보다 오차를 줄였다.' if report['improved'] else '최선 모델도 기준보다 오차를 줄이지 못했다. 이 파일, 이 기간의 결과다.')\n",
-   "결론 세 줄이에요. 무엇을 어떻게 나눴는지, 기준과 최선 모델의 MAE, 그리고 개선 여부를 improved에 따라 골라 출력해요."
+   "결론 세 줄은 f-string으로요. 무엇을 언제 예측해 어떻게 나눴는지, 기준과 최선의 MAE, 그리고 개선 여부예요. 개선 못 했어도 그대로 적어야 정직한 보고거든요."
   ],
   [
    "run",
@@ -91,11 +82,11 @@
   ],
   [
    "output",
-   "세 줄이 나왔죠? 테스트는 80거래일, 기준 MAE 13638원, 최선 모델 Linear MAE 13521원이에요. 기준보다 오차를 줄였다고 나왔어요."
+   "세 줄 나왔죠? 테스트는 80거래일, 기준 MAE 13638원, 최선 모델 Linear 13521원이에요. 기준보다 조금 줄였다고 적혔어요."
   ],
   [
    "submit",
-   "제출할게요. 검사는 다섯 숫자가 실제 계산과 맞는지만 보거든요."
+   "제출할게요."
   ]
  ]
 }

@@ -15,6 +15,10 @@
    "hash": "62645085d446"
   },
   {
+   "block": "problem",
+   "hash": "62645085d446"
+  },
+  {
    "block": "starter",
    "hash": "99183826c273"
   },
@@ -50,31 +54,35 @@
  "entry": [
   [
    "problem",
-   "자, 이번엔 열 여섯 개의 상관계수를 한 번에 봐요. 숫자 표 대신 색으로 칠해서 방향이 바로 보이게 하는 거예요."
+   "자, 이번엔 여섯 열의 상관계수를 한 번에 색으로 봐요. 표의 숫자를 눈으로 훑는 대신 히트맵으로 그리는 거거든요."
+  ],
+  [
+   "hint",
+   "힌트에 있는 sns.heatmap 옵션을 그대로 쓰면 돼요. 양수는 붉게, 음수는 푸르게 칠해져요."
   ],
   [
    "starter",
-   "준비 코드엔 titanic 데이터와 seaborn, 그리고 columns에 숫자 열 여섯 개 이름이 들어 있어요."
+   "pandas, matplotlib, seaborn 불러오기와 titanic 읽기는 준비돼 있어요. columns에 숫자 열 여섯 개 이름이 들어 있죠?"
   ],
   [
    "code",
    "corr = titanic[columns].corr()\n",
-   "columns로 여섯 열만 골라서 corr()을 부르면 6×6 상관계수 표가 corr에 들어가요."
+   "titanic에서 columns 여섯 열만 고르고 corr()을 부르면 6×6 상관계수 표가 돼요. 그걸 corr에 담아요."
   ],
   [
    "code",
    "fig, ax = plt.subplots()\n",
-   "그림 한 장과 축 하나를 먼저 만들어요. 여기에 히트맵을 올릴 거거든요."
+   "그림 한 장과 축 하나를 먼저 만들어요. ax에 히트맵을 올릴 거거든요."
   ],
   [
    "code",
    "sns.heatmap(corr, annot=True, vmin=-1, vmax=1, center=0, cmap='coolwarm', ax=ax)\n",
-   "sns.heatmap에 corr을 넘겨요. annot=True면 칸에 숫자가 찍히고, vmin과 vmax를 -1과 1로 묶어 두면 양수는 붉게, 음수는 푸르게 칠해져요."
+   "corr 표를 heatmap에 넘겨요. annot=True면 칸마다 숫자가 찍히고, vmin=-1·vmax=1·center=0이면 0을 가운데 두고 -1부터 1까지 색을 나눠요."
   ],
   [
    "code",
    "plt.show()\n",
-   "plt.show()로 그림을 띄우면 돼요."
+   "마지막으로 plt.show()로 그림을 띄워요."
   ],
   [
    "run",
@@ -82,7 +90,7 @@
   ],
   [
    "output",
-   "6×6 히트맵이 떴죠? 대각선이 전부 1이면 맞게 만든 거예요. 생존 행을 따라가면서 어느 열이 가장 짙은지 보세요."
+   "6×6 히트맵이 떴죠? 대각선이 전부 1이면 맞게 만든 거예요. 생존 행을 따라가면서 어느 칸이 가장 진한지 보세요."
   ],
   [
    "submit",

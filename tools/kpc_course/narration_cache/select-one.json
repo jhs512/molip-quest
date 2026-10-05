@@ -46,16 +46,16 @@
  "entry": [
   [
    "problem",
-   "자, 이번엔 HTML에서 선택자로 요소를 찾아요. #prices li에 맞는 요소 수를 n_items에, 첫 종목 이름을 first_name에 담으면 돼요."
+   "자, 이번엔 HTML 안에서 원하는 요소만 골라내요. 선택자 #prices li에 맞는 요소 수와 첫 종목 이름을 찾으면 돼요."
   ],
   [
    "starter",
-   "준비 코드가 data/prices.html을 읽어서 soup를 만들어 뒀어요. 이건 그대로 두고 아래에 이어서 써요."
+   "준비 코드가 HTML 파일을 읽어서 soup까지 만들어 뒀어요. 저는 soup에서 찾기만 하면 돼요."
   ],
   [
    "code",
    "items = soup.select('#prices li')\nn_items = len(items)\n",
-   "soup.select는 맞는 요소를 리스트로 돌려줘요. 그러니 len()으로 세면 돼요."
+   "soup.select는 맞는 요소를 리스트로 돌려주거든요. 그러니 len으로 세면 개수가 나와요."
   ],
   [
    "code",
@@ -65,7 +65,7 @@
   [
    "code",
    "print(n_items, first_name)\n",
-   "둘 다 한 줄에 출력할게요."
+   "둘을 한 줄에 출력할게요."
   ],
   [
    "run",
@@ -73,7 +73,7 @@
   ],
   [
    "output",
-   "2 가상A가 나왔죠? li가 두 개고, 첫 종목 이름이 가상A거든요."
+   "2 가상A가 나왔죠? 종목이 두 개고 첫 이름이 가상A예요."
   ],
   [
    "submit",

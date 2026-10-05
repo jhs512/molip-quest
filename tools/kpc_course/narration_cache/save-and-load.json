@@ -54,27 +54,27 @@
   ],
   [
    "starter",
-   "자료 나누기, 손질기 함수, joblib과 로지스틱 회귀 불러오기는 준비되어 있어요."
+   "데이터 나누기와 make_preprocessor, joblib과 LogisticRegression 불러오기는 준비되어 있어요."
   ],
   [
    "code",
    "\nmodel = Pipeline([('prepare', make_preprocessor()), ('model', LogisticRegression(max_iter=1000))])\nmodel.fit(X_train, y_train)\n",
-   "손질기와 로지스틱 회귀를 Pipeline으로 묶어 model에 넣고, 훈련 자료로 fit해요."
+   "먼저 손질기와 로지스틱 회귀를 Pipeline으로 묶어 model에 담아요. 그걸 훈련 자료로 fit하면 돼요."
   ],
   [
    "code",
    "joblib.dump(model, 'titanic_model.joblib')\n",
-   "joblib.dump로 학습한 model을 titanic_model.joblib 파일에 저장해요."
+   "joblib.dump가 학습한 model을 titanic_model.joblib 파일로 저장하거든요."
   ],
   [
    "code",
    "loaded = joblib.load('titanic_model.joblib')\n",
-   "joblib.load로 그 파일을 다시 읽어 loaded에 담아요. 학습은 다시 안 하거든요."
+   "joblib.load로 그 파일을 다시 읽어 loaded에 담아요. 저장과 불러오기 사이에 학습은 없어요."
   ],
   [
    "code",
    "test_accuracy = accuracy_score(y_test, loaded.predict(X_test))\nprint(f'불러온 모델의 테스트 정확도: {test_accuracy:.3f}')\n",
-   "불러온 loaded로 테스트 자료를 예측해서 정확도를 test_accuracy에 담고 출력해요."
+   "불러온 loaded로 테스트 자료를 예측하고, 정답 y_test와 비교한 정확도를 test_accuracy에 담아 출력해요."
   ],
   [
    "run",
@@ -82,7 +82,7 @@
   ],
   [
    "output",
-   "0.809가 나왔죠? 저장 전 모델과 똑같은 예측이라 정확도도 같아요."
+   "불러온 모델의 테스트 정확도가 0.809로 나왔죠? 원래 모델과 예측이 완전히 같으니 정확도도 같아요."
   ],
   [
    "submit",

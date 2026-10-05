@@ -41,40 +41,31 @@
   {
    "block": "solution",
    "hash": "b191dc9e4d1b"
-  },
-  {
-   "block": "solution",
-   "hash": "b191dc9e4d1b"
   }
  ],
  "entry": [
   [
    "problem",
-   "자, 손질을 배우기 전에 모델을 한 번 돌려 봐요. 빈칸이 없고 이미 숫자인 열 세 개만 쓰거든요."
+   "자, 손질을 배우기 전에 모델을 한 번 돌려 봐요. 빈칸 없고 이미 숫자인 열 셋만 쓸 거예요."
   ],
   [
    "starter",
-   "준비 코드엔 훈련 자료와 테스트 자료가 나뉘어 있어요. simple에 객실등급, 형제배우자, 부모자녀 세 열이 들어 있고요."
+   "준비 코드엔 titanic 읽기와 X, y 나누기가 돼 있어요. simple에 객실등급, 형제배우자, 부모자녀 세 열이 들어 있고요."
   ],
   [
    "code",
    "model = LogisticRegression(max_iter=1000)\n",
-   "먼저 모델을 만들어요. LogisticRegression을 model이라는 이름에 담으면 돼요."
+   "자, 첫 단계는 만들기예요. LogisticRegression을 model에 담아요."
   ],
   [
    "code",
-   "model.fit(X_train[simple], y_train)\n",
-   "그다음 학습이에요. 입력 X는 X_train[simple], 정답 y는 y_train을 넣어요."
-  ],
-  [
-   "code",
-   "pred = model.predict(X_test[simple])\n",
-   "이제 테스트 자료를 예측해요. 세 열만 골라서 넣어야 하거든요."
+   "model.fit(X_train[simple], y_train)\npred = model.predict(X_test[simple])\n",
+   "둘째는 학습이에요. 훈련 자료 X_train[simple]과 y_train을 fit에 넣죠? 셋째는 예측이에요. 테스트 자료 X_test[simple]로 pred를 만들어요."
   ],
   [
    "code",
    "accuracy = accuracy_score(y_test, pred)\nprint(accuracy)\n",
-   "테스트 정답과 예측이 일치한 비율이 정확도예요. accuracy에 담고 출력해요."
+   "accuracy_score가 테스트 정답과 예측이 맞은 비율이에요. accuracy에 담아 출력하면 돼요."
   ],
   [
    "run",
@@ -82,7 +73,7 @@
   ],
   [
    "output",
-   "0.67 정도 나왔죠? 재료가 셋뿐이라 높지 않아요. 이 숫자를 기억해 두세요. 남은 미션은 이 숫자를 올리는 일이거든요."
+   "0.67 정도가 나왔죠? 재료가 셋뿐이라 높지 않아요. 이 숫자를 기억해 두세요. 남은 미션은 이걸 올리는 일이거든요."
   ],
   [
    "submit",

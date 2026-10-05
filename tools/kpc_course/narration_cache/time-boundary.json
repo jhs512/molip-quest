@@ -15,10 +15,6 @@
    "hash": "3f8c31f8197f"
   },
   {
-   "block": "problem",
-   "hash": "3f8c31f8197f"
-  },
-  {
    "block": "starter",
    "hash": "e96f3ceb7edf"
   },
@@ -54,35 +50,31 @@
  "entry": [
   [
    "problem",
-   "자, 이번엔 훈련 자료와 테스트 자료를 나눠요. 정답 날짜까지 보고 나누는 게 핵심이거든요."
-  ],
-  [
-   "hint",
-   "두 조건을 괄호로 감싸 &로 이으면 돼요. 입력과 정답은 같은 마스크로 함께 골라요."
+   "자, 시간 순으로 훈련·테스트를 나눠요. 정답 날짜까지 test_start 전인 행만 훈련에 쓰는 거예요."
   ],
   [
    "starter",
-   "준비 코드엔 frame, X, y까지 만들어져 있어요. 이 밑에 네 줄을 이어 쓰면 돼요."
+   "준비 코드엔 frame과 입력 X, 정답 y가 이미 있어요. target_date 열도 들어 있고요."
   ],
   [
    "code",
    "test_start = frame.index[-80]\n",
-   "자, 먼저 테스트 시작 날짜를 정해요. 뒤에서 80번째 날짜를 test_start로 잡아요."
+   "뒤에서 80번째 날짜를 test_start로 잡아요. 여기부터가 테스트 자료거든요."
   ],
   [
    "code",
    "train_mask = (frame.index < test_start) & (frame['target_date'] < test_start)\ntest_mask = frame.index >= test_start\n",
-   "훈련 마스크는 두 조건을 모두 만족해야 해요. 입력 날짜도, target_date도 test_start 전이어야 하거든요. 테스트 마스크는 입력 날짜가 test_start 이상인 행이에요."
+   "train_mask는 두 조건을 괄호로 감싸 &로 이어요. 입력 날짜도, target_date도 test_start 전이어야 해요. test_mask는 입력 날짜가 test_start 이상인 행이고요."
   ],
   [
    "code",
    "X_train, X_test = X.loc[train_mask], X.loc[test_mask]\ny_train, y_test = y.loc[train_mask], y.loc[test_mask]\n",
-   "이제 같은 마스크로 X와 y를 함께 골라요. 그래야 입력과 정답의 행이 안 어긋나거든요."
+   "입력과 정답은 같은 마스크로 함께 골라요. 그래야 행이 안 어긋나거든요."
   ],
   [
    "code",
    "print(len(X_train), len(X_test))\nprint(frame.loc[train_mask, 'target_date'].max(), X_test.index.min())\n",
-   "두 쪽의 행 수를 출력해요. 그리고 훈련 정답의 마지막 날짜와 테스트 첫 날짜도 나란히 찍어 봐요."
+   "두 쪽 행 수를 찍고요. 훈련 정답의 마지막 날짜와 테스트 첫 날짜도 나란히 찍어요."
   ],
   [
    "run",
@@ -90,7 +82,7 @@
   ],
   [
    "output",
-   "315 80이 나왔죠? 경계에 걸린 하루가 빠져서 396이 아니라 395예요. 훈련 정답 마지막이 5월 8일, 테스트 첫날이 5월 11일이니 누수가 없어요."
+   "315 80이 나왔죠? 396행에서 경계 하루가 빠진 거예요. 훈련 정답 마지막 날짜 5월 8일이 테스트 첫 날짜 5월 11일보다 앞이에요. 누수가 없는 거죠."
   ],
   [
    "submit",

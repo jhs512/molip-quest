@@ -15,6 +15,10 @@
    "hash": "1dbe2c561908"
   },
   {
+   "block": "problem",
+   "hash": "1dbe2c561908"
+  },
+  {
    "block": "starter",
    "hash": "1c777baea619"
   },
@@ -42,21 +46,25 @@
  "entry": [
   [
    "problem",
-   "자, 조금 전 반복문으로 더했던 전체 금액을 이번엔 표로 구해요. df의 amount 열을 골라 .sum()으로 합계를 내서 total_amount에 저장하고 출력하면 돼요."
+   "자, 조금 전 반복문으로 구했던 전체 금액을 이번엔 표로 구해요. df의 amount 열을 골라 .sum()으로 합계를 내서 total_amount에 넣고 출력하면 돼요."
+  ],
+  [
+   "hint",
+   "df['amount']가 한 열이에요. 뒤에 .sum()만 붙이면 그 열의 합계거든요. 반복문도 total_amount = 0도 필요 없어요."
   ],
   [
    "starter",
-   "준비 코드는 그대로 둘게요. 세 종목이 든 holdings 목록을 pd.DataFrame으로 바꿔 df에 넣어 뒀거든요."
+   "준비 코드는 그대로 둘게요. pandas를 불러오고, holdings 목록을 df라는 표로 만들어 뒀어요."
   ],
   [
    "code",
    "total_amount = df['amount'].sum()\n",
-   "df['amount']가 한 열이에요. 뒤에 .sum()을 붙이면 그 열의 합계가 바로 나와서 total_amount에 들어가요. 반복문도 total_amount = 0도 필요 없죠?"
+   "df['amount']로 amount 열 하나를 고르고, .sum()으로 그 열을 전부 더해요. 그 값을 total_amount에 넣어요."
   ],
   [
    "code",
    "print(total_amount)\n",
-   "그다음 줄에서 total_amount를 꺼내 출력하면 돼요."
+   "그다음 줄에서 꺼내 출력하면 돼요."
   ],
   [
    "run",
@@ -64,7 +72,7 @@
   ],
   [
    "output",
-   "130000이 나왔죠? 반복문으로 구했던 값과 똑같아요. 그런데 코드는 한 줄이거든요."
+   "130000이 나왔죠? 반복문으로 구한 값과 똑같아요. 코드는 한 줄이면 되거든요."
   ],
   [
    "submit",

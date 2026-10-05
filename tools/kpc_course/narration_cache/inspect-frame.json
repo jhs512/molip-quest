@@ -19,10 +19,6 @@
    "hash": "f4e1386bc87e"
   },
   {
-   "block": "problem",
-   "hash": "3f6d48f4c1d0"
-  },
-  {
    "block": "solution",
    "hash": "32d1c30b3b5a"
   },
@@ -50,30 +46,26 @@
  "entry": [
   [
    "problem",
-   "자, 이번엔 표를 받자마자 제일 먼저 할 일이에요. 몇 행 몇 열인지, 열 이름이 뭔지 확인하는 거거든요."
+   "자, 이번엔 표를 받자마자 크기부터 확인해요. 네 건의 거래가 든 orders 표인데, 가격 하나가 비어 있거든요. 행 수, 열 수, 열 이름 리스트를 각각 담아서 출력하면 돼요."
   ],
   [
    "starter",
-   "준비 코드엔 pandas를 부르고 orders 표를 만드는 두 줄이 있어요. 가격 하나가 None으로 비어 있죠? 그대로 둘게요."
-  ],
-  [
-   "hint",
-   "orders.shape는 (4, 3) 같은 쌍이에요. 쌍이니까 변수 두 개에 한 번에 나눠 담을 수 있거든요."
+   "준비 코드는 pandas를 불러오고 orders 표를 만들어 둔 거예요. 그대로 둘게요."
   ],
   [
    "code",
    "n_rows, n_columns = orders.shape\n",
-   "orders.shape가 주는 쌍을 n_rows와 n_columns에 한 번에 나눠 담아요."
+   "orders.shape는 (4, 3) 같은 쌍이거든요. 그래서 n_rows, n_columns에 한 번에 나눠 담아요."
   ],
   [
    "code",
    "column_names = list(orders.columns)\n",
-   "orders.columns를 list로 감싸서 열 이름 리스트를 column_names에 넣어요."
+   "열 이름은 orders.columns에 있어요. list로 감싸면 평범한 리스트가 돼요."
   ],
   [
    "code",
    "print(n_rows, n_columns, column_names)\n",
-   "세 값을 한 줄에 출력하면 돼요."
+   "세 값을 한 줄에 같이 출력할게요."
   ],
   [
    "run",
@@ -81,7 +73,7 @@
   ],
   [
    "output",
-   "4 3이 나오고 뒤에 product, price, quantity가 보이죠? 비어 있는 가격도 행 하나로 세어져서 4행이에요."
+   "4 3 ['product', 'price', 'quantity']가 나왔죠? 4행 3열이고, 열 이름이 product, price, quantity예요."
   ],
   [
    "submit",

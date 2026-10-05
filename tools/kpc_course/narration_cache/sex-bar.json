@@ -45,45 +45,36 @@
   {
    "block": "solution",
    "hash": "57f941ef48d6"
-  },
-  {
-   "block": "solution",
-   "hash": "57f941ef48d6"
   }
  ],
  "entry": [
   [
    "problem",
-   "자, 앞 단원에서 만든 성별 생존율 표를 이번엔 그래프로 바꿔 볼게요. 막대 둘이 여성과 남성 생존율 높이로 서면 돼요."
+   "자, 앞 단원에서 만든 성별 생존율 표를 이번엔 그래프로 바꿔요. 막대 둘이 여성·남성 생존율 퍼센트 높이로 서면 돼요."
   ],
   [
    "starter",
-   "준비 코드엔 titanic을 읽어 두고 plt와 sns를 들여왔어요. 그대로 두고 아래에 이어 쓰면 돼요."
+   "titanic 자료 읽기와 matplotlib, seaborn 불러오기는 준비돼 있어요. 그대로 둘게요."
   ],
   [
    "code",
    "rates = titanic.groupby('성별')['생존'].mean()\n",
-   "먼저 성별로 묶어서 생존 평균을 rates에 담아요. 앞 단원과 똑같은 줄이거든요."
+   "앞 단원과 같아요. 성별로 묶어서 생존 평균을 rates에 담아요."
   ],
   [
    "code",
-   "fig, ax = plt.subplots()\n",
-   "plt.subplots()로 도화지 fig와 그림판 ax를 만들어요. 그림은 이 ax 위에 그려요."
-  ],
-  [
-   "code",
-   "ax.bar(rates.index, rates * 100)\n",
-   "ax.bar에 x로 rates.index, 높이로 rates * 100을 줘요. 100을 곱해야 퍼센트가 되죠?"
+   "fig, ax = plt.subplots()\nax.bar(rates.index, rates * 100)\n",
+   "도화지를 하나 펴고요. x엔 rates의 이름표, 높이엔 rates에 100을 곱한 퍼센트를 줘요."
   ],
   [
    "code",
    "ax.set(xlabel='성별', ylabel='생존율 (%)', ylim=(0, 100), title='성별 생존율')\n",
-   "ax.set 한 줄로 축 이름과 제목을 붙여요. ylim을 0부터 100으로 두면 퍼센트 눈금이 돼요."
+   "set 한 줄로 축 이름과 제목을 붙여요. ylim을 0에서 100으로 고정하면 퍼센트가 그대로 읽히거든요."
   ],
   [
    "code",
    "plt.show()\n",
-   "마지막에 plt.show()로 그림을 띄우면 돼요."
+   "마지막에 plt.show()로 띄우면 돼요."
   ],
   [
    "run",
@@ -91,7 +82,7 @@
   ],
   [
    "output",
-   "막대 둘이 보이죠? 여성 막대가 남성보다 훨씬 높고, y축 눈금이 0부터 100까지 퍼센트로 서 있는지 보세요."
+   "막대 둘이 섰죠? 여성 막대가 남성보다 훨씬 높고, y축은 0에서 100까지예요."
   ],
   [
    "submit",

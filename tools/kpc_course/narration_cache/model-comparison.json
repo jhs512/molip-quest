@@ -15,10 +15,6 @@
    "hash": "3987ca21dc78"
   },
   {
-   "block": "problem",
-   "hash": "3987ca21dc78"
-  },
-  {
    "block": "starter",
    "hash": "9e1773dfba4b"
   },
@@ -58,40 +54,36 @@
  "entry": [
   [
    "problem",
-   "자, 기준 모델과 세 모델을 같은 조건에서 한 표에 놓고 비교해요. 각 모델을 Pipeline로 묶어 학습하고, accuracy와 f1을 results 표로 모으면 돼요."
-  ],
-  [
-   "hint",
-   "패턴은 늘 같아요. 빈 리스트를 두고, 반복문 안에서 만들고, 학습하고, 예측하고, 점수를 한 줄씩 append해요. 끝나면 DataFrame으로 바꾸면 돼요."
+   "자, 이번엔 기준 모델과 세 모델을 같은 조건에서 한 표에 놓고 비교해요. 각 모델을 전처리 Pipeline으로 묶어 학습하고, accuracy와 f1을 results 표로 모으는 거예요."
   ],
   [
    "starter",
-   "준비 코드가 자료 나누기와 make_preprocessor, 모델 네 개와 점수 함수를 다 불러와 두었어요. 그대로 두고 아래에 이어 써요."
+   "준비 코드엔 훈련 자료와 테스트 자료 나누기, make_preprocessor, 그리고 네 모델과 평가 함수 import가 들어 있어요. 그대로 둘게요."
   ],
   [
    "code",
    "\nmodels = {'Dummy': DummyClassifier(strategy='most_frequent'), 'Logistic': LogisticRegression(max_iter=2000), 'Tree': DecisionTreeClassifier(max_depth=4, random_state=42), 'Forest': RandomForestClassifier(n_estimators=50, max_depth=5, random_state=42)}\n",
-   "먼저 models 딕셔너리에 네 모델을 이름표와 함께 넣어요. Dummy가 기준 모델이고, Forest는 n_estimators=50, max_depth=5, random_state=42거든요."
+   "먼저 models 딕셔너리에 네 모델을 이름표와 함께 넣어요. Dummy가 기준 모델이고, Forest는 n_estimators=50, max_depth=5, random_state=42예요."
   ],
   [
    "code",
    "rows = []\nfitted = {}\n",
-   "결과 한 줄씩 담을 rows와, 학습한 모델을 보관할 fitted를 비워 두고 시작해요."
+   "표 만들기 패턴이죠? 빈 리스트 rows를 두고, 학습한 모델을 보관할 fitted도 빈 딕셔너리로 두면 돼요."
   ],
   [
    "code",
    "for name, estimator in models.items():\n    model = Pipeline([('prepare', make_preprocessor()), ('model', estimator)])\n    model.fit(X_train, y_train)\n    pred = model.predict(X_test)\n",
-   "자, 반복문이에요. 모델마다 Pipeline을 새로 만들어 전처리를 똑같이 붙이고, 훈련 자료로 fit, 테스트 자료로 predict해요. 조건이 같아야 공정한 비교죠?"
+   "models.items()로 이름과 모델을 하나씩 꺼내요. 매번 Pipeline을 새로 만들어 fit하고, 테스트 자료로 predict하는 거예요."
   ],
   [
    "code",
    "    fitted[name] = model\n    rows.append({'model': name, 'accuracy': accuracy_score(y_test, pred), 'f1': f1_score(y_test, pred, zero_division=0)})\n",
-   "학습한 모델은 fitted에 이름으로 보관하고, rows엔 이름과 accuracy, f1을 딕셔너리 한 줄로 덧붙여요. zero_division=0은 기준 모델처럼 양성을 하나도 안 맞힐 때 F1을 0으로 두라는 뜻이거든요."
+   "학습한 모델은 fitted에 이름으로 보관해요. 그리고 rows에 이름, accuracy, f1을 딕셔너리 한 줄로 덧붙이면 돼요. zero_division=0은 F1이 0일 때 경고 없이 0을 주거든요."
   ],
   [
    "code",
    "results = pd.DataFrame(rows).set_index('model')\nresults\n",
-   "반복이 끝나면 rows를 DataFrame으로 바꾸고 model 열을 인덱스로 세워요. 그럼 모델 이름이 행이 되고 accuracy, f1 두 열만 남죠."
+   "반복이 끝나면 rows를 DataFrame으로 만들고 model 열을 인덱스로 세워요. 그게 results 표예요."
   ],
   [
    "run",
@@ -99,7 +91,7 @@
   ],
   [
    "output",
-   "네 줄짜리 표가 나왔죠? Dummy 줄을 먼저 보세요. 정확도가 앞 미션의 162/262와 같고 F1이 0이면 표가 맞게 만들어진 거예요. 그다음 Logistic, Tree, Forest가 기준을 얼마나 넘는지 두 열을 나란히 보면 돼요."
+   "표가 나왔죠? Dummy 줄을 먼저 보세요. 정확도가 앞 미션의 162/262와 같고 F1이 0이면 표가 맞게 만들어진 거예요. 그다음 Logistic, Tree, Forest가 기준을 얼마나 넘는지 비교하면 돼요."
   ],
   [
    "submit",

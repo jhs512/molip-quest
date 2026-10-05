@@ -15,16 +15,12 @@
    "hash": "ebd19dfac51a"
   },
   {
-   "block": "example",
-   "hash": "e3b0c44298fc"
+   "block": "starter",
+   "hash": "c9df3b1a6595"
   },
   {
    "block": "problem",
    "hash": "ebd19dfac51a"
-  },
-  {
-   "block": "starter",
-   "hash": "c9df3b1a6595"
   },
   {
    "block": "solution",
@@ -53,26 +49,22 @@
    "자, 이번엔 \"또는\"이에요. 제품이 A이거나 수량이 1인 거래를 either에 담으면 돼요."
   ],
   [
-   "examples",
-   "A, A, C 세 건이 남으면 맞게 한 거예요."
+   "starter",
+   "준비 코드엔 pandas와 orders 표가 있어요. 거래 네 건이 들어 있죠? 그대로 둘게요."
   ],
   [
    "hint",
-   "&가 \"그리고\", |가 \"또는\"이거든요. 조건마다 괄호를 꼭 치세요. 괄호가 없으면 오류가 나요."
-  ],
-  [
-   "starter",
-   "pandas를 불러오고 orders 표를 만든 준비 코드는 그대로 둘게요."
+   "&가 \"그리고\", |가 \"또는\"이에요. 조건마다 괄호를 꼭 쳐야 오류가 안 나거든요."
   ],
   [
    "code",
    "either = orders.loc[(orders['product'] == 'A') | (orders['quantity'] == 1)]\n",
-   "조건 둘을 각각 괄호로 감싸고, 가운데 |로 이어요. 둘 중 하나만 맞아도 그 줄이 뽑히거든요."
+   "조건 두 개를 각각 괄호로 감싸고, 가운데를 |로 이어요. 둘 중 하나만 맞아도 골라 와요."
   ],
   [
    "code",
    "either\n",
-   "마지막 줄에 either를 적어 두면 표가 바로 보여요."
+   "마지막 줄에 either만 적으면 표가 보여요."
   ],
   [
    "run",
@@ -80,7 +72,7 @@
   ],
   [
    "output",
-   "A, A, C 세 줄이 보이죠? B는 두 조건 다 아니라서 빠진 거예요."
+   "표를 보세요. product 열이 A, A, C 세 건이면 맞게 한 거예요. C는 수량이 1이라 들어왔거든요."
   ],
   [
    "submit",

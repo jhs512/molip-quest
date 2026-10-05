@@ -46,20 +46,20 @@
  "entry": [
   [
    "problem",
-   "자, 같은 계산을 이번엔 이름표로 해요. price와 quantity를 곱한 값을 amount에 저장하고, print(amount)로 출력하면 돼요."
+   "자, 같은 계산을 이번엔 이름표를 써서 해요. 두 변수를 곱해서 amount에 저장하고 출력하면 돼요."
   ],
   [
    "hint",
-   "숫자 30000을 직접 적으면 안 돼요. 가격이 바뀌면 틀리는 코드가 되거든요."
+   "숫자 30000을 직접 적으면 가격이 바뀌었을 때 틀리는 코드가 되거든요. 꼭 곱셈으로 계산해야 해요."
   ],
   [
    "starter",
-   "준비 코드에 price는 10000, quantity는 3이 들어 있어요. 이 두 줄은 그대로 둘게요."
+   "준비 코드에 price가 10000, quantity가 3으로 들어가 있어요. 이 두 줄은 그대로 둘게요."
   ],
   [
    "code",
    "amount = price * quantity\n",
-   "오른쪽 price * quantity를 먼저 계산해서, 그 값을 amount에 넣어요."
+   "오른쪽 price 곱하기 quantity를 먼저 계산해요. 그 값이 amount에 들어가거든요."
   ],
   [
    "code",
@@ -72,7 +72,7 @@
   ],
   [
    "output",
-   "30000이 나왔죠? 검사는 amount가 price * quantity로 계산됐는지도 봐요."
+   "30000이 나왔죠? 검사는 amount가 price 곱하기 quantity로 계산됐는지도 봐요."
   ],
   [
    "submit",

@@ -15,6 +15,10 @@
    "hash": "3bebe8af9095"
   },
   {
+   "block": "problem",
+   "hash": "3bebe8af9095"
+  },
+  {
    "block": "starter",
    "hash": "d62216d3e977"
   },
@@ -50,31 +54,35 @@
  "entry": [
   [
    "problem",
-   "자, 릿지가 기준 모델보다 나아졌는지 참·거짓 하나로 정리해요. 기준 MAE는 baseline_mae, 릿지 MAE는 ridge_mae에 담고, 둘을 비교한 결과를 improved에 넣으면 돼요."
+   "자, 릿지가 기준보다 나아졌는지를 참·거짓 하나로 정리해요. 기준 예측 MAE는 baseline_mae, 릿지 MAE는 ridge_mae, 비교 결과는 improved에 담아 세 값을 출력하면 돼요."
+  ],
+  [
+   "hint",
+   "improved가 False로 나와도 틀린 게 아니에요. 그 기간의 사실이거든요. 검사는 계산이 맞는지만 봐요."
   ],
   [
    "starter",
-   "준비 코드가 특징 표를 만들고 훈련 자료와 테스트 자료로 나눠 놨어요. Pipeline, StandardScaler, Ridge, mean_absolute_error도 이미 불러왔으니 그대로 둘게요."
+   "준비 코드에 훈련 자료와 테스트 자료, Pipeline과 Ridge, mean_absolute_error까지 다 들어와 있어요. 그대로 두고 아래에 이어서 써요."
   ],
   [
    "code",
    "baseline_mae = mean_absolute_error(y_test, X_test['close'])\n",
-   "기준 모델부터요. 오늘 종가 close를 내일 종가 예측으로 그대로 쓴 MAE거든요."
+   "기준 모델부터 구해요. 오늘 종가를 내일 종가로 내는 예측이니까 X_test의 close를 그대로 정답 y_test와 비교하면 돼요."
   ],
   [
    "code",
    "ridge = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))])\nridge.fit(X_train, y_train)\n",
-   "릿지는 표준화 뒤에 Ridge(alpha=1)을 잇는 파이프라인이에요. 훈련 자료로만 학습해요."
+   "릿지는 표준화와 Ridge(alpha=1)을 파이프라인으로 묶어요. 훈련 자료로만 fit 하는 거 잊지 마세요."
   ],
   [
    "code",
    "ridge_mae = mean_absolute_error(y_test, ridge.predict(X_test))\n",
-   "테스트 자료로 예측해서 정답 y_test와 비교한 MAE를 ridge_mae에 담아요."
+   "테스트 자료를 예측해서 같은 잣대인 MAE로 재요. 기준과 똑같은 y_test로 비교해야 공정하거든요."
   ],
   [
    "code",
    "improved = bool(ridge_mae < baseline_mae)\nprint(baseline_mae, ridge_mae, improved)\n",
-   "릿지 MAE가 기준보다 작으면 True예요. bool로 감싸서 참·거짓 하나로 만들고 세 값을 출력해요."
+   "비교를 bool로 감싸서 참·거짓 하나로 만들어요. 세 값을 한 줄에 출력해요."
   ],
   [
    "run",
@@ -82,7 +90,7 @@
   ],
   [
    "output",
-   "기준이 13637.5, 릿지가 약 13601이죠? 조금 작아서 improved가 True로 나왔어요. False였어도 그대로 적으면 돼요."
+   "13637.5, 13601.09, True가 나왔죠? 릿지가 기준보다 조금 낫지만 차이는 36원쯤이에요. False였어도 그대로 적으면 돼요."
   ],
   [
    "submit",

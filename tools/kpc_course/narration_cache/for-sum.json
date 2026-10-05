@@ -15,10 +15,6 @@
    "hash": "aff54e5bbe0a"
   },
   {
-   "block": "problem",
-   "hash": "aff54e5bbe0a"
-  },
-  {
    "block": "starter",
    "hash": "5128631639d0"
   },
@@ -46,25 +42,21 @@
  "entry": [
   [
    "problem",
-   "자, 앞에서는 sum()이 합계를 구해 줬죠? 이번엔 그 일을 직접 해요. prices의 값을 for로 하나씩 꺼내 total에 더하는 거예요."
-  ],
-  [
-   "hint",
-   "for price in prices라고 쓰면 price에 값이 하나씩 들어와요. 그때마다 아래 들여쓴 줄이 반복되거든요."
+   "자, 앞에서는 sum()이 합계를 구해 줬죠? 이번엔 그 일을 for로 직접 해요. prices의 값을 하나씩 꺼내 total에 더하면 돼요."
   ],
   [
    "starter",
-   "준비 코드엔 prices 목록이랑 total = 0이 들어 있어요. 이건 그대로 둘게요."
+   "준비 코드에 prices 목록과 total = 0이 있어요. 0에서 시작해서 쌓아 가는 거예요."
   ],
   [
    "code",
    "for price in prices:\n    total += price\n",
-   "for로 price에 값을 하나씩 받아요. 들여쓴 줄에서 total += price로 누적하면 돼요."
+   "for price in prices라고 쓰면 price에 값이 하나씩 들어와요. 그때마다 들여쓴 줄에서 total += price로 누적하거든요."
   ],
   [
    "code",
    "print(total)\n",
-   "print(total)은 들여쓰기 없이 반복문 밖에 둬요. 그래야 마지막에 한 번만 출력되거든요."
+   "print(total)은 들여쓰기 없이 반복문 밖에 둬요. 그래야 마지막에 한 번만 출력돼요."
   ],
   [
    "run",
@@ -72,7 +64,7 @@
   ],
   [
    "output",
-   "40200이 나왔죠? sum() 없이 직접 누적한 결과예요."
+   "40200이 나왔죠? sum() 없이 네 값을 직접 더한 거예요."
   ],
   [
    "submit",

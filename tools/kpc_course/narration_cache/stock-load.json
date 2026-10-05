@@ -46,26 +46,26 @@
  "entry": [
   [
    "problem",
-   "자, 주가 파일을 날짜 순서대로 읽어 볼게요. 행 수, 열 수, 첫 날짜와 마지막 날짜까지 확인해요."
+   "자, 주가 파일을 읽어 prices에 담아요. 날짜 열은 날짜로 읽어 인덱스로 올리고 sort_index()로 정렬해요. 행 수와 열 수, 첫 날짜와 마지막 날짜까지 확인하면 돼요."
   ],
   [
    "starter",
-   "pandas를 pd로 가져오는 줄은 준비돼 있어요. 그대로 두면 돼요."
+   "import pandas as pd 한 줄은 준비되어 있어요. 그대로 둘게요."
   ],
   [
    "code",
    "prices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\n",
-   "parse_dates로 날짜 열을 진짜 날짜로 읽어요. 그걸 인덱스로 올리고 sort_index로 정렬하면 돼요."
+   "개념의 한 줄 그대로예요. parse_dates로 날짜로 읽고, set_index로 인덱스로 올리고, sort_index로 정렬하거든요."
   ],
   [
    "code",
    "n_rows, n_columns = prices.shape\nprint(n_rows, n_columns)\n",
-   "shape는 행 수와 열 수를 한 쌍으로 주거든요. n_rows와 n_columns에 나눠 담고 출력해요."
+   "shape는 (행, 열) 두 개를 주니까 n_rows와 n_columns에 한 번에 나눠 담아요. 그다음 줄에서 출력하죠?"
   ],
   [
    "code",
    "print(prices.index.min(), prices.index.max())\nprices.head()\n",
-   "인덱스가 날짜니까 min과 max가 첫 날짜와 마지막 날짜예요. head로 앞부분도 같이 봐요."
+   "인덱스가 날짜니까 min()이 첫 날짜, max()가 마지막 날짜예요. head()로 앞 몇 줄도 볼게요."
   ],
   [
    "run",
@@ -73,7 +73,7 @@
   ],
   [
    "output",
-   "401 6이 나왔죠? 그리고 2025-01-13부터 2026-09-04까지예요. 첫 날짜가 더 앞이니까 오름차순이 맞아요."
+   "401 6이 나왔죠? 401행 6열이에요. 첫 날짜는 2025-01-13, 마지막 날짜는 2026-09-04로 오름차순이면 맞게 읽은 거예요."
   ],
   [
    "submit",

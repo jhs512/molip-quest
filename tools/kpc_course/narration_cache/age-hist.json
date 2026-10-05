@@ -15,10 +15,6 @@
    "hash": "d5633a9cbdb7"
   },
   {
-   "block": "problem",
-   "hash": "d5633a9cbdb7"
-  },
-  {
    "block": "starter",
    "hash": "436788e304e0"
   },
@@ -58,40 +54,36 @@
  "entry": [
   [
    "problem",
-   "자, 이번엔 나이가 어떻게 퍼져 있는지 히스토그램으로 봐요. 나이를 아는 승객만 골라서 구간 20개로 나눠 세는 거거든요."
-  ],
-  [
-   "hint",
-   "빈 나이는 dropna로 빼고, 그림판을 만든 다음 sns.histplot으로 그려요. 축 이름과 제목을 붙이면 돼요."
+   "자, 나이가 기록된 승객만 골라서 나이 히스토그램을 그려요. 어느 나이대에 사람이 몰려 있는지 보는 거거든요."
   ],
   [
    "starter",
-   "준비 코드는 titanic 표를 읽고 pyplot과 seaborn을 불러와 둔 거예요. 그대로 둘게요."
+   "titanic 표 읽기와 plt, sns 가져오기는 준비되어 있어요. 그대로 두면 돼요."
   ],
   [
    "code",
    "known_age = titanic.dropna(subset=['나이'])\n",
-   "먼저 나이 칸이 비어 있는 줄을 빼요. subset에 나이만 넣으면 그 칸만 보고 걸러 주거든요. 남은 승객이 known_age예요."
+   "자, 나이가 빈 줄은 dropna로 빼서 known_age에 담아요."
   ],
   [
    "code",
    "fig, ax = plt.subplots()\n",
-   "그림판을 하나 만들어요. fig가 전체 종이, ax가 그 위에 그릴 축이죠?"
+   "그림 한 장이랑 축 하나를 만들어요. 이름이 fig랑 ax예요."
   ],
   [
    "code",
    "sns.histplot(data=known_age, x='나이', bins=20, ax=ax)\n",
-   "자, 히스토그램이에요. data는 known_age, x는 나이, bins=20이면 나이를 스무 구간으로 잘라서 각 구간의 인원을 세요. ax=ax로 방금 만든 축에 그리면 돼요."
+   "histplot에 known_age를 주고 x는 나이, bins는 20으로 해요. 구간 20개짜리 막대가 되거든요."
   ],
   [
    "code",
    "ax.set(xlabel='나이', ylabel='Passenger count', title='Known ages only')\n",
-   "축 이름과 제목을 한 번에 붙여요. 가로가 나이, 세로가 승객 수라는 걸 그림만 봐도 알게요."
+   "ax.set으로 축 이름이랑 제목을 한 번에 붙여요."
   ],
   [
    "code",
    "plt.show()\n",
-   "마지막에 plt.show()로 화면에 띄우면 돼요."
+   "마지막에 plt.show()로 띄우면 돼요."
   ],
   [
    "run",
@@ -99,7 +91,7 @@
   ],
   [
    "output",
-   "히스토그램이 떴죠? 막대 스무 개의 높이를 전부 더하면 나이를 아는 인원 1046이에요. 어느 나이대 막대가 유독 높은지, 사람이 어디에 몰려 있는지 보세요."
+   "히스토그램이 떴죠? 막대 20개 높이를 다 더하면 나이를 아는 1046명이에요. 어디에 막대가 높은지 보세요."
   ],
   [
    "submit",

@@ -50,26 +50,26 @@
  "entry": [
   [
    "problem",
-   "자, 빈칸 채우기와 표준화를 한 줄로 묶어 볼게요. 두 도구를 Pipeline에 넣으면 도구 하나처럼 쓸 수 있거든요."
+   "자, 빈칸 채우기와 표준화를 한 줄로 묶어요. Pipeline에 두 도구를 순서대로 넣는 거거든요."
   ],
   [
    "starter",
-   "타이타닉 자료를 나눈 X_train, X_test와 SimpleImputer, Pipeline, StandardScaler가 준비되어 있어요. 숫자 열 이름은 numeric에 들어 있죠?"
+   "데이터 나누기와 import, 숫자 열 목록 numeric은 준비돼 있어요."
   ],
   [
    "code",
    "numeric_pipeline = Pipeline([('fill', SimpleImputer(strategy='median')), ('scale', StandardScaler())])\n",
-   "Pipeline 괄호 안에 리스트, 그 안에 이름과 도구 쌍 두 개예요. fill은 중앙값으로 빈칸을 채우고 scale은 표준화를 하거든요."
+   "리스트 안에 (이름, 도구) 쌍이 두 개죠? 먼저 중앙값으로 채우고, 그다음 표준화하는 순서예요."
   ],
   [
    "code",
    "train_values = numeric_pipeline.fit_transform(X_train[numeric])\n",
-   "훈련 자료에는 fit_transform이에요. 중앙값과 평균, 표준편차를 훈련 자료에서 배우면서 바로 바꿔 줘요."
+   "만든 뒤엔 도구 하나처럼 써요. 훈련 자료에는 fit_transform으로 기준을 배우면서 바꿔요."
   ],
   [
    "code",
    "test_values = numeric_pipeline.transform(X_test[numeric])\n",
-   "테스트 자료에는 transform만 써요. 훈련에서 배운 값을 그대로 쓰면 되거든요."
+   "테스트 자료에는 transform만이에요. 훈련에서 배운 기준을 그대로 쓰는 거거든요."
   ],
   [
    "code",
@@ -82,7 +82,7 @@
   ],
   [
    "output",
-   "(1047, 5) (262, 5)가 나왔죠? 훈련 1047행, 테스트 262행에 숫자 열 다섯 개 그대로예요."
+   "훈련 1047행 5열, 테스트 262행 5열이 나왔죠? 숫자 열 다섯 개가 그대로 다섯 열이에요."
   ],
   [
    "submit",

@@ -15,12 +15,16 @@
    "hash": "4d9b864ab11d"
   },
   {
-   "block": "problem",
-   "hash": "4d9b864ab11d"
-  },
-  {
    "block": "starter",
    "hash": "93e2e2ec62b8"
+  },
+  {
+   "block": "solution",
+   "hash": "1e048cc64246"
+  },
+  {
+   "block": "solution",
+   "hash": "1e048cc64246"
   },
   {
    "block": "solution",
@@ -50,30 +54,36 @@
  "entry": [
   [
    "problem",
-   "자, 방금 만든 넓은 표를 이번엔 그래프로 바꿔요. 성별마다 등급 막대 세 개가 묶여 나오면 돼요."
-  ],
-  [
-   "hint",
-   "앞 미션과 같은 wide에 100만 곱하면 퍼센트가 되거든요. 그 다음은 plot.bar 한 줄이에요."
+   "자, 방금 만든 넓은 표를 그래프로 바꿔요. 이번엔 wide에 100을 곱해 퍼센트로 두고, 성별마다 등급 막대 세 개가 묶이게 그릴 거예요."
   ],
   [
    "starter",
-   "titanic 표와 plt, sns는 이미 준비돼 있어요. 그대로 두고 아래에 이어 쓸게요."
+   "pandas와 titanic 표, matplotlib의 plt, seaborn은 준비돼 있어요. 그대로 둘게요."
   ],
   [
    "code",
-   "grouped = titanic.groupby(['성별', '객실등급'])['생존'].agg(['count', 'mean'])\nwide = grouped['mean'].unstack('객실등급') * 100\n",
-   "앞 미션과 같은 넓은 표인데, 끝에 100을 곱했죠? 0.7 같은 비율이 70 같은 퍼센트가 돼요."
+   "grouped = titanic.groupby(['성별', '객실등급'])['생존'].agg(['count', 'mean'])\n",
+   "앞 미션과 같아요. 성별과 객실등급으로 묶어서 count와 mean을 같이 구해요."
+  ],
+  [
+   "code",
+   "wide = grouped['mean'].unstack('객실등급') * 100\n",
+   "mean만 꺼내 객실등급을 열로 펼치고, 100을 곱해 퍼센트로 만들어요."
   ],
   [
    "code",
    "ax = wide.plot.bar(ylim=(0, 100), rot=0)\n",
-   "wide.plot.bar가 그래프 영역을 돌려줘서 ax에 받아요. ylim은 0부터 100까지, rot=0은 글자를 눕히지 않는 거예요."
+   "wide.plot.bar가 막대 그래프를 그려요. ylim은 y축을 0에서 100으로 고정하고, rot=0은 x축 글자를 눕히지 않아요. 돌려받은 ax가 그래프 영역이에요."
   ],
   [
    "code",
-   "ax.set(ylabel='생존율 (%)', title='성별·객실등급별 생존율 (%)')\nplt.show()\n",
-   "받아 둔 ax에 y축 이름과 제목을 한 번에 붙여요. 그리고 plt.show()로 띄우면 돼요."
+   "ax.set(ylabel='생존율 (%)', title='성별·객실등급별 생존율 (%)')\n",
+   "그 ax에 set으로 y축 이름과 제목을 한 번에 붙여요."
+  ],
+  [
+   "code",
+   "plt.show()\n",
+   "plt.show()로 그래프를 띄워요."
   ],
   [
    "run",
@@ -81,7 +91,7 @@
   ],
   [
    "output",
-   "막대 여섯 개가 보이죠? 성별 두 묶음에 등급 막대가 세 개씩이에요. 등급을 나눈 뒤에도 성별 차이가 남는지, 그 차이가 등급마다 비슷한지 읽어 보세요."
+   "막대 여섯 개가 보이죠? 성별 두 묶음에 등급 막대가 셋씩이에요. 등급을 나눈 뒤에도 여자 쪽이 높은지, 그 차이가 등급마다 비슷한지 읽어 보세요."
   ],
   [
    "submit",

@@ -46,25 +46,25 @@
  "entry": [
   [
    "problem",
-   "자, 이번엔 인원과 생존자 수와 생존율을 따로 구하지 않고 한 표로 봐요. 성별로 묶은 생존에 agg를 붙이면 되거든요."
+   "자, 이번엔 인원과 비율을 따로 구하지 않고 한 표로 봐요. 성별로 묶은 생존에 count, sum, mean을 한꺼번에 붙이는 거거든요."
   ],
   [
    "hint",
-   "힌트는 agg 안에 count, sum, mean 세 개를 목록으로 넣는 거예요. 열 이름이 각각 인원, 생존자 수, 생존율이 돼요."
+   "groupby 뒤에 agg를 쓰면 여러 계산을 한 번에 할 수 있어요. 열 이름은 각각 인원, 생존자 수, 생존율이에요."
   ],
   [
    "starter",
-   "준비 코드는 pandas를 불러오고 titanic 표를 읽는 두 줄이에요. 그대로 둘게요."
+   "준비 코드는 pandas를 부르고 titanic.csv를 titanic으로 읽어 둔 두 줄이에요. 그대로 둘게요."
   ],
   [
    "code",
    "gender_summary = titanic.groupby('성별')['생존'].agg(['count', 'sum', 'mean'])\n",
-   "성별로 묶고 생존 열만 고른 뒤 agg에 count, sum, mean을 한꺼번에 줘요. 그 표를 gender_summary에 담아요."
+   "성별로 묶고 생존 열만 고른 다음, agg에 count, sum, mean을 목록으로 넘겨요. 그 표를 gender_summary에 넣어요."
   ],
   [
    "code",
    "gender_summary\n",
-   "마지막 줄에 이름만 적으면 그 표가 결과로 나와요."
+   "마지막 줄에 이름만 적으면 표가 화면에 나와요."
   ],
   [
    "run",
@@ -72,7 +72,7 @@
   ],
   [
    "output",
-   "성별이 행, count·sum·mean이 열인 표가 나왔죠? count 열을 더하면 1309, sum 열을 더하면 500이면 맞게 한 거예요."
+   "성별이 행, count, sum, mean이 열인 표가 나왔죠? count 열을 더하면 1309, sum 열을 더하면 500이면 맞게 한 거예요."
   ],
   [
    "submit",

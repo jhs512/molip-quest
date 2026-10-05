@@ -15,12 +15,12 @@
    "hash": "bff09333157f"
   },
   {
-   "block": "problem",
-   "hash": "bff09333157f"
-  },
-  {
    "block": "starter",
    "hash": "0987e023d76f"
+  },
+  {
+   "block": "solution",
+   "hash": "8c8d90d7e988"
   },
   {
    "block": "solution",
@@ -54,35 +54,36 @@
  "entry": [
   [
    "problem",
-   "자, 빈칸을 채운 표와 뺀 표를 나란히 놓고 비교해요. 두 합계가 얼마나 달라지는지 보는 게 요점이거든요."
-  ],
-  [
-   "hint",
-   "채우기는 fillna에 중앙값을 넣으면 되고요. 빼기는 dropna에 subset으로 price 열을 주면 돼요."
+   "자, 빈칸 하나를 채운 표와 뺀 표, 두 길의 합계를 나란히 비교해요. 어느 쪽이 진짜냐가 아니라, 선택에 따라 답이 달라진다는 걸 보는 거예요."
   ],
   [
    "starter",
-   "준비 코드엔 orders 표가 있어요. C 상품의 가격 한 칸이 None으로 비어 있죠?"
+   "준비 코드에 orders 표가 있어요. 네 줄 중 C 상품의 price가 None으로 비어 있죠?"
   ],
   [
    "code",
-   "filled = orders.copy()\nfilled['price'] = filled['price'].fillna(filled['price'].median())\nfilled['amount'] = filled['price'] * filled['quantity']\n",
-   "먼저 copy로 복사본을 만들어요. 그 가격 결측을 중앙값으로 채우고, 가격 곱하기 수량으로 amount 열을 만들죠."
+   "filled = orders.copy()\nfilled['price'] = filled['price'].fillna(filled['price'].median())\n",
+   "먼저 copy로 표를 복사해서 filled를 만들어요. 그다음 price의 빈칸을 fillna로 중앙값으로 채우는 거예요."
+  ],
+  [
+   "code",
+   "filled['amount'] = filled['price'] * filled['quantity']\n",
+   "채운 표에 amount 열을 만들어요. 가격 곱하기 수량이죠?"
   ],
   [
    "code",
    "dropped = orders.dropna(subset=['price']).copy()\ndropped['amount'] = dropped['price'] * dropped['quantity']\n",
-   "이번엔 다른 길이에요. dropna로 가격이 빈 행을 빼고, 똑같이 amount 열을 만들어요."
+   "이번엔 뺀 길이에요. dropna에 subset으로 price를 주면 가격이 빈 행만 빠져요. 거기에도 똑같이 amount 열을 만들어요."
   ],
   [
    "code",
    "filled_total = filled['amount'].sum()\ndropped_total = dropped['amount'].sum()\n",
-   "각 표의 amount를 sum으로 더해요. 채운 쪽은 filled_total, 뺀 쪽은 dropped_total에 담고요."
+   "두 표의 amount를 각각 sum으로 더해요. 하나는 filled_total, 하나는 dropped_total에 담는 거예요."
   ],
   [
    "code",
    "print(filled_total, dropped_total)\nfilled\n",
-   "두 합계를 한 줄에 출력해요. 마지막 줄 filled는 채운 표를 화면에 보여 주는 거예요."
+   "두 합계를 나란히 출력하고, 채운 표 filled도 마지막에 보여 줄게요."
   ],
   [
    "run",
@@ -90,7 +91,7 @@
   ],
   [
    "output",
-   "130000.0 118000.0이 나왔죠? 채우면 130000, 빼면 118000이에요. 빈칸 하나를 어떻게 다루느냐로 답이 달라지거든요. 어느 쪽도 진짜 전체 금액은 아니니까, 보고서엔 그 선택을 적어야 해요."
+   "130000.0과 118000.0이 나왔죠? 채운 쪽이 더 커요. 빈칸 한 줄을 중앙값으로 채운 만큼 차이가 나거든요. 어느 쪽도 진짜 전체 금액은 아니에요. 그래서 보고서엔 그 선택을 적어야 돼요."
   ],
   [
    "submit",

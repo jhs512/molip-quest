@@ -61,55 +61,64 @@
   {
    "block": "solution",
    "hash": "38be708f12ad"
+  },
+  {
+   "block": "solution",
+   "hash": "38be708f12ad"
   }
  ],
  "entry": [
   [
    "problem",
-   "자, 주가 챕터를 한 번에 복습해요. 이번엔 이동평균 창을 5일에서 10일로 바꿔요. 입력 열, 시간 분리, 기준 모델, 릿지, 보고까지 전부 직접 써요."
+   "자, 주가 챕터를 통째로 복습해요. 이동평균 창만 5일에서 10일로 바꾸고, 입력 열부터 보고 딕셔너리까지 전부 직접 써요."
   ],
   [
    "hint",
-   "앞에서 만든 여섯 열에서 rolling(5)만 rolling(10)으로 바꾸면 돼요. 처음 아홉 행이 비어서 391행이 남거든요."
+   "앞에서 만든 여섯 열에서 rolling(5)만 rolling(10)으로 바꾸면 돼요. 분리 규칙도 앞 단원 그대로예요."
   ],
   [
    "starter",
-   "준비 코드는 stock.csv를 날짜 순으로 읽어 prices에 담고, Pipeline과 StandardScaler, Ridge, mean_absolute_error를 불러 둔 상태예요. 그대로 두고 아래에 이어 써요."
+   "준비 코드에 prices 읽기와 Pipeline, StandardScaler, Ridge, mean_absolute_error 불러오기가 있어요. 그대로 둘게요."
   ],
   [
    "code",
    "\nframe = pd.DataFrame(index=prices.index)\nframe['close'] = prices['종가']\nframe['return_1'] = prices['종가'].pct_change()\n",
-   "자, 날짜를 index로 둔 빈 표 frame을 만들어요. 오늘 종가를 close에, 어제 대비 수익률을 return_1에 넣어요."
+   "자, 빈 frame을 prices와 같은 날짜로 만들고 close와 return_1부터 채워요."
   ],
   [
    "code",
    "frame['ma10'] = prices['종가'].rolling(10).mean()\nframe['lag_close_1'] = prices['종가'].shift(1)\n",
-   "여기가 이번 과제의 핵심이에요. rolling(10)으로 10일 이동평균을 ma10에 담고, 어제 종가는 shift(1)로 lag_close_1에 넣어요."
+   "여기가 이번 과제의 핵심이에요. rolling(10)으로 열흘 평균 ma10을 만들고, lag_close_1은 어제 종가예요."
   ],
   [
    "code",
    "frame['target_next_close'] = prices['종가'].shift(-1)\nframe['target_date'] = pd.Series(prices.index, index=prices.index).shift(-1)\nframe = frame.dropna().copy()\n",
-   "정답 y는 내일 종가라서 shift(-1)이에요. 그 날짜도 target_date로 같이 두고, 빈 행을 dropna()로 지운 뒤 .copy()를 해요."
+   "정답 y는 내일 종가, target_date는 그 날짜예요. dropna로 비는 행을 지우면 처음 아홉 행이 빠져요."
   ],
   [
    "code",
    "feature_columns = ['close', 'return_1', 'ma10', 'lag_close_1']\nX = frame[feature_columns]\ny = frame['target_next_close']\n",
-   "입력 X는 네 열이에요. 정답 y는 target_next_close 한 열이고요."
+   "입력 X는 네 열, 정답 y는 target_next_close예요. 열 이름이 ma10인 걸 확인하세요."
   ],
   [
    "code",
    "test_start = frame.index[-80]\ntrain_mask = (frame.index < test_start) & (frame['target_date'] < test_start)\ntest_mask = frame.index >= test_start\n",
-   "마지막 80행이 테스트예요. 훈련은 입력 날짜와 target_date가 모두 test_start 전인 행만 써요. 경계 하루를 빼서 누수를 막는 거거든요."
+   "마지막 80행이 테스트예요. 훈련은 입력 날짜와 target_date가 모두 test_start 전인 행만 쓰니까 경계 하루가 빠지거든요."
   ],
   [
    "code",
-   "X_train, X_test = X.loc[train_mask], X.loc[test_mask]\ny_train, y_test = y.loc[train_mask], y.loc[test_mask]\nbaseline_mae = mean_absolute_error(y_test, X_test['close'].to_numpy())\n",
-   "마스크로 훈련 자료와 테스트 자료를 갈라요. 기준 모델은 오늘 종가를 그대로 내는 거라서, 테스트의 close 열과 y_test를 비교해 MAE를 재요."
+   "X_train, X_test = X.loc[train_mask], X.loc[test_mask]\ny_train, y_test = y.loc[train_mask], y.loc[test_mask]\n",
+   "마스크로 훈련 자료와 테스트 자료를 갈라요. 310행과 80행이 나오면 맞은 거예요."
   ],
   [
    "code",
-   "model = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))]).fit(X_train, y_train)\nridge_mae = mean_absolute_error(y_test, model.predict(X_test))\nreport = {'window': 10, 'rows': len(frame), 'baseline_mae': baseline_mae, 'ridge_mae': ridge_mae, 'improved': ridge_mae < baseline_mae}\nprint(report)\n",
-   "StandardScaler 뒤에 Ridge(alpha=1)을 붙인 파이프라인을 훈련 자료로 학습해요. 테스트 MAE를 ridge_mae에 담고, report 딕셔너리에 창 크기, 행 수, 두 MAE, 개선 여부를 모아 출력해요."
+   "baseline_mae = mean_absolute_error(y_test, X_test['close'].to_numpy())\nmodel = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))]).fit(X_train, y_train)\nridge_mae = mean_absolute_error(y_test, model.predict(X_test))\n",
+   "기준 모델은 오늘 종가를 그대로 내는 거예요. 그다음 StandardScaler와 Ridge(alpha=1) 파이프라인을 훈련 자료로 맞추고 테스트 MAE를 재요."
+  ],
+  [
+   "code",
+   "report = {'window': 10, 'rows': len(frame), 'baseline_mae': baseline_mae, 'ridge_mae': ridge_mae, 'improved': ridge_mae < baseline_mae}\nprint(report)\n",
+   "마지막으로 report 딕셔너리에 창, 행 수, 두 MAE, improved를 담아 출력해요."
   ],
   [
    "run",
@@ -117,7 +126,7 @@
   ],
   [
    "output",
-   "rows가 391이죠? baseline_mae는 13637.5, ridge_mae는 약 13859예요. 릿지가 기준 모델을 못 이겨서 improved가 False인데, 이대로 두면 돼요."
+   "rows가 391이고 baseline_mae는 13637.5, ridge_mae는 약 13859예요. 릿지가 기준 모델을 못 이겨서 improved가 False인데, 그대로 두면 돼요."
   ],
   [
    "submit",

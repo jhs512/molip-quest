@@ -15,10 +15,6 @@
    "hash": "e3f6b4434f5e"
   },
   {
-   "block": "problem",
-   "hash": "e3f6b4434f5e"
-  },
-  {
    "block": "starter",
    "hash": "f9cf27fa881e"
   },
@@ -54,35 +50,31 @@
  "entry": [
   [
    "problem",
-   "자, 앞 단원의 get_dummies를 모델 흐름에 맞는 도구로 바꿔요. 훈련 자료에서 배운 기준으로 테스트 자료까지 똑같이 바꾸는 거거든요."
-  ],
-  [
-   "hint",
-   "빈칸 채우기와 똑같은 모양이에요. 훈련에는 fit_transform, 테스트에는 transform이면 돼요."
+   "자, 앞 단원의 get_dummies를 모델 흐름에 맞는 도구로 바꿔요. 훈련 자료로 fit하고 테스트 자료엔 transform만 하는 거거든요."
   ],
   [
    "starter",
-   "준비 코드는 그대로 둘게요. 타이타닉 자료를 읽어서 입력 X와 정답 y를 나누고, 훈련 자료와 테스트 자료로 쪼개 뒀어요. OneHotEncoder도 이미 불러왔죠?"
+   "준비 코드엔 타이타닉을 읽고 X, y를 나눈 뒤 OneHotEncoder까지 불러와 있어요. 그대로 둘게요."
   ],
   [
    "code",
    "\nencoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)\n",
-   "먼저 encoder를 만들어요. handle_unknown='ignore'는 처음 보는 값이 나와도 오류 대신 0으로 두라는 뜻이고, sparse_output=False는 보통 배열로 달라는 뜻이에요."
+   "먼저 encoder를 만들어요. handle_unknown='ignore'는 처음 보는 값이 나와도 0으로 두라는 뜻이에요. sparse_output=False는 보통 배열로 달라는 뜻이고요."
   ],
   [
    "code",
    "train_encoded = encoder.fit_transform(X_train[['성별']])\n",
-   "훈련 자료의 성별 열에는 fit_transform이에요. 여기서 어떤 값이 있는지 배우면서 바로 바꾸거든요."
+   "훈련 자료의 성별 열엔 fit_transform이에요. 어떤 값이 있는지 배우면서 바로 바꾸는 거죠."
   ],
   [
    "code",
    "test_encoded = encoder.transform(X_test[['성별']])\n",
-   "테스트 자료에는 transform만 써요. 훈련에서 배운 기준을 그대로 적용하는 거죠?"
+   "테스트 자료엔 transform만 해요. 훈련에서 배운 기준을 그대로 쓰는 거거든요."
   ],
   [
    "code",
-   "print(train_encoded.shape, test_encoded.shape)\n\n",
-   "마지막으로 둘의 shape를 출력해요."
+   "print(train_encoded.shape, test_encoded.shape)\n",
+   "둘의 shape를 찍어서 열 개수를 확인해요."
   ],
   [
    "run",
@@ -90,7 +82,7 @@
   ],
   [
    "output",
-   "(1047, 2) (262, 2)가 나왔죠? 둘 다 열이 2개, 여성과 남성이에요. 훈련 자료 1047줄, 테스트 자료 262줄이고요."
+   "(1047, 2) (262, 2)가 나왔죠? 둘 다 열이 2개, 여성과 남성이에요."
   ],
   [
    "submit",

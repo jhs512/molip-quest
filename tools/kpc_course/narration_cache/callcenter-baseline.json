@@ -50,31 +50,31 @@
  "entry": [
   [
    "problem",
-   "자, 주가에서 잠깐 벗어나 콜센터예요. 팀장은 지난주 같은 요일과 같다고 보고 상담원을 배치해 왔죠. 이 방법이 얼마나 빗나가는지가 통화량 예측 모델이 넘어야 할 선이에요."
+   "자, 주가에서 잠깐 벗어나 콜센터예요. 팀장은 매주 지난주 같은 요일과 같다고 보고 상담원을 배치해 왔죠? 이 방법이 얼마나 빗나가는지가 통화량 예측 모델이 넘어야 할 선이거든요."
   ],
   [
    "starter",
-   "준비 코드엔 calls 표와 mean_absolute_error가 들어와 있어요. 2주치 일별 통화량이에요."
+   "준비 코드에 2주치 일별 통화량 calls와 mean_absolute_error가 있어요. 그대로 둘게요."
   ],
   [
    "code",
    "\nlast_week = calls[calls['week'] == 1]['calls'].to_numpy()\nthis_week = calls[calls['week'] == 2]['calls'].to_numpy()\n",
-   "week가 1인 줄만 골라 calls 열을 배열로 꺼내요. 2주차도 같은 모양으로 this_week에 담아요."
+   "week가 1인 줄만 골라 calls 열을 배열로 꺼내요. 2주차도 같은 모양이죠?"
   ],
   [
    "code",
    "baseline_mae = mean_absolute_error(this_week, last_week)\n",
-   "지표 함수는 정답, 예측 순서거든요. 정답은 this_week, 예측은 last_week예요."
+   "지표 함수는 정답, 예측 순서예요. 정답은 this_week, 예측은 last_week거든요."
   ],
   [
    "code",
    "monday_error = abs(this_week[0] - last_week[0])\n",
-   "월요일은 두 배열의 첫 값이죠? 차이에 abs를 씌워 월요일 오차만 따로 둬요."
+   "월요일은 두 배열의 첫 값이에요. 차이에 절댓값을 씌우면 돼요."
   ],
   [
    "code",
    "print(baseline_mae, monday_error)\n",
-   "두 값을 같이 출력하면 돼요."
+   "두 값을 같이 출력해요."
   ],
   [
    "run",
@@ -82,7 +82,7 @@
   ],
   [
    "output",
-   "37.14와 90이 나왔죠? 하루 평균 37건, 한 건 5분이면 약 185분이 밀리거나 비어요. 월요일은 90건이니 훨씬 커요."
+   "MAE가 37.14, 월요일 오차가 90이죠? 통화 한 건에 5분이면 하루 평균 180분쯤 밀리거나 비는 거예요. 월요일만 보면 450분이거든요."
   ],
   [
    "submit",

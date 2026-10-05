@@ -37,35 +37,26 @@
   {
    "block": "solution",
    "hash": "102eb53f1797"
-  },
-  {
-   "block": "solution",
-   "hash": "102eb53f1797"
   }
  ],
  "entry": [
   [
    "problem",
-   "자, 여섯 달 중 한 번이라도 연체한 사람을 찾아요. 연체는 값 1 이상이거든요. 행마다 하나라도 참인지를 보면 돼요."
+   "자, 여섯 달 중 한 번이라도 연체한 적이 있는지를 새 열로 만들어요. 연체는 상환 값이 1 이상이거든요."
   ],
   [
    "starter",
-   "준비 코드엔 credit, target, pay_columns가 들어 있어요. 상환 여섯 열의 이름이 pay_columns에 담겨 있죠?"
+   "credit 표와 타깃 이름, 여섯 달 상환 열 목록 pay_columns는 준비돼 있어요. 그대로 둘게요."
   ],
   [
    "code",
    "credit['has_delay'] = (credit[pay_columns] >= 1).any(axis=1)\n",
-   "여섯 열 전부에 1 이상인지 조건을 걸어요. any(axis=1)은 행마다 하나라도 참이면 참이에요. 그걸 새 열 has_delay에 넣어요."
+   "여섯 열 전부에 1 이상인지 참·거짓을 매기고요. any(axis=1)로 행마다 하나라도 참이면 참이에요. 그걸 has_delay에 넣어요."
   ],
   [
    "code",
-   "summary = credit.groupby('has_delay')[target].agg(['count', 'sum', 'mean'])\n",
-   "has_delay로 묶고 타깃의 count, sum, mean을 구해요. mean이 바로 그룹의 부도율이거든요."
-  ],
-  [
-   "code",
-   "summary\n",
-   "마지막 줄에 summary를 두면 표가 바로 나와요."
+   "summary = credit.groupby('has_delay')[target].agg(['count', 'sum', 'mean'])\nsummary\n",
+   "has_delay로 묶어서 타깃의 count, sum, mean을 summary에 담아요. 마지막 줄에 summary를 써서 표를 보죠."
   ],
   [
    "run",
@@ -73,7 +64,7 @@
   ],
   [
    "output",
-   "두 줄짜리 표가 나왔죠? False와 True 행의 mean을 비교해 보세요. 연체 경험이 있는 쪽 부도율이 얼마나 높은지 보면 돼요."
+   "두 줄짜리 표가 나왔죠? False와 True 행의 mean을 비교하세요. 연체 경험이 있는 그룹의 부도율이 얼마나 높은지 보면 돼요."
   ],
   [
    "submit",

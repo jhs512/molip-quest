@@ -50,31 +50,31 @@
  "entry": [
   [
    "problem",
-   "자, 마지막 그래프예요. 릿지 파이프라인으로 예측을 구하고, 실제 다음 종가와 겹쳐 그려요. x축은 입력 날짜가 아니라 정답 날짜거든요."
+   "자, 마지막 그래프예요. 릿지로 예측한 다음 종가를 실제 종가와 같은 날짜 축에 겹쳐 그려요. x축은 입력 날짜가 아니라 정답 날짜거든요."
   ],
   [
    "starter",
-   "자료 읽기, 입력 X와 정답 y, 훈련 자료와 테스트 자료 나누기까지 준비돼 있어요. Pipeline, Ridge, plt도 이미 불러왔고요."
+   "준비 코드엔 특징 네 개, 정답 target_next_close, 그리고 정답 날짜 target_date까지 다 들어 있어요. 시간 순으로 나눈 훈련 자료와 테스트 자료도 그대로 둘게요."
   ],
   [
    "code",
    "model = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))])\nmodel.fit(X_train, y_train)\nprediction = model.predict(X_test)\n",
-   "표준화 다음에 Ridge를 잇는 파이프라인이에요. 훈련 자료로 학습하고 테스트 자료의 예측을 prediction에 담아요."
+   "스케일 맞추기와 릿지를 파이프라인으로 묶어 훈련 자료로 학습해요. 테스트 자료 X_test로 예측해서 prediction에 담고요."
   ],
   [
    "code",
    "comparison = pd.DataFrame({'actual': y_test.to_numpy(), 'prediction': prediction}, index=pd.DatetimeIndex(frame.loc[test_mask, 'target_date']))\n",
-   "실제값과 예측을 한 표로 모아요. 인덱스는 target_date, 그러니까 정답이 실제로 나온 날짜로 두는 거죠."
+   "실제 값 actual과 예측 prediction을 한 표로 만들어요. 인덱스는 target_date, 그러니까 정답이 생긴 날짜예요."
   ],
   [
    "code",
    "fig, ax = plt.subplots()\nax.plot(comparison.index, comparison['actual'], label='Actual next close')\nax.plot(comparison.index, comparison['prediction'], label='Ridge')\n",
-   "도화지를 만들고 실제 선을 먼저 그려요. 같은 날짜 축 위에 예측 선을 하나 더 겹치면 돼요."
+   "도화지 fig, ax를 만들고 같은 날짜 축에 두 선을 그려요. 실제 선 먼저, 예측 선 하나 더요."
   ],
   [
    "code",
    "ax.set(xlabel='정답 날짜', ylabel='Price', title='Held-out next trading day')\nax.legend()\nplt.show()\ncomparison.head()\n",
-   "x축 이름을 정답 날짜로 붙이고 범례를 켜요. 마지막에 표 앞부분도 확인해 볼게요."
+   "x축 이름을 정답 날짜로 적고 범례도 켜요. 그래프를 띄운 뒤 표 첫 다섯 줄도 같이 봐요."
   ],
   [
    "run",
@@ -82,7 +82,7 @@
   ],
   [
    "output",
-   "두 선이 같은 날짜 축에 겹쳐 나왔죠? 예측이 실제를 얼마나 따라가는지, 어느 구간에서 벌어지는지 보세요. 아래 표에서 actual과 prediction 열도 비교해 보시고요."
+   "두 선이 겹쳐 나왔죠? 예측 선이 실제 선을 어디까지 따라가고 어느 구간에서 벌어지는지 보세요. 표 인덱스가 정답 날짜인 것도 확인하고요."
   ],
   [
    "submit",

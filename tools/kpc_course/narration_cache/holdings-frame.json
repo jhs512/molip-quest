@@ -42,21 +42,21 @@
  "entry": [
   [
    "problem",
-   "자, 이번엔 holdings를 표로 띄워 볼 거예요. 종목마다 금액까지 들어 있는 사전 세 개를 한 표로 만드는 거죠."
+   "자, 금액까지 들어 있는 holdings를 표로 만들어요. DataFrame으로 바꿔서 df에 넣고, 마지막 줄에 df를 적어 띄우면 돼요."
   ],
   [
    "starter",
-   "준비 코드엔 pandas가 pd로 들어와 있고, 세 종목이 든 holdings가 있어요. 이건 그대로 둘게요."
+   "준비 코드엔 pandas가 pd로 들어와 있고, 세 종목의 holdings가 만들어져 있어요. 그대로 둘게요."
   ],
   [
    "code",
    "df = pd.DataFrame(holdings)\n",
-   "pd.DataFrame에 holdings를 넣으면 사전 하나가 한 행이 돼요. 그걸 df에 저장하고요."
+   "pd.DataFrame에 holdings를 넣으면 딕셔너리 목록이 표가 돼요. 그걸 df에 저장해요."
   ],
   [
    "code",
-   "df\n",
-   "마지막 줄에 df만 적으면 표가 그대로 떠요. print는 필요 없거든요."
+   "df",
+   "마지막 줄에 df만 적으면 표가 화면에 떠요. print()는 필요 없거든요."
   ],
   [
    "run",

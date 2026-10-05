@@ -19,10 +19,6 @@
    "hash": "df7bb87d8447"
   },
   {
-   "block": "problem",
-   "hash": "df7bb87d8447"
-  },
-  {
    "block": "starter",
    "hash": "89fe41377bcc"
   },
@@ -54,34 +50,30 @@
  "entry": [
   [
    "problem",
-   "자, 이제 회귀를 처음 돌려 봐요. 선형 회귀 하나만 먼저 해 볼게요."
-  ],
-  [
-   "problem",
-   "StandardScaler와 LinearRegression을 Pipeline으로 묶고, 테스트 예측의 MAE를 재는 거거든요."
+   "자, 회귀 모델을 처음 돌려 봐요. 표준화와 선형 회귀를 Pipeline으로 묶어 학습하고, MAE와 가중치 네 개를 출력하면 돼요."
   ],
   [
    "hint",
-   "분류 때와 똑같은 흐름이에요. Pipeline을 만들고, fit, predict, 그리고 점수죠."
+   "분류 때와 흐름이 같아요. 묶고, fit하고, predict하고, 점수를 재면 돼요."
   ],
   [
    "starter",
-   "준비 코드가 특징 네 개와 훈련 자료, 테스트 자료를 미리 나눠 놨어요. 필요한 import도 다 들어 있어요."
+   "주가 자료에서 입력 X 네 열과 정답 y를 만들고, 훈련 자료와 테스트 자료로 나눈 준비 코드는 그대로 둘게요."
   ],
   [
    "code",
    "model = Pipeline([('scale', StandardScaler()), ('model', LinearRegression())])\nmodel.fit(X_train, y_train)\n",
-   "자, 눈금 맞추기와 선형 회귀를 Pipeline으로 묶어 model에 담아요. 그다음 훈련 자료로 fit 하면 돼요."
+   "자, 표준화 뒤에 선형 회귀가 오도록 Pipeline으로 묶어 model에 담아요. 그리고 훈련 자료로 fit을 하죠."
   ],
   [
    "code",
    "prediction = model.predict(X_test)\nlinear_mae = mean_absolute_error(y_test, prediction)\nprint(linear_mae)\n",
-   "테스트 자료를 predict 해서 prediction에 넣어요. 정답 y_test와 비교한 MAE를 linear_mae에 저장하고 출력하죠."
+   "테스트 자료를 predict해서 prediction에 넣어요. 정답 y_test와 비교한 MAE를 linear_mae에 담아 출력하거든요."
   ],
   [
    "code",
    "print(model.named_steps['model'].coef_)\n",
-   "named_steps로 Pipeline 안의 선형 회귀를 꺼내요. coef_가 특징 네 개의 가중치거든요."
+   "named_steps로 파이프라인 안의 모델을 꺼내요. coef_가 입력 네 열의 가중치예요."
   ],
   [
    "run",
@@ -89,7 +81,7 @@
   ],
   [
    "output",
-   "MAE가 약 13520이에요. 앞 단원의 기준 MAE와 비교해 보세요. 가중치는 첫 번째 close가 약 53196으로 가장 크죠?"
+   "MAE가 13520 정도 나왔죠? 앞 단원의 기준 MAE와 비교해 보세요. 가중치는 첫 번째 close가 53196으로 가장 커요. return_1은 거의 0에 가깝고, ma5는 양수, lag_close_1은 음수거든요."
   ],
   [
    "submit",

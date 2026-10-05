@@ -46,26 +46,26 @@
  "entry": [
   [
    "problem",
-   "자, 앞 미션에서 손으로 구한 기준 MAE를 이번엔 scikit-learn의 mean_absolute_error로 구해요. 같은 숫자가 나와야 하거든요."
+   "자, 앞 미션에서 손으로 구한 기준 오차를 이번엔 scikit-learn 함수로 구해요. 결과는 manual_mae와 같은 숫자여야 해요."
   ],
   [
    "starter",
-   "준비 코드엔 X_train, X_test, y_train, y_test까지 다 나눠져 있고, mean_absolute_error도 이미 가져와 있어요. 그대로 둘게요."
+   "자료 읽기와 특징 만들기, 훈련 자료와 테스트 자료 나누기, mean_absolute_error 불러오기까지 준비돼 있어요."
   ],
   [
    "code",
    "\nbaseline_pred = X_test['close'].to_numpy()\n",
-   "먼저 기준 예측이에요. 테스트 자료의 close 열을 to_numpy로 배열로 바꿔 baseline_pred에 담아요."
+   "기준 예측은 오늘 종가 그대로예요. to_numpy로 배열로 바꿔 baseline_pred에 넣어요."
   ],
   [
    "code",
    "baseline_mae = mean_absolute_error(y_test, baseline_pred)\n",
-   "이제 점수예요. 지표 함수는 앞서처럼 정답, 예측 순서로 넣으면 돼요."
+   "지표 함수는 정답, 예측 순서거든요. y_test를 먼저, baseline_pred를 다음에 넣어요."
   ],
   [
    "code",
    "print(baseline_mae)\n",
-   "마지막으로 baseline_mae를 출력해요."
+   "구한 점수를 출력해요."
   ],
   [
    "run",
@@ -73,7 +73,7 @@
   ],
   [
    "output",
-   "13637.5가 나왔죠? 앞 미션의 manual_mae와 같은 값이에요. 이 선을 이 챕터의 모든 모델이 넘어야 하거든요."
+   "13637.5가 나왔죠? 앞 미션의 manual_mae와 같은 값이에요. 이 선을 모델이 넘어야 해요."
   ],
   [
    "submit",

@@ -15,16 +15,8 @@
    "hash": "99002bbbc79d"
   },
   {
-   "block": "problem",
-   "hash": "99002bbbc79d"
-  },
-  {
    "block": "starter",
    "hash": "4493f17b4927"
-  },
-  {
-   "block": "solution",
-   "hash": "63b22f8f0c28"
   },
   {
    "block": "solution",
@@ -62,45 +54,36 @@
  "entry": [
   [
    "problem",
-   "자, 2장에서 배운 걸 한 번에 써 보는 도전 과제예요. 8주치 크루아상 판매 기록이 56행이고, 판매량이 빈 날이 있거든요. 결측 세기, 채우기, 조건 선택, 저장까지 쭉 가요."
-  ],
-  [
-   "hint",
-   "결측은 isna().sum()으로 세고, fillna는 새 변수에 담아요. 토·일 고르기는 isin이 편하고요."
+   "자, 2장에서 배운 걸 한 번에 써 보는 도전 과제예요. 빵 공장의 8주치 판매 기록 56행인데, 판매량이 비어 있는 날이 있거든요. 읽기, 결측, 조건 선택, 저장을 차례로 해요."
   ],
   [
    "starter",
-   "준비 코드에서 pandas를 불러오고 data/croissant.csv를 sales에 읽어 뒀어요. 이건 그대로 둘게요."
+   "준비 코드는 pandas를 부르고 croissant.csv를 sales에 읽어 둔 두 줄이에요. 그대로 둘게요."
   ],
   [
    "code",
    "n_missing = int(sales['판매량'].isna().sum())\n",
-   "판매량 열의 결측을 isna로 찾고 sum으로 세요. int로 감싸서 n_missing에 담으면 돼요."
+   "먼저 판매량 열의 결측을 세요. isna()로 참·거짓을 만들고 sum()으로 더한 다음, int로 감싸 정수로 만들어요."
   ],
   [
    "code",
    "filled = sales.copy()\nfilled['판매량'] = filled['판매량'].fillna(sales['판매량'].median())\n",
-   "원본 sales는 그대로 두니까 copy로 새 표 filled를 만들어요. 그 판매량 결측을 median, 중앙값으로 채우는 거죠."
+   "원본 sales는 그대로 두고 copy()로 새 표 filled를 만들어요. 그 표의 판매량 결측만 중앙값으로 채우면 돼요."
   ],
   [
    "code",
-   "rainy = filled[filled['날씨'] == '비']\n",
-   "날씨가 비인지 비교하면 참·거짓 마스크가 나와요. 그걸 대괄호에 넣으면 비 오는 날만 남거든요."
-  ],
-  [
-   "code",
-   "weekend_mean = filled[filled['요일'].isin(['토', '일'])]['판매량'].mean()\n",
-   "요일이 토나 일인지는 isin으로 한 번에 물어요. 그 행들의 판매량 평균을 weekend_mean에 담아요."
+   "rainy = filled[filled['날씨'] == '비']\nweekend_mean = filled[filled['요일'].isin(['토', '일'])]['판매량'].mean()\n",
+   "조건 선택이에요. 날씨가 비인 행은 등호 두 개 마스크로 고르고요. 요일이 토나 일인 행은 isin으로 골라서 판매량 평균을 내요."
   ],
   [
    "code",
    "filled.to_csv('croissant_clean.csv', index=False)\nsaved = pd.read_csv('croissant_clean.csv')\n",
-   "filled를 to_csv로 저장하는데 index=False를 꼭 붙여요. 다시 read_csv로 읽어 saved에 담으면 돼요."
+   "정리한 filled를 to_csv로 저장해요. index=False를 꼭 붙여야 번호 열이 안 끼어들거든요. 그리고 바로 다시 읽어 saved에 담아요."
   ],
   [
    "code",
    "print(n_missing, len(rainy), round(weekend_mean, 1), saved.shape)\n",
-   "결측 개수, rainy 행 수, 주말 평균, saved의 모양을 한 줄로 찍어서 확인해요."
+   "마지막으로 결측 개수, 비 온 날 행 수, 주말 평균, 저장한 표의 모양을 한 줄에 찍어 확인해요."
   ],
   [
    "run",
@@ -108,7 +91,7 @@
   ],
   [
    "output",
-   "2 15 557.6 (56, 5)이 나왔죠? 결측 2개, 비 오는 날 15행, 주말 평균 557.6, 저장한 표는 56행 5열이에요."
+   "2 15 557.6 (56, 5)가 나왔죠? 결측이 2개, 비 온 날이 15행, 주말 평균이 557.6이고 다시 읽은 표는 56행 5열이에요."
   ],
   [
    "submit",

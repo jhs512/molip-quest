@@ -15,10 +15,6 @@
    "hash": "83c0bdfaef0c"
   },
   {
-   "block": "problem",
-   "hash": "83c0bdfaef0c"
-  },
-  {
    "block": "starter",
    "hash": "d3bcfe099f41"
   },
@@ -50,30 +46,26 @@
  "entry": [
   [
    "problem",
-   "자, 표의 뼈대부터 볼게요. titanic의 행 수와 열 수, 열 이름 리스트를 각각 저장하고 셋 다 출력해요."
-  ],
-  [
-   "hint",
-   "앞 단원과 같아요. shape로 행과 열 수를 받고, columns를 list로 바꾸면 돼요."
+   "자, 표의 뼈대부터 봐요. titanic이 몇 행 몇 열인지, 열 이름은 뭔지 확인하는 거예요."
   ],
   [
    "starter",
-   "준비 코드 두 줄은 그대로 둘게요. pandas를 불러오고 titanic.csv를 titanic에 읽어 뒀거든요."
+   "준비 코드 두 줄은 그대로 둘게요. titanic.csv를 읽어서 titanic에 담아 뒀어요."
   ],
   [
    "code",
    "n_rows, n_columns = titanic.shape\n",
-   "titanic.shape는 행 수와 열 수 두 개를 돌려줘요. 그래서 n_rows와 n_columns에 한 번에 나눠 받아요."
+   "앞 단원과 같아요. shape가 (행 수, 열 수)를 주니까 둘을 한 번에 받아요."
   ],
   [
    "code",
    "columns = list(titanic.columns)\n",
-   "titanic.columns는 열 이름 묶음이에요. list로 감싸서 보통 리스트로 만들어 columns에 넣어요."
+   "titanic.columns를 list로 감싸면 열 이름 리스트가 돼요."
   ],
   [
    "code",
    "print(n_rows, n_columns)\nprint(columns)\n",
-   "이제 셋 다 출력해요. 행 수와 열 수는 한 줄에, 열 이름 리스트는 다음 줄에 찍어요."
+   "셋 다 출력해요. 행 수와 열 수는 한 줄에, 열 이름은 다음 줄에요."
   ],
   [
    "run",
@@ -81,7 +73,7 @@
   ],
   [
    "output",
-   "1309 14가 나왔죠? 1309행 14열이에요. 아래 리스트에 객실등급, 생존, 이름 같은 열 이름이 보이면 맞게 한 거예요."
+   "1309 14가 나왔죠? 그 아래 열 이름 리스트에 객실등급, 생존, 이름이 보이면 맞게 한 거예요."
   ],
   [
    "submit",

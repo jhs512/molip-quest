@@ -50,30 +50,30 @@
  "entry": [
   [
    "problem",
-   "자, 어느 열이 얼마나 비어 있는지 세어 볼게요. 나이는 꽤 비어 있고, 요금은 거의 안 비어 있을 거예요."
+   "자, 어느 열이 얼마나 비어 있는지 세 볼게요. titanic.isna().sum()을 missing에 담고, 나이와 요금의 결측 수를 정수로 꺼내요."
   ],
   [
    "hint",
-   "isna().sum()은 열 이름으로 꺼내는 Series예요. 거기서 하나를 꺼내 int()로 바꾸면 돼요."
+   "isna().sum()은 열 이름으로 꺼내는 Series거든요. missing['나이']처럼 꺼내서 int()로 바꾸면 돼요."
   ],
   [
    "starter",
-   "준비 코드 두 줄은 그대로 둘게요. titanic에 표가 이미 읽혀 있거든요."
+   "pandas를 부르고 titanic.csv를 읽는 두 줄은 준비되어 있어요. 그대로 둘게요."
   ],
   [
    "code",
    "missing = titanic.isna().sum()\n",
-   "isna()로 빈칸을 표시하고 sum()으로 열마다 세요. 그 결과를 missing에 넣어요."
+   "isna()로 빈칸을 참·거짓으로 바꾸고, sum()으로 열마다 세서 missing에 넣어요."
   ],
   [
    "code",
    "age_missing = int(missing['나이'])\nfare_missing = int(missing['요금'])\n",
-   "missing['나이']처럼 열 이름으로 꺼내요. int()로 감싸서 정수로 담으면 돼요."
+   "열 이름으로 꺼낸 값을 int()로 감싸서 정수로 담아요."
   ],
   [
    "code",
    "print(missing)\nprint(age_missing, fare_missing)\n",
-   "열마다 결측 수를 먼저 찍고, 나이와 요금 둘을 한 줄로 찍어요."
+   "표 전체를 한 번 보고, 두 숫자를 따로 출력해요."
   ],
   [
    "run",
@@ -81,7 +81,7 @@
   ],
   [
    "output",
-   "나이가 263, 요금이 1 나왔죠? 생존은 0이에요. 타깃은 하나도 안 비었거든요. 선실은 1014로 가장 많이 비어 있어요."
+   "나이는 263개, 요금은 1개 비어 있죠? 생존은 0이니까 타깃은 하나도 안 비어 있어요."
   ],
   [
    "submit",

@@ -57,50 +57,68 @@
   {
    "block": "solution",
    "hash": "24a57b43e8c3"
+  },
+  {
+   "block": "solution",
+   "hash": "24a57b43e8c3"
+  },
+  {
+   "block": "solution",
+   "hash": "24a57b43e8c3"
   }
  ],
  "entry": [
   [
    "problem",
-   "자, 5장을 통째로 복습해요. 자료 읽기부터 네 모델 비교표까지 직접 쓰는 거예요. 순서가 핵심이에요. 분할이 먼저, 손질은 그다음이거든요."
+   "자, 5장을 한 번에 복습해요. 자료 읽기부터 네 모델 비교표까지 직접 써요. 분할보다 손질이 먼저 오면 조용한 누수가 생기거든요."
   ],
   [
    "hint",
-   "앞 단원의 make_preprocessor()를 떠올리면 돼요. 수치형 다섯 열, 범주형 두 열이에요."
+   "앞 단원의 make_preprocessor()를 떠올리세요. 마지막은 results['f1'].idxmax()면 돼요."
   ],
   [
    "starter",
-   "준비 코드에는 import만 들어 있어요. 분할, 손질, 모델, 평가 도구가 전부 불러와져 있죠? 나머지는 저랑 같이 써요."
+   "준비 코드엔 import만 열한 줄 있어요. pandas, 분할, 손질기, 네 모델, 두 지표예요. 그대로 둘게요."
   ],
   [
    "code",
    "\ntitanic = pd.read_csv('data/titanic.csv')\nfeatures = ['객실등급', '성별', '나이', '형제배우자', '부모자녀', '요금', '탑승항구']\nX = titanic[features].copy()\ny = titanic['생존'].astype(int)\n",
-   "먼저 자료를 읽고 입력 X와 정답 y를 갈라요. 생존은 astype(int)로 정수로 바꿔 두면 돼요."
+   "자, 먼저 자료를 읽어요. 일곱 열을 입력 X로, 정수로 바꾼 생존을 정답 y로 잡아요."
   ],
   [
    "code",
    "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)\n",
-   "손질보다 분할이 먼저예요. stratify=y로 생존 비율을 양쪽에 똑같이 맞춰 주거든요."
+   "손질보다 분할이 먼저예요. stratify=y로 생존 비율을 지키고, 난수 42로 고정해요."
   ],
   [
    "code",
-   "preprocessor = ColumnTransformer(\n    [\n        ('numeric', Pipeline([('fill', SimpleImputer(strategy='median')), ('scale', StandardScaler())]), ['객실등급', '나이', '형제배우자', '부모자녀', '요금']),\n        ('category', Pipeline([('fill', SimpleImputer(strategy='most_frequent')), ('encode', OneHotEncoder(handle_unknown='ignore'))]), ['성별', '탑승항구']),\n    ]\n)\n",
-   "손질기예요. 숫자 열은 중앙값으로 채우고 표준화해요. 글자 열은 최빈값으로 채우고 One-hot으로 펼치죠? handle_unknown='ignore'가 처음 보는 값을 막아 줘요."
+   "preprocessor = ColumnTransformer(\n    [\n        ('numeric', Pipeline([('fill', SimpleImputer(strategy='median')), ('scale', StandardScaler())]), ['객실등급', '나이', '형제배우자', '부모자녀', '요금']),\n",
+   "이제 손질기예요. 숫자 열 다섯 개는 중앙값으로 채우고 표준화해요."
+  ],
+  [
+   "code",
+   "        ('category', Pipeline([('fill', SimpleImputer(strategy='most_frequent')), ('encode', OneHotEncoder(handle_unknown='ignore'))]), ['성별', '탑승항구']),\n    ]\n)\n",
+   "글자 열 둘은 최빈값으로 채우고 One-hot이에요. handle_unknown='ignore'로 못 본 값도 넘겨요."
   ],
   [
    "code",
    "models = {\n    'Dummy': DummyClassifier(strategy='most_frequent'),\n    'Logistic': LogisticRegression(max_iter=2000),\n    'Tree': DecisionTreeClassifier(max_depth=5, random_state=42),\n    'Forest': RandomForestClassifier(n_estimators=50, max_depth=5, random_state=42),\n}\n",
-   "비교할 넷을 사전에 담아요. Dummy가 기준 모델이에요. 가장 많은 답만 찍는 거죠? 나머지 셋은 하이퍼파라미터를 문제대로 맞춰요."
+   "네 모델을 사전에 담아요. Dummy는 가장 많은 답 찍기, 나머지 셋은 문제에 적힌 하이퍼파라미터 그대로예요."
   ],
   [
    "code",
-   "rows = {}\nfor name, model in models.items():\n    pipeline = Pipeline([('prepare', preprocessor), ('model', model)])\n    pipeline.fit(X_train, y_train)\n    pred = pipeline.predict(X_test)\n    rows[name] = {'accuracy': accuracy_score(y_test, pred), 'f1': f1_score(y_test, pred)}\n",
-   "모델마다 Pipeline을 새로 만들어요. preprocessor는 같은 걸 써도 돼요. fit마다 훈련 자료로 다시 맞춰지거든요. 훈련 자료로 fit, 테스트 자료로 predict예요."
+   "rows = {}\nfor name, model in models.items():\n    pipeline = Pipeline([('prepare', preprocessor), ('model', model)])\n    pipeline.fit(X_train, y_train)\n",
+   "모델마다 Pipeline을 새로 만들어요. preprocessor는 같은 걸 써도 돼요. 매번 훈련 자료로 다시 fit되거든요."
+  ],
+  [
+   "code",
+   "    pred = pipeline.predict(X_test)\n    rows[name] = {'accuracy': accuracy_score(y_test, pred), 'f1': f1_score(y_test, pred)}\n",
+   "테스트 자료로 예측하고, 정확도와 F1을 모델 이름 아래 적어 둬요."
   ],
   [
    "code",
    "results = pd.DataFrame(rows).T\nbest_model = results['f1'].idxmax()\nprint(best_model)\nresults\n",
-   "사전을 표로 바꾸고 .T로 뒤집어요. 모델 이름이 행이 되죠? F1이 가장 높은 행 이름을 idxmax()로 꺼내요."
+   "사전을 표로 바꾸고 뒤집어요. F1이 가장 높은 줄의 이름이 best_model이에요."
   ],
   [
    "run",
@@ -108,7 +126,7 @@
   ],
   [
    "output",
-   "Forest가 찍혔죠? 아래 표에서 Dummy 줄을 보세요. 정확도가 162/262, 기준 모델이에요. 나머지 셋이 그 위에 있으면 맞게 한 거예요."
+   "Forest가 나왔죠? 표에서 Dummy의 accuracy를 보세요. 162 나누기 262면 맞게 한 거예요."
   ],
   [
    "submit",

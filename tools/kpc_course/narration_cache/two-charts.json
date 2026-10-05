@@ -15,12 +15,12 @@
    "hash": "d56298b63679"
   },
   {
-   "block": "problem",
-   "hash": "d56298b63679"
-  },
-  {
    "block": "starter",
    "hash": "3528ec285540"
+  },
+  {
+   "block": "solution",
+   "hash": "0f1c80e5b431"
   },
   {
    "block": "solution",
@@ -58,40 +58,41 @@
  "entry": [
   [
    "problem",
-   "자, 도전 과제예요. 보고서 한 장엔 보통 그래프가 둘 이상 들어가거든요. 4장에서 배운 묶음 막대와 히스토그램을 한 종이에 나란히 그려요."
-  ],
-  [
-   "hint",
-   "힌트의 두 줄을 그대로 쓰면 돼요. ax=ax2가 빠지면 엉뚱한 곳에 그려지니까 꼭 챙겨요."
+   "자, 도전 과제예요. 보고서 한 장에 그래프 둘을 나란히 넣어요. plt.subplots(1, 2)로 영역 두 개를 만들고, 왼쪽엔 묶음 막대, 오른쪽엔 히스토그램을 그리면 돼요."
   ],
   [
    "starter",
-   "titanic을 읽어 두고, plt와 sns까지 불러 둔 준비 코드는 그대로 둘게요."
+   "pandas로 titanic을 읽고, matplotlib과 seaborn을 불러오는 준비 코드는 그대로 둘게요."
   ],
   [
    "code",
-   "wide = titanic.groupby(['객실등급', '성별'])['생존'].mean().unstack('성별') * 100\nknown_age = titanic[titanic['나이'].notna()]\n",
-   "자, 먼저 자료 둘을 준비해요. wide는 객실등급과 성별로 묶은 생존율을 퍼센트로 펼친 표예요. known_age는 나이가 기록된 승객만 남긴 거예요."
+   "wide = titanic.groupby(['객실등급', '성별'])['생존'].mean().unstack('성별') * 100\n",
+   "먼저 왼쪽 그림의 재료예요. 객실등급과 성별로 묶어 생존 평균을 내고, 성별을 열로 펼친 뒤 100을 곱해 퍼센트로 만들어요."
+  ],
+  [
+   "code",
+   "known_age = titanic[titanic['나이'].notna()]\n",
+   "오른쪽 그림의 재료예요. 나이가 기록된 승객만 골라 known_age에 담아요."
   ],
   [
    "code",
    "fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4))\n",
-   "plt.subplots(1, 2)가 종이 한 장에 영역 두 개를 나란히 만들어요. 왼쪽이 ax1, 오른쪽이 ax2예요."
+   "자, 종이 한 장에 영역 두 개를 만들어요. 왼쪽이 ax1, 오른쪽이 ax2거든요."
   ],
   [
    "code",
    "wide.plot.bar(ax=ax1, ylim=(0, 100), rot=0)\nax1.set_ylabel('생존율 (%)')\nax1.set_title('등급과 성별에 따른 생존율')\n",
-   "왼쪽 영역이에요. ax=ax1로 자리를 정해서 묶음 막대를 그리고, y축 이름과 제목을 붙여요."
+   "왼쪽 ax1에 묶음 막대를 그려요. ax=ax1이 핵심이에요. y축은 0에서 100까지, y축 이름과 제목도 ax1에 붙이면 돼요."
   ],
   [
    "code",
    "sns.histplot(data=known_age, x='나이', bins=20, ax=ax2)\nax2.set_title('나이 분포')\n",
-   "오른쪽 영역이에요. bins=20으로 나이를 스무 칸으로 나눠요. ax=ax2가 핵심이거든요."
+   "오른쪽 ax2엔 나이 히스토그램을 스무 칸으로 그려요. ax=ax2가 빠지면 엉뚱한 곳에 그려지거든요. 제목도 붙여요."
   ],
   [
    "code",
    "plt.show()\n",
-   "마지막에 plt.show()로 띄우면 돼요."
+   "마지막으로 plt.show()로 띄워요."
   ],
   [
    "run",
@@ -99,7 +100,7 @@
   ],
   [
    "output",
-   "그림 한 장이 떴죠? 왼쪽에 막대 여섯 개, 오른쪽에 막대 스무 개가 보이면 맞게 한 거예요."
+   "그림이 떴죠? 왼쪽에 막대 여섯 개, 오른쪽에 막대 스무 개가 보이면 맞게 한 거예요."
   ],
   [
    "submit",

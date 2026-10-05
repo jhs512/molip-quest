@@ -15,10 +15,6 @@
    "hash": "785c0e8ae60d"
   },
   {
-   "block": "problem",
-   "hash": "785c0e8ae60d"
-  },
-  {
    "block": "starter",
    "hash": "ee8843f95fb0"
   },
@@ -50,30 +46,26 @@
  "entry": [
   [
    "problem",
-   "자, 이번엔 타깃 열을 세 볼 거예요. 생존 열에 0과 1이 각각 몇 명인지 value_counts로 세어 보죠."
-  ],
-  [
-   "hint",
-   "value_counts는 값마다 몇 번 나오는지 세어 줘요. 결과에서 counts[0]이 0의 개수, counts[1]이 1의 개수거든요."
+   "자, 타깃 열을 세어 봐요. 생존 열에 0과 1이 각각 몇 명인지 value_counts()로 세고, 사망과 생존 인원을 정수로 꺼내요."
   ],
   [
    "starter",
-   "pandas를 불러오고 titanic.csv를 읽는 두 줄은 준비돼 있어요. 그대로 둘게요."
+   "pandas를 불러오고 titanic 자료를 읽는 두 줄은 준비되어 있어요. 그대로 둘게요."
   ],
   [
    "code",
    "counts = titanic['생존'].value_counts()\n",
-   "생존 열을 꺼내서 value_counts를 붙여요. 값별 개수가 counts에 들어가죠."
+   "생존 열에 value_counts()를 붙이면 값마다 몇 번 나오는지 세어 줘요. 그걸 counts에 넣어요."
   ],
   [
    "code",
    "n_dead = int(counts[0])\nn_alive = int(counts[1])\n",
-   "counts[0]이 사망, counts[1]이 생존 인원이에요. int로 감싸 정수로 저장하면 돼요."
+   "counts[0]이 0의 개수, 그러니까 사망 인원이거든요. counts[1]이 생존 인원이죠. int()로 감싸서 정수로 담아요."
   ],
   [
    "code",
    "print(counts)\nprint(n_dead, n_alive)\n",
-   "counts 표를 먼저 찍고, 두 정수도 한 줄로 출력해요."
+   "셋 다 출력해요. counts 표 하나, 두 정수 한 줄이에요."
   ],
   [
    "run",
@@ -81,7 +73,7 @@
   ],
   [
    "output",
-   "0이 809, 1이 500이죠? 더하면 1309, 전체 인원과 딱 맞아요. 아래엔 809 500이 나왔고요."
+   "0이 809, 1이 500이에요. 더하면 1309, 전체 인원이 맞죠? 마지막 줄에 809 500이 정수로 나왔어요."
   ],
   [
    "submit",

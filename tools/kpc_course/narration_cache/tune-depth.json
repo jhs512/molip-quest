@@ -58,40 +58,40 @@
  "entry": [
   [
    "problem",
-   "자, 트리를 얼마나 깊게 키울지 고르는 문제예요. 후보 깊이마다 교차검증 점수를 재고, 제일 좋은 깊이 하나만 테스트에 써요."
+   "자, 트리 깊이 후보 depths가 준비돼 있어요. 후보마다 교차 검증으로 채점해서 가장 좋은 깊이를 고르고, 그 깊이로 다시 학습해 테스트 정확도까지 내요."
   ],
   [
    "hint",
-   "깊이를 고를 땐 훈련 자료만 써야 해요. 테스트 자료는 best_depth를 정한 뒤 딱 한 번만 쓰거든요."
+   "깊이를 고를 때 테스트 자료는 쓰지 않아요. best_depth를 정한 뒤에 한 번만 써요."
   ],
   [
    "starter",
-   "자료 나누기와 make_preprocessor는 준비돼 있어요. 후보 depths와 빈 딕셔너리 cv_scores도 있으니 그대로 둘게요."
+   "데이터 나누기, 손질기 make_preprocessor, 깊이 후보 depths, 빈 딕셔너리 cv_scores까지 준비돼 있어요."
   ],
   [
    "code",
    "for depth in depths:\n    model = Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(max_depth=depth, random_state=42))])\n    cv_scores[depth] = cross_val_score(model, X_train, y_train, cv=5).mean()\n",
-   "후보마다 손질기와 트리를 묶어 모델을 만들어요. cross_val_score로 다섯 번 채점한 평균을 깊이 이름표로 담아요."
+   "자, 깊이마다 손질기와 트리를 묶은 모델을 만들어요. cross_val_score로 훈련 자료만 다섯 조각으로 채점해서 평균을 cv_scores에 담거든요."
   ],
   [
    "code",
    "best_depth = max(cv_scores, key=cv_scores.get)\n",
-   "점수가 제일 높은 깊이를 골라요. key에 cv_scores.get을 주면 값이 큰 키를 돌려주거든요."
+   "점수가 가장 높은 깊이를 max로 골라요. key에 cv_scores.get을 주면 값이 큰 키를 돌려주죠?"
   ],
   [
    "code",
    "model = Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(max_depth=best_depth, random_state=42))])\nmodel.fit(X_train, y_train)\n",
-   "고른 깊이로 모델을 새로 만들어요. 훈련 자료 전체로 한 번 더 학습하면 돼요."
+   "고른 깊이 best_depth로 모델을 새로 만들어서 훈련 자료 전체로 다시 학습해요."
   ],
   [
    "code",
    "test_accuracy = accuracy_score(y_test, model.predict(X_test))\n",
-   "이제야 테스트 자료를 꺼내요. 예측과 정답 y_test를 맞춰 정확도를 재요."
+   "이제야 테스트 자료를 한 번 써요. 테스트 정확도를 test_accuracy에 담으면 돼요."
   ],
   [
    "code",
    "print({depth: round(float(score), 3) for depth, score in cv_scores.items()})\nprint(f'고른 깊이 {best_depth}, 테스트 정확도 {test_accuracy:.3f}')\n",
-   "깊이별 점수를 소수 셋째 자리로 보기 좋게 찍어요. 고른 깊이와 테스트 정확도도 같이 출력해요."
+   "깊이별 점수를 소수 셋째 자리로 보기 좋게 찍고, 고른 깊이와 테스트 정확도를 출력해요."
   ],
   [
    "run",
@@ -99,7 +99,7 @@
   ],
   [
    "output",
-   "깊이 3이 0.806으로 제일 높죠? 더 깊은 12는 0.726으로 오히려 떨어져요. 고른 깊이 3의 테스트 정확도는 0.836이에요."
+   "깊이 3이 0.806으로 제일 높고, 12는 0.726으로 떨어졌죠? 너무 깊으면 외우기만 하거든요. 고른 깊이 3의 테스트 정확도는 0.836이에요."
   ],
   [
    "submit",

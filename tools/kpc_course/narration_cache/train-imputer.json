@@ -54,35 +54,35 @@
  "entry": [
   [
    "problem",
-   "자, 나이와 요금의 빈칸을 채워요. 중앙값 기준은 훈련 자료에서만 정하고, 테스트 자료엔 그 기준을 그대로 써요."
+   "자, 나이와 요금에 빈 값이 있죠? 훈련 자료의 중앙값으로 채울 거예요."
   ],
   [
    "hint",
-   "핵심은 fit_transform과 transform의 차이예요. 테스트에 fit을 다시 하면 기준이 바뀌거든요."
+   "기준은 훈련 자료에서 한 번만 정해요. 테스트에 fit을 다시 하면 기준이 바뀌거든요."
   ],
   [
    "starter",
-   "titanic 표를 읽어 X와 y를 나누고, train_test_split로 훈련 자료와 테스트 자료까지 갈라 뒀어요. SimpleImputer도 불러 놨어요."
+   "타이타닉 표를 읽고 훈련 자료와 테스트 자료로 나눈 것까지 준비돼 있어요. SimpleImputer도 불러왔죠?"
   ],
   [
    "code",
    "\nimputer = SimpleImputer(strategy='median')\n",
-   "SimpleImputer를 strategy='median'으로 만들어 imputer에 담아요. 빈칸을 중앙값으로 채우는 도구예요."
+   "먼저 채우는 도구를 만들어요. strategy를 median으로 주면 중앙값으로 채우거든요."
   ],
   [
    "code",
    "train_values = imputer.fit_transform(X_train[['나이', '요금']])\n",
-   "훈련 표의 나이와 요금 두 열에 fit_transform을 해요. 여기서 중앙값을 정하고 바로 채우거든요."
+   "훈련 표의 나이와 요금에 fit_transform을 해요. 중앙값을 정하고 바로 채우는 거예요."
   ],
   [
    "code",
    "test_values = imputer.transform(X_test[['나이', '요금']])\n",
-   "테스트 표엔 같은 imputer로 transform만 불러요. 훈련에서 정한 기준을 그대로 쓰는 거죠?"
+   "테스트 표엔 transform만 불러요. 훈련에서 정한 기준 그대로 채우는 거죠?"
   ],
   [
    "code",
-   "print(train_values.shape, test_values.shape)\n",
-   "두 결과의 shape를 출력해서 행과 열 수를 확인해요."
+   "print(train_values.shape, test_values.shape)\n\n",
+   "두 결과의 shape를 찍어서 행과 열 수를 확인해요."
   ],
   [
    "run",

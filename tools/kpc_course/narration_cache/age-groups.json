@@ -50,30 +50,30 @@
  "entry": [
   [
    "problem",
-   "자, 나이는 값이 수십 가지라 그대로 묶으면 그룹이 너무 많아요. 먼저 pd.cut()으로 네 구간으로 나누고, 구간별로 생존을 묶어 볼게요."
+   "자, 나이는 값이 수십 가지라 그대로 묶으면 그룹이 너무 많아요. 그래서 먼저 네 구간으로 나누고, 구간별 생존을 세어 볼게요."
   ],
   [
    "hint",
-   "right=False면 왼쪽 경계를 포함해서 20살이 20~39에 들어가요. observed=True는 아무도 없는 구간을 표에서 빼 달라는 옵션이에요."
+   "pd.cut이 나이를 구간으로 잘라 주거든요. 경계는 0, 20, 40, 60, 무한대예요."
   ],
   [
    "starter",
-   "pandas를 불러오고 titanic을 읽어 두는 두 줄은 준비돼 있어요. 그대로 둘게요."
+   "pandas를 불러오고 titanic 표를 읽는 준비 코드는 그대로 둘게요."
   ],
   [
    "code",
    "titanic['age_group'] = pd.cut(titanic['나이'], bins=[0, 20, 40, 60, float('inf')], labels=['0~19', '20~39', '40~59', '60+'], right=False)\n",
-   "자, pd.cut()에 나이 열과 경계 bins, 이름표 labels를 줘요. right=False로 왼쪽 경계를 포함시키고, 결과를 age_group 열로 붙여요."
+   "pd.cut에 나이 열과 경계, 이름표를 줘요. right=False라서 20살은 20~39에 들어가요. 그 결과를 age_group 열로 붙여요."
   ],
   [
    "code",
    "age_summary = titanic.groupby('age_group', observed=True)['생존'].agg(['count', 'sum', 'mean'])\n",
-   "그다음 age_group으로 묶고 생존 열만 골라요. agg에 count, sum, mean을 한꺼번에 주면 세 숫자가 나란히 나오거든요."
+   "이제 age_group으로 묶어서 생존의 count, sum, mean을 한 번에 구해요. observed=True는 아무도 없는 구간을 표에서 빼 달라는 뜻이에요."
   ],
   [
    "code",
    "age_summary\n",
-   "마지막 줄에 age_summary만 적으면 표가 화면에 나와요."
+   "마지막 줄에 이름만 적으면 표가 화면에 나와요."
   ],
   [
    "run",
@@ -81,7 +81,7 @@
   ],
   [
    "output",
-   "구간 네 개가 행으로 선 표가 나왔죠? count를 보세요. 나이가 비어 있는 263명은 어느 구간에도 안 들어가서 합이 1309보다 작아요. mean이 구간별 생존 비율이에요."
+   "네 구간이 행으로 선 표가 나왔죠? count를 다 더하면 1309보다 작아요. 나이가 빈 263명은 어느 구간에도 안 들어가거든요."
   ],
   [
    "submit",
