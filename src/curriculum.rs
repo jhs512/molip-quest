@@ -234,6 +234,16 @@ impl Activity {
             ActivityKind::Slides { .. } => "슬라이드",
         }
     }
+    /// One emoji per mission kind, shown in the curriculum menu next to the label.
+    pub fn icon(&self) -> &'static str {
+        match self.kind {
+            ActivityKind::Concept { .. } => "📘",
+            ActivityKind::Coding { .. } if self.challenge => "⭐",
+            ActivityKind::Coding { .. } => "💻",
+            ActivityKind::Quiz { .. } => "❓",
+            ActivityKind::Slides { .. } => "🎞️",
+        }
+    }
     pub fn progress_unit(&self, parent: &Unit) -> Unit {
         let mut unit = match &self.kind {
             ActivityKind::Coding { problem } => problem.clone(),

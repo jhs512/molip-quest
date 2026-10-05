@@ -60,6 +60,19 @@ fn mission_progress<'a>(
     format!("{done} / {total} 미션 · {percent}%")
 }
 
+/// (done, total, percent) for a gauge.
+fn mission_counts<'a>(units: impl Iterator<Item = &'a Unit>, completed: &HashSet<String>) -> (usize, usize, usize) {
+    let mut total = 0;
+    let mut done = 0;
+    for unit in units {
+        for activity in &unit.activities {
+            total += 1;
+            done += usize::from(completed.contains(&activity.progress_unit(unit).id));
+        }
+    }
+    (done, total, if total == 0 { 0 } else { done * 100 / total })
+}
+
 #[component]
 pub fn Learning(
     course: Course,
@@ -260,23 +273,37 @@ pub fn Learning(
             div {class:"curriculum-modal-header",h2 {"수업 목차"}
                 button {class:"curriculum-close",aria_label:"수업 목차 닫기",autofocus:true,onclick:move |_|{document::eval("document.querySelector('.curriculum-menu').close();");},"닫기 ×"}
             }
-            p {class:"curriculum-overall",{format!("전체 진도 {}",mission_progress(course.chapters.iter().flat_map(|c|c.units.iter()),&completed_items))}}
+            {
+                let (done,total,percent)=mission_counts(course.chapters.iter().flat_map(|c|c.units.iter()),&completed_items);
+                rsx! {
+                    div {class:"curriculum-gauge",role:"progressbar",aria_valuemin:"0",aria_valuemax:"100",aria_valuenow:"{percent}",
+                        div {class:"curriculum-gauge-head",span {class:"curriculum-gauge-label","클리어"}span {class:"curriculum-gauge-percent","{percent}%"}span {class:"curriculum-gauge-count",{format!("{done} / {total} 미션")}}}
+                        div {class:"curriculum-gauge-track",div {class:"curriculum-gauge-fill",style:"width:{percent}%"}}
+                    }
+                }
+            }
             nav {class:"curriculum",
-            for chapter in &course.chapters {h3 {{format!("{} · {}",chapter.title,mission_progress(chapter.units.iter(),&completed_items))}}
-                for unit in &chapter.units {div {class:"curriculum-unit",button {class:if unit.id==active_id {"unit selected"}else{"unit"},aria_current:if unit.id==active_id {"step"}else{"false"},disabled:!unlocked.contains(&unit.id),onclick:{let id=unit.id.clone();let active_id=active_id.clone();move |_|{if id!=active_id {mission_index.set(usize::MAX);}selected.set(id.clone());document::eval("document.querySelector('.curriculum-menu').close();");}},
-                    span {class:"unit-summary",span {class:"unit-title",{format!("{} {}",if unit.id==active_id {"▶"}else if completed.contains(&unit.id) {"✓"} else if unlocked.contains(&unit.id) {"○"} else {"🔒"},unit.title)}}span {class:"unit-progress",{mission_progress(std::iter::once(unit),&completed_items)}}}
+            for chapter in &course.chapters {h3 {span {class:"curriculum-kind","📚 챕터"}{format!(" {} · {}",chapter.title,mission_progress(chapter.units.iter(),&completed_items))}}
+                for unit in &chapter.units {div {class:"curriculum-unit",button {class:format!("unit{}{}",if unit.id==active_id {" selected"}else{""},if completed.contains(&unit.id) {" done"}else{""}),aria_current:if unit.id==active_id {"step"}else{"false"},disabled:!unlocked.contains(&unit.id),onclick:{let id=unit.id.clone();let active_id=active_id.clone();move |_|{if id!=active_id {mission_index.set(usize::MAX);}selected.set(id.clone());document::eval("document.querySelector('.curriculum-menu').close();");}},
+                    span {class:"unit-summary",span {class:"unit-title",span {class:"curriculum-kind","📖 단원"}{format!(" {} {}",if unit.id==active_id {"▶"}else if completed.contains(&unit.id) {"✓"} else if unlocked.contains(&unit.id) {"○"} else {"🔒"},unit.title)}}span {class:"unit-progress",{mission_progress(std::iter::once(unit),&completed_items)}}}
                     if unit.id==active_id {span {class:"unit-current","학습 중"}}
                 }
-                if unit.id==active_id {
+                // Every unit's missions stay on screen: the menu never folds.
+                {
+                    let is_active = unit.id==active_id;
+                    let unit_unlocked = if unlocked.contains(&unit.id) { unlocked_activities(unit,&completed_items) } else { 0 };
+                    rsx! {
                     nav {class:"curriculum-missions",aria_label:"단원 미션",
                         for (n,activity) in unit.activities.iter().enumerate() {
-                            button {class:format!("curriculum-mission{}{}", if n==active_mission {" selected"} else {""}, if activity.challenge {" challenge"} else {""}),
-                                aria_current:if n==active_mission {"step"}else{"false"},disabled:n>=active_unlocked,
-                                onclick:move |_|{mission_index.set(n);document::eval("document.querySelector('.curriculum-menu').close();");},
-                                span {class:"mission-kind",{format!("{} {} · {}",if n==active_mission {"▶"}else if completed_items.contains(&activity.progress_unit(unit).id){"✓"}else if n<active_unlocked {"○"}else{"🔒"},n+1,activity.label())}}
+                            button {class:format!("curriculum-mission{}{}{}", if is_active && n==active_mission {" selected"} else {""}, if activity.challenge {" challenge"} else {""}, if completed_items.contains(&activity.progress_unit(unit).id) {" done"} else if n<unit_unlocked {" todo"} else {""}),
+                                aria_current:if is_active && n==active_mission {"step"}else{"false"},disabled:n>=unit_unlocked,
+                                onclick:{let id=unit.id.clone();move |_|{if !is_active {selected.set(id.clone());}mission_index.set(n);document::eval("document.querySelector('.curriculum-menu').close();");}},
+                                span {class:"mission-kind",{format!("{} {} · {} {}",if is_active && n==active_mission {"▶"}else if completed_items.contains(&activity.progress_unit(unit).id){"✓"}else if n<unit_unlocked {"○"}else{"🔒"},n+1,activity.icon(),activity.label())}
+                                    span {class:"mission-state",{if completed_items.contains(&activity.progress_unit(unit).id) {"클리어"} else if n<unit_unlocked {"미완료"} else {"잠김"}}}}
                                 span {class:"mission-title","{activity.title}"}
                             }
                         }
+                    }
                     }
                 }
                 }}
@@ -942,39 +969,8 @@ fn AssistantPanel(
             request.call(());
         }
     });
-    // Three suggested questions that fit the mission on screen; a tap sends one right away.
-    // The course supplies questions written for this mission (`ask`); these are the fallback.
-    let defaults: [&'static str; 3] = match kind.as_str() {
-        "슬라이드" => [
-            "이 덱을 세 줄로 요약해 줘",
-            "이 장에서 꼭 기억할 한 가지는?",
-            "다음 장으로 넘겨 줘",
-        ],
-        "개념" => [
-            "이 개념을 빵 공장 예로 설명해 줘",
-            "확인 문항 힌트만 줘, 답은 말고",
-            "핵심 용어 세 개만 정리해 줘",
-        ],
-        "퀴즈" => [
-            "1번 문제 힌트만 줘",
-            "왜 다른 보기가 틀렸는지 설명해 줘",
-            "퀴즈 전부 풀어서 채점해 줘",
-        ],
-        _ => [
-            "힌트만 줘, 답은 말고",
-            "지금 쓴 코드 어디가 틀렸어?",
-            "이 문제 풀어서 제출까지 해 줘",
-        ],
-    };
-    let mut suggestions: Vec<String> = if ask.is_empty() {
-        defaults.iter().map(|s| s.to_string()).collect()
-    } else {
-        ask.clone()
-    };
-    // /auto (narrate this mission) and /auto-all (run to the end) are typed by the instructor
-    // and not shown; students see /clear.
-    const CLEAR: &str = "/clear";
-    suggestions.push(CLEAR.into());
+    // Suggested-question chips were removed: the student types their own question.
+    let _ = (&kind, &ask);
     // The speed lives in the page (shared with 읽어주기): show the saved value once mounted.
     use_effect(|| {
         document::eval("const s=document.querySelector('select.assistant-rate');if(s&&window.molipVoice)s.value=String(molipVoice.rate);");
@@ -1079,13 +1075,6 @@ fn AssistantPanel(
                 }
             }
             div { class:"assistant-footer",
-                div { class:"assistant-suggestions",
-                    for text in suggestions.clone() {
-                        button { class: if text == CLEAR {"assistant-chip narrate"} else {"assistant-chip"},
-                            title: if text == CLEAR {"대화를 지웁니다"} else {""},
-                            disabled: pending(), onclick: { let text = text.clone(); move |_| { draft.set(text.clone()); send.call(()); } }, "{text}" }
-                    }
-                }
                 div { class:"assistant-context", span { class:"assistant-context-dot" } "「{title}」 기준으로 답하는 중" }
             }
             div { class:"assistant-compose",

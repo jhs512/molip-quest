@@ -256,6 +256,7 @@ UNIT = unit('control', '조건·반복과 DataFrame', [
 
         ```mapping
         제목: 반복문과 넘파이의 차이
+종류: 비교
         왼쪽: Python 반복문
         오른쪽: NumPy 배열
         값 하나씩 꺼낸다 → 덩어리째 넘긴다

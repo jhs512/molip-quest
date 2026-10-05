@@ -152,6 +152,29 @@ textarea[data-code-editor][hidden] { display: none; }
 .practice-shell .curriculum-mission.selected { background: #16476b; color: #fff; border-left-color: #79dcff; }
 .curriculum-mission.selected .mission-kind { color: #b5eaff; }
 .curriculum-mission:disabled { cursor: default; }
+/* Cleared vs. not yet: a green or amber bar at the left of every mission row, and a word. */
+.curriculum-mission .mission-kind { display: flex; align-items: center; gap: 8px; }
+.curriculum-mission .mission-state { margin-left: auto; font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: 999px; border: 1px solid currentColor; }
+.practice-shell .curriculum-mission.done { border-left-color: #63dbb6; }
+.practice-shell .curriculum-mission.done .mission-kind { color: #63dbb6; }
+.practice-shell .curriculum-mission.done .mission-title { color: #9fd9c4; }
+.practice-shell .curriculum-mission.todo { border-left-color: #f2c94c; }
+.practice-shell .curriculum-mission.todo .mission-kind { color: #f2c94c; }
+.practice-shell .curriculum-mission.todo .mission-title { color: #f1f9ff; }
+.practice-shell .curriculum-mission.selected { border-left-color: #79dcff; }
+.practice-shell .curriculum-mission.selected .mission-kind { color: #b5eaff; }
+.curriculum-menu .unit.done .unit-title { color: #63dbb6; }
+.curriculum-menu .unit.done .unit-progress { color: #63dbb6; }
+.curriculum-kind { font-size: 11px; font-weight: 700; color: #9ab0c2; background: #0f1f2b; border: 1px solid #40576b; border-radius: 6px; padding: 1px 6px; margin-right: 4px; vertical-align: middle; }
+.curriculum-menu h3 .curriculum-kind { color: #79dcff; }
+/* Overall clear-rate gauge at the top of the menu. */
+.curriculum-gauge { margin: 4px 28px 8px; }
+.curriculum-gauge-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; }
+.curriculum-gauge-label { font-size: 14px; color: #a6c3d9; font-weight: 700; }
+.curriculum-gauge-percent { font-size: 26px; font-weight: 800; color: #79dcff; }
+.curriculum-gauge-count { font-size: 13px; color: #a6c3d9; margin-left: auto; }
+.curriculum-gauge-track { height: 14px; border-radius: 999px; background: #0f1f2b; border: 1px solid #40576b; overflow: hidden; }
+.curriculum-gauge-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #63dbb6, #79dcff); transition: width .3s ease; }
 .header-navigation { display: flex; gap: 6px; flex-shrink: 0; }
 @media (max-width: 760px) { .practice-header .header-navigation button { display: inline-block; } .practice-header { height: auto; min-height: 62px; flex-wrap: wrap; } }
 .mission-controls span { font-size: 13px; color: #9acbbd; }

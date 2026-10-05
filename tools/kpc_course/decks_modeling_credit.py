@@ -18,6 +18,7 @@ DECK_LEAKAGE = slides('deck-leakage', '시험지에 답이 적혀 있으면', FR
 
 ```mapping
 제목: 사고 전과 사고 뒤
+종류: 비교
 왼쪽: 맞히는 시점에 아는 것
 오른쪽: 결과가 나온 뒤 적히는 것
 성별 · 등급 · 나이 → 구명보트 번호
@@ -122,6 +123,7 @@ DECK_SPLIT = slides('deck-split', '문제집과 모의고사', FRONT + r"""
 
 ```mapping
 제목: 같은 표를 두 번 가른다
+종류: 비교
 왼쪽: 열로 가른다
 오른쪽: 행으로 가른다
 입력 X · 정답 y → 훈련 · 테스트
@@ -170,7 +172,7 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, stratify=y, random_state=42)
 ```
 
-순서는 **훈련 입력, 테스트 입력, 훈련 정답, 테스트 정답**입니다. 인자 세 개의 뜻은 다음 장.
+순서는 **훈련 입력, 테스트 입력, 훈련 정답, 테스트 정답**입니다.
 
 ---
 
@@ -300,6 +302,7 @@ DECK_PIPELINE = slides('deck-pipeline', 'fit은 훈련 자료로만', FRONT + r"
 
 ```mapping
 제목: fit과 transform
+종류: 비교
 왼쪽: 훈련 자료
 오른쪽: 테스트 자료
 fit_transform → transform
@@ -539,6 +542,7 @@ DECK_METRICS = slides('deck-metrics', '맞힌 개수가 아니라 종류', FRONT
 
 ```mapping
 제목: 경고 100명, 실제 부도 50명
+종류: 비교
 왼쪽: 정밀도
 오른쪽: 재현율
 경고 100명 중 → 실제 부도 50명 중
@@ -630,6 +634,7 @@ prediction = (probabilities >= 0.5).astype(int)     # predict()가 속으로 하
 
 ```mapping
 제목: 선을 옮기면
+종류: 비교
 왼쪽: 기준값을 낮추면
 오른쪽: 기준값을 높이면
 경고가 늘어난다 → 경고가 줄어든다

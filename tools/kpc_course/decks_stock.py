@@ -54,6 +54,7 @@ DECK_STOCK_DATA = slides('deck-stock-data', '주가는 시간이 있는 표', FR
 
 ```mapping
 제목: 결정하는 시각에 아는 것만
+종류: 비교
 왼쪽: 빵 공장 · 새벽 3시
 오른쪽: 주가 · 오늘 저녁
 요일, 어제 판매량, 날씨 예보 → 오늘까지의 가격
@@ -148,6 +149,7 @@ DECK_FEATURES = slides('deck-features', '어제로 내일을', FRONT + r"""
 
 ```mapping
 제목: shift(1)과 shift(-1)
+종류: 비교
 왼쪽: shift(1)
 오른쪽: shift(-1)
 한 칸 아래로 → 한 칸 위로
@@ -254,6 +256,7 @@ DECK_NAIVE = slides('deck-naive', '내일은 오늘과 같다', FRONT + r"""
 
 ```mapping
 제목: 두 기준 모델
+종류: 비교
 왼쪽: 타이타닉 · 분류
 오른쪽: 주가 · 회귀
 가장 많은 답을 전원에게 → 오늘 종가를 그대로
@@ -481,6 +484,7 @@ DECK_WRAP = slides('deck-wrap', '같은 흐름을 세 번', FRONT + r"""
 
 ```mapping
 제목: 구명보트 열과 target_next_close
+종류: 비교
 왼쪽: 타이타닉
 오른쪽: 주가
 구명보트 번호 → target_next_close
