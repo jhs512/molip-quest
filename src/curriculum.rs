@@ -62,6 +62,142 @@ pub enum QuestionKind {
     ShortAnswer {
         accepted: Vec<String>,
     },
+    /// A real table on screen; the student ticks rows (`pick` = "rows") or columns ("columns")
+    /// and the rule says which selections count. The answer is the picked 0-based indices,
+    /// sorted and comma-separated ("0,3,5"). `expected` is the model answer in words.
+    TableSelect {
+        table: SelectTable,
+        pick: String,
+        rule: SelectRule,
+        expected: String,
+    },
+}
+
+#[derive(Clone, Deserialize, Serialize, PartialEq)]
+pub struct SelectTable {
+    pub columns: Vec<String>,
+    pub rows: Vec<Vec<String>>,
+}
+
+/// Every constraint given must hold. Indices are rows or columns, as `pick` says.
+#[derive(Clone, Default, Deserialize, Serialize, PartialEq)]
+pub struct SelectRule {
+    /// How many to pick: (min, max).
+    #[serde(default)]
+    pub size: Option<(usize, usize)>,
+    /// Must be picked.
+    #[serde(default)]
+    pub required: Vec<usize>,
+    /// Must not be picked.
+    #[serde(default)]
+    pub forbidden: Vec<usize>,
+    /// When given, nothing outside this set may be picked.
+    #[serde(default)]
+    pub allowed: Option<Vec<usize>>,
+    /// Rows only: exactly `count` picked rows must have `column == value`.
+    #[serde(default)]
+    pub quota: Vec<Quota>,
+}
+
+#[derive(Clone, Deserialize, Serialize, PartialEq)]
+pub struct Quota {
+    pub column: String,
+    pub value: String,
+    pub count: usize,
+}
+
+/// The picked indices in a stored answer ("0,3,5"), sorted, without repeats.
+pub fn parse_selection(answer: &str) -> Vec<usize> {
+    let mut picked: Vec<usize> = answer
+        .split(',')
+        .filter_map(|s| s.trim().parse().ok())
+        .collect();
+    picked.sort_unstable();
+    picked.dedup();
+    picked
+}
+
+/// Why a selection fails the rule, in the student's words, or Ok when it passes.
+pub fn check_selection(
+    table: &SelectTable,
+    pick: &str,
+    rule: &SelectRule,
+    picked: &[usize],
+) -> Result<(), String> {
+    let label = |i: usize| -> String {
+        if pick == "columns" {
+            table
+                .columns
+                .get(i)
+                .cloned()
+                .unwrap_or_else(|| format!("{}열", i + 1))
+        } else {
+            format!("{}행", i + 1)
+        }
+    };
+    let names = |ids: &[usize]| ids.iter().map(|&i| label(i)).collect::<Vec<_>>().join(", ");
+    if let Some((min, max)) = rule.size {
+        if picked.len() < min || picked.len() > max {
+            let want = if min == max {
+                format!("{min}개")
+            } else {
+                format!("{min}~{max}개")
+            };
+            return Err(format!(
+                "{want}를 골라야 하는데 {}개를 골랐습니다.",
+                picked.len()
+            ));
+        }
+    }
+    let missing: Vec<usize> = rule
+        .required
+        .iter()
+        .copied()
+        .filter(|i| !picked.contains(i))
+        .collect();
+    if !missing.is_empty() {
+        return Err(format!("{}은(는) 꼭 들어가야 합니다.", names(&missing)));
+    }
+    let wrong: Vec<usize> = picked
+        .iter()
+        .copied()
+        .filter(|i| rule.forbidden.contains(i))
+        .collect();
+    if !wrong.is_empty() {
+        return Err(format!("{}은(는) 빼야 합니다.", names(&wrong)));
+    }
+    if let Some(allowed) = &rule.allowed {
+        let outside: Vec<usize> = picked
+            .iter()
+            .copied()
+            .filter(|i| !allowed.contains(i))
+            .collect();
+        if !outside.is_empty() {
+            return Err(format!("{}은(는) 고를 수 없습니다.", names(&outside)));
+        }
+    }
+    for quota in &rule.quota {
+        let Some(column) = table.columns.iter().position(|c| c == &quota.column) else {
+            return Err(format!("표에 '{}' 열이 없습니다.", quota.column));
+        };
+        let have = picked
+            .iter()
+            .filter(|&&r| {
+                table
+                    .rows
+                    .get(r)
+                    .and_then(|row| row.get(column))
+                    .is_some_and(|cell| cell.trim() == quota.value.trim())
+            })
+            .count();
+        if have != quota.count {
+            return Err(format!(
+                "{}={}인 행을 {}개 골라야 하는데 {}개입니다.",
+                quota.column, quota.value, quota.count, have
+            ));
+        }
+    }
+    Ok(())
 }
 
 /// The bodies of every ```lang fenced block in a Markdown text, in order.
@@ -108,6 +244,112 @@ impl Activity {
         unit.revision = parent.revision;
         unit.activities.clear();
         unit
+    }
+}
+
+#[cfg(test)]
+mod select_tests {
+    use super::*;
+
+    fn table() -> SelectTable {
+        SelectTable {
+            columns: vec!["등급".into(), "생존".into(), "이름".into()],
+            rows: vec![
+                vec!["1".into(), "1".into(), "A".into()],
+                vec!["1".into(), "0".into(), "B".into()],
+                vec!["2".into(), "1".into(), "C".into()],
+                vec!["3".into(), "0".into(), "D".into()],
+            ],
+        }
+    }
+
+    #[test]
+    fn selections_parse_sorted_without_repeats() {
+        assert_eq!(parse_selection("3, 1,1,x,0"), vec![0, 1, 3]);
+        assert!(parse_selection("").is_empty());
+    }
+
+    #[test]
+    fn exact_column_sets_and_quotas_grade_with_a_reason() {
+        let t = table();
+        let target = SelectRule {
+            size: Some((1, 1)),
+            required: vec![1],
+            allowed: Some(vec![1]),
+            ..Default::default()
+        };
+        assert!(check_selection(&t, "columns", &target, &[1]).is_ok());
+        assert_eq!(
+            check_selection(&t, "columns", &target, &[0, 1]).unwrap_err(),
+            "1개를 골라야 하는데 2개를 골랐습니다."
+        );
+        assert_eq!(
+            check_selection(&t, "columns", &target, &[0]).unwrap_err(),
+            "생존은(는) 꼭 들어가야 합니다."
+        );
+        let balanced = SelectRule {
+            size: Some((2, 2)),
+            quota: vec![
+                Quota {
+                    column: "생존".into(),
+                    value: "1".into(),
+                    count: 1,
+                },
+                Quota {
+                    column: "생존".into(),
+                    value: "0".into(),
+                    count: 1,
+                },
+            ],
+            ..Default::default()
+        };
+        assert!(check_selection(&t, "rows", &balanced, &[2, 3]).is_ok());
+        assert_eq!(
+            check_selection(&t, "rows", &balanced, &[0, 2]).unwrap_err(),
+            "생존=1인 행을 1개 골라야 하는데 2개입니다."
+        );
+        let forbidden = SelectRule {
+            forbidden: vec![3],
+            ..Default::default()
+        };
+        assert_eq!(
+            check_selection(&t, "rows", &forbidden, &[1, 3]).unwrap_err(),
+            "4행은(는) 빼야 합니다."
+        );
+    }
+
+    #[test]
+    fn a_table_question_grades_and_reports_the_miss_first() {
+        let q = Question {
+            id: "t".into(),
+            prompt: "타깃 열".into(),
+            explanation: "생존이 타깃입니다.".into(),
+            kind: QuestionKind::TableSelect {
+                table: table(),
+                pick: "columns".into(),
+                rule: SelectRule {
+                    size: Some((1, 1)),
+                    required: vec![1],
+                    ..Default::default()
+                },
+                expected: "생존".into(),
+            },
+        };
+        let ok = grade_quiz(
+            std::slice::from_ref(&q),
+            &HashMap::from([("t".into(), "1".into())]),
+        );
+        assert!(ok.passed);
+        let miss = grade_quiz(
+            std::slice::from_ref(&q),
+            &HashMap::from([("t".into(), "0,2".into())]),
+        );
+        assert!(!miss.passed);
+        assert!(miss.cases[0]
+            .stderr
+            .starts_with("1개를 골라야 하는데 2개를 골랐습니다."));
+        assert!(miss.cases[0].stderr.ends_with("생존이 타깃입니다."));
+        assert_eq!(miss.cases[0].expected, "생존");
     }
 }
 
@@ -268,6 +510,28 @@ pub fn grade_quiz(questions: &[Question], answers: &HashMap<String, String>) -> 
                         && accepted.iter().any(|a| normalize(a) == normalize(&answer)),
                     accepted[0].clone(),
                 ),
+                QuestionKind::TableSelect {
+                    table,
+                    pick,
+                    rule,
+                    expected,
+                } => {
+                    let picked = parse_selection(&answer);
+                    match check_selection(table, pick, rule, &picked) {
+                        Ok(()) => (true, expected.clone()),
+                        Err(why) => {
+                            // The specific miss comes first, then the explanation.
+                            return TestCaseResult {
+                                input: q.prompt.clone(),
+                                expected: expected.clone(),
+                                stdout: answer,
+                                stderr: format!("{why}\n\n{}", q.explanation),
+                                passed: false,
+                                state: "wrong_answer".into(),
+                            };
+                        }
+                    }
+                }
             };
             TestCaseResult {
                 input: q.prompt.clone(),
@@ -360,6 +624,45 @@ fn validate_questions(questions: &[Question]) -> Result<(), String> {
                 if accepted.is_empty() || accepted.iter().any(|a| a.trim().is_empty()) =>
             {
                 return Err("주관식 인정 답안이 필요합니다.".into())
+            }
+            QuestionKind::TableSelect {
+                table,
+                pick,
+                rule,
+                expected,
+            } => {
+                let width = table.columns.len();
+                if width == 0
+                    || table.rows.is_empty()
+                    || table.rows.iter().any(|r| r.len() != width)
+                    || table.columns.iter().any(|c| c.trim().is_empty())
+                {
+                    return Err("표 고르기 문항의 표를 확인하세요 (열 이름, 행 길이).".into());
+                }
+                let count = match pick.as_str() {
+                    "rows" => table.rows.len(),
+                    "columns" => width,
+                    _ => return Err("표 고르기 문항의 pick은 rows 또는 columns입니다.".into()),
+                };
+                let indices = rule
+                    .required
+                    .iter()
+                    .chain(&rule.forbidden)
+                    .chain(rule.allowed.iter().flatten());
+                if indices.into_iter().any(|&i| i >= count)
+                    || rule.size.is_some_and(|(min, max)| min > max || max > count)
+                    || rule.quota.iter().any(|q| {
+                        pick != "rows" || !table.columns.contains(&q.column) || q.count > count
+                    })
+                    || (rule.size.is_none()
+                        && rule.required.is_empty()
+                        && rule.forbidden.is_empty()
+                        && rule.allowed.is_none()
+                        && rule.quota.is_empty())
+                    || expected.trim().is_empty()
+                {
+                    return Err("표 고르기 문항의 규칙을 확인하세요.".into());
+                }
             }
             _ => (),
         }

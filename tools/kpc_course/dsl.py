@@ -55,6 +55,66 @@ def io(input, expected):
     return dict(input=input, expected=expected)
 
 
+# ---- 표에서 고르기: a real table on screen, the student ticks rows or columns. ----
+
+def table(csv, rows=None, columns=None, where=None, limit=None):
+    """A small table taken from courses/data/<csv> as the student would see it. `rows` picks
+    row numbers (0-based, in the file's order), `where(row_dict)` filters, `columns` keeps and
+    orders columns, `limit` caps the count. Cells stay the file's text (blank stays blank)."""
+    import csv as _csv
+    import pathlib
+    path = pathlib.Path(__file__).resolve().parents[2] / "courses" / "data" / csv
+    with path.open(encoding="utf-8", newline="") as handle:
+        reader = _csv.DictReader(handle)
+        records = list(reader)
+        names = list(reader.fieldnames)
+    if rows is not None:
+        records = [records[i] for i in rows]
+    if where is not None:
+        records = [r for r in records if where(r)]
+    if limit is not None:
+        records = records[:limit]
+    keep = list(columns) if columns else names
+    return dict(columns=keep, rows=[[r[c] for c in keep] for r in records])
+
+
+def pick_rows(prompt, table, explanation, expected, size=None, required=(), forbidden=(), allowed=None, quota=()):
+    """Rows to tick. `quota` is a list of (column, value, count): exactly that many picked rows
+    must have column == value. `expected` is the model answer in words (shown after a miss)."""
+    return _pick("rows", prompt, table, explanation, expected, size, required, forbidden, allowed, quota)
+
+
+def pick_columns(prompt, table, explanation, expected, size=None, required=(), forbidden=(), allowed=None):
+    """Columns to tick; `required`/`forbidden`/`allowed` take column names or indices."""
+    names = table["columns"]
+    index = lambda c: names.index(c) if isinstance(c, str) else int(c)
+    return _pick("columns", prompt, table, explanation, expected, size,
+                 [index(c) for c in required], [index(c) for c in forbidden],
+                 None if allowed is None else [index(c) for c in allowed], ())
+
+
+def _pick(pick, prompt, table, explanation, expected, size, required, forbidden, allowed, quota):
+    rule = dict(required=list(required), forbidden=list(forbidden), quota=[dict(column=c, value=str(v), count=n) for c, v, n in quota])
+    if size is not None:
+        rule["size"] = list(size) if isinstance(size, (list, tuple)) else [size, size]
+    if allowed is not None:
+        rule["allowed"] = list(allowed)
+    return dict(prompt=text(prompt), type="table_select", table=table, pick=pick, rule=rule,
+                expected=text(expected), explanation=text(explanation))
+
+
+def exact_rows(prompt, table, explanation, expected, rows):
+    """Tick exactly these rows (0-based indices)."""
+    rows = list(rows)
+    return pick_rows(prompt, table, explanation, expected, size=len(rows), required=rows, allowed=rows)
+
+
+def exact_columns(prompt, table, explanation, expected, columns):
+    """Tick exactly these columns (names)."""
+    columns = list(columns)
+    return pick_columns(prompt, table, explanation, expected, size=len(columns), required=columns, allowed=columns)
+
+
 CODE_TOKEN = re.compile(r"`([A-Za-z_][A-Za-z0-9_.]*(?:\(\))?)`")
 
 
@@ -156,11 +216,8 @@ def slides(id, title, markdown, ask=None, script=None):
                 raise SystemExit(f"{id}: {n + 1}번째 스크립트가 비었거나 '-->'를 담고 있습니다.")
         parts = [f"{part.rstrip()}\n\n<!-- {line} -->\n" for part, line in zip(parts, script)]
         markdown = (front or "") + "\n---\n".join(parts)
-    deck = dict(id=id, title=title, kind="slides", markdown=markdown,
-                ask=list(ask) if ask else default_ask("slides", title))
-    if not ask:
-        deck["ask_is_default"] = True
-    return deck
+    return dict(id=id, title=title, kind="slides", markdown=markdown,
+                ask=list(ask) if ask else default_ask("slides", title), ask_is_default=not ask)
 
 
 def challenge(id, title, **kwargs):
@@ -181,7 +238,7 @@ def quiz(id, title, *questions, ask=None):
             question["correct"] = order.index(question["correct"])
         shuffled.append(question)
     return dict(id=id, title=title, kind="quiz", questions=shuffled,
-                ask=list(ask) if ask else default_ask("quiz", title, count=len(shuffled)))
+                ask=list(ask) if ask else default_ask("quiz", title, count=len(shuffled)), ask_is_default=not ask)
 
 
 def unit(id, title, activities):

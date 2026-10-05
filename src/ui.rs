@@ -510,6 +510,46 @@ fn QuizView(
                         }
                     },
                     QuestionKind::ShortAnswer {..}=>rsx! {input {aria_label:q.prompt.clone(),placeholder:"답을 입력하세요",initial_value:input_defaults.get(&q.id).cloned().unwrap_or_default(),oninput:{let id=q.id.clone();let key=key.clone();move |e|{answers.write().insert(id.clone(),e.value());report.set(None);if let Err(e)=drafts::save(&key,"",&answers()){message.set(e);}}}}},
+                    QuestionKind::TableSelect {table,pick,..}=>{
+                        // The picked indices live in the answer as "0,3,5"; a tick toggles one.
+                        let picked=molip_quest::curriculum::parse_selection(answers.read().get(&q.id).map(String::as_str).unwrap_or(""));
+                        let rows_mode=pick=="rows";
+                        let toggle={let id=q.id.clone();let key=key.clone();move |index:usize|{
+                            let mut picked=molip_quest::curriculum::parse_selection(answers.read().get(&id).map(String::as_str).unwrap_or(""));
+                            match picked.iter().position(|&i|i==index) {Some(at)=>{picked.remove(at);},None=>{picked.push(index);picked.sort_unstable();}}
+                            answers.write().insert(id.clone(),picked.iter().map(|i|i.to_string()).collect::<Vec<_>>().join(","));
+                            report.set(None);
+                            if let Err(e)=drafts::save(&key,"",&answers()){message.set(e);}
+                        }};
+                        rsx! {
+                            div {class:"table-select","data-pick":pick.clone(),
+                                p {class:"table-select-help",{if rows_mode {format!("행 왼쪽의 네모를 눌러 고르세요 · {}개 고름",picked.len())} else {format!("열 머리글을 눌러 고르세요 · {}개 고름",picked.len())}}}
+                                div {class:"data-grid",table {
+                                    thead {tr {th {class:"table-select-corner",{if rows_mode {"선택"} else {"#"}}}
+                                        for (c,name) in table.columns.iter().enumerate() {
+                                            th {class:if !rows_mode&&picked.contains(&c) {"picked"} else {""},
+                                                if rows_mode {"{name}"}
+                                                else {label {class:"table-select-column",input {r#type:"checkbox","data-index":c.to_string(),checked:picked.contains(&c),onchange:{let mut toggle=toggle.clone();move |_|toggle(c)}}" {name}"}}
+                                            }
+                                        }
+                                    }}
+                                    tbody {
+                                        for (r,row) in table.rows.iter().enumerate() {
+                                            tr {class:if rows_mode&&picked.contains(&r) {"picked"} else {""},
+                                                td {class:"table-select-corner",
+                                                    if rows_mode {label {class:"table-select-row",input {r#type:"checkbox","data-index":r.to_string(),checked:picked.contains(&r),onchange:{let mut toggle=toggle.clone();move |_|toggle(r)}}" {r+1}"}}
+                                                    else {"{r+1}"}
+                                                }
+                                                for (c,cell) in row.iter().enumerate() {
+                                                    td {class:if !rows_mode&&picked.contains(&c) {"picked"} else {""},{if cell.is_empty() {"·".to_string()} else {cell.clone()}}}
+                                                }
+                                            }
+                                        }
+                                    }
+                                }}
+                            }
+                        }
+                    },
                 }
                 if let Some(result)=report.read().as_ref().and_then(|r|r.cases.get(n)) {
                     p {class:"error","다시 생각해보세요."}

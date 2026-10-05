@@ -86,7 +86,40 @@ def _answer(question):
     time, so the number is final), or the first accepted short answer."""
     if question["type"] == "choice":
         return str(question["correct"] + 1)
+    if question["type"] == "table_select":
+        return ",".join(str(i + 1) for i in _selection(question))
     return question["accepted"][0]
+
+
+def _selection(question):
+    """One selection that satisfies a 표 고르기 rule: the required ones, then rows that fill
+    each quota, then more allowed ones up to the minimum size. Fails the build if none works."""
+    table, pick, rule = question["table"], question["pick"], question["rule"]
+    count = len(table["rows"]) if pick == "rows" else len(table["columns"])
+    allowed = set(rule.get("allowed", range(count)) if rule.get("allowed") is not None else range(count))
+    allowed -= set(rule.get("forbidden", []))
+    picked = list(rule.get("required", []))
+    for quota in rule.get("quota", []):
+        column = table["columns"].index(quota["column"])
+        have = sum(1 for r in picked if table["rows"][r][column].strip() == quota["value"].strip())
+        for r in range(count):
+            if have >= quota["count"]:
+                break
+            if r in picked or r not in allowed:
+                continue
+            if table["rows"][r][column].strip() == quota["value"].strip():
+                picked.append(r)
+                have += 1
+    low = rule.get("size", [0, count])[0]
+    for r in range(count):
+        if len(picked) >= low:
+            break
+        if r not in picked and r in allowed:
+            picked.append(r)
+    picked.sort()
+    if rule.get("size") and not rule["size"][0] <= len(picked) <= rule["size"][1]:
+        raise SystemExit(f"표 고르기 문항의 규칙을 만족하는 답을 찾지 못했습니다: {question['prompt'][:40]}")
+    return picked
 
 
 def compile_quiz(activity):

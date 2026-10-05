@@ -359,6 +359,16 @@
           if (!pick) { notes.push(`${key}번: 보기 "${want}"를 찾지 못했습니다. 보기: ${radios.map(r => label(r)).join(' | ')}`); continue; }
           if (a.say) { spotlight(pick.closest('.quiz-option') ? `option:${key}:${radios.indexOf(pick) + 1}` : `quiz:${key}`, a.say); }
           pick.click();
+        } else if (section.querySelector('.table-select')) {
+          // A table: the answer is 1-based row/column numbers ("1,3,5"); tick exactly those.
+          const wanted = new Set(want.split(',').map(s => Number(s.trim()) - 1).filter(n => Number.isInteger(n) && n >= 0));
+          const boxes = [...section.querySelectorAll('.table-select input[type=checkbox]')];
+          if (!boxes.length) { notes.push(`${key}번: 고를 표가 없습니다`); continue; }
+          if (a.say) spotlight(`quiz:${key}`, a.say);
+          for (const box of boxes) {
+            const index = Number(box.dataset.index);
+            if (box.checked !== wanted.has(index)) { box.click(); await sleep(120); }
+          }
         } else {
           const input = section.querySelector('input:not([type=radio]):not([type=checkbox])');
           if (!input) { notes.push(`${key}번: 입력칸이 없습니다`); continue; }

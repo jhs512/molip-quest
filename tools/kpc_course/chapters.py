@@ -5,6 +5,7 @@ from kpc_course.prompts import PROMPTS
 from kpc_course.asks import ASKS
 from kpc_course.challenges import CHALLENGES
 from kpc_course.decks import DECK_PLACEMENTS
+from kpc_course.table_quizzes import PLACEMENTS as TABLE_QUIZ_PLACEMENTS
 
 OUTLINE = [
     ("python", "1. 파이썬 개발 환경과 기본 문법 이해", ["d1_p1_environment", "d1_p2_structures", "d1_p3_control"]),
@@ -33,6 +34,11 @@ def build():
         for (unit_index, position), decks in sorted(by_slot.items(), key=lambda item: (item[0][0], -item[0][1])):
             for offset, deck in enumerate(decks):
                 units[unit_index]["activities"].insert(position + offset, deck)
+        # 표에서 고르기 quizzes go right after their unit's 단원 점검 (or at the end).
+        for _, unit_id, table_quiz in [p for p in TABLE_QUIZ_PLACEMENTS if p[0] == chapter_id]:
+            unit = next(u for u in units if u["id"] == unit_id)
+            after = next((i for i, a in enumerate(unit["activities"]) if a["kind"] == "quiz" and a["title"] == "단원 점검"), len(unit["activities"]) - 1)
+            unit["activities"].insert(after + 1, table_quiz)
         seen = set()
         for _, _, _, deck in placements:
             if deck["id"] in seen:
@@ -44,7 +50,7 @@ def build():
                 # from asks.py, or, for a deck, the ones written next to the deck itself.
                 if activity["id"] in ASKS:
                     activity["ask"] = list(ASKS[activity["id"]])
-                elif not (activity["kind"] == "slides" and activity.get("ask") and not activity.get("ask_is_default")):
+                elif not (activity.get("ask") and activity.get("ask_is_default") is False):
                     raise SystemExit(f"{unit['id']}/{activity['id']}: tools/kpc_course/asks.py에 추천 질문이 없습니다.")
                 if activity["kind"] == "coding":
                     problem = activity["problem"]
