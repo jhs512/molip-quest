@@ -20,10 +20,12 @@
   if (globalThis.molipAgent || typeof document === 'undefined') return;
   const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
   const byText = (selector, text) => [...document.querySelectorAll(selector)].find(b => b.textContent.trim() === text);
+  // Wait for a run or a grading to finish: the button comes back, or the reward card is up (a
+  // passed quiz keeps its 제출 button disabled, so the card is the signal there).
   async function waitIdle(button, limit = 180000) {
     const started = Date.now();
     await sleep(200);
-    while (button.isConnected && button.disabled && Date.now() - started < limit) await sleep(150);
+    while (button.isConnected && button.disabled && !cleared() && Date.now() - started < limit) await sleep(150);
     await sleep(250);
   }
   const text = (selector, max = 3000) => [...document.querySelectorAll(selector)].map(e => e.textContent.trim()).filter(Boolean).join('\n').slice(0, max);
