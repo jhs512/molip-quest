@@ -27,7 +27,7 @@ TIME_SPLIT = "feature_columns = ['close', 'return_1', 'ma5', 'lag_close_1']\nX =
 REG = "from sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression, Ridge, Lasso\nfrom sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score\n"
 
 CHECKER_HEAD = (
-    "import matplotlib\n\nmatplotlib.use('Agg')\nimport runpy, sys\n\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\n"
+    "import matplotlib\n\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as _plt\n\n_plt.show = lambda *a, **k: None  # a check opens no window and leaves no 'non-interactive' warning in the result\nimport runpy, sys\n\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\n"
 )
 CHECKER_TAIL = (
     "\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n"
