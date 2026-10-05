@@ -1,7 +1,7 @@
-"""2일차 · 1교시 — Figure·Axes와 막대그래프"""
+"""Figure·Axes와 막대그래프"""
 from kpc_course.dsl import *
 
-UNIT = unit('bar-chart', '2일차 · 1교시 — Figure·Axes와 막대그래프', [
+UNIT = unit('bar-chart', 'Figure·Axes와 막대그래프', [
     concept('axes', '종이 한 장과 그 위의 그래프',
         body="""
         앞 단원에서 성별 생존율 표를 만들었습니다. 숫자 두 개를 비교하는 데는 표로 충분하지만, 그룹이 넷, 여섯으로 늘어나면 눈이 숫자를 따라가지 못합니다. 그래서 이제 표를 그림으로 바꿉니다. 그래프로 시작해서, 다음 챕터의 "누가 살아남았나"를 맞히는 모델까지 이어집니다.
@@ -87,7 +87,7 @@ UNIT = unit('bar-chart', '2일차 · 1교시 — Figure·Axes와 막대그래프
         starter=TI + PLOT + "# rates, fig, ax를 만들고 막대그래프를 그리세요\n",
         solution=TI + PLOT + "rates = titanic.groupby('객실등급')['생존'].mean()\nfig, ax = plt.subplots()\nax.bar(rates.index.astype(str), rates * 100)\nax.set(xlabel='객실등급', ylabel='생존율 (%)', ylim=(0, 100), title='Survival by class')\nplt.show()\n",
         check="assert len(s['ax'].patches)==3\nassert s['ax'].get_ylim()==(0.0,100.0) and s['ax'].get_xlabel()=='객실등급'\nheights=sorted(p.get_height() for p in s['ax'].patches)\nassert abs(heights[0]-181/709*100)<1e-8 and abs(heights[2]-200/323*100)<1e-8"),
-    quiz('bar-check', '2일차 1교시 점검',
+    quiz('bar-check', '단원 점검',
         short('종이 위에서 실제로 그래프가 그려지는 영역, `fig, ax = plt.subplots()`의 `ax`를 부르는 이름은 무엇인가요?', ['Axes', 'axes', '축 영역'],
               '`Axes`가 그래프 영역입니다. 막대·선·축 이름은 전부 `ax`에 붙입니다.'),
         choice('`fig, ax = plt.subplots()` 다음에 막대를 그리는 명령은 어느 것인가요?',

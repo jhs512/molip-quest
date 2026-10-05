@@ -1,7 +1,7 @@
 {
   "id": "kpc-finance-2026",
   "title": "KPC · 머신러닝을 활용한 금융데이터 분석",
-  "description": "3일 · 20시간 · 7챕터. 개념을 확인하고 독립된 main.py 미션과 퀴즈를 클리어하세요.",
+  "description": "7챕터 · 20단원. 개념을 확인하고 독립된 main.py 미션과 퀴즈를 클리어하세요.",
   "chapters": [
     {
       "id": "python",
@@ -9,7 +9,7 @@
       "units": [
         {
           "id": "environment",
-          "title": "1일차 · 1교시 — 내 코드의 첫 실행",
+          "title": "내 코드의 첫 실행",
           "content": "",
           "revision": 4,
           "activities": [
@@ -721,7 +721,7 @@
             },
             {
               "id": "tools",
-              "title": "1교시 점검",
+              "title": "단원 점검",
               "kind": "quiz",
               "questions": [
                 {
@@ -884,7 +884,7 @@
         },
         {
           "id": "structures",
-          "title": "1일차 · 2교시 — 변수와 자료구조",
+          "title": "변수와 자료구조",
           "content": "",
           "revision": 4,
           "activities": [
@@ -961,7 +961,7 @@
               "id": "values",
               "title": "값이 여러 개면 리스트, 이름표가 있으면 딕셔너리",
               "kind": "concept",
-              "body": "1교시에서는 값 하나에 이름 하나를 붙였습니다. 그런데 어떤 주식의 사흘치 가격을 다루려면 `price1`, `price2`, `price3`을 따로 만들어야 할까요? 백 일치라면요? 그래서 값 여러 개를 **한 줄로 세워 한 이름에** 담는 방법이 있습니다. 바로 리스트입니다.\n\n```comic-gen\n제목: 값 백 개에 이름 백 개?\n등장인물:\n  민지:\n    그림: 사람\n    이름표: 민지\n    외형: {머리모양: 단발, 머리색: \"#573d36\", 옷: 후드, 옷색: \"#609b87\"}\n  파이썬: {그림: 서버, 이름표: Python}\n컷:\n  - 인물: [{식별자: 민지, 표정: 어리둥절}, 파이썬]\n    대사:\n      - {화자: 민지, 상대: 파이썬, 내용: \"백 일치 가격이면 변수가 백 개야?\"}\n      - {화자: 파이썬, 상대: 민지, 내용: \"값들을 한 줄로 세워서 이름 하나에 담아. 그게 리스트야.\"}\n  - 구성: 이전\n    인물: [{식별자: 민지, 표정: 보통}, {식별자: 파이썬, 손모양: 가리키는손}]\n    대사:\n      - {화자: 민지, 상대: 파이썬, 내용: \"첫 값은 어떻게 꺼내?\"}\n      - 화자: 파이썬\n        상대: 민지\n        내용: |-\n          prices[0]. 자리는 0부터 세고\n          마지막은 prices[-1].\n```\n\n```python\nprices = [10000, 10200, 10100]\nprint(prices[0])      # 첫 값 10000\nprint(prices[-1])     # 마지막 값 10100\nprint(len(prices))    # 개수 3\nprint(sum(prices))    # 합계 30300\nprices.append(10300)  # 맨 뒤에 값 추가\n```\n\n리스트의 자리는 **0부터** 셉니다. 첫 값이 `prices[0]`, 둘째가 `prices[1]`입니다. 뒤에서부터 세고 싶으면 음수를 씁니다. `prices[-1]`은 마지막 값입니다. 없는 자리를 부르면 Python은 `IndexError`라는 오류로 알려 줍니다. `len`은 몇 개인지, `sum`은 다 더하면 얼마인지를 돌려주고, `append`는 맨 뒤에 값을 하나 붙입니다.\n\n리스트는 \"몇 번째\"로 값을 찾습니다. 그런데 어떤 종목 하나를 설명하려면 이름, 가격, 수량처럼 **종류가 다른 값**이 한 묶음입니다. 이때는 자리 번호보다 \"가격\", \"수량\" 같은 이름표로 찾는 쪽이 자연스럽습니다. 그런 묶음이 딕셔너리입니다.\n\n```python\nholding = {'name': '연습A', 'price': 10000, 'quantity': 3}\nprint(holding['price'])     # 10000\nholding['quantity'] = 5     # 값 바꾸기\nholding['amount'] = 50000   # 새 이름표 추가\n```\n\n딕셔너리는 중괄호 안에 `'이름표': 값` 쌍을 쉼표로 늘어놓습니다. 이름표를 **키**(key)라고 부르며 꺼낼 때는 `holding['price']`처럼 대괄호 안에 키를 따옴표째 적습니다. 키는 글자가 정확히 같아야 합니다. `'Price'`와 `'price'`는 다른 키라서 없는 키를 부르면 `KeyError`가 납니다. 리스트는 **위치**로, 딕셔너리는 **키**로 찾는다는 것만 기억하면 뒤가 편해집니다.",
+              "body": "앞 단원에서는 값 하나에 이름 하나를 붙였습니다. 그런데 어떤 주식의 사흘치 가격을 다루려면 `price1`, `price2`, `price3`을 따로 만들어야 할까요? 백 일치라면요? 그래서 값 여러 개를 **한 줄로 세워 한 이름에** 담는 방법이 있습니다. 바로 리스트입니다.\n\n```comic-gen\n제목: 값 백 개에 이름 백 개?\n등장인물:\n  민지:\n    그림: 사람\n    이름표: 민지\n    외형: {머리모양: 단발, 머리색: \"#573d36\", 옷: 후드, 옷색: \"#609b87\"}\n  파이썬: {그림: 서버, 이름표: Python}\n컷:\n  - 인물: [{식별자: 민지, 표정: 어리둥절}, 파이썬]\n    대사:\n      - {화자: 민지, 상대: 파이썬, 내용: \"백 일치 가격이면 변수가 백 개야?\"}\n      - {화자: 파이썬, 상대: 민지, 내용: \"값들을 한 줄로 세워서 이름 하나에 담아. 그게 리스트야.\"}\n  - 구성: 이전\n    인물: [{식별자: 민지, 표정: 보통}, {식별자: 파이썬, 손모양: 가리키는손}]\n    대사:\n      - {화자: 민지, 상대: 파이썬, 내용: \"첫 값은 어떻게 꺼내?\"}\n      - 화자: 파이썬\n        상대: 민지\n        내용: |-\n          prices[0]. 자리는 0부터 세고\n          마지막은 prices[-1].\n```\n\n```python\nprices = [10000, 10200, 10100]\nprint(prices[0])      # 첫 값 10000\nprint(prices[-1])     # 마지막 값 10100\nprint(len(prices))    # 개수 3\nprint(sum(prices))    # 합계 30300\nprices.append(10300)  # 맨 뒤에 값 추가\n```\n\n리스트의 자리는 **0부터** 셉니다. 첫 값이 `prices[0]`, 둘째가 `prices[1]`입니다. 뒤에서부터 세고 싶으면 음수를 씁니다. `prices[-1]`은 마지막 값입니다. 없는 자리를 부르면 Python은 `IndexError`라는 오류로 알려 줍니다. `len`은 몇 개인지, `sum`은 다 더하면 얼마인지를 돌려주고, `append`는 맨 뒤에 값을 하나 붙입니다.\n\n리스트는 \"몇 번째\"로 값을 찾습니다. 그런데 어떤 종목 하나를 설명하려면 이름, 가격, 수량처럼 **종류가 다른 값**이 한 묶음입니다. 이때는 자리 번호보다 \"가격\", \"수량\" 같은 이름표로 찾는 쪽이 자연스럽습니다. 그런 묶음이 딕셔너리입니다.\n\n```python\nholding = {'name': '연습A', 'price': 10000, 'quantity': 3}\nprint(holding['price'])     # 10000\nholding['quantity'] = 5     # 값 바꾸기\nholding['amount'] = 50000   # 새 이름표 추가\n```\n\n딕셔너리는 중괄호 안에 `'이름표': 값` 쌍을 쉼표로 늘어놓습니다. 이름표를 **키**(key)라고 부르며 꺼낼 때는 `holding['price']`처럼 대괄호 안에 키를 따옴표째 적습니다. 키는 글자가 정확히 같아야 합니다. `'Price'`와 `'price'`는 다른 키라서 없는 키를 부르면 `KeyError`가 납니다. 리스트는 **위치**로, 딕셔너리는 **키**로 찾는다는 것만 기억하면 뒤가 편해집니다.",
               "check": {
                 "prompt": "값마다 이름표(키)를 붙여 두고 그 이름표로 값을 찾는 자료구조는 무엇인가요?",
                 "type": "short_answer",
@@ -983,12 +983,12 @@
                 {
                   "action": "say",
                   "target": "title",
-                  "text": "자, 2교시는 값을 담는 그릇이 두 개 늘어요. 리스트와 딕셔너리예요."
+                  "text": "자, 이 단원은 값을 담는 그릇이 두 개 늘어요. 리스트와 딕셔너리예요."
                 },
                 {
                   "action": "say",
-                  "target": "text:1교시에서는 값 하나에 이름 하나를 붙였습니다",
-                  "text": "1교시엔 값 하나에 이름 하나였죠? 백 일치 가격이면 변수가 백 개예요. 그래서 값 여러 개를 한 줄로 세워 이름 하나에 담아요. 그게 리스트예요."
+                  "target": "text:앞 단원에서는 값 하나에 이름 하나를 붙였습니다",
+                  "text": "앞 단원엔 값 하나에 이름 하나였죠? 백 일치 가격이면 변수가 백 개예요. 그래서 값 여러 개를 한 줄로 세워 이름 하나에 담아요. 그게 리스트예요."
                 },
                 {
                   "action": "say",
@@ -1188,7 +1188,7 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "30000이 나왔죠? 1교시에 변수로 했던 계산을 키로 한 거예요."
+                  "text": "30000이 나왔죠? 앞 단원에 변수로 했던 계산을 키로 한 거예요."
                 },
                 {
                   "action": "submit",
@@ -1375,7 +1375,7 @@
             },
             {
               "id": "structure-check",
-              "title": "2교시 점검",
+              "title": "단원 점검",
               "kind": "quiz",
               "questions": [
                 {
@@ -1534,7 +1534,7 @@
         },
         {
           "id": "control",
-          "title": "1일차 · 3교시 — 조건·반복과 DataFrame",
+          "title": "조건·반복과 DataFrame",
           "content": "",
           "revision": 4,
           "activities": [
@@ -1641,7 +1641,7 @@
                 {
                   "action": "say",
                   "target": "title",
-                  "text": "자, 3교시는 코드의 흐름을 바꿔요. 조건에 따라 고르는 if, 여러 값에 반복하는 for예요."
+                  "text": "자, 이 단원은 코드의 흐름을 바꿔요. 조건에 따라 고르는 if, 여러 값에 반복하는 for예요."
                 },
                 {
                   "action": "say",
@@ -1776,7 +1776,7 @@
               "problem": {
                 "id": "for-sum",
                 "title": "반복문으로 합계 누적하기",
-                "content": "### 목표\n\n2교시에서는 `sum()`이 합계를 구해 줬습니다. 이번에는 그 일을 직접 합니다. `prices`의 값을 `for`로 하나씩 꺼내 `total`에 더한 뒤, 반복이 끝나면 `total`을 출력하세요.\n\n결과는 40200입니다. `sum()`을 쓰지 않고 누적하세요.\n\n### 힌트\n\n`for price in prices:`라고 쓰면 `price`에 값이 하나씩 들어오면서 아래 들여쓴 줄이 반복됩니다. 그 안에서 `total += price`로 누적하세요. `print(total)`은 들여쓰기 없이 반복문 **밖**에 두어야 마지막에 한 번만 출력됩니다.",
+                "content": "### 목표\n\n앞 단원에서는 `sum()`이 합계를 구해 줬습니다. 이번에는 그 일을 직접 합니다. `prices`의 값을 `for`로 하나씩 꺼내 `total`에 더한 뒤, 반복이 끝나면 `total`을 출력하세요.\n\n결과는 40200입니다. `sum()`을 쓰지 않고 누적하세요.\n\n### 힌트\n\n`for price in prices:`라고 쓰면 `price`에 값이 하나씩 들어오면서 아래 들여쓴 줄이 반복됩니다. 그 안에서 `total += price`로 누적하세요. `print(total)`은 들여쓰기 없이 반복문 **밖**에 두어야 마지막에 한 번만 출력됩니다.",
                 "starter_code": "prices = [10000,10200,9900,10100]\ntotal = 0\n# for 반복문으로 total에 누적하세요\n",
                 "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['total']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['total']==40200\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
                 "prompt": "파이썬. prices = [10000,10200,9900,10100]. sum() 쓰지 말고 for 반복문으로 total에 누적해서 출력.\n\n---\n코드만 줘",
@@ -1791,7 +1791,7 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 2교시엔 sum()이 합계를 내 줬죠? 이번엔 그 일을 직접 해요. prices 값을 for로 하나씩 꺼내 total에 더하고, 끝나면 total을 출력하면 돼요. sum()은 안 써요."
+                  "text": "자, 앞 단원엔 sum()이 합계를 내 줬죠? 이번엔 그 일을 직접 해요. prices 값을 for로 하나씩 꺼내 total에 더하고, 끝나면 total을 출력하면 돼요. sum()은 안 써요."
                 },
                 {
                   "action": "set_code",
@@ -2032,7 +2032,7 @@
                 {
                   "action": "type_code",
                   "code": "for holding in holdings:\n    holding['amount'] = holding['price'] * holding['quantity']\n",
-                  "say": "for holding in holdings 콜론. holding에 딕셔너리가 하나씩 들어와요. 안에서 새 키 amount에 가격 곱하기 수량을 넣어요. 2교시 holding 미션을 세 번 돈 거예요."
+                  "say": "for holding in holdings 콜론. holding에 딕셔너리가 하나씩 들어와요. 안에서 새 키 amount에 가격 곱하기 수량을 넣어요. 앞 단원 holding 미션을 세 번 돈 거예요."
                 },
                 {
                   "action": "type_code",
@@ -2516,7 +2516,7 @@
             },
             {
               "id": "control-check",
-              "title": "3교시 점검",
+              "title": "단원 점검",
               "kind": "quiz",
               "questions": [
                 {
@@ -2702,7 +2702,7 @@
               "problem": {
                 "id": "week-plan",
                 "title": "★ 도전 과제 · 일주일 생산 계획표",
-                "content": "### 문제에서 필요한 설명\n\n파리바게뜨 공장의 지난주 요일별 크루아상 판매량이 `sales` 딕셔너리에 있습니다. 공장 규칙은 \"판매량의 1.1배를 반올림해 굽는다\"입니다. 1장에서 배운 변수·리스트·딕셔너리·반복·조건·표를 전부 써서 생산 계획표를 만듭니다.\n\n### 목표\n\n1. `for`로 요일을 하나씩 돌면서 `{'요일': ..., '판매량': ..., '계획': round(판매량 * 1.1)}` 딕셔너리를 `plans` 리스트에 모으세요.\n2. 계획 수량의 합계를 `total_plan`에 누적하세요(`sum()` 금지, 반복문 안에서 누적).\n3. `max()` 없이 `if`로 판매량이 가장 많은 요일을 `best_day`에 담으세요.\n4. `plans`로 `DataFrame`을 만들어 `df`에 담고 마지막 줄에 `df`를 적어 표를 띄우세요.\n\n7행 3열 표가 나오고 `best_day`가 `토`이면 맞게 한 것입니다.\n\n### 힌트\n\n`for day, sold in sales.items():`로 키와 값을 함께 꺼낼 수 있습니다. 최댓값 찾기는 3교시의 `highest` 패턴 그대로이고, 반복 안에서 `best_day = day`도 같이 갱신하면 됩니다.",
+                "content": "### 문제에서 필요한 설명\n\n파리바게뜨 공장의 지난주 요일별 크루아상 판매량이 `sales` 딕셔너리에 있습니다. 공장 규칙은 \"판매량의 1.1배를 반올림해 굽는다\"입니다. 1장에서 배운 변수·리스트·딕셔너리·반복·조건·표를 전부 써서 생산 계획표를 만듭니다.\n\n### 목표\n\n1. `for`로 요일을 하나씩 돌면서 `{'요일': ..., '판매량': ..., '계획': round(판매량 * 1.1)}` 딕셔너리를 `plans` 리스트에 모으세요.\n2. 계획 수량의 합계를 `total_plan`에 누적하세요(`sum()` 금지, 반복문 안에서 누적).\n3. `max()` 없이 `if`로 판매량이 가장 많은 요일을 `best_day`에 담으세요.\n4. `plans`로 `DataFrame`을 만들어 `df`에 담고 마지막 줄에 `df`를 적어 표를 띄우세요.\n\n7행 3열 표가 나오고 `best_day`가 `토`이면 맞게 한 것입니다.\n\n### 힌트\n\n`for day, sold in sales.items():`로 키와 값을 함께 꺼낼 수 있습니다. 최댓값 찾기는 앞에서 본 `highest` 패턴 그대로이고, 반복 안에서 `best_day = day`도 같이 갱신하면 됩니다.",
                 "starter_code": "import pandas as pd\nsales = {'월': 412, '화': 388, '수': 455, '목': 430, '금': 520, '토': 610, '일': 580}\nplans = []\ntotal_plan = 0\n# plans, total_plan, best_day, df를 만드세요\n",
                 "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['best_day', 'df', 'plans', 'sales', 'total_plan']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert [p['요일'] for p in s['plans']]==['월','화','수','목','금','토','일']\n    assert [p['계획'] for p in s['plans']]==[round(v*1.1) for v in s['sales'].values()]\n    assert s['total_plan']==sum(round(v*1.1) for v in s['sales'].values())\n    assert s['best_day']=='토'\n    assert s['df'].shape==(7,3) and list(s['df'].columns)==['요일','판매량','계획']\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
                 "prompt": "파이썬. sales = {'월': 412, ..., '일': 580} 딕셔너리. for로 요일마다 {'요일','판매량','계획': round(판매량*1.1)} 딕셔너리를 plans에 모으고, 계획 합계는 total_plan에 누적(sum 금지), 판매량 최대 요일은 if로 best_day에(max 금지). plans로 DataFrame df 만들어 마지막 줄에 df.\n\n---\n코드만 줘",
@@ -2723,7 +2723,7 @@
                 {
                   "action": "say",
                   "target": "hint",
-                  "text": "sales.items()로 키와 값을 함께 꺼내요. 최댓값은 3교시 highest 패턴 그대로예요."
+                  "text": "sales.items()로 키와 값을 함께 꺼내요. 최댓값은 앞에서 본 highest 패턴 그대로예요."
                 },
                 {
                   "action": "set_code",
@@ -2780,7 +2780,7 @@
       "units": [
         {
           "id": "files",
-          "title": "1일차 · 4교시 — CSV·Excel과 행·열 선택",
+          "title": "CSV·Excel과 행·열 선택",
           "content": "",
           "revision": 4,
           "activities": [
@@ -2857,7 +2857,7 @@
               "id": "file-table",
               "title": "표를 파일로 저장하고 다시 열기",
               "kind": "concept",
-              "body": "3교시의 표는 코드 안에 직접 적은 종목 세 개였습니다. 그런데 진짜 분석은 남이 만들어 둔 파일에서 시작합니다. 거래 내역은 Excel로 오고, 주가는 CSV로 내려받고, 설문 결과는 또 다른 CSV입니다. 곧 쓸 타이타닉 승객 기록도 1,309줄짜리 CSV 파일입니다. 그러니 \"파일을 표로 읽어 오는 법\"과 \"표를 파일로 저장하는 법\"이 먼저입니다.\n\n```comic-gen\n제목: 어디서 왔든 읽고 나면 같은 표\n등장인물:\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [강사]\n    대사: [{화자: 강사, 내용: \"파일 형식이 달라도 DataFrame이 된 뒤에는 똑같이 다룹니다.\"}]\n    다이어그램:\n      종류: 머메이드\n      제목: 파일 → DataFrame\n      높이: 420\n      원문: |\n        flowchart TB\n          A[\"CSV 파일\"] -->|read_csv| D[\"DataFrame\"]\n          B[\"Excel 파일\"] -->|read_excel| D\n          D --> E[\"다루는 법은 같다\"]\n```\n\nCSV는 값을 쉼표로 구분해 한 줄에 한 행씩 적은 **글자 파일**입니다. 메모장으로 열어도 읽힙니다. Excel 파일(.xlsx)은 시트와 서식이 있는 문서라서 더 복잡하지만, `pandas`로 읽으면 둘 다 똑같은 `DataFrame`이 됩니다. 어디서 왔든 표가 된 다음부터는 다루는 법이 같다는 것이 핵심입니다.\n\n```python\nimport pandas as pd\norders.to_csv('orders.csv', index=False)   # 저장\nsaved = pd.read_csv('orders.csv')          # 다시 읽기\ntitanic = pd.read_csv('data/titanic.csv')  # 남이 만든 파일 읽기\n```\n\n저장할 때 `index=False`를 붙이는 이유가 있습니다. `DataFrame`은 행마다 0, 1, 2… 번호(인덱스)를 달고 있는데, 이 번호를 파일에 함께 적으면 다시 읽을 때 \"이름 없는 열\"이 하나 더 생겨 버립니다. 번호는 데이터가 아니니 빼고 저장하는 것이 보통입니다.\n\n읽어 온 표가 어떻게 생겼는지 확인하는 세 가지는 늘 같습니다. `df.head()`로 앞 5행을 훑어보고, `df.shape`로 몇 행 몇 열인지 세고, `df.columns`로 열 이름을 확인합니다. 그다음에 원하는 열과 행을 고릅니다. 열은 `df['price']`처럼 이름으로, 행은 `df.iloc[:2]`처럼 자리 번호로, 또는 `df.loc[조건]`처럼 조건으로 고릅니다. 이 단원의 미션은 이 동작들을 하나씩 해 보는 것입니다.",
+              "body": "앞 단원의 표는 코드 안에 직접 적은 종목 세 개였습니다. 그런데 진짜 분석은 남이 만들어 둔 파일에서 시작합니다. 거래 내역은 Excel로 오고, 주가는 CSV로 내려받고, 설문 결과는 또 다른 CSV입니다. 곧 쓸 타이타닉 승객 기록도 1,309줄짜리 CSV 파일입니다. 그러니 \"파일을 표로 읽어 오는 법\"과 \"표를 파일로 저장하는 법\"이 먼저입니다.\n\n```comic-gen\n제목: 어디서 왔든 읽고 나면 같은 표\n등장인물:\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [강사]\n    대사: [{화자: 강사, 내용: \"파일 형식이 달라도 DataFrame이 된 뒤에는 똑같이 다룹니다.\"}]\n    다이어그램:\n      종류: 머메이드\n      제목: 파일 → DataFrame\n      높이: 420\n      원문: |\n        flowchart TB\n          A[\"CSV 파일\"] -->|read_csv| D[\"DataFrame\"]\n          B[\"Excel 파일\"] -->|read_excel| D\n          D --> E[\"다루는 법은 같다\"]\n```\n\nCSV는 값을 쉼표로 구분해 한 줄에 한 행씩 적은 **글자 파일**입니다. 메모장으로 열어도 읽힙니다. Excel 파일(.xlsx)은 시트와 서식이 있는 문서라서 더 복잡하지만, `pandas`로 읽으면 둘 다 똑같은 `DataFrame`이 됩니다. 어디서 왔든 표가 된 다음부터는 다루는 법이 같다는 것이 핵심입니다.\n\n```python\nimport pandas as pd\norders.to_csv('orders.csv', index=False)   # 저장\nsaved = pd.read_csv('orders.csv')          # 다시 읽기\ntitanic = pd.read_csv('data/titanic.csv')  # 남이 만든 파일 읽기\n```\n\n저장할 때 `index=False`를 붙이는 이유가 있습니다. `DataFrame`은 행마다 0, 1, 2… 번호(인덱스)를 달고 있는데, 이 번호를 파일에 함께 적으면 다시 읽을 때 \"이름 없는 열\"이 하나 더 생겨 버립니다. 번호는 데이터가 아니니 빼고 저장하는 것이 보통입니다.\n\n읽어 온 표가 어떻게 생겼는지 확인하는 세 가지는 늘 같습니다. `df.head()`로 앞 5행을 훑어보고, `df.shape`로 몇 행 몇 열인지 세고, `df.columns`로 열 이름을 확인합니다. 그다음에 원하는 열과 행을 고릅니다. 열은 `df['price']`처럼 이름으로, 행은 `df.iloc[:2]`처럼 자리 번호로, 또는 `df.loc[조건]`처럼 조건으로 고릅니다. 이 단원의 미션은 이 동작들을 하나씩 해 보는 것입니다.",
               "check": {
                 "prompt": "`to_csv`로 저장할 때 행 번호(인덱스)를 파일에 넣지 않으려고 붙이는 옵션은 무엇인가요?",
                 "type": "short_answer",
@@ -2877,11 +2877,11 @@
                 {
                   "action": "say",
                   "target": "title",
-                  "text": "자, 이번 교시는 파일이에요. 표를 파일로 저장하고, 파일을 표로 다시 여는 법이요."
+                  "text": "자, 이 단원은 파일이에요. 표를 파일로 저장하고, 파일을 표로 다시 여는 법이요."
                 },
                 {
                   "action": "say",
-                  "target": "text:3교시의 표는 코드 안에 직접 적은 종목 세 개였습니다",
+                  "target": "text:앞 단원의 표는 코드 안에 직접 적은 종목 세 개였습니다",
                   "text": "지금까지 표는 코드 안에 직접 적었죠? 진짜 분석은 남이 만든 파일에서 시작해요. 거래 내역은 Excel, 주가는 CSV로 오거든요."
                 },
                 {
@@ -3210,7 +3210,7 @@
               "problem": {
                 "id": "loc-condition",
                 "title": "조건으로 행 고르기",
-                "content": "### 목표\n\n자리 번호가 아니라 **조건**으로 행을 고릅니다. 수량이 3 이상인 거래만 골라 `many`에 저장하고 마지막 줄에 `many`를 적어 표를 확인하세요.\n\n제품 A 두 건(수량 3과 4)만 남으면 맞게 한 것입니다.\n\n### 힌트\n\n`orders['quantity'] >= 3`은 행마다 참·거짓을 매긴 결과입니다. 이걸 `orders.loc[...]` 안에 넣으면 참인 행만 남습니다. 3교시의 `if`가 표 전체에 한꺼번에 적용되는 셈입니다.",
+                "content": "### 목표\n\n자리 번호가 아니라 **조건**으로 행을 고릅니다. 수량이 3 이상인 거래만 골라 `many`에 저장하고 마지막 줄에 `many`를 적어 표를 확인하세요.\n\n제품 A 두 건(수량 3과 4)만 남으면 맞게 한 것입니다.\n\n### 힌트\n\n`orders['quantity'] >= 3`은 행마다 참·거짓을 매긴 결과입니다. 이걸 `orders.loc[...]` 안에 넣으면 참인 행만 남습니다. 앞 단원의 `if`가 표 전체에 한꺼번에 적용되는 셈입니다.",
                 "starter_code": "import pandas as pd\norders = pd.DataFrame({'product':['A','B','A','C'], 'price':[10000,20000,12000,None], 'quantity':[3,2,4,1]})\n# many를 만들고 표를 표시하세요\n",
                 "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['many']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['many']['product'].tolist()==['A','A'] and s['many']['quantity'].tolist()==[3,4]\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
                 "prompt": "pandas. orders DataFrame에서 quantity가 3 이상인 행만 불리언 마스크로 골라 many에 담고 마지막 줄에 many.\n\n---\n코드만 줘",
@@ -3235,7 +3235,7 @@
                 {
                   "action": "type_code",
                   "code": "many = orders.loc[orders['quantity'] >= 3]\nmany\n",
-                  "say": "orders['quantity'] >= 3은 행마다 참 거짓을 매긴 거예요. 그걸 loc 안에 넣으면 참인 행만 남아요. 3교시의 if가 표 전체에 한꺼번에 걸리는 셈이죠."
+                  "say": "orders['quantity'] >= 3은 행마다 참 거짓을 매긴 거예요. 그걸 loc 안에 넣으면 참인 행만 남아요. 앞 단원의 if가 표 전체에 한꺼번에 걸리는 셈이죠."
                 },
                 {
                   "action": "run",
@@ -3308,7 +3308,7 @@
             },
             {
               "id": "files-check",
-              "title": "4교시 점검",
+              "title": "단원 점검",
               "kind": "quiz",
               "questions": [
                 {
@@ -3474,7 +3474,7 @@
         },
         {
           "id": "missing",
-          "title": "1일차 · 5교시 — 조건 필터와 결측치",
+          "title": "조건 필터와 결측치",
           "content": "",
           "revision": 4,
           "activities": [
@@ -3551,7 +3551,7 @@
               "id": "missing-values",
               "title": "빈칸은 0이 아니다",
               "kind": "concept",
-              "body": "4교시의 `orders` 표에는 가격이 비어 있는 거래가 한 건 있었습니다. 설문지를 떠올려 보세요. 어떤 사람이 나이 칸을 비워 두었다면 그 사람의 나이는 0살일까요? 아닙니다. **모른다**가 정답입니다. 표에서 비어 있는 칸을 결측(missing)이라고 부르고, `pandas`는 그 자리에 `NaN`이라고 표시합니다. 결측과 0을 혼동하면 평균이 엉뚱하게 낮아지고, 그 평균으로 한 모든 계산이 같이 틀어집니다.\n\n```comic-gen\n제목: 빈칸은 0이 아니다\n등장인물:\n  준호:\n    그림: 사람\n    이름표: 준호 · 은행 직원\n    외형: {머리색: \"#303746\", 옷색: \"#b88646\"}\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [준호, 강사]\n    대사:\n      - {화자: 준호, 상대: 강사, 내용: \"나이 칸이 비었으면 0으로 채울까요?\"}\n      - {화자: 강사, 상대: 준호, 내용: \"그러면 0살 고객이 생깁니다.\"}\n  - 구성: 이전\n    인물: [{식별자: 준호, 표정: 어리둥절}, {식별자: 강사, 손모양: 가리키는손}]\n    대사:\n      - {화자: 준호, 상대: 강사, 내용: \"평균 나이가 확 내려가겠네요.\"}\n      - 화자: 강사\n        상대: 준호\n        내용: |-\n          빈칸은 '모른다'로 두고\n          먼저 몇 개인지 세어 보죠.\n```\n\n그러니 분석을 시작하기 전에 어디가 얼마나 비어 있는지부터 셉니다. `isna()`는 빈 칸을 `True`로 표시한 표를 돌려주고, 거기에 `.sum()`을 붙이면 열마다 `True`의 개수, 즉 결측 개수가 나옵니다.\n\n```python\norders.isna().sum()                       # 열마다 빈 칸 개수\nfilled = orders['price'].fillna(12000)    # 빈 칸을 12000으로 채운 새 열\ndropped = orders.dropna(subset=['price']) # 가격이 빈 행을 뺀 새 표\n```\n\n비어 있는 칸을 다루는 길은 두 가지뿐입니다. 어떤 값으로 **채우거나**(`fillna`), 그 행을 **빼거나**(`dropna`). 무엇을 채울지는 사람이 정합니다. 흔한 선택은 그 열의 중앙값(값들을 크기순으로 세웠을 때 한가운데 값)입니다. 어느 쪽이 옳은지는 상황마다 다르고, 두 선택의 결과가 얼마나 달라지는지는 이 단원 마지막 미션에서 직접 보게 됩니다. 한 가지 주의할 점은 `fillna`와 `dropna`가 **새 표를 돌려줄 뿐 원본은 그대로**라는 것입니다. 바꾼 결과를 쓰려면 변수에 받아 두어야 합니다.\n\n```comic-gen\n제목: 빈칸을 0으로 넣으면\n등장인물:\n  공장장:\n    그림: 사람\n    이름표: 빵 공장장\n    외형: {피부색: \"#d6a279\", 머리모양: 민머리, 옷색: \"#8a6d4b\"}\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [{식별자: 공장장, 표정: 보통}, 강사]\n    대사:\n      - {화자: 공장장, 상대: 강사, 내용: \"지난 화요일 판매량을 안 적었어요. 0으로 넣을게요.\"}\n      - {화자: 강사, 상대: 공장장, 내용: \"그러면 화요일에 한 개도 못 판 날이 돼요. 평균이 확 내려가요.\"}\n  - 구성: 이전\n    인물: [{식별자: 공장장, 표정: 기쁨}, {식별자: 강사, 손모양: 가리키는손}]\n    대사:\n      - {화자: 강사, 상대: 공장장, 내용: \"모르면 모른다고 두고, 중앙값으로 채우거나 그 날을 빼세요.\"}\n      - {화자: 공장장, 상대: 강사, 내용: \"빈칸은 0이 아니라 모름. 알겠어요.\"}\n```\n\n조건으로 행을 고르는 일도 한 단계 늘어납니다. 4교시에는 조건이 하나였지만, \"가격이 12000 이상**이고** 수량이 2 이상\"처럼 둘을 합칠 때는 각 조건을 괄호로 감싸고 `&`(그리고)로 잇습니다. \"제품이 A**이거나** 수량이 1\"은 `|`(또는)입니다. 괄호를 빼면 Python이 계산 순서를 다르게 읽어 오류가 납니다.\n\n```python\nboth = orders.loc[(orders['price'] >= 12000) & (orders['quantity'] >= 2)]\neither = orders.loc[(orders['product'] == 'A') | (orders['quantity'] == 1)]\n```",
+              "body": "앞 단원의 `orders` 표에는 가격이 비어 있는 거래가 한 건 있었습니다. 설문지를 떠올려 보세요. 어떤 사람이 나이 칸을 비워 두었다면 그 사람의 나이는 0살일까요? 아닙니다. **모른다**가 정답입니다. 표에서 비어 있는 칸을 결측(missing)이라고 부르고, `pandas`는 그 자리에 `NaN`이라고 표시합니다. 결측과 0을 혼동하면 평균이 엉뚱하게 낮아지고, 그 평균으로 한 모든 계산이 같이 틀어집니다.\n\n```comic-gen\n제목: 빈칸은 0이 아니다\n등장인물:\n  준호:\n    그림: 사람\n    이름표: 준호 · 은행 직원\n    외형: {머리색: \"#303746\", 옷색: \"#b88646\"}\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [준호, 강사]\n    대사:\n      - {화자: 준호, 상대: 강사, 내용: \"나이 칸이 비었으면 0으로 채울까요?\"}\n      - {화자: 강사, 상대: 준호, 내용: \"그러면 0살 고객이 생깁니다.\"}\n  - 구성: 이전\n    인물: [{식별자: 준호, 표정: 어리둥절}, {식별자: 강사, 손모양: 가리키는손}]\n    대사:\n      - {화자: 준호, 상대: 강사, 내용: \"평균 나이가 확 내려가겠네요.\"}\n      - 화자: 강사\n        상대: 준호\n        내용: |-\n          빈칸은 '모른다'로 두고\n          먼저 몇 개인지 세어 보죠.\n```\n\n그러니 분석을 시작하기 전에 어디가 얼마나 비어 있는지부터 셉니다. `isna()`는 빈 칸을 `True`로 표시한 표를 돌려주고, 거기에 `.sum()`을 붙이면 열마다 `True`의 개수, 즉 결측 개수가 나옵니다.\n\n```python\norders.isna().sum()                       # 열마다 빈 칸 개수\nfilled = orders['price'].fillna(12000)    # 빈 칸을 12000으로 채운 새 열\ndropped = orders.dropna(subset=['price']) # 가격이 빈 행을 뺀 새 표\n```\n\n비어 있는 칸을 다루는 길은 두 가지뿐입니다. 어떤 값으로 **채우거나**(`fillna`), 그 행을 **빼거나**(`dropna`). 무엇을 채울지는 사람이 정합니다. 흔한 선택은 그 열의 중앙값(값들을 크기순으로 세웠을 때 한가운데 값)입니다. 어느 쪽이 옳은지는 상황마다 다르고, 두 선택의 결과가 얼마나 달라지는지는 이 단원 마지막 미션에서 직접 보게 됩니다. 한 가지 주의할 점은 `fillna`와 `dropna`가 **새 표를 돌려줄 뿐 원본은 그대로**라는 것입니다. 바꾼 결과를 쓰려면 변수에 받아 두어야 합니다.\n\n```comic-gen\n제목: 빈칸을 0으로 넣으면\n등장인물:\n  공장장:\n    그림: 사람\n    이름표: 빵 공장장\n    외형: {피부색: \"#d6a279\", 머리모양: 민머리, 옷색: \"#8a6d4b\"}\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [{식별자: 공장장, 표정: 보통}, 강사]\n    대사:\n      - {화자: 공장장, 상대: 강사, 내용: \"지난 화요일 판매량을 안 적었어요. 0으로 넣을게요.\"}\n      - {화자: 강사, 상대: 공장장, 내용: \"그러면 화요일에 한 개도 못 판 날이 돼요. 평균이 확 내려가요.\"}\n  - 구성: 이전\n    인물: [{식별자: 공장장, 표정: 기쁨}, {식별자: 강사, 손모양: 가리키는손}]\n    대사:\n      - {화자: 강사, 상대: 공장장, 내용: \"모르면 모른다고 두고, 중앙값으로 채우거나 그 날을 빼세요.\"}\n      - {화자: 공장장, 상대: 강사, 내용: \"빈칸은 0이 아니라 모름. 알겠어요.\"}\n```\n\n조건으로 행을 고르는 일도 한 단계 늘어납니다. 앞 단원에서는 조건이 하나였지만, \"가격이 12000 이상**이고** 수량이 2 이상\"처럼 둘을 합칠 때는 각 조건을 괄호로 감싸고 `&`(그리고)로 잇습니다. \"제품이 A**이거나** 수량이 1\"은 `|`(또는)입니다. 괄호를 빼면 Python이 계산 순서를 다르게 읽어 오류가 납니다.\n\n```python\nboth = orders.loc[(orders['price'] >= 12000) & (orders['quantity'] >= 2)]\neither = orders.loc[(orders['product'] == 'A') | (orders['quantity'] == 1)]\n```",
               "check": {
                 "prompt": "표에서 값이 비어 있는 칸을 가리키는 말은 무엇인가요?",
                 "type": "short_answer",
@@ -3575,11 +3575,11 @@
                 {
                   "action": "say",
                   "target": "title",
-                  "text": "자, 이번 교시 주제는 빈칸이에요. 빈칸은 0이 아니다, 이 한 문장이요."
+                  "text": "자, 이 단원 주제는 빈칸이에요. 빈칸은 0이 아니다, 이 한 문장이요."
                 },
                 {
                   "action": "say",
-                  "target": "text:4교시의 orders 표에는 가격이 비어 있는 거래가 한 건 있었습니다",
+                  "target": "text:앞 단원의 orders 표에는 가격이 비어 있는 거래가 한 건 있었습니다",
                   "text": "설문지에 나이 칸을 비워 둔 사람, 그 사람 나이가 0살일까요? 아니죠, 모른다예요. 이 빈 칸을 결측이라 부르고 pandas는 NaN으로 표시해요. 0과 섞으면 평균이 엉뚱하게 내려가요."
                 },
                 {
@@ -3620,7 +3620,7 @@
                 {
                   "action": "say",
                   "target": "quiz:1",
-                  "text": "확인 문항이요. 표에서 비어 있는 칸을 부르는 말, 이 교시 제목에 있었죠?"
+                  "text": "확인 문항이요. 표에서 비어 있는 칸을 부르는 말, 이 단원 제목에 있었죠?"
                 },
                 {
                   "action": "answer_quiz",
@@ -3967,7 +3967,7 @@
             },
             {
               "id": "missing-check",
-              "title": "5교시 점검",
+              "title": "단원 점검",
               "kind": "quiz",
               "questions": [
                 {
@@ -4129,7 +4129,7 @@
         },
         {
           "id": "html",
-          "title": "1일차 · 6교시 — 저장 HTML에서 데이터 수집",
+          "title": "저장 HTML에서 데이터 수집",
           "content": "",
           "revision": 4,
           "activities": [
@@ -4229,12 +4229,12 @@
                 {
                   "action": "say",
                   "target": "title",
-                  "text": "자, 이번 교시는 웹 페이지예요. 글자 덩어리에서 우리가 원하는 칸 두 개만 집어내요."
+                  "text": "자, 이 단원은 웹 페이지예요. 글자 덩어리에서 우리가 원하는 칸 두 개만 집어내요."
                 },
                 {
                   "action": "say",
                   "target": "text:지금까지의 표는 파일로 받았습니다",
-                  "text": "어떤 숫자는 파일이 아니라 웹 페이지에만 있어요. 포털 시세 화면이 그렇죠. 화면의 정체는 HTML이라는 글자 파일인데, 광고, 메뉴, 제목이 수천 줄 섞여 있어요. 거기서 가격만 집어내는 게 이 교시 일이에요."
+                  "text": "어떤 숫자는 파일이 아니라 웹 페이지에만 있어요. 포털 시세 화면이 그렇죠. 화면의 정체는 HTML이라는 글자 파일인데, 광고, 메뉴, 제목이 수천 줄 섞여 있어요. 거기서 가격만 집어내는 게 이 단원 일이에요."
                 },
                 {
                   "action": "say",
@@ -4405,7 +4405,7 @@
               "problem": {
                 "id": "select-prices",
                 "title": "가격만 모두 뽑아 숫자 리스트로",
-                "content": "### 목표\n\n이번에는 두 종목의 가격을 전부 뽑아 숫자 리스트로 만듭니다. `#prices li b`로 가격 요소를 모두 찾고, 하나씩 글자를 꺼내 쉼표를 지우고 `int()`로 바꾼 값을 `prices` 리스트에 모으세요.\n\n`prices`가 `[10000, 20000]`이면 맞게 한 것입니다. 3교시의 `for`와 `append`가 그대로 쓰입니다.\n\n### 힌트\n\n`prices = []`로 빈 리스트를 만들고 `for tag in soup.select('#prices li b'):`로 돌면서 `prices.append(int(tag.get_text(strip=True).replace(',', '')))`를 하세요.",
+                "content": "### 목표\n\n이번에는 두 종목의 가격을 전부 뽑아 숫자 리스트로 만듭니다. `#prices li b`로 가격 요소를 모두 찾고, 하나씩 글자를 꺼내 쉼표를 지우고 `int()`로 바꾼 값을 `prices` 리스트에 모으세요.\n\n`prices`가 `[10000, 20000]`이면 맞게 한 것입니다. 앞 단원의 `for`와 `append`가 그대로 쓰입니다.\n\n### 힌트\n\n`prices = []`로 빈 리스트를 만들고 `for tag in soup.select('#prices li b'):`로 돌면서 `prices.append(int(tag.get_text(strip=True).replace(',', '')))`를 하세요.",
                 "starter_code": "import pandas as pd\nfrom pathlib import Path\nfrom bs4 import BeautifulSoup\nhtml=Path('data/prices.html').read_text(encoding='utf-8')\nsoup=BeautifulSoup(html,'html.parser')\n# prices 리스트를 만들고 출력하세요\n",
                 "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['prices']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['prices']==[10000,20000]\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
                 "prompt": "파이썬 BeautifulSoup. soup 객체가 있어. \"#prices li b\" 요소들의 텍스트를 꺼내 쉼표 제거 후 int로 바꿔 prices 리스트에 모아 출력. 결과 [10000, 20000].\n\n---\n코드만 줘",
@@ -4430,7 +4430,7 @@
                 {
                   "action": "type_code",
                   "code": "prices = []\nfor tag in soup.select('#prices li b'):\n    prices.append(int(tag.get_text(strip=True).replace(',', '')))\n",
-                  "say": "빈 리스트를 만들고 for로 b 요소를 하나씩 돌아요. 안에서는 글자 꺼내기, 쉼표 지우기, int, append. 3교시의 for와 append가 그대로 쓰이죠."
+                  "say": "빈 리스트를 만들고 for로 b 요소를 하나씩 돌아요. 안에서는 글자 꺼내기, 쉼표 지우기, int, append. 앞 단원의 for와 append가 그대로 쓰이죠."
                 },
                 {
                   "action": "type_code",
@@ -4459,7 +4459,7 @@
               "problem": {
                 "id": "parse-html",
                 "title": "종목 코드·이름·가격을 표로 모으기",
-                "content": "### 목표\n\n네 단계를 한 번에 합니다. `data/prices.html`을 읽어 `soup`를 만들고, `#prices li`를 하나씩 돌면서 종목 코드(`data-code` 속성), 이름(`.name`), 가격(`b`, 쉼표 없는 정수)을 담은 딕셔너리를 `rows` 리스트에 모은 뒤, `rows`로 `df`를 만드세요.\n\n`df`가 2행이고 `price` 열이 10000, 20000이면 맞게 한 것입니다. 딕셔너리 리스트가 표가 되는 것은 3교시에서 본 그대로입니다.\n\n### 힌트\n\n`soup = BeautifulSoup(html, 'html.parser')`로 시작합니다. `for item in soup.select('#prices li'):` 안에서 코드는 `item['data-code']`, 이름은 `item.select_one('.name').get_text(strip=True)`, 가격은 `int(item.select_one('b').get_text(strip=True).replace(',', ''))`로 꺼내 `{'code': ..., 'name': ..., 'price': ...}` 딕셔너리를 `rows`에 `append`하세요. 마지막에 `df = pd.DataFrame(rows)`.",
+                "content": "### 목표\n\n네 단계를 한 번에 합니다. `data/prices.html`을 읽어 `soup`를 만들고, `#prices li`를 하나씩 돌면서 종목 코드(`data-code` 속성), 이름(`.name`), 가격(`b`, 쉼표 없는 정수)을 담은 딕셔너리를 `rows` 리스트에 모은 뒤, `rows`로 `df`를 만드세요.\n\n`df`가 2행이고 `price` 열이 10000, 20000이면 맞게 한 것입니다. 딕셔너리 리스트가 표가 되는 것은 앞 단원에서 본 그대로입니다.\n\n### 힌트\n\n`soup = BeautifulSoup(html, 'html.parser')`로 시작합니다. `for item in soup.select('#prices li'):` 안에서 코드는 `item['data-code']`, 이름은 `item.select_one('.name').get_text(strip=True)`, 가격은 `int(item.select_one('b').get_text(strip=True).replace(',', ''))`로 꺼내 `{'code': ..., 'name': ..., 'price': ...}` 딕셔너리를 `rows`에 `append`하세요. 마지막에 `df = pd.DataFrame(rows)`.",
                 "starter_code": "import pandas as pd\nfrom pathlib import Path\nfrom bs4 import BeautifulSoup\nhtml=Path('data/prices.html').read_text(encoding='utf-8')\n# soup, rows, df를 만드세요\n",
                 "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['df']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['df']['code'].tolist()==['A','B']\n    assert s['df']['price'].tolist()==[10000,20000]\n    assert s['df']['name'].tolist()==['가상A','가상B']\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
                 "prompt": "파이썬 BeautifulSoup + pandas. data/prices.html을 읽어 soup를 만들고, \"#prices li\"를 돌면서 data-code 속성, .name 텍스트, b 텍스트(쉼표 제거 후 int)를 딕셔너리로 rows 리스트에 모은 뒤 pd.DataFrame(rows)를 df에. 열 이름 code, name, price.\n\n---\n코드만 줘",
@@ -4494,7 +4494,7 @@
                 {
                   "action": "type_code",
                   "code": "df=pd.DataFrame(rows)\ndf\n",
-                  "say": "딕셔너리 리스트를 DataFrame에 넣으면 표가 돼요. 3교시에서 본 그대로죠."
+                  "say": "딕셔너리 리스트를 DataFrame에 넣으면 표가 돼요. 앞 단원에서 본 그대로죠."
                 },
                 {
                   "action": "run",
@@ -4513,7 +4513,7 @@
             },
             {
               "id": "html-check",
-              "title": "6교시 점검",
+              "title": "단원 점검",
               "kind": "quiz",
               "questions": [
                 {
@@ -4579,7 +4579,7 @@
                   "accepted": [
                     "DataFrame"
                   ],
-                  "explanation": "3교시와 같습니다. 딕셔너리 하나가 한 행이 되어 `DataFrame`이 만들어집니다.",
+                  "explanation": "앞 단원과 같습니다. 딕셔너리 하나가 한 행이 되어 `DataFrame`이 만들어집니다.",
                   "id": "q6"
                 },
                 {
@@ -4643,7 +4643,7 @@
                 {
                   "action": "say",
                   "target": "quiz:6",
-                  "text": "6번. 3교시와 같습니다. 딕셔너리 하나가 한 행이 되어 DataFrame이 만들어집니다."
+                  "text": "6번. 앞 단원과 같습니다. 딕셔너리 하나가 한 행이 되어 DataFrame이 만들어집니다."
                 },
                 {
                   "action": "say",
@@ -4678,7 +4678,7 @@
               "problem": {
                 "id": "croissant-clean",
                 "title": "★ 도전 과제 · 크루아상 판매 기록 정리",
-                "content": "### 문제에서 필요한 설명\n\n`data/croissant.csv`는 빵 공장의 8주치 일별 판매 기록입니다(날짜·요일·날씨·기온·판매량, 56행). 판매량이 비어 있는 날이 있습니다. 2장에서 배운 읽기·결측·조건 선택·저장을 한 번에 씁니다.\n\n### 목표\n\n1. 판매량의 결측 개수를 `int`로 `n_missing`에 담으세요.\n2. 판매량 결측을 **중앙값**으로 채운 새 표를 `filled`에 담으세요. 원본 `sales`는 바꾸지 않습니다.\n3. `filled`에서 날씨가 `비`인 행만 `rainy`에 담으세요.\n4. `filled`에서 요일이 `토` 또는 `일`인 행의 판매량 평균을 `weekend_mean`에 담으세요.\n5. `filled`를 `croissant_clean.csv`로 저장(`index=False`)하고 다시 읽어 `saved`에 담으세요.\n\n`n_missing`이 2, `rainy`가 15행, `saved`가 56행 5열이면 맞게 한 것입니다.\n\n### 힌트\n\n결측 세기는 `isna().sum()`, 채우기는 `fillna(중앙값)`을 **새 변수**에, 조건은 불리언 마스크, 둘 중 하나는 `isin(['토', '일'])`가 편합니다. 저장은 4교시의 `to_csv(index=False)`입니다.",
+                "content": "### 문제에서 필요한 설명\n\n`data/croissant.csv`는 빵 공장의 8주치 일별 판매 기록입니다(날짜·요일·날씨·기온·판매량, 56행). 판매량이 비어 있는 날이 있습니다. 2장에서 배운 읽기·결측·조건 선택·저장을 한 번에 씁니다.\n\n### 목표\n\n1. 판매량의 결측 개수를 `int`로 `n_missing`에 담으세요.\n2. 판매량 결측을 **중앙값**으로 채운 새 표를 `filled`에 담으세요. 원본 `sales`는 바꾸지 않습니다.\n3. `filled`에서 날씨가 `비`인 행만 `rainy`에 담으세요.\n4. `filled`에서 요일이 `토` 또는 `일`인 행의 판매량 평균을 `weekend_mean`에 담으세요.\n5. `filled`를 `croissant_clean.csv`로 저장(`index=False`)하고 다시 읽어 `saved`에 담으세요.\n\n`n_missing`이 2, `rainy`가 15행, `saved`가 56행 5열이면 맞게 한 것입니다.\n\n### 힌트\n\n결측 세기는 `isna().sum()`, 채우기는 `fillna(중앙값)`을 **새 변수**에, 조건은 불리언 마스크, 둘 중 하나는 `isin(['토', '일'])`가 편합니다. 저장은 앞 단원의 `to_csv(index=False)`입니다.",
                 "starter_code": "import pandas as pd\nsales = pd.read_csv('data/croissant.csv')\n# n_missing, filled, rainy, weekend_mean, saved를 만드세요\n",
                 "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['filled', 'n_missing', 'rainy', 'sales', 'saved', 'weekend_mean']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['n_missing']==2 and s['sales']['판매량'].isna().sum()==2\n    assert s['filled']['판매량'].isna().sum()==0 and abs(s['filled']['판매량'].sum()-25174)<1e-6\n    assert len(s['rainy'])==15 and (s['rainy']['날씨']=='비').all()\n    assert abs(s['weekend_mean']-557.5625)<1e-6\n    assert s['saved'].shape==(56,5) and list(s['saved'].columns)==['날짜','요일','날씨','기온','판매량']\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
                 "prompt": "pandas. data/croissant.csv(날짜·요일·날씨·기온·판매량). 판매량 결측 개수를 int로 n_missing, 결측을 중앙값으로 채운 새 표를 filled(원본 sales는 그대로), 날씨가 '비'인 행을 rainy, 요일이 토·일인 행의 판매량 평균을 weekend_mean, filled를 croissant_clean.csv(index=False)로 저장 후 다시 읽어 saved.\n\n---\n코드만 줘",
@@ -4756,7 +4756,7 @@
       "units": [
         {
           "id": "titanic-structure",
-          "title": "1일차 · 7교시 — 실제 데이터와 Target",
+          "title": "실제 데이터와 Target",
           "content": "",
           "revision": 4,
           "activities": [
@@ -4833,7 +4833,7 @@
               "id": "target",
               "title": "우리가 맞히고 싶은 칸부터 정하기",
               "kind": "concept",
-              "body": "4교시 끝에 잠깐 열어 봤던 `data/titanic.csv`로 돌아갑니다. 1912년 타이타닉호에 탔던 승객 1,309명의 기록입니다. 한 사람이 한 행이고, 열에는 객실 등급(`객실등급`), 성별(`성별`), 나이(`나이`), 함께 탄 형제·배우자 수(`형제배우자`), 부모·자녀 수(`부모자녀`), 요금(`요금`), 탑승 항구(`탑승항구`) 같은 정보가 있습니다. 그리고 `생존` 열이 있습니다. 0이면 사망, 1이면 생존입니다.\n\n```comic-gen\n제목: 먼저 정할 것\n등장인물:\n  준호:\n    그림: 사람\n    이름표: 준호 · 은행 직원\n    외형: {머리색: \"#303746\", 옷색: \"#b88646\"}\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [{식별자: 준호, 표정: 어리둥절}, 강사]\n    대사:\n      - {화자: 준호, 상대: 강사, 내용: \"열이 14개나 되는데 뭐부터 봐요?\"}\n      - {화자: 강사, 상대: 준호, 내용: \"맞히고 싶은 칸부터요. 그걸 타깃이라고 불러요.\"}\n  - 구성: 이전\n    인물: [{식별자: 준호, 표정: 기쁨}, {식별자: 강사, 손모양: 가리키는손}]\n    대사:\n      - {화자: 준호, 상대: 강사, 내용: \"그럼 생존 열이 타깃이고…\"}\n      - {화자: 강사, 상대: 준호, 내용: \"나머지는 맞히는 데 쓸 재료예요.\"}\n```\n\n다음 챕터에서 우리는 이 표로 \"어떤 승객이 살아남았을까\"를 맞히는 모델을 만듭니다. 그러려면 먼저 **무엇을 맞힐 것인지**를 정해야 합니다. 맞히려는 칸을 타깃(target)이라고 부릅니다. 여기서는 `생존`입니다. 타깃을 정하고 나면 나머지 열은 \"맞히는 데 쓸 재료\"가 됩니다.\n\n그런데 재료라고 다 쓸 수 있는 것은 아닙니다. `구명보트`(탄 구명보트의 번호)와 `시신번호`(수습된 시신에 매긴 번호) 열을 보세요. 둘 다 **사고가 끝난 뒤에** 적힌 정보입니다. 구명보트 번호가 있으면 살아남은 것이고 시신 번호가 있으면 사망한 것이니, 이 열로 생존을 맞히는 것은 답안지를 보고 시험을 치는 것과 같습니다. 재료는 \"맞히려는 시점에 알 수 있는 것\"만 써야 합니다. 이 원칙은 모델을 만들 때도, 주가를 다룰 때도 계속 나옵니다.\n\n```python\ntitanic = pd.read_csv('data/titanic.csv')\ntitanic.shape                      # (행 수, 열 수)\ntitanic['생존'].value_counts() # 0과 1이 각각 몇 명\ntitanic['생존'].mean()         # 0과 1의 평균 = 1의 비율 = 생존율\ntitanic.isna().sum()               # 열마다 빈 칸 개수\n```\n\n타깃이 0과 1뿐이면 평균이 곧 비율입니다. 1이 세 명, 0이 일곱 명이면 평균은 0.3이고 생존율 30%입니다. 이 단원의 미션은 이 표를 숫자로 더듬어 보는 것입니다. 몇 명인지, 몇 명이 살아남았는지, 어느 칸이 얼마나 비어 있는지. 특히 나이는 꽤 많이 비어 있는데, 5교시에서 배운 대로 빈 나이는 0살이 아니라 \"모름\"입니다.",
+              "body": "앞 단원 끝에 잠깐 열어 봤던 `data/titanic.csv`로 돌아갑니다. 1912년 타이타닉호에 탔던 승객 1,309명의 기록입니다. 한 사람이 한 행이고, 열에는 객실 등급(`객실등급`), 성별(`성별`), 나이(`나이`), 함께 탄 형제·배우자 수(`형제배우자`), 부모·자녀 수(`부모자녀`), 요금(`요금`), 탑승 항구(`탑승항구`) 같은 정보가 있습니다. 그리고 `생존` 열이 있습니다. 0이면 사망, 1이면 생존입니다.\n\n```comic-gen\n제목: 먼저 정할 것\n등장인물:\n  준호:\n    그림: 사람\n    이름표: 준호 · 은행 직원\n    외형: {머리색: \"#303746\", 옷색: \"#b88646\"}\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [{식별자: 준호, 표정: 어리둥절}, 강사]\n    대사:\n      - {화자: 준호, 상대: 강사, 내용: \"열이 14개나 되는데 뭐부터 봐요?\"}\n      - {화자: 강사, 상대: 준호, 내용: \"맞히고 싶은 칸부터요. 그걸 타깃이라고 불러요.\"}\n  - 구성: 이전\n    인물: [{식별자: 준호, 표정: 기쁨}, {식별자: 강사, 손모양: 가리키는손}]\n    대사:\n      - {화자: 준호, 상대: 강사, 내용: \"그럼 생존 열이 타깃이고…\"}\n      - {화자: 강사, 상대: 준호, 내용: \"나머지는 맞히는 데 쓸 재료예요.\"}\n```\n\n다음 챕터에서 우리는 이 표로 \"어떤 승객이 살아남았을까\"를 맞히는 모델을 만듭니다. 그러려면 먼저 **무엇을 맞힐 것인지**를 정해야 합니다. 맞히려는 칸을 타깃(target)이라고 부릅니다. 여기서는 `생존`입니다. 타깃을 정하고 나면 나머지 열은 \"맞히는 데 쓸 재료\"가 됩니다.\n\n그런데 재료라고 다 쓸 수 있는 것은 아닙니다. `구명보트`(탄 구명보트의 번호)와 `시신번호`(수습된 시신에 매긴 번호) 열을 보세요. 둘 다 **사고가 끝난 뒤에** 적힌 정보입니다. 구명보트 번호가 있으면 살아남은 것이고 시신 번호가 있으면 사망한 것이니, 이 열로 생존을 맞히는 것은 답안지를 보고 시험을 치는 것과 같습니다. 재료는 \"맞히려는 시점에 알 수 있는 것\"만 써야 합니다. 이 원칙은 모델을 만들 때도, 주가를 다룰 때도 계속 나옵니다.\n\n```python\ntitanic = pd.read_csv('data/titanic.csv')\ntitanic.shape                      # (행 수, 열 수)\ntitanic['생존'].value_counts() # 0과 1이 각각 몇 명\ntitanic['생존'].mean()         # 0과 1의 평균 = 1의 비율 = 생존율\ntitanic.isna().sum()               # 열마다 빈 칸 개수\n```\n\n타깃이 0과 1뿐이면 평균이 곧 비율입니다. 1이 세 명, 0이 일곱 명이면 평균은 0.3이고 생존율 30%입니다. 이 단원의 미션은 이 표를 숫자로 더듬어 보는 것입니다. 몇 명인지, 몇 명이 살아남았는지, 어느 칸이 얼마나 비어 있는지. 특히 나이는 꽤 많이 비어 있는데, 앞 단원에서 배운 대로 빈 나이는 0살이 아니라 \"모름\"입니다.",
               "check": {
                 "prompt": "모델이 맞히려는 칸, 이 자료에서는 `생존` 열을 가리키는 영어 용어는 무엇인가요?",
                 "type": "short_answer",
@@ -4856,12 +4856,12 @@
                 {
                   "action": "say",
                   "target": "title",
-                  "text": "자, 이번 교시는 진짜 자료예요. 열이 열넷인데 뭐부터 볼지, 그걸 정해요."
+                  "text": "자, 이 단원은 진짜 자료예요. 열이 열넷인데 뭐부터 볼지, 그걸 정해요."
                 },
                 {
                   "action": "say",
-                  "target": "text:4교시 끝에 잠깐 열어 봤던",
-                  "text": "4교시에 잠깐 열어 본 타이타닉 표로 돌아가요. 승객 1309명, 한 사람이 한 행이에요. 객실등급, 성별, 나이, 요금 같은 열이 있고, 생존 열은 0이면 사망, 1이면 생존이에요."
+                  "target": "text:앞 단원 끝에 잠깐 열어 봤던",
+                  "text": "앞 단원에 잠깐 열어 본 타이타닉 표로 돌아가요. 승객 1309명, 한 사람이 한 행이에요. 객실등급, 성별, 나이, 요금 같은 열이 있고, 생존 열은 0이면 사망, 1이면 생존이에요."
                 },
                 {
                   "action": "say",
@@ -4886,7 +4886,7 @@
                 {
                   "action": "say",
                   "target": "text:타깃이 0과 1뿐이면 평균이 곧 비율입니다",
-                  "text": "0과 1만 있는 열은 평균이 곧 비율이에요. 1이 셋, 0이 일곱이면 평균 0.3, 생존율 30%죠. 그리고 빈 나이는 0살이 아니라 모름이에요. 5교시에서 봤죠?"
+                  "text": "0과 1만 있는 열은 평균이 곧 비율이에요. 1이 셋, 0이 일곱이면 평균 0.3, 생존율 30%죠. 그리고 빈 나이는 0살이 아니라 모름이에요. 앞 단원에서 봤죠?"
                 },
                 {
                   "action": "say",
@@ -4909,7 +4909,7 @@
               "problem": {
                 "id": "titanic-shape",
                 "title": "자료의 크기와 열 이름",
-                "content": "### 목표\n\n표의 뼈대부터 봅니다. `titanic`의 행 수를 `n_rows`, 열 수를 `n_columns`, 열 이름 리스트를 `columns`에 저장하고 출력하세요.\n\n1309행 14열이고 열 이름 중에 `생존`이 있으면 맞게 한 것입니다.\n\n### 힌트\n\n4교시와 같습니다. `n_rows, n_columns = titanic.shape`, `columns = list(titanic.columns)`.",
+                "content": "### 목표\n\n표의 뼈대부터 봅니다. `titanic`의 행 수를 `n_rows`, 열 수를 `n_columns`, 열 이름 리스트를 `columns`에 저장하고 출력하세요.\n\n1309행 14열이고 열 이름 중에 `생존`이 있으면 맞게 한 것입니다.\n\n### 힌트\n\n앞 단원과 같습니다. `n_rows, n_columns = titanic.shape`, `columns = list(titanic.columns)`.",
                 "starter_code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\n# n_rows, n_columns, columns를 만들고 출력하세요\n",
                 "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['columns', 'n_columns', 'n_rows']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['n_rows']==1309 and s['n_columns']==14\n    assert '생존' in list(s['columns']) and '나이' in list(s['columns'])\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
                 "prompt": "pandas. titanic = pd.read_csv('data/titanic.csv'). 행 수 n_rows, 열 수 n_columns, 열 이름 리스트 columns에 담고 출력.\n\n---\n코드만 줘",
@@ -4924,7 +4924,7 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 표의 뼈대부터 봐요. 행 수를 n_rows, 열 수를 n_columns, 열 이름 리스트를 columns에 담아서 출력하면 돼요. 4교시에 한 것과 같아요."
+                  "text": "자, 표의 뼈대부터 봐요. 행 수를 n_rows, 열 수를 n_columns, 열 이름 리스트를 columns에 담아서 출력하면 돼요. 앞 단원에 한 것과 같아요."
                 },
                 {
                   "action": "set_code",
@@ -5140,7 +5140,7 @@
             },
             {
               "id": "target-check",
-              "title": "7교시 점검",
+              "title": "단원 점검",
               "kind": "quiz",
               "questions": [
                 {
@@ -5307,7 +5307,7 @@
         },
         {
           "id": "titanic-groups",
-          "title": "1일차 · 8교시 — 그룹별 생존율",
+          "title": "그룹별 생존율",
           "content": "",
           "revision": 4,
           "activities": [
@@ -5384,7 +5384,7 @@
               "id": "denominator",
               "title": "비율 뒤에는 항상 \"몇 명 중\"이 붙어야 한다",
               "kind": "concept",
-              "body": "7교시에서 전체 생존율을 구했습니다. 그런데 \"전체 38%\"라는 숫자 하나로는 아무 질문에도 답할 수 없습니다. 여성과 남성은 달랐을까? 1등실과 3등실은? 아이와 노인은? 이런 질문에 답하려면 표를 **그룹으로 나눠서** 각 그룹의 생존율을 따로 구해야 합니다. 그 도구가 `groupby`입니다.\n\n```comic-gen\n제목: 몇 명 중에?\n등장인물:\n  민지:\n    그림: 사람\n    이름표: 민지\n    외형: {머리모양: 단발, 머리색: \"#573d36\", 옷: 후드, 옷색: \"#609b87\"}\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [{식별자: 민지, 표정: 기쁨}, 강사]\n    대사:\n      - {화자: 민지, 상대: 강사, 내용: \"여성 생존율이 훨씬 높아요!\"}\n      - {화자: 강사, 상대: 민지, 내용: \"몇 명 중 몇 명인가요?\"}\n  - 구성: 이전\n    인물: [{식별자: 민지, 표정: 어리둥절}, {식별자: 강사, 손모양: 가리키는손}]\n    대사:\n      - {화자: 민지, 상대: 강사, 내용: \"...비율만 봤어요.\"}\n      - 화자: 강사\n        상대: 민지\n        내용: |-\n          인원·생존자·비율을 같이 보세요.\n          3명 중 2명도 67%거든요.\n```\n\n```python\ntitanic.groupby('성별')['생존'].mean()\ntitanic.groupby('성별')['생존'].agg(['count', 'sum', 'mean'])\n```\n\n첫 줄은 \"성별로 묶은 뒤, `생존` 열의 평균을 그룹마다 구해라\"입니다. 두 번째 줄의 `agg`는 집계를 여러 개 한 번에 달라는 뜻으로, `count`는 그룹 인원, `sum`은 생존자 수(1의 합), `mean`은 생존율입니다. 이 셋을 같이 보는 습관이 중요합니다.\n\n왜냐하면 비율은 분모를 숨기기 때문입니다. \"A 그룹 생존율 100%\"가 알고 보니 1명 중 1명일 수 있습니다. 여성과 남성도 인원이 꽤 다릅니다. 그러니 생존율을 말할 때는 **몇 명 중 몇 명**인지를 늘 붙이세요. `count`가 그 분모입니다. 다만 `count`는 빈 칸을 빼고 세기 때문에, 나이처럼 결측이 많은 열의 `count`는 \"그 그룹의 인원\"이 아니라 \"그 그룹에서 나이를 아는 인원\"입니다. 인원을 셀 때는 빈 칸이 없는 `생존` 열로 세는 것이 안전합니다.\n\n```comic-gen\n제목: 생존율 100%의 정체\n등장인물:\n  준호:\n    그림: 사람\n    이름표: 준호 · 은행 직원\n    외형: {머리색: \"#303746\", 옷색: \"#b88646\"}\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [{식별자: 준호, 표정: 기쁨}, 강사]\n    대사:\n      - {화자: 준호, 상대: 강사, 내용: \"이 그룹은 생존율 100%예요!\"}\n      - {화자: 강사, 상대: 준호, 내용: \"몇 명 중 몇 명이에요?\"}\n  - 구성: 이전\n    인물: [{식별자: 준호, 표정: 어리둥절}, {식별자: 강사, 손모양: 가리키는손}]\n    대사:\n      - {화자: 준호, 상대: 강사, 내용: \"…1명 중 1명이요.\"}\n      - {화자: 강사, 상대: 준호, 내용: \"그래서 비율 옆에는 꼭 인원을 같이 적어요.\"}\n```\n\n마지막으로 해석의 선을 하나 긋고 갑니다. 여성의 생존율이 남성보다 높다는 표는 \"이 자료에서 그렇게 **관찰되었다**\"는 사실입니다. \"여성이라서 살았다\"는 원인 설명과는 다릅니다. 여성 승객 중에 1등실 비율이 높았을 수도 있고, 구조 순서 같은 다른 요인이 있었을 수도 있습니다. 한 표는 관찰이고, 원인은 다른 조건을 함께 나눠 봐야 조금씩 좁혀집니다. 그래프를 그리는 챕터에서 이 선을 다시 만나게 됩니다.",
+              "body": "앞 단원에서 전체 생존율을 구했습니다. 그런데 \"전체 38%\"라는 숫자 하나로는 아무 질문에도 답할 수 없습니다. 여성과 남성은 달랐을까? 1등실과 3등실은? 아이와 노인은? 이런 질문에 답하려면 표를 **그룹으로 나눠서** 각 그룹의 생존율을 따로 구해야 합니다. 그 도구가 `groupby`입니다.\n\n```comic-gen\n제목: 몇 명 중에?\n등장인물:\n  민지:\n    그림: 사람\n    이름표: 민지\n    외형: {머리모양: 단발, 머리색: \"#573d36\", 옷: 후드, 옷색: \"#609b87\"}\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [{식별자: 민지, 표정: 기쁨}, 강사]\n    대사:\n      - {화자: 민지, 상대: 강사, 내용: \"여성 생존율이 훨씬 높아요!\"}\n      - {화자: 강사, 상대: 민지, 내용: \"몇 명 중 몇 명인가요?\"}\n  - 구성: 이전\n    인물: [{식별자: 민지, 표정: 어리둥절}, {식별자: 강사, 손모양: 가리키는손}]\n    대사:\n      - {화자: 민지, 상대: 강사, 내용: \"...비율만 봤어요.\"}\n      - 화자: 강사\n        상대: 민지\n        내용: |-\n          인원·생존자·비율을 같이 보세요.\n          3명 중 2명도 67%거든요.\n```\n\n```python\ntitanic.groupby('성별')['생존'].mean()\ntitanic.groupby('성별')['생존'].agg(['count', 'sum', 'mean'])\n```\n\n첫 줄은 \"성별로 묶은 뒤, `생존` 열의 평균을 그룹마다 구해라\"입니다. 두 번째 줄의 `agg`는 집계를 여러 개 한 번에 달라는 뜻으로, `count`는 그룹 인원, `sum`은 생존자 수(1의 합), `mean`은 생존율입니다. 이 셋을 같이 보는 습관이 중요합니다.\n\n왜냐하면 비율은 분모를 숨기기 때문입니다. \"A 그룹 생존율 100%\"가 알고 보니 1명 중 1명일 수 있습니다. 여성과 남성도 인원이 꽤 다릅니다. 그러니 생존율을 말할 때는 **몇 명 중 몇 명**인지를 늘 붙이세요. `count`가 그 분모입니다. 다만 `count`는 빈 칸을 빼고 세기 때문에, 나이처럼 결측이 많은 열의 `count`는 \"그 그룹의 인원\"이 아니라 \"그 그룹에서 나이를 아는 인원\"입니다. 인원을 셀 때는 빈 칸이 없는 `생존` 열로 세는 것이 안전합니다.\n\n```comic-gen\n제목: 생존율 100%의 정체\n등장인물:\n  준호:\n    그림: 사람\n    이름표: 준호 · 은행 직원\n    외형: {머리색: \"#303746\", 옷색: \"#b88646\"}\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [{식별자: 준호, 표정: 기쁨}, 강사]\n    대사:\n      - {화자: 준호, 상대: 강사, 내용: \"이 그룹은 생존율 100%예요!\"}\n      - {화자: 강사, 상대: 준호, 내용: \"몇 명 중 몇 명이에요?\"}\n  - 구성: 이전\n    인물: [{식별자: 준호, 표정: 어리둥절}, {식별자: 강사, 손모양: 가리키는손}]\n    대사:\n      - {화자: 준호, 상대: 강사, 내용: \"…1명 중 1명이요.\"}\n      - {화자: 강사, 상대: 준호, 내용: \"그래서 비율 옆에는 꼭 인원을 같이 적어요.\"}\n```\n\n마지막으로 해석의 선을 하나 긋고 갑니다. 여성의 생존율이 남성보다 높다는 표는 \"이 자료에서 그렇게 **관찰되었다**\"는 사실입니다. \"여성이라서 살았다\"는 원인 설명과는 다릅니다. 여성 승객 중에 1등실 비율이 높았을 수도 있고, 구조 순서 같은 다른 요인이 있었을 수도 있습니다. 한 표는 관찰이고, 원인은 다른 조건을 함께 나눠 봐야 조금씩 좁혀집니다. 그래프를 그리는 챕터에서 이 선을 다시 만나게 됩니다.",
               "check": {
                 "prompt": "그룹별 생존율을 보고할 때 비율과 함께 꼭 적어야 하는 것은 비율의 무엇인가요?",
                 "type": "short_answer",
@@ -5406,12 +5406,12 @@
                 {
                   "action": "say",
                   "target": "title",
-                  "text": "자, 비율을 말할 때마다 몇 명 중을 붙이는 습관, 이번 교시 주제예요."
+                  "text": "자, 비율을 말할 때마다 몇 명 중을 붙이는 습관, 이 단원 주제예요."
                 },
                 {
                   "action": "say",
-                  "target": "text:7교시에서 전체 생존율을 구했습니다",
-                  "text": "7교시에 전체 생존율 38%를 구했죠? 그런데 그 숫자 하나로는 여성과 남성이 달랐나, 1등실과 3등실은, 이런 질문에 답을 못 해요. 표를 그룹으로 나눠야 하고, 그 도구가 groupby예요."
+                  "target": "text:앞 단원에서 전체 생존율을 구했습니다",
+                  "text": "앞 단원에 전체 생존율 38%를 구했죠? 그런데 그 숫자 하나로는 여성과 남성이 달랐나, 1등실과 3등실은, 이런 질문에 답을 못 해요. 표를 그룹으로 나눠야 하고, 그 도구가 groupby예요."
                 },
                 {
                   "action": "say",
@@ -5464,7 +5464,7 @@
               "problem": {
                 "id": "sex-counts",
                 "title": "성별 인원 세기",
-                "content": "### 목표\n\n비율을 구하기 전에 분모부터 셉니다. `titanic['성별'].value_counts()`를 `gender_counts`에 저장하고 출력하세요.\n\n여성과 남성의 인원이 꽤 다르다는 것을 눈으로 확인해 두세요. 이 숫자가 다음 미션의 분모입니다.\n\n### 힌트\n\n7교시의 `value_counts()`와 같습니다. 열만 `성별`로 바꾸세요.",
+                "content": "### 목표\n\n비율을 구하기 전에 분모부터 셉니다. `titanic['성별'].value_counts()`를 `gender_counts`에 저장하고 출력하세요.\n\n여성과 남성의 인원이 꽤 다르다는 것을 눈으로 확인해 두세요. 이 숫자가 다음 미션의 분모입니다.\n\n### 힌트\n\n앞 단원의 `value_counts()`와 같습니다. 열만 `성별`로 바꾸세요.",
                 "starter_code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\n# gender_counts를 만들고 출력하세요\n",
                 "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['gender_counts']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['gender_counts']['여성']==466 and s['gender_counts']['남성']==843\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
                 "prompt": "pandas. titanic DataFrame. 성별 열 value_counts()를 gender_counts에 담고 출력.\n\n---\n코드만 줘",
@@ -5489,7 +5489,7 @@
                 {
                   "action": "type_code",
                   "code": "gender_counts = titanic['성별'].value_counts()\nprint(gender_counts)\n",
-                  "say": "7교시 value_counts와 같아요. 열만 성별로 바꿨어요. 바로 출력해요."
+                  "say": "앞 단원 value_counts와 같아요. 열만 성별로 바꿨어요. 바로 출력해요."
                 },
                 {
                   "action": "run",
@@ -5729,7 +5729,7 @@
             },
             {
               "id": "groups-check",
-              "title": "8교시 점검",
+              "title": "단원 점검",
               "kind": "quiz",
               "questions": [
                 {
@@ -5932,7 +5932,7 @@
                 {
                   "action": "type_code",
                   "code": "family_summary = titanic.groupby('가족동반')['생존'].agg(['count', 'sum', 'mean'])\n",
-                  "say": "8교시와 같은 표예요. 묶는 열만 방금 만든 가족동반이에요. 인원, 생존자, 생존율 셋을 같이 봐요."
+                  "say": "앞 단원과 같은 표예요. 묶는 열만 방금 만든 가족동반이에요. 인원, 생존자, 생존율 셋을 같이 봐요."
                 },
                 {
                   "action": "type_code",
@@ -5969,7 +5969,7 @@
       "units": [
         {
           "id": "bar-chart",
-          "title": "2일차 · 1교시 — Figure·Axes와 막대그래프",
+          "title": "Figure·Axes와 막대그래프",
           "content": "",
           "revision": 4,
           "activities": [
@@ -6305,7 +6305,7 @@
             },
             {
               "id": "bar-check",
-              "title": "2일차 1교시 점검",
+              "title": "단원 점검",
               "kind": "quiz",
               "questions": [
                 {
@@ -6471,7 +6471,7 @@
         },
         {
           "id": "distribution",
-          "title": "2일차 · 2교시 — 분포와 관계 시각화",
+          "title": "분포와 관계 시각화",
           "content": "",
           "revision": 4,
           "activities": [
@@ -6556,7 +6556,7 @@
               "id": "distribution-types",
               "title": "질문이 다르면 그래프도 다르다",
               "kind": "concept",
-              "body": "막대그래프는 \"그룹마다 값이 얼마인가\"에 답합니다. 그런데 자료를 보다 보면 다른 종류의 질문이 생깁니다. 승객 나이는 어떻게 퍼져 있을까? 요금이 비싼 사람이 나이도 많을까? 여섯 개의 열 중 어느 둘이 같이 움직일까? 질문이 다르면 그래프도 달라야 합니다. 이 단원에서 세 가지를 익힙니다.\n\n```comic-gen\n제목: 질문이 그래프를 고른다\n등장인물:\n  민지:\n    그림: 사람\n    이름표: 민지\n    외형: {머리모양: 단발, 머리색: \"#573d36\", 옷: 후드, 옷색: \"#609b87\"}\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [{식별자: 민지, 표정: 어리둥절}, 강사]\n    대사:\n      - {화자: 민지, 상대: 강사, 내용: \"어떤 그래프를 그려야 해요?\"}\n      - {화자: 강사, 상대: 민지, 내용: \"그 전에, 무엇이 궁금한지부터요.\"}\n```\n\n```mapping\n제목: 무엇이 궁금한가 → 어떤 그래프\n왼쪽: 궁금한 것\n오른쪽: 그래프\n그룹끼리 비교 (성별 생존율) → 막대그래프\n한 열이 어떻게 퍼져 있나 (나이) → 히스토그램\n두 숫자가 같이 움직이나 (나이·요금) → 산점도\n시간에 따라 어떻게 변하나 (종가) → 선그래프\n```\n\n**값이 어떻게 퍼져 있나 → 히스토그램.** 나이처럼 값이 연속으로 이어지는 열은 막대로 그릴 그룹이 없습니다. 그래서 값의 범위를 같은 폭의 구간(`bins`)으로 잘라 각 구간에 몇 명이 들어가는지 셉니다. 구간을 20개로 자르면 20개 막대, 5개로 자르면 5개 막대가 되고, 같은 자료라도 모양이 달라 보입니다. 그래서 히스토그램을 보고할 때는 구간 수를 함께 적습니다. 그리고 빈 나이 263명은 어느 구간에도 넣을 수 없으니 먼저 빼고 그립니다.\n\n**둘이 같이 움직이나 → 산점도.** 승객 한 명을 점 하나로, 가로축에 나이, 세로축에 요금을 찍습니다. 점들이 오른쪽 위로 몰리면 \"나이가 많을수록 요금도 비싼 경향\", 아무 모양이 없으면 \"관계가 안 보임\"입니다.\n\n**여러 쌍을 한눈에 → 상관계수 히트맵.** 산점도를 열 쌍마다 그리는 대신, 두 열이 얼마나 같이 움직이는지를 -1에서 1 사이 숫자 하나로 요약한 것이 상관계수입니다. 1에 가까우면 함께 오르고, -1에 가까우면 하나가 오를 때 다른 하나가 내리며, 0 근처면 관계가 약합니다. 열이 여섯 개면 상관계수가 6×6 표로 나오는데, 이 표를 색으로 칠한 것이 히트맵입니다. 대각선은 자기 자신과의 상관이라 항상 1입니다.\n\n```python\nimport seaborn as sns\nknown_age = titanic.dropna(subset=['나이'])\nfig, ax = plt.subplots()\nsns.histplot(data=known_age, x='나이', bins=20, ax=ax)   # 히스토그램\nax.scatter(known['나이'], known['요금'])                 # 산점도. known: 나이·요금이 모두 있는 행\nsns.heatmap(corr, annot=True, vmin=-1, vmax=1, ax=ax)   # 히트맵. corr: 상관계수 표\n```\n\n`seaborn`은 `matplotlib` 위에서 표 열 이름만으로 그래프를 그려 주는 도구입니다. `ax=ax`로 어느 그래프 영역에 그릴지 알려 주면 1교시의 뼈대와 그대로 어울립니다. 마지막으로 해석의 선 하나. 요금과 생존의 상관계수가 양수라는 것은 \"요금이 비싼 사람 중에 생존자가 많았다\"는 관찰이지 \"요금을 더 내면 산다\"는 뜻이 아닙니다. 상관은 함께 변하는 경향이고, 원인은 다른 문제입니다.",
+              "body": "막대그래프는 \"그룹마다 값이 얼마인가\"에 답합니다. 그런데 자료를 보다 보면 다른 종류의 질문이 생깁니다. 승객 나이는 어떻게 퍼져 있을까? 요금이 비싼 사람이 나이도 많을까? 여섯 개의 열 중 어느 둘이 같이 움직일까? 질문이 다르면 그래프도 달라야 합니다. 이 단원에서 세 가지를 익힙니다.\n\n```comic-gen\n제목: 질문이 그래프를 고른다\n등장인물:\n  민지:\n    그림: 사람\n    이름표: 민지\n    외형: {머리모양: 단발, 머리색: \"#573d36\", 옷: 후드, 옷색: \"#609b87\"}\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [{식별자: 민지, 표정: 어리둥절}, 강사]\n    대사:\n      - {화자: 민지, 상대: 강사, 내용: \"어떤 그래프를 그려야 해요?\"}\n      - {화자: 강사, 상대: 민지, 내용: \"그 전에, 무엇이 궁금한지부터요.\"}\n```\n\n```mapping\n제목: 무엇이 궁금한가 → 어떤 그래프\n왼쪽: 궁금한 것\n오른쪽: 그래프\n그룹끼리 비교 (성별 생존율) → 막대그래프\n한 열이 어떻게 퍼져 있나 (나이) → 히스토그램\n두 숫자가 같이 움직이나 (나이·요금) → 산점도\n시간에 따라 어떻게 변하나 (종가) → 선그래프\n```\n\n**값이 어떻게 퍼져 있나 → 히스토그램.** 나이처럼 값이 연속으로 이어지는 열은 막대로 그릴 그룹이 없습니다. 그래서 값의 범위를 같은 폭의 구간(`bins`)으로 잘라 각 구간에 몇 명이 들어가는지 셉니다. 구간을 20개로 자르면 20개 막대, 5개로 자르면 5개 막대가 되고, 같은 자료라도 모양이 달라 보입니다. 그래서 히스토그램을 보고할 때는 구간 수를 함께 적습니다. 그리고 빈 나이 263명은 어느 구간에도 넣을 수 없으니 먼저 빼고 그립니다.\n\n**둘이 같이 움직이나 → 산점도.** 승객 한 명을 점 하나로, 가로축에 나이, 세로축에 요금을 찍습니다. 점들이 오른쪽 위로 몰리면 \"나이가 많을수록 요금도 비싼 경향\", 아무 모양이 없으면 \"관계가 안 보임\"입니다.\n\n**여러 쌍을 한눈에 → 상관계수 히트맵.** 산점도를 열 쌍마다 그리는 대신, 두 열이 얼마나 같이 움직이는지를 -1에서 1 사이 숫자 하나로 요약한 것이 상관계수입니다. 1에 가까우면 함께 오르고, -1에 가까우면 하나가 오를 때 다른 하나가 내리며, 0 근처면 관계가 약합니다. 열이 여섯 개면 상관계수가 6×6 표로 나오는데, 이 표를 색으로 칠한 것이 히트맵입니다. 대각선은 자기 자신과의 상관이라 항상 1입니다.\n\n```python\nimport seaborn as sns\nknown_age = titanic.dropna(subset=['나이'])\nfig, ax = plt.subplots()\nsns.histplot(data=known_age, x='나이', bins=20, ax=ax)   # 히스토그램\nax.scatter(known['나이'], known['요금'])                 # 산점도. known: 나이·요금이 모두 있는 행\nsns.heatmap(corr, annot=True, vmin=-1, vmax=1, ax=ax)   # 히트맵. corr: 상관계수 표\n```\n\n`seaborn`은 `matplotlib` 위에서 표 열 이름만으로 그래프를 그려 주는 도구입니다. `ax=ax`로 어느 그래프 영역에 그릴지 알려 주면 앞 단원의 뼈대와 그대로 어울립니다. 마지막으로 해석의 선 하나. 요금과 생존의 상관계수가 양수라는 것은 \"요금이 비싼 사람 중에 생존자가 많았다\"는 관찰이지 \"요금을 더 내면 산다\"는 뜻이 아닙니다. 상관은 함께 변하는 경향이고, 원인은 다른 문제입니다.",
               "check": {
                 "prompt": "나이처럼 연속으로 이어지는 값을 같은 폭의 구간으로 잘라 각 구간의 개수를 막대로 그린 그래프를 무엇이라고 하나요?",
                 "type": "short_answer",
@@ -6811,7 +6811,7 @@
             },
             {
               "id": "distribution-check",
-              "title": "2일차 2교시 점검",
+              "title": "단원 점검",
               "kind": "quiz",
               "questions": [
                 {
@@ -6976,7 +6976,7 @@
         },
         {
           "id": "insight",
-          "title": "2일차 · 3교시 — 그림에서 근거 읽기",
+          "title": "그림에서 근거 읽기",
           "content": "",
           "revision": 4,
           "activities": [
@@ -7061,7 +7061,7 @@
               "id": "observations",
               "title": "관찰, 다음 질문, 그리고 아직 모르는 것",
               "kind": "concept",
-              "body": "지금까지 표와 그래프를 여럿 만들었습니다. 이 단원은 만드는 법이 아니라 **읽는 법**입니다. 분석 결과를 말할 때 세 가지를 따로 떼어 적으면 틀린 말을 하지 않게 됩니다.\n\n```comic-gen\n제목: 관찰, 질문, 한계\n등장인물:\n  민지:\n    그림: 사람\n    이름표: 민지\n    외형: {머리모양: 단발, 머리색: \"#573d36\", 옷: 후드, 옷색: \"#609b87\"}\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [{식별자: 민지, 표정: 기쁨}, 강사]\n    대사:\n      - {화자: 민지, 상대: 강사, 내용: \"3등실이라서 죽은 거네요!\"}\n      - {화자: 강사, 상대: 민지, 내용: \"표가 말한 건 '3등실 남성 493명 중 15%'까지예요.\"}\n  - 구성: 이전\n    인물: [{식별자: 민지, 표정: 어리둥절}, {식별자: 강사, 손모양: 가리키는손}]\n    대사:\n      - {화자: 민지, 상대: 강사, 내용: \"그럼 '라서'는 어디서 와요?\"}\n      - 화자: 강사\n        상대: 민지\n        내용: |-\n          자료 밖에서요. 그건 다음 질문이나\n          한계로 적습니다.\n```\n\n첫째, **관찰.** 무엇을 계산했고 어떤 차이가 보이는지를 숫자와 분모로 적습니다. \"여성 466명 중 73%가 생존, 남성 843명 중 19%가 생존.\" 둘째, **다음 질문.** 그 차이가 다른 조건 때문일 수 있는지를 묻습니다. \"여성 승객 중 1등실 비율이 높았던 것은 아닐까? 등급을 나눠도 성별 차이가 남을까?\" 셋째, **아직 모르는 것.** 이 자료만으로는 답할 수 없는 부분을 솔직히 적습니다. \"구조 순서나 선실 위치는 기록에 없다.\"\n\n두 번째 질문에 답하려면 그룹을 **두 조건으로** 나눠야 합니다. `groupby`에 열 이름을 리스트로 넣으면 성별 × 등급, 여섯 그룹이 됩니다. 결과는 두 단계 인덱스를 가진 긴 표인데, 비교하기에는 성별이 행, 등급이 열인 넓은 표가 편합니다. 그 변환이 `unstack`입니다.\n\n```python\ngrouped = titanic.groupby(['성별', '객실등급'])['생존'].agg(['count', 'mean'])\nwide = grouped['mean'].unstack('객실등급')   # 행: 성별, 열: 등급\nax = (wide * 100).plot.bar(ylim=(0, 100))  # 성별마다 등급 막대 세 개\n```\n\n넓은 표를 `.plot.bar()`에 넘기면 행마다 막대 묶음을 그려 주므로 1교시처럼 `ax.bar`를 직접 쓰지 않아도 됩니다. 여섯 그룹의 분모(`count`)는 넓은 표에 없으니 긴 표에서 함께 읽어야 합니다. 어떤 그룹은 수십 명뿐이라 비율이 크게 흔들립니다.\n\n마지막으로 제목 이야기입니다. 그림 제목에는 예쁜 말 대신 **무엇을 계산했는지**를 적습니다. \"성별·객실등급별 생존율 (%)\"처럼요. 남이 그 그림만 보고도 무엇을 비교한 것인지 알 수 있어야 분석이 전달됩니다.",
+              "body": "지금까지 표와 그래프를 여럿 만들었습니다. 이 단원은 만드는 법이 아니라 **읽는 법**입니다. 분석 결과를 말할 때 세 가지를 따로 떼어 적으면 틀린 말을 하지 않게 됩니다.\n\n```comic-gen\n제목: 관찰, 질문, 한계\n등장인물:\n  민지:\n    그림: 사람\n    이름표: 민지\n    외형: {머리모양: 단발, 머리색: \"#573d36\", 옷: 후드, 옷색: \"#609b87\"}\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [{식별자: 민지, 표정: 기쁨}, 강사]\n    대사:\n      - {화자: 민지, 상대: 강사, 내용: \"3등실이라서 죽은 거네요!\"}\n      - {화자: 강사, 상대: 민지, 내용: \"표가 말한 건 '3등실 남성 493명 중 15%'까지예요.\"}\n  - 구성: 이전\n    인물: [{식별자: 민지, 표정: 어리둥절}, {식별자: 강사, 손모양: 가리키는손}]\n    대사:\n      - {화자: 민지, 상대: 강사, 내용: \"그럼 '라서'는 어디서 와요?\"}\n      - 화자: 강사\n        상대: 민지\n        내용: |-\n          자료 밖에서요. 그건 다음 질문이나\n          한계로 적습니다.\n```\n\n첫째, **관찰.** 무엇을 계산했고 어떤 차이가 보이는지를 숫자와 분모로 적습니다. \"여성 466명 중 73%가 생존, 남성 843명 중 19%가 생존.\" 둘째, **다음 질문.** 그 차이가 다른 조건 때문일 수 있는지를 묻습니다. \"여성 승객 중 1등실 비율이 높았던 것은 아닐까? 등급을 나눠도 성별 차이가 남을까?\" 셋째, **아직 모르는 것.** 이 자료만으로는 답할 수 없는 부분을 솔직히 적습니다. \"구조 순서나 선실 위치는 기록에 없다.\"\n\n두 번째 질문에 답하려면 그룹을 **두 조건으로** 나눠야 합니다. `groupby`에 열 이름을 리스트로 넣으면 성별 × 등급, 여섯 그룹이 됩니다. 결과는 두 단계 인덱스를 가진 긴 표인데, 비교하기에는 성별이 행, 등급이 열인 넓은 표가 편합니다. 그 변환이 `unstack`입니다.\n\n```python\ngrouped = titanic.groupby(['성별', '객실등급'])['생존'].agg(['count', 'mean'])\nwide = grouped['mean'].unstack('객실등급')   # 행: 성별, 열: 등급\nax = (wide * 100).plot.bar(ylim=(0, 100))  # 성별마다 등급 막대 세 개\n```\n\n넓은 표를 `.plot.bar()`에 넘기면 행마다 막대 묶음을 그려 주므로 앞 단원처럼 `ax.bar`를 직접 쓰지 않아도 됩니다. 여섯 그룹의 분모(`count`)는 넓은 표에 없으니 긴 표에서 함께 읽어야 합니다. 어떤 그룹은 수십 명뿐이라 비율이 크게 흔들립니다.\n\n마지막으로 제목 이야기입니다. 그림 제목에는 예쁜 말 대신 **무엇을 계산했는지**를 적습니다. \"성별·객실등급별 생존율 (%)\"처럼요. 남이 그 그림만 보고도 무엇을 비교한 것인지 알 수 있어야 분석이 전달됩니다.",
               "check": {
                 "prompt": "\"여성 생존율이 높다\"는 관찰 뒤에 \"등급을 나눠도 차이가 남을까?\"처럼 다른 조건을 묻는 문장은 관찰·질문·한계 중 무엇인가요?",
                 "type": "short_answer",
@@ -7140,7 +7140,7 @@
               "problem": {
                 "id": "embarked-rate",
                 "title": "탑승 항구별 인원과 생존율",
-                "content": "### 목표\n\n앞서 배운 `groupby`를 한 번 더 손에 익힙니다. 탑승 항구(`탑승항구`)별로 `생존`의 `count`와 `mean`을 구해 `by_port`에 저장하고 마지막 줄에 적어 확인하세요.\n\n세 항구의 `count`를 더하면 1309가 아니라 1307이 나옵니다. 왜 두 명이 빠지는지 7교시에서 본 결측 표를 떠올려 보세요.\n\n### 힌트\n\n`titanic.groupby('탑승항구')['생존'].agg(['count', 'mean'])`입니다. `탑승항구`가 비어 있는 두 명은 어느 항구 그룹에도 들어가지 않습니다.",
+                "content": "### 목표\n\n앞서 배운 `groupby`를 한 번 더 손에 익힙니다. 탑승 항구(`탑승항구`)별로 `생존`의 `count`와 `mean`을 구해 `by_port`에 저장하고 마지막 줄에 적어 확인하세요.\n\n세 항구의 `count`를 더하면 1309가 아니라 1307이 나옵니다. 왜 두 명이 빠지는지 앞 단원에서 본 결측 표를 떠올려 보세요.\n\n### 힌트\n\n`titanic.groupby('탑승항구')['생존'].agg(['count', 'mean'])`입니다. `탑승항구`가 비어 있는 두 명은 어느 항구 그룹에도 들어가지 않습니다.",
                 "starter_code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\n# by_port를 만드세요\n",
                 "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['by_port']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert set(s['by_port'].index)=={'C','Q','S'}\n    assert s['by_port']['count'].sum()==1307\n    assert s['by_port'].loc['S','count']==914\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
                 "prompt": "pandas. titanic DataFrame. 탑승항구로 groupby한 생존의 agg(['count','mean'])을 by_port에 담고 마지막 줄에 by_port.\n\n---\n코드만 줘",
@@ -7312,7 +7312,7 @@
             },
             {
               "id": "insight-check",
-              "title": "2일차 3교시 점검",
+              "title": "단원 점검",
               "kind": "quiz",
               "questions": [
                 {
@@ -7561,7 +7561,7 @@
       "units": [
         {
           "id": "features",
-          "title": "2일차 · 4교시 — 입력과 정답 분리",
+          "title": "입력과 정답 분리",
           "content": "",
           "revision": 4,
           "activities": [
@@ -8093,7 +8093,7 @@
             },
             {
               "id": "features-check",
-              "title": "2일차 4교시 점검",
+              "title": "단원 점검",
               "kind": "quiz",
               "questions": [
                 {
@@ -8260,7 +8260,7 @@
         },
         {
           "id": "preprocessing",
-          "title": "2일차 · 5교시 — 분리와 전처리 Pipeline",
+          "title": "분리와 전처리 Pipeline",
           "content": "",
           "revision": 4,
           "activities": [
@@ -8345,7 +8345,7 @@
               "id": "fit-train",
               "title": "기준은 훈련 자료에서만 정한다",
               "kind": "concept",
-              "body": "4교시에서 입력 `X`와 정답 `y`를 만들었습니다. 이제 둘을 훈련 자료와 테스트 자료로 나눕니다. 손으로 자르지 않고 `train_test_split`에 맡기는데, 인자 세 개의 뜻만 알면 됩니다. `test_size=0.2`는 20%를 테스트로 떼어 두라는 것, `stratify=y`는 두 쪽의 생존 비율이 비슷하게 섞으라는 것, `random_state=42`는 누가 실행해도 똑같이 나뉘게 하는 고정 번호입니다. 돌려주는 순서는 훈련 입력, 테스트 입력, 훈련 정답, 테스트 정답입니다.\n\n```interactive\n위젯: stratify\n```\n\n```comic-gen\n제목: 기준은 훈련 자료에서만\n등장인물:\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [{식별자: 강사, 손모양: 가리키는손}]\n    대사: [{화자: 강사, 내용: \"중앙값은 훈련 자료에서 정하고, 테스트에는 그 값을 적용만 합니다.\"}]\n    다이어그램:\n      종류: 머메이드\n      제목: fit과 transform\n      높이: 440\n      원문: |\n        sequenceDiagram\n          participant 훈련\n          participant I as SimpleImputer\n          participant 테스트\n          훈련->>I: fit_transform\n          I-->>훈련: 중앙값 정하고 채움\n          테스트->>I: transform\n          I-->>테스트: 같은 중앙값으로 채움\n```\n\n```python\nfrom sklearn.model_selection import train_test_split\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)\n```\n\n나눈 다음에 손질을 시작합니다. 나이의 빈칸을 중앙값으로 채우려면 \"중앙값이 얼마인가\"를 먼저 알아야 하고, `성별`을 One-hot으로 바꾸려면 \"어떤 값들이 있는가\"를 알아야 합니다. 이렇게 손질의 **기준을 정하는 일** 자체가 자료를 들여다보는 학습입니다. 그래서 기준은 **훈련 자료에서만** 정하고, 테스트 자료에는 정해진 기준을 **적용만** 합니다. 테스트의 나이까지 넣어 중앙값을 구하면 모의고사 문제를 미리 본 셈이 됩니다. 작은 누수입니다.\n\n```comic-gen\n제목: 중앙값은 어디서 구하나\n등장인물:\n  민지:\n    그림: 사람\n    이름표: 민지 · 수강생\n    외형: {머리모양: 단발, 옷: 후드, 옷색: \"#4f8a8b\"}\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [{식별자: 민지, 표정: 기쁨}, 강사]\n    대사:\n      - {화자: 민지, 상대: 강사, 내용: \"빈 나이를 채울 중앙값, 1,309명 전체에서 구하면 더 정확하지 않아요?\"}\n      - {화자: 강사, 상대: 민지, 내용: \"그 1,309명 안에 테스트 262명이 들어 있죠.\"}\n  - 구성: 이전\n    인물: [{식별자: 민지, 표정: 어리둥절}, {식별자: 강사, 손모양: 가리키는손}]\n    대사:\n      - {화자: 강사, 상대: 민지, 내용: \"시험지를 보고 공부하는 셈이에요. 기준은 훈련 1,047명에서만.\"}\n      - {화자: 민지, 상대: 강사, 내용: \"훈련에서 정하고, 테스트에는 적용만. 알겠어요.\"}\n```\n\n`scikit-learn`의 손질 도구들은 이 구분을 메서드 이름으로 드러냅니다. `fit`은 기준 정하기, `transform`은 적용하기, `fit_transform`은 둘을 한 번에. 그러니 훈련에는 `fit_transform`, 테스트에는 `transform`입니다.\n\n```python\nfrom sklearn.impute import SimpleImputer\nimputer = SimpleImputer(strategy='median')\ntrain_values = imputer.fit_transform(X_train[['나이', '요금']])  # 훈련에서 중앙값을 정하고 채움\ntest_values = imputer.transform(X_test[['나이', '요금']])        # 같은 중앙값으로 채우기만\n```\n\n이 규칙은 빈칸 채우기뿐 아니라 One-hot 인코딩, 숫자 크기 맞추기(표준화) 전부에 똑같이 적용됩니다. 한 번 더 요약하면, **훈련에서 정하고 테스트에는 적용만.**",
+              "body": "앞 단원에서 입력 `X`와 정답 `y`를 만들었습니다. 이제 둘을 훈련 자료와 테스트 자료로 나눕니다. 손으로 자르지 않고 `train_test_split`에 맡기는데, 인자 세 개의 뜻만 알면 됩니다. `test_size=0.2`는 20%를 테스트로 떼어 두라는 것, `stratify=y`는 두 쪽의 생존 비율이 비슷하게 섞으라는 것, `random_state=42`는 누가 실행해도 똑같이 나뉘게 하는 고정 번호입니다. 돌려주는 순서는 훈련 입력, 테스트 입력, 훈련 정답, 테스트 정답입니다.\n\n```interactive\n위젯: stratify\n```\n\n```comic-gen\n제목: 기준은 훈련 자료에서만\n등장인물:\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [{식별자: 강사, 손모양: 가리키는손}]\n    대사: [{화자: 강사, 내용: \"중앙값은 훈련 자료에서 정하고, 테스트에는 그 값을 적용만 합니다.\"}]\n    다이어그램:\n      종류: 머메이드\n      제목: fit과 transform\n      높이: 440\n      원문: |\n        sequenceDiagram\n          participant 훈련\n          participant I as SimpleImputer\n          participant 테스트\n          훈련->>I: fit_transform\n          I-->>훈련: 중앙값 정하고 채움\n          테스트->>I: transform\n          I-->>테스트: 같은 중앙값으로 채움\n```\n\n```python\nfrom sklearn.model_selection import train_test_split\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)\n```\n\n나눈 다음에 손질을 시작합니다. 나이의 빈칸을 중앙값으로 채우려면 \"중앙값이 얼마인가\"를 먼저 알아야 하고, `성별`을 One-hot으로 바꾸려면 \"어떤 값들이 있는가\"를 알아야 합니다. 이렇게 손질의 **기준을 정하는 일** 자체가 자료를 들여다보는 학습입니다. 그래서 기준은 **훈련 자료에서만** 정하고, 테스트 자료에는 정해진 기준을 **적용만** 합니다. 테스트의 나이까지 넣어 중앙값을 구하면 모의고사 문제를 미리 본 셈이 됩니다. 작은 누수입니다.\n\n```comic-gen\n제목: 중앙값은 어디서 구하나\n등장인물:\n  민지:\n    그림: 사람\n    이름표: 민지 · 수강생\n    외형: {머리모양: 단발, 옷: 후드, 옷색: \"#4f8a8b\"}\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [{식별자: 민지, 표정: 기쁨}, 강사]\n    대사:\n      - {화자: 민지, 상대: 강사, 내용: \"빈 나이를 채울 중앙값, 1,309명 전체에서 구하면 더 정확하지 않아요?\"}\n      - {화자: 강사, 상대: 민지, 내용: \"그 1,309명 안에 테스트 262명이 들어 있죠.\"}\n  - 구성: 이전\n    인물: [{식별자: 민지, 표정: 어리둥절}, {식별자: 강사, 손모양: 가리키는손}]\n    대사:\n      - {화자: 강사, 상대: 민지, 내용: \"시험지를 보고 공부하는 셈이에요. 기준은 훈련 1,047명에서만.\"}\n      - {화자: 민지, 상대: 강사, 내용: \"훈련에서 정하고, 테스트에는 적용만. 알겠어요.\"}\n```\n\n`scikit-learn`의 손질 도구들은 이 구분을 메서드 이름으로 드러냅니다. `fit`은 기준 정하기, `transform`은 적용하기, `fit_transform`은 둘을 한 번에. 그러니 훈련에는 `fit_transform`, 테스트에는 `transform`입니다.\n\n```python\nfrom sklearn.impute import SimpleImputer\nimputer = SimpleImputer(strategy='median')\ntrain_values = imputer.fit_transform(X_train[['나이', '요금']])  # 훈련에서 중앙값을 정하고 채움\ntest_values = imputer.transform(X_test[['나이', '요금']])        # 같은 중앙값으로 채우기만\n```\n\n이 규칙은 빈칸 채우기뿐 아니라 One-hot 인코딩, 숫자 크기 맞추기(표준화) 전부에 똑같이 적용됩니다. 한 번 더 요약하면, **훈련에서 정하고 테스트에는 적용만.**",
               "check": {
                 "prompt": "빈칸을 채울 중앙값이나 One-hot의 값 목록 같은 손질 기준은 훈련 자료와 테스트 자료 중 어느 쪽에서만 정해야 하나요?",
                 "type": "short_answer",
@@ -8374,8 +8374,8 @@
                 },
                 {
                   "action": "say",
-                  "target": "text:4교시에서 입력 X와 정답 y를 만들었습니다",
-                  "text": "4교시에 만든 X와 y를 훈련 자료와 테스트 자료로 나눠요. train_test_split에 맡기는데 인자 셋만 알면 돼요. test_size=0.2는 20%를 테스트로, stratify=y는 양쪽 생존 비율을 비슷하게, random_state=42는 누가 돌려도 똑같이 나뉘게 하는 고정 번호예요."
+                  "target": "text:앞 단원에서 입력 X와 정답 y를 만들었습니다",
+                  "text": "앞 단원에 만든 X와 y를 훈련 자료와 테스트 자료로 나눠요. train_test_split에 맡기는데 인자 셋만 알면 돼요. test_size=0.2는 20%를 테스트로, stratify=y는 양쪽 생존 비율을 비슷하게, random_state=42는 누가 돌려도 똑같이 나뉘게 하는 고정 번호예요."
                 },
                 {
                   "action": "say",
@@ -8615,7 +8615,7 @@
               "problem": {
                 "id": "onehot-fit",
                 "title": "글자 열을 훈련 기준으로 One-hot",
-                "content": "### 목표\n\n4교시의 `get_dummies`를 모델 흐름에 맞는 도구로 바꿉니다. `OneHotEncoder(handle_unknown='ignore', sparse_output=False)`를 `encoder`에 만들고, `X_train[['성별']]`에 `fit_transform`한 결과를 `train_encoded`, `X_test[['성별']]`에 `transform`한 결과를 `test_encoded`에 저장해 `shape`를 출력하세요.\n\n두 결과 모두 열이 2개(여성, 남성)이면 맞게 한 것입니다.\n\n### 힌트\n\n빈칸 채우기와 똑같은 모양입니다. 훈련에는 `fit_transform`, 테스트에는 `transform`. `handle_unknown='ignore'`는 테스트에 처음 보는 값이 나와도 오류 대신 0으로 두라는 뜻이고, `sparse_output=False`는 결과를 보통 배열로 달라는 뜻입니다.",
+                "content": "### 목표\n\n앞 단원의 `get_dummies`를 모델 흐름에 맞는 도구로 바꿉니다. `OneHotEncoder(handle_unknown='ignore', sparse_output=False)`를 `encoder`에 만들고, `X_train[['성별']]`에 `fit_transform`한 결과를 `train_encoded`, `X_test[['성별']]`에 `transform`한 결과를 `test_encoded`에 저장해 `shape`를 출력하세요.\n\n두 결과 모두 열이 2개(여성, 남성)이면 맞게 한 것입니다.\n\n### 힌트\n\n빈칸 채우기와 똑같은 모양입니다. 훈련에는 `fit_transform`, 테스트에는 `transform`. `handle_unknown='ignore'`는 테스트에 처음 보는 값이 나와도 오류 대신 0으로 두라는 뜻이고, `sparse_output=False`는 결과를 보통 배열로 달라는 뜻입니다.",
                 "starter_code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nfeatures=['객실등급','성별','나이','형제배우자','부모자녀','요금','탑승항구']\nX=titanic[features].copy()\ny=titanic['생존'].astype(int)\nfrom sklearn.model_selection import train_test_split\nX_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.2,stratify=y,random_state=42)\nfrom sklearn.preprocessing import OneHotEncoder\n# encoder, train_encoded, test_encoded를 만드세요\n",
                 "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['encoder', 'test_encoded', 'train_encoded']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['train_encoded'].shape==(1047,2) and s['test_encoded'].shape==(262,2)\n    assert sorted(s['encoder'].categories_[0])==['남성','여성']\n    assert (s['train_encoded'].sum(axis=1)==1).all()\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
                 "prompt": "scikit-learn. X_train, X_test가 있어. OneHotEncoder(handle_unknown='ignore', sparse_output=False)를 encoder에 만들고 X_train[['성별']]에 fit_transform → train_encoded, X_test[['성별']]에 transform → test_encoded. shape 출력.\n\n---\n코드만 줘",
@@ -8630,7 +8630,7 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 4교시의 get_dummies를 모델 흐름에 맞는 도구로 바꿔요. OneHotEncoder를 encoder에 만들고, 훈련 성별에 fit_transform, 테스트 성별에 transform한 결과를 train_encoded, test_encoded에 담아 shape를 출력하면 돼요."
+                  "text": "자, 앞 단원의 get_dummies를 모델 흐름에 맞는 도구로 바꿔요. OneHotEncoder를 encoder에 만들고, 훈련 성별에 fit_transform, 테스트 성별에 transform한 결과를 train_encoded, test_encoded에 담아 shape를 출력하면 돼요."
                 },
                 {
                   "action": "set_code",
@@ -8883,7 +8883,7 @@
             },
             {
               "id": "pipeline-check",
-              "title": "2일차 5교시 점검",
+              "title": "단원 점검",
               "kind": "quiz",
               "questions": [
                 {
@@ -9048,7 +9048,7 @@
         },
         {
           "id": "classifiers",
-          "title": "2일차 · 6교시 — 세 분류 모델과 기준 비교",
+          "title": "세 분류 모델과 기준 비교",
           "content": "",
           "revision": 4,
           "activities": [
@@ -9109,7 +9109,7 @@
               "id": "baselines",
               "title": "\"좋다\"고 말하려면 비교할 기준이 있어야 한다",
               "kind": "concept",
-              "body": "손질이 끝났으니 모델을 고를 차례입니다. 이 수업에서는 세 가지를 씁니다. 수식 없이 각각이 무엇을 하는지만 잡아 두면 됩니다.\n\n**로지스틱 회귀**(`LogisticRegression`)는 입력마다 점수를 매겨 더한 뒤, 합이 어떤 선을 넘으면 생존, 못 넘으면 사망으로 가릅니다. 어느 열이 얼마나 중요한지가 점수로 남아 설명하기 쉽습니다. **결정 트리**(`DecisionTreeClassifier`)는 스무고개입니다. \"여성인가? → 3등실인가? → 나이가 15세 이하인가?\" 같은 질문을 가지처럼 뻗어 가며 가릅니다. 질문을 끝없이 늘리면 훈련 자료를 통째로 외워 버릴 수 있어서 `max_depth`로 질문 깊이를 제한합니다. **랜덤 포레스트**(`RandomForestClassifier`)는 서로 조금씩 다른 트리를 수십 개 만들어 다수결로 정합니다. 한 트리의 실수를 다른 트리들이 덮어 주어 보통 트리 하나보다 안정적입니다.\n\n```interactive\n위젯: overfit\n```\n\n모델이 몇 개든 비교 방식은 하나입니다. **같은 훈련 자료로 배우고, 같은 테스트 자료로 채점한다.** 그런데 그 전에 물어야 할 것이 있습니다. 정확도 78%는 좋은 걸까요? 테스트 262명 중 사망이 162명이므로 **아무것도 보지 않고 전원 사망이라고 찍어도 62%**가 나옵니다. 모델의 실력은 이 \"찍기 점수\"와 비교해야 보입니다. 그래서 가장 많은 답만 찍는 `DummyClassifier`를 기준 모델로 먼저 돌립니다. 기준보다 못한 모델은 아무것도 배우지 못한 것입니다. 현장도 마찬가지입니다. 콜센터 팀장이 월요일 인력을 짤 때 가장 단순한 방법은 \"지난주 월요일과 같게\"입니다. 통화량 예측 모델을 들여왔는데 이 방법보다 더 빗나간다면, 그 모델은 팀장의 감보다 못한 것입니다.\n\n```comic-gen\n제목: 팀장의 감과 모델\n등장인물:\n  팀장:\n    그림: 사람\n    이름표: 콜센터 팀장\n    외형: {머리모양: 긴머리, 머리색: \"#2f2a33\", 옷: 재킷, 옷색: \"#7a5a9e\"}\n  민지:\n    그림: 사람\n    이름표: 민지\n    외형: {머리모양: 단발, 머리색: \"#573d36\", 옷: 후드, 옷색: \"#609b87\"}\n컷:\n  - 인물: [팀장, 민지]\n    대사:\n      - 화자: 팀장\n        상대: 민지\n        내용: |-\n          월요일 인력은\n          지난주 월요일과 같게 짜요.\n      - {화자: 민지, 상대: 팀장, 내용: \"저는 통화량 예측 모델을 만들었어요!\"}\n  - 구성: 이전\n    인물: [{식별자: 팀장, 표정: 어리둥절}, {식별자: 민지, 표정: 어리둥절}]\n    대사:\n      - {화자: 팀장, 상대: 민지, 내용: \"그래서 내 방법보다 덜 빗나가나요?\"}\n      - {화자: 민지, 상대: 팀장, 내용: \"...그걸 아직 안 재 봤네요.\"}\n  - 구성: 이전\n    인물: [{식별자: 팀장, 표정: 기쁨}, {식별자: 민지, 표정: 기쁨}]\n    대사:\n      - 화자: 민지\n        상대: 팀장\n        내용: |-\n          팀장님 방법이 기준 모델이에요.\n          그걸 먼저 재고 비교할게요.\n      - {화자: 팀장, 상대: 민지, 내용: \"제 방법보다 못 맞히면 안 쓰는 걸로 하죠.\"}\n```\n\n```python\nmodel = Pipeline([('prepare', make_preprocessor()), ('model', LogisticRegression(max_iter=2000))])\nmodel.fit(X_train, y_train)\npred = model.predict(X_test)\naccuracy_score(y_test, pred)\n```\n\n준비 코드의 `make_preprocessor()`는 5교시에서 만든 숫자용 묶음(채우기+표준화)과 글자용 묶음(채우기+One-hot)을 하나로 합친 손질기입니다. 그 뒤에 모델을 붙인 `Pipeline`을 쓰면 `fit` 한 번으로 손질과 학습이 끝나고, `predict` 한 번으로 손질과 예측이 끝납니다. 모델을 바꿀 때는 `('model', ...)` 자리만 바꿉니다.\n\n점수는 정확도(accuracy, 전체 중 맞힌 비율) 하나만 보지 않습니다. 생존자가 적은 자료에서는 생존자를 얼마나 잘 찾아냈는지를 따로 보는 F1 점수도 함께 적습니다. 자세한 뜻은 8교시에서 다룹니다. 지금은 \"두 점수를 표로 나란히 적는다\"까지만.",
+              "body": "손질이 끝났으니 모델을 고를 차례입니다. 이 수업에서는 세 가지를 씁니다. 수식 없이 각각이 무엇을 하는지만 잡아 두면 됩니다.\n\n**로지스틱 회귀**(`LogisticRegression`)는 입력마다 점수를 매겨 더한 뒤, 합이 어떤 선을 넘으면 생존, 못 넘으면 사망으로 가릅니다. 어느 열이 얼마나 중요한지가 점수로 남아 설명하기 쉽습니다. **결정 트리**(`DecisionTreeClassifier`)는 스무고개입니다. \"여성인가? → 3등실인가? → 나이가 15세 이하인가?\" 같은 질문을 가지처럼 뻗어 가며 가릅니다. 질문을 끝없이 늘리면 훈련 자료를 통째로 외워 버릴 수 있어서 `max_depth`로 질문 깊이를 제한합니다. **랜덤 포레스트**(`RandomForestClassifier`)는 서로 조금씩 다른 트리를 수십 개 만들어 다수결로 정합니다. 한 트리의 실수를 다른 트리들이 덮어 주어 보통 트리 하나보다 안정적입니다.\n\n```interactive\n위젯: overfit\n```\n\n모델이 몇 개든 비교 방식은 하나입니다. **같은 훈련 자료로 배우고, 같은 테스트 자료로 채점한다.** 그런데 그 전에 물어야 할 것이 있습니다. 정확도 78%는 좋은 걸까요? 테스트 262명 중 사망이 162명이므로 **아무것도 보지 않고 전원 사망이라고 찍어도 62%**가 나옵니다. 모델의 실력은 이 \"찍기 점수\"와 비교해야 보입니다. 그래서 가장 많은 답만 찍는 `DummyClassifier`를 기준 모델로 먼저 돌립니다. 기준보다 못한 모델은 아무것도 배우지 못한 것입니다. 현장도 마찬가지입니다. 콜센터 팀장이 월요일 인력을 짤 때 가장 단순한 방법은 \"지난주 월요일과 같게\"입니다. 통화량 예측 모델을 들여왔는데 이 방법보다 더 빗나간다면, 그 모델은 팀장의 감보다 못한 것입니다.\n\n```comic-gen\n제목: 팀장의 감과 모델\n등장인물:\n  팀장:\n    그림: 사람\n    이름표: 콜센터 팀장\n    외형: {머리모양: 긴머리, 머리색: \"#2f2a33\", 옷: 재킷, 옷색: \"#7a5a9e\"}\n  민지:\n    그림: 사람\n    이름표: 민지\n    외형: {머리모양: 단발, 머리색: \"#573d36\", 옷: 후드, 옷색: \"#609b87\"}\n컷:\n  - 인물: [팀장, 민지]\n    대사:\n      - 화자: 팀장\n        상대: 민지\n        내용: |-\n          월요일 인력은\n          지난주 월요일과 같게 짜요.\n      - {화자: 민지, 상대: 팀장, 내용: \"저는 통화량 예측 모델을 만들었어요!\"}\n  - 구성: 이전\n    인물: [{식별자: 팀장, 표정: 어리둥절}, {식별자: 민지, 표정: 어리둥절}]\n    대사:\n      - {화자: 팀장, 상대: 민지, 내용: \"그래서 내 방법보다 덜 빗나가나요?\"}\n      - {화자: 민지, 상대: 팀장, 내용: \"...그걸 아직 안 재 봤네요.\"}\n  - 구성: 이전\n    인물: [{식별자: 팀장, 표정: 기쁨}, {식별자: 민지, 표정: 기쁨}]\n    대사:\n      - 화자: 민지\n        상대: 팀장\n        내용: |-\n          팀장님 방법이 기준 모델이에요.\n          그걸 먼저 재고 비교할게요.\n      - {화자: 팀장, 상대: 민지, 내용: \"제 방법보다 못 맞히면 안 쓰는 걸로 하죠.\"}\n```\n\n```python\nmodel = Pipeline([('prepare', make_preprocessor()), ('model', LogisticRegression(max_iter=2000))])\nmodel.fit(X_train, y_train)\npred = model.predict(X_test)\naccuracy_score(y_test, pred)\n```\n\n준비 코드의 `make_preprocessor()`는 앞 단원에서 만든 숫자용 묶음(채우기+표준화)과 글자용 묶음(채우기+One-hot)을 하나로 합친 손질기입니다. 그 뒤에 모델을 붙인 `Pipeline`을 쓰면 `fit` 한 번으로 손질과 학습이 끝나고, `predict` 한 번으로 손질과 예측이 끝납니다. 모델을 바꿀 때는 `('model', ...)` 자리만 바꿉니다.\n\n점수는 정확도(accuracy, 전체 중 맞힌 비율) 하나만 보지 않습니다. 생존자가 적은 자료에서는 생존자를 얼마나 잘 찾아냈는지를 따로 보는 F1 점수도 함께 적습니다. 자세한 뜻은 뒤 단원에서 다룹니다. 지금은 \"두 점수를 표로 나란히 적는다\"까지만.",
               "check": {
                 "prompt": "입력을 보지 않고 가장 많은 답만 찍는 기준 모델의 `scikit-learn` 이름은 무엇인가요?",
                 "type": "short_answer",
@@ -9165,13 +9165,13 @@
                 },
                 {
                   "action": "say",
-                  "target": "text:준비 코드의 make_preprocessor()는 5교시에서",
-                  "text": "준비 코드의 make_preprocessor()가 5교시의 숫자용 묶음과 글자용 묶음을 합친 손질기예요. 모델을 바꿀 때는 model 자리만 바꾸면 돼요."
+                  "target": "text:준비 코드의 make_preprocessor()는 앞 단원에서",
+                  "text": "준비 코드의 make_preprocessor()가 앞 단원의 숫자용 묶음과 글자용 묶음을 합친 손질기예요. 모델을 바꿀 때는 model 자리만 바꾸면 돼요."
                 },
                 {
                   "action": "say",
                   "target": "text:점수는 정확도(accuracy, 전체 중 맞힌 비율) 하나만 보지 않습니다",
-                  "text": "점수는 정확도 하나만 보지 않아요. 생존자가 적은 자료라 생존자를 얼마나 잘 찾았는지 보는 F1도 같이 적어요. 뜻은 8교시에서 하고, 지금은 두 점수를 표에 나란히 적는다까지만이에요."
+                  "text": "점수는 정확도 하나만 보지 않아요. 생존자가 적은 자료라 생존자를 얼마나 잘 찾았는지 보는 F1도 같이 적어요. 뜻은 앞 단원에서 하고, 지금은 두 점수를 표에 나란히 적는다까지만이에요."
                 },
                 {
                   "action": "say",
@@ -9689,7 +9689,7 @@
               "id": "save-model",
               "title": "한 번 만든 모델은 저장해서 다시 쓴다",
               "kind": "concept",
-              "body": "지금까지 모든 미션은 실행할 때마다 `fit`부터 다시 했습니다. 승객 1,047명이면 1초라 괜찮지만, 회사 자료는 수백만 행이고 훈련에 몇 시간이 걸리기도 합니다. 그걸 예측할 때마다 다시 배우게 할 이유가 없습니다. 배운 모델은 **파일로 저장**해 두고, 쓸 때는 **불러와서 `predict`만** 합니다.\n\n```comic-gen\n제목: 어제 훈련한 모델은 어디 갔나\n등장인물:\n  공장장:\n    그림: 사람\n    이름표: 빵 공장장\n    외형: {피부색: \"#d6a279\", 머리모양: 민머리, 옷색: \"#8a6d4b\"}\n  모델: {그림: 서버, 이름표: 모델}\n컷:\n  - 인물: [{식별자: 공장장, 표정: 어리둥절}, {식별자: 모델, 표정: 보통}]\n    대사:\n      - {화자: 공장장, 상대: 모델, 내용: \"어제 세 시간 걸려 훈련했는데, 오늘 또 처음부터?\"}\n      - {화자: 모델, 상대: 공장장, 내용: \"프로그램이 끝나면 저는 사라져요. 저장 안 하셨잖아요.\"}\n  - 구성: 이전\n    인물: [{식별자: 공장장, 손모양: 가리키는손}, {식별자: 모델, 표정: 기쁨}]\n    대사:\n      - {화자: 공장장, 상대: 모델, 내용: \"joblib.dump로 파일에 넣어 둘게.\"}\n      - {화자: 모델, 상대: 공장장, 내용: \"그럼 내일 새벽엔 불러와서 바로 예측만 하면 돼요.\"}\n```\n\n```python\nimport joblib\njoblib.dump(model, 'titanic_model.joblib')      # 훈련 끝난 모델을 파일로\nloaded = joblib.load('titanic_model.joblib')     # 다른 날, 다른 프로그램에서 불러오기\nloaded.predict(X_new)                            # 훈련 없이 바로 예측\n```\n\n`joblib`은 `scikit-learn`과 함께 설치되는 저장 도구입니다. 저장하는 것은 모델 하나가 아니라 **파이프라인 전체**입니다. 그래서 5교시에 훈련 자료에서 정한 기준(나이의 중앙값, One-hot 열 목록, 표준화 기준)도 파일 안에 같이 들어가고, 새 자료에도 같은 손질이 그대로 적용됩니다. 손질과 모델을 한 줄로 묶어 둔 또 하나의 이유입니다.\n\n현장에서는 이렇게 돌아갑니다. 빵 공장은 **매주 월요일에 한 번** 지난 기록으로 다시 훈련해 파일을 갈아 끼우고, **매일 새벽에는 불러와서 오늘 생산량만** 예측합니다. 콜센터의 월요일 인원 예측도 같은 모양입니다. AI에게 \"해 줘\"라고 시킬 때도 **\"모델은 파일로 저장하고, 예측 스크립트는 불러오기만 하게\"**라고 한 줄 보태면 매번 훈련하는 코드를 받지 않습니다.\n\n주의할 점 두 가지. 저장한 파일은 같은 버전의 `scikit-learn`에서 열어야 안전하고, 자료가 많이 바뀌면(새 메뉴, 새 상품) 다시 훈련해야 합니다. 파일은 \"그때 배운 규칙\"일 뿐이니까요.",
+              "body": "지금까지 모든 미션은 실행할 때마다 `fit`부터 다시 했습니다. 승객 1,047명이면 1초라 괜찮지만, 회사 자료는 수백만 행이고 훈련에 몇 시간이 걸리기도 합니다. 그걸 예측할 때마다 다시 배우게 할 이유가 없습니다. 배운 모델은 **파일로 저장**해 두고, 쓸 때는 **불러와서 `predict`만** 합니다.\n\n```comic-gen\n제목: 어제 훈련한 모델은 어디 갔나\n등장인물:\n  공장장:\n    그림: 사람\n    이름표: 빵 공장장\n    외형: {피부색: \"#d6a279\", 머리모양: 민머리, 옷색: \"#8a6d4b\"}\n  모델: {그림: 서버, 이름표: 모델}\n컷:\n  - 인물: [{식별자: 공장장, 표정: 어리둥절}, {식별자: 모델, 표정: 보통}]\n    대사:\n      - {화자: 공장장, 상대: 모델, 내용: \"어제 세 시간 걸려 훈련했는데, 오늘 또 처음부터?\"}\n      - {화자: 모델, 상대: 공장장, 내용: \"프로그램이 끝나면 저는 사라져요. 저장 안 하셨잖아요.\"}\n  - 구성: 이전\n    인물: [{식별자: 공장장, 손모양: 가리키는손}, {식별자: 모델, 표정: 기쁨}]\n    대사:\n      - {화자: 공장장, 상대: 모델, 내용: \"joblib.dump로 파일에 넣어 둘게.\"}\n      - {화자: 모델, 상대: 공장장, 내용: \"그럼 내일 새벽엔 불러와서 바로 예측만 하면 돼요.\"}\n```\n\n```python\nimport joblib\njoblib.dump(model, 'titanic_model.joblib')      # 훈련 끝난 모델을 파일로\nloaded = joblib.load('titanic_model.joblib')     # 다른 날, 다른 프로그램에서 불러오기\nloaded.predict(X_new)                            # 훈련 없이 바로 예측\n```\n\n`joblib`은 `scikit-learn`과 함께 설치되는 저장 도구입니다. 저장하는 것은 모델 하나가 아니라 **파이프라인 전체**입니다. 그래서 앞 단원에 훈련 자료에서 정한 기준(나이의 중앙값, One-hot 열 목록, 표준화 기준)도 파일 안에 같이 들어가고, 새 자료에도 같은 손질이 그대로 적용됩니다. 손질과 모델을 한 줄로 묶어 둔 또 하나의 이유입니다.\n\n현장에서는 이렇게 돌아갑니다. 빵 공장은 **매주 월요일에 한 번** 지난 기록으로 다시 훈련해 파일을 갈아 끼우고, **매일 새벽에는 불러와서 오늘 생산량만** 예측합니다. 콜센터의 월요일 인원 예측도 같은 모양입니다. AI에게 \"해 줘\"라고 시킬 때도 **\"모델은 파일로 저장하고, 예측 스크립트는 불러오기만 하게\"**라고 한 줄 보태면 매번 훈련하는 코드를 받지 않습니다.\n\n주의할 점 두 가지. 저장한 파일은 같은 버전의 `scikit-learn`에서 열어야 안전하고, 자료가 많이 바뀌면(새 메뉴, 새 상품) 다시 훈련해야 합니다. 파일은 \"그때 배운 규칙\"일 뿐이니까요.",
               "check": {
                 "prompt": "훈련이 끝난 파이프라인을 파일로 저장할 때 쓰는 함수는 무엇인가요? `joblib.____(model, 'titanic_model.joblib')`",
                 "type": "short_answer",
@@ -9821,7 +9821,7 @@
             },
             {
               "id": "model-check",
-              "title": "2일차 6교시 점검",
+              "title": "단원 점검",
               "kind": "quiz",
               "questions": [
                 {
@@ -10027,7 +10027,7 @@
               "problem": {
                 "id": "full-comparison",
                 "title": "★ 도전 과제 · 기준과 세 모델, 처음부터 끝까지",
-                "content": "### 문제에서 필요한 설명\n\n5장을 한 번에 복습합니다. 이번에는 준비 코드가 거의 없습니다. 자료 읽기부터 입력·정답 분리, 층화 분할, 손질기, 네 모델 비교표까지 직접 씁니다. 순서를 틀리면 조용한 누수가 생깁니다.\n\n### 목표\n\n1. `data/titanic.csv`를 읽고 `features = ['객실등급','성별','나이','형제배우자','부모자녀','요금','탑승항구']`로 `X`, `y`(정수 `생존`)를 만드세요.\n2. `train_test_split(test_size=0.2, stratify=y, random_state=42)`로 나누세요.\n3. 숫자 열은 중앙값 채우기+표준화, 글자 열은 최빈값 채우기+One-hot(`handle_unknown='ignore'`)으로 묶은 `ColumnTransformer`를 `preprocessor`에 만드세요.\n4. `models`에 `Dummy`(가장 많은 답 찍기), `Logistic`(반복 2000회), `Tree`(깊이 5, 난수 42), `Forest`(트리 50개, 깊이 5, 난수 42)를 넣고, 각각 `Pipeline([('prepare', preprocessor), ('model', m)])`로 학습·예측해 `accuracy`, `f1` 두 열의 `results` 표를 만드세요.\n5. F1이 가장 높은 모델 이름을 `best_model`에 담으세요.\n\n`Dummy`의 정확도가 162/262이고 `best_model`이 `Dummy`가 아니면 맞게 한 것입니다.\n\n### 힌트\n\n5교시의 `make_preprocessor()`를 떠올리세요. 수치형은 `['객실등급','나이','형제배우자','부모자녀','요금']`, 범주형은 `['성별','탑승항구']`입니다. `Pipeline`은 모델마다 새로 만들어야 합니다(`preprocessor`는 같은 것을 다시 써도 됩니다. 매번 같은 훈련 자료로 다시 `fit`되기 때문입니다). `best_model = results['f1'].idxmax()`.",
+                "content": "### 문제에서 필요한 설명\n\n5장을 한 번에 복습합니다. 이번에는 준비 코드가 거의 없습니다. 자료 읽기부터 입력·정답 분리, 층화 분할, 손질기, 네 모델 비교표까지 직접 씁니다. 순서를 틀리면 조용한 누수가 생깁니다.\n\n### 목표\n\n1. `data/titanic.csv`를 읽고 `features = ['객실등급','성별','나이','형제배우자','부모자녀','요금','탑승항구']`로 `X`, `y`(정수 `생존`)를 만드세요.\n2. `train_test_split(test_size=0.2, stratify=y, random_state=42)`로 나누세요.\n3. 숫자 열은 중앙값 채우기+표준화, 글자 열은 최빈값 채우기+One-hot(`handle_unknown='ignore'`)으로 묶은 `ColumnTransformer`를 `preprocessor`에 만드세요.\n4. `models`에 `Dummy`(가장 많은 답 찍기), `Logistic`(반복 2000회), `Tree`(깊이 5, 난수 42), `Forest`(트리 50개, 깊이 5, 난수 42)를 넣고, 각각 `Pipeline([('prepare', preprocessor), ('model', m)])`로 학습·예측해 `accuracy`, `f1` 두 열의 `results` 표를 만드세요.\n5. F1이 가장 높은 모델 이름을 `best_model`에 담으세요.\n\n`Dummy`의 정확도가 162/262이고 `best_model`이 `Dummy`가 아니면 맞게 한 것입니다.\n\n### 힌트\n\n앞 단원의 `make_preprocessor()`를 떠올리세요. 수치형은 `['객실등급','나이','형제배우자','부모자녀','요금']`, 범주형은 `['성별','탑승항구']`입니다. `Pipeline`은 모델마다 새로 만들어야 합니다(`preprocessor`는 같은 것을 다시 써도 됩니다. 매번 같은 훈련 자료로 다시 `fit`되기 때문입니다). `best_model = results['f1'].idxmax()`.",
                 "starter_code": "import pandas as pd\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.compose import ColumnTransformer\nfrom sklearn.impute import SimpleImputer\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import OneHotEncoder, StandardScaler\nfrom sklearn.dummy import DummyClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.tree import DecisionTreeClassifier\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import accuracy_score, f1_score\n# X, y, 분할, preprocessor, models, results, best_model을 만드세요\n",
                 "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['X', 'X_test', 'X_train', 'best_model', 'results', 'y', 'y_test', 'y_train']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['X'].shape==(1309,7) and int(s['y'].sum())==500\n    assert len(s['X_train'])==1047 and len(s['X_test'])==262 and abs(s['y_train'].mean()-s['y_test'].mean())<0.02\n    assert set(s['results'].index)=={'Dummy','Logistic','Tree','Forest'} and list(s['results'].columns)==['accuracy','f1']\n    assert abs(s['results'].loc['Dummy','accuracy']-162/262)<1e-9 and s['results'].loc['Dummy','f1']==0\n    assert s['best_model']!='Dummy' and s['best_model']==s['results']['f1'].idxmax()\n    assert (s['results'].loc[['Logistic','Tree','Forest'],'accuracy']>162/262).all()\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
                 "prompt": "scikit-learn. data/titanic.csv에서 features 7개로 X, y(생존 int). train_test_split(test_size=0.2, stratify=y, random_state=42). ColumnTransformer: 수치형 5열은 SimpleImputer(median)+StandardScaler, 범주형(성별, 탑승항구)은 SimpleImputer(most_frequent)+OneHotEncoder(handle_unknown='ignore'). models = Dummy(most_frequent), Logistic(max_iter=2000), Tree(max_depth=5, random_state=42), Forest(n_estimators=50, max_depth=5, random_state=42). 각각 Pipeline([('prepare', preprocessor), ('model', m)])로 fit/predict해 accuracy, f1 두 열 DataFrame results. best_model = results['f1'].idxmax().\n\n---\n코드만 줘",
@@ -10048,7 +10048,7 @@
                 {
                   "action": "say",
                   "target": "hint",
-                  "text": "5교시의 make_preprocessor를 떠올리세요. 숫자 열 다섯은 중앙값 채우기와 표준화, 글자 열 둘은 최빈값 채우기와 One-hot이에요. Pipeline은 모델마다 새로 만들고, best_model은 results의 f1에서 idxmax예요."
+                  "text": "앞 단원의 make_preprocessor를 떠올리세요. 숫자 열 다섯은 중앙값 채우기와 표준화, 글자 열 둘은 최빈값 채우기와 One-hot이에요. Pipeline은 모델마다 새로 만들고, best_model은 results의 f1에서 idxmax예요."
                 },
                 {
                   "action": "set_code",
@@ -10058,7 +10058,7 @@
                 {
                   "action": "type_code",
                   "code": "titanic = pd.read_csv('data/titanic.csv')\nfeatures = ['객실등급','성별','나이','형제배우자','부모자녀','요금','탑승항구']\nX = titanic[features].copy()\ny = titanic['생존'].astype(int)\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)\n",
-                  "say": "4교시와 5교시 그대로예요. 자료를 읽고, 사고 전에 알 수 있는 일곱 열로 X, 생존을 정수로 y. 그리고 test_size=0.2, stratify=y, random_state=42로 나눠요. 손질보다 분할이 먼저죠."
+                  "say": "앞 두 단원 그대로예요. 자료를 읽고, 사고 전에 알 수 있는 일곱 열로 X, 생존을 정수로 y. 그리고 test_size=0.2, stratify=y, random_state=42로 나눠요. 손질보다 분할이 먼저죠."
                 },
                 {
                   "action": "type_code",
@@ -10105,7 +10105,7 @@
       "units": [
         {
           "id": "credit-target",
-          "title": "2일차 · 7교시 — 부도 정의와 연체 이력",
+          "title": "부도 정의와 연체 이력",
           "content": "",
           "revision": 4,
           "activities": [
@@ -10557,7 +10557,7 @@
             },
             {
               "id": "credit-check",
-              "title": "2일차 7교시 점검",
+              "title": "단원 점검",
               "kind": "quiz",
               "questions": [
                 {
@@ -10719,7 +10719,7 @@
         },
         {
           "id": "credit-metrics",
-          "title": "2일차 · 8교시 — 네 지표와 확률 기준",
+          "title": "네 지표와 확률 기준",
           "content": "",
           "revision": 4,
           "activities": [
@@ -10807,7 +10807,7 @@
               "problem": {
                 "id": "manual-metrics",
                 "title": "혼동행렬로 네 지표 손계산",
-                "content": "### 문제에서 필요한 설명\n\n이 단원은 개념 미션 없이 문제 안에서 설명합니다. 7교시의 부도율은 약 22%였습니다. 뒤집으면 **전원 \"정상\"이라고 찍어도 정확도 78%**라는 뜻입니다. 그런데 그 모델은 부도 고객을 한 명도 찾아내지 못합니다. 카드사가 원하는 것은 정확도가 아니라 \"부도 날 사람을 미리 찾는 것\"이므로, 정확도 하나로는 모델을 평가할 수 없습니다. 그래서 맞힘과 틀림을 네 칸으로 나눠 봅니다.\n\n부도(1)를 양성이라고 부르기로 하고, 실제와 예측을 표로 놓으면 이렇게 됩니다. 이 표가 혼동행렬입니다.\n\n| | 예측: 정상(0) | 예측: 부도(1) |\n| --- | --- | --- |\n| **실제: 정상(0)** | TN (맞게 정상) | FP (멀쩡한 사람을 부도로 경고) |\n| **실제: 부도(1)** | FN (부도를 놓침) | TP (맞게 부도) |\n\n네 칸에서 지표 네 개가 나옵니다. **정확도**(accuracy)는 전체 중 맞힌 비율 (TP+TN)/전체. **정밀도**(precision)는 부도라고 경고한 사람 중 진짜 부도였던 비율 TP/(TP+FP), 즉 경고의 신뢰도. **재현율**(recall)은 진짜 부도 중 미리 찾아낸 비율 TP/(TP+FN), 즉 놓치지 않은 정도. **F1**은 정밀도와 재현율을 하나로 합친 점수로, 둘 다 높아야 높아집니다. 전원 정상으로 찍은 모델은 TP가 0이라 정밀도·재현율·F1이 전부 0입니다. 정확도 78%의 정체가 이렇게 드러납니다.\n\n어느 지표가 중요한지는 실수의 비용에 달렸습니다. 부도를 놓치면(FN) 돈을 떼이고, 멀쩡한 고객에게 경고하면(FP) 고객을 잃습니다. 떼이는 쪽이 더 아프면 재현율을, 고객을 잃는 쪽이 더 아프면 정밀도를 더 봅니다.\n\n### 목표\n\n```comic-gen\n제목: 경고를 보낸 100명, 실제 부도 50명\n등장인물:\n  준호:\n    그림: 사람\n    이름표: 준호 · 은행 직원\n    외형: {머리색: \"#303746\", 옷색: \"#b88646\"}\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [{식별자: 준호, 표정: 어리둥절}, 강사]\n    대사:\n      - {화자: 준호, 상대: 강사, 내용: \"100명에게 부도 경고를 보냈는데 20명만 진짜였어요.\"}\n      - {화자: 강사, 상대: 준호, 내용: \"보낸 경고 중 맞은 비율이 정밀도예요. 20/100.\"}\n  - 구성: 이전\n    인물: [{식별자: 준호, 표정: 보통}, {식별자: 강사, 손모양: 가리키는손}]\n    대사:\n      - {화자: 준호, 상대: 강사, 내용: \"실제 부도는 50명이었는데 20명만 잡았고요.\"}\n      - {화자: 강사, 상대: 준호, 내용: \"진짜 부도 중 잡은 비율이 재현율이에요. 20/50.\"}\n  - 구성: 이전\n    인물: [{식별자: 준호, 표정: 기쁨}, {식별자: 강사, 손모양: null}]\n    대사:\n      - {화자: 준호, 상대: 강사, 내용: \"놓친 30명이 돈을 떼이는 쪽이네요.\"}\n      - {화자: 강사, 상대: 준호, 내용: \"그래서 은행은 재현율을 먼저 봐요.\"}\n```\n\n작은 예로 공식을 손에 익힙니다. `tp, fp, fn, tn`이 준비돼 있습니다. 위 표의 공식대로 `precision`, `recall`, `accuracy`를 계산해 저장하고 출력하세요.\n\n세 값이 모두 약 0.667이면 맞게 계산한 것입니다.\n\n### 힌트\n\n정밀도의 분모는 \"부도라고 예측한 수\" `tp + fp`, 재현율의 분모는 \"진짜 부도 수\" `tp + fn`, 정확도는 `(tp + tn) / (tp + fp + fn + tn)`입니다.",
+                "content": "### 문제에서 필요한 설명\n\n이 단원은 개념 미션 없이 문제 안에서 설명합니다. 앞 단원의 부도율은 약 22%였습니다. 뒤집으면 **전원 \"정상\"이라고 찍어도 정확도 78%**라는 뜻입니다. 그런데 그 모델은 부도 고객을 한 명도 찾아내지 못합니다. 카드사가 원하는 것은 정확도가 아니라 \"부도 날 사람을 미리 찾는 것\"이므로, 정확도 하나로는 모델을 평가할 수 없습니다. 그래서 맞힘과 틀림을 네 칸으로 나눠 봅니다.\n\n부도(1)를 양성이라고 부르기로 하고, 실제와 예측을 표로 놓으면 이렇게 됩니다. 이 표가 혼동행렬입니다.\n\n| | 예측: 정상(0) | 예측: 부도(1) |\n| --- | --- | --- |\n| **실제: 정상(0)** | TN (맞게 정상) | FP (멀쩡한 사람을 부도로 경고) |\n| **실제: 부도(1)** | FN (부도를 놓침) | TP (맞게 부도) |\n\n네 칸에서 지표 네 개가 나옵니다. **정확도**(accuracy)는 전체 중 맞힌 비율 (TP+TN)/전체. **정밀도**(precision)는 부도라고 경고한 사람 중 진짜 부도였던 비율 TP/(TP+FP), 즉 경고의 신뢰도. **재현율**(recall)은 진짜 부도 중 미리 찾아낸 비율 TP/(TP+FN), 즉 놓치지 않은 정도. **F1**은 정밀도와 재현율을 하나로 합친 점수로, 둘 다 높아야 높아집니다. 전원 정상으로 찍은 모델은 TP가 0이라 정밀도·재현율·F1이 전부 0입니다. 정확도 78%의 정체가 이렇게 드러납니다.\n\n어느 지표가 중요한지는 실수의 비용에 달렸습니다. 부도를 놓치면(FN) 돈을 떼이고, 멀쩡한 고객에게 경고하면(FP) 고객을 잃습니다. 떼이는 쪽이 더 아프면 재현율을, 고객을 잃는 쪽이 더 아프면 정밀도를 더 봅니다.\n\n### 목표\n\n```comic-gen\n제목: 경고를 보낸 100명, 실제 부도 50명\n등장인물:\n  준호:\n    그림: 사람\n    이름표: 준호 · 은행 직원\n    외형: {머리색: \"#303746\", 옷색: \"#b88646\"}\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [{식별자: 준호, 표정: 어리둥절}, 강사]\n    대사:\n      - {화자: 준호, 상대: 강사, 내용: \"100명에게 부도 경고를 보냈는데 20명만 진짜였어요.\"}\n      - {화자: 강사, 상대: 준호, 내용: \"보낸 경고 중 맞은 비율이 정밀도예요. 20/100.\"}\n  - 구성: 이전\n    인물: [{식별자: 준호, 표정: 보통}, {식별자: 강사, 손모양: 가리키는손}]\n    대사:\n      - {화자: 준호, 상대: 강사, 내용: \"실제 부도는 50명이었는데 20명만 잡았고요.\"}\n      - {화자: 강사, 상대: 준호, 내용: \"진짜 부도 중 잡은 비율이 재현율이에요. 20/50.\"}\n  - 구성: 이전\n    인물: [{식별자: 준호, 표정: 기쁨}, {식별자: 강사, 손모양: null}]\n    대사:\n      - {화자: 준호, 상대: 강사, 내용: \"놓친 30명이 돈을 떼이는 쪽이네요.\"}\n      - {화자: 강사, 상대: 준호, 내용: \"그래서 은행은 재현율을 먼저 봐요.\"}\n```\n\n작은 예로 공식을 손에 익힙니다. `tp, fp, fn, tn`이 준비돼 있습니다. 위 표의 공식대로 `precision`, `recall`, `accuracy`를 계산해 저장하고 출력하세요.\n\n세 값이 모두 약 0.667이면 맞게 계산한 것입니다.\n\n### 힌트\n\n정밀도의 분모는 \"부도라고 예측한 수\" `tp + fp`, 재현율의 분모는 \"진짜 부도 수\" `tp + fn`, 정확도는 `(tp + tn) / (tp + fp + fn + tn)`입니다.",
                 "starter_code": "tp, fp, fn, tn = 2, 1, 1, 2\n# precision, recall, accuracy를 계산하고 출력하세요\n",
                 "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['accuracy', 'precision', 'recall']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert abs(s['precision']-2/3)<1e-12 and abs(s['recall']-2/3)<1e-12 and abs(s['accuracy']-2/3)<1e-12\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
                 "prompt": "파이썬. tp, fp, fn, tn = 2, 1, 1, 2. precision = tp/(tp+fp), recall = tp/(tp+fn), accuracy = (tp+tn)/(tp+fp+fn+tn) 계산해서 세 변수에 담고 출력.\n\n---\n코드만 줘",
@@ -10935,7 +10935,7 @@
               "problem": {
                 "id": "credit-model",
                 "title": "부도 모델과 기준 모델을 네 지표로 비교",
-                "content": "### 목표\n\n진짜 자료입니다. 준비 코드가 `상환_9월`, `신용한도`, `나이` 세 열을 입력으로 훈련·테스트를 나눠 두었습니다. `models`에 `Dummy`와 `Logistic`을 넣고, 각각 `StandardScaler`와 묶은 `Pipeline`으로 학습·예측한 뒤 `accuracy`, `precision`, `recall`, `f1`을 구해 `results` 표를 만드세요.\n\n기준 모델의 정확도는 78% 근처인데 재현율은 0입니다. 로지스틱 회귀가 재현율을 얼마나 끌어올리는지, 그 대가로 정확도는 어떻게 되는지 보세요.\n\n### 힌트\n\n6교시의 표 만들기 패턴 그대로입니다. `for name, estimator in models.items():` 안에서 `Pipeline([('scale', StandardScaler()), ('model', estimator)])`를 만들어 `fit`, `predict`하고 네 지표를 딕셔너리로 `rows`에 모읍니다. 정밀도·재현율·F1에는 `zero_division=0`을 주면 기준 모델처럼 TP가 0일 때 경고 없이 0이 나옵니다.",
+                "content": "### 목표\n\n진짜 자료입니다. 준비 코드가 `상환_9월`, `신용한도`, `나이` 세 열을 입력으로 훈련·테스트를 나눠 두었습니다. `models`에 `Dummy`와 `Logistic`을 넣고, 각각 `StandardScaler`와 묶은 `Pipeline`으로 학습·예측한 뒤 `accuracy`, `precision`, `recall`, `f1`을 구해 `results` 표를 만드세요.\n\n기준 모델의 정확도는 78% 근처인데 재현율은 0입니다. 로지스틱 회귀가 재현율을 얼마나 끌어올리는지, 그 대가로 정확도는 어떻게 되는지 보세요.\n\n### 힌트\n\n앞 단원의 표 만들기 패턴 그대로입니다. `for name, estimator in models.items():` 안에서 `Pipeline([('scale', StandardScaler()), ('model', estimator)])`를 만들어 `fit`, `predict`하고 네 지표를 딕셔너리로 `rows`에 모읍니다. 정밀도·재현율·F1에는 `zero_division=0`을 주면 기준 모델처럼 TP가 0일 때 경고 없이 0이 나옵니다.",
                 "starter_code": "import pandas as pd\ncredit = pd.read_csv('data/credit.csv')\ntarget = '다음달 부도'\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.dummy import DummyClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import accuracy_score,precision_score,recall_score,f1_score\nX=credit[['상환_9월','신용한도','나이']]\ny=credit[target]\nX_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.2,stratify=y,random_state=42)\n# models와 results를 만드세요\n",
                 "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['X_test', 'results']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert set(s['results'].index)=={'Dummy','Logistic'}\n    assert set(s['results'].columns)=={'accuracy','precision','recall','f1'}\n    assert s['results'].loc['Dummy','recall']==0\n    assert ((s['results']>=0)&(s['results']<=1)).all().all()\n    assert len(s['X_test'])==6000\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
                 "prompt": "scikit-learn. X_train, X_test, y_train, y_test가 있어(입력 상환_9월, 신용한도, 나이). models = {'Dummy': DummyClassifier(strategy='most_frequent'), 'Logistic': LogisticRegression(max_iter=1000)}. 각각 Pipeline([('scale', StandardScaler()), ('model', m)])로 fit/predict해서 accuracy, precision, recall, f1 네 지표를 구하고 모델 이름을 인덱스로 한 DataFrame results를 만들어. precision은 zero_division=0.\n\n---\n코드만 줘",
@@ -10955,7 +10955,7 @@
                 {
                   "action": "say",
                   "target": "hint",
-                  "text": "앞 교시의 표 만들기 패턴 그대로예요. 정밀도, 재현율, F1에 zero_division=0을 주면 기준 모델처럼 TP가 0일 때 경고 없이 0이 나와요."
+                  "text": "앞 단원의 표 만들기 패턴 그대로예요. 정밀도, 재현율, F1에 zero_division=0을 주면 기준 모델처럼 TP가 0일 때 경고 없이 0이 나와요."
                 },
                 {
                   "action": "set_code",
@@ -11186,7 +11186,7 @@
             },
             {
               "id": "metrics-check",
-              "title": "2일차 8교시 점검",
+              "title": "단원 점검",
               "kind": "quiz",
               "questions": [
                 {
@@ -11428,7 +11428,7 @@
       "units": [
         {
           "id": "stock-data",
-          "title": "3일차 · 1교시 — 주가 파일과 시점",
+          "title": "주가 파일과 시점",
           "content": "",
           "revision": 4,
           "activities": [
@@ -11758,7 +11758,7 @@
             },
             {
               "id": "stock-data-check",
-              "title": "3일차 1교시 점검",
+              "title": "단원 점검",
               "kind": "quiz",
               "questions": [
                 {
@@ -11904,7 +11904,7 @@
         },
         {
           "id": "stock-features",
-          "title": "3일차 · 2교시 — 수익률·이동평균·lag",
+          "title": "수익률·이동평균·lag",
           "content": "",
           "revision": 4,
           "activities": [
@@ -12242,7 +12242,7 @@
                 "starter_code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\nframe=pd.DataFrame(index=prices.index)\n# 여섯 열을 만들고 불완전한 행을 제외하세요\n",
                 "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['frame', 'prices']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['frame'].shape==(396,6)\n    assert s['frame'].notna().all().all()\n    assert (s['frame']['target_date']>s['frame'].index).all()\n    assert s['frame']['ma5'].iloc[0]==s['prices']['종가'].iloc[:5].mean()\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
                 "prompt": "pandas. prices(날짜 인덱스, 종가 열)와 빈 frame=pd.DataFrame(index=prices.index)가 있어. frame에 close(종가), return_1(pct_change), ma5(rolling(5).mean()), lag_close_1(shift(1)), target_next_close(shift(-1)), target_date(pd.Series(prices.index, index=prices.index).shift(-1)) 여섯 열을 만들고 frame = frame.dropna().copy(). 396행이어야 해.\n\n---\n코드만 줘",
-                "prompt_why": "- `target_date` → 정답 날짜를 남겨 둔다. 다음 교시의 경계 누수를 막기 위해.\n- `dropna()` → 불완전한 행 제거. `396행` → 검산."
+                "prompt_why": "- `target_date` → 정답 날짜를 남겨 둔다. 다음 단원의 경계 누수를 막기 위해.\n- `dropna()` → 불완전한 행 제거. `396행` → 검산."
               },
               "ask": [
                 "왜 396행이 남아?",
@@ -12302,7 +12302,7 @@
             },
             {
               "id": "feature-time-check",
-              "title": "3일차 2교시 점검",
+              "title": "단원 점검",
               "kind": "quiz",
               "questions": [
                 {
@@ -12448,7 +12448,7 @@
         },
         {
           "id": "stock-split",
-          "title": "3일차 · 3교시 — 시간 분리와 기준 모델",
+          "title": "시간 분리와 기준 모델",
           "content": "",
           "revision": 4,
           "activities": [
@@ -12509,7 +12509,7 @@
               "id": "temporal-boundary",
               "title": "시간은 섞으면 안 되고, 경계의 하루도 조심해야 한다",
               "kind": "concept",
-              "body": "타이타닉에서는 `train_test_split`이 승객을 무작위로 섞어 훈련과 테스트를 나눴습니다. 승객끼리는 순서가 없으니 괜찮았습니다. 주가는 다릅니다. 날짜를 무작위로 섞으면 6월 가격으로 훈련한 모델이 3월 가격을 맞히는 꼴이 됩니다. 미래를 보고 과거를 맞히는 것은 시험이 아닙니다. 그래서 시간 자료는 **앞쪽 기간으로 훈련하고 뒤쪽 기간으로 테스트**합니다. 여기서는 마지막 80거래일을 테스트로 떼어 둡니다.\n\n```comic-gen\n제목: 섞으면 점쟁이가 된다\n등장인물:\n  모델: {그림: 서버, 이름표: 모델}\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [{식별자: 모델, 표정: 기쁨}, 강사]\n    대사:\n      - {화자: 모델, 상대: 강사, 내용: \"날짜를 섞어서 나눴더니 5월 종가를 거의 다 맞혔어요!\"}\n      - {화자: 강사, 상대: 모델, 내용: \"훈련 자료에 6월 가격이 들어 있었죠?\"}\n  - 구성: 이전\n    인물: [{식별자: 모델, 표정: 슬픔}, {식별자: 강사, 손모양: 가리키는손}]\n    대사:\n      - {화자: 강사, 상대: 모델, 내용: \"미래를 보고 과거를 맞힌 거예요. 실제 내일은 그렇게 안 보여요.\"}\n      - {화자: 모델, 상대: 강사, 내용: \"앞 기간으로 배우고 뒤 기간으로 채점할게요.\"}\n```\n\n```comic-gen\n제목: 시간은 섞지 않는다\n등장인물:\n  준호:\n    그림: 사람\n    이름표: 준호 · 은행 직원\n    외형: {머리색: \"#303746\", 옷색: \"#b88646\"}\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [준호, 강사]\n    대사:\n      - 화자: 준호\n        상대: 강사\n        내용: |-\n          타이타닉처럼 train_test_split으로\n          섞으면 안 돼요?\n      - {화자: 강사, 상대: 준호, 내용: \"6월 가격으로 배워서 3월을 맞히게 돼요.\"}\n  - 구성: 이전\n    인물: [{식별자: 준호, 표정: 기쁨}, {식별자: 강사, 손모양: 가리키는손}]\n    대사:\n      - {화자: 준호, 상대: 강사, 내용: \"미래를 보고 과거를 맞히는 거네요.\"}\n      - 화자: 강사\n        상대: 준호\n        내용: |-\n          앞 기간으로 배우고 뒤 기간으로 채점해요.\n          그게 전부예요.\n```\n\n```interactive\n위젯: temporal\n```\n\n그런데 경계를 하루 잘못 그으면 작은 누수가 숨어듭니다. 테스트가 시작되는 날을 `test_start`라고 합시다. 그 바로 전날 행을 보세요. 입력 날짜는 테스트 전이니 훈련에 들어가도 될 것 같지만, 그 행의 **정답**은 `test_start` 당일의 종가입니다. 테스트 첫날의 답을 훈련에서 이미 본 셈입니다.\n\n| 행의 날짜 | 정답 날짜 | 훈련에 넣어도 되나 |\n| --- | --- | --- |\n| test_start 이틀 전 | test_start 하루 전 | 된다 |\n| test_start 하루 전 | **test_start** | 안 된다. 정답이 테스트 기간 |\n| test_start | test_start 다음 거래일 | 테스트 |\n\n그래서 훈련 조건은 둘입니다. 입력 날짜도 `test_start` 전, 그리고 `target_date`도 `test_start` 전. 2교시에서 `target_date`를 남겨 둔 이유가 이것입니다.\n\n```python\ntest_start = frame.index[-80]\ntrain_mask = (frame.index < test_start) & (frame['target_date'] < test_start)\ntest_mask = frame.index >= test_start\nX_train, X_test = X.loc[train_mask], X.loc[test_mask]\n```\n\n나눴으면 기준 모델입니다. 분류의 \"전원 사망\"에 해당하는 가장 단순한 예측은 **\"내일 종가는 오늘 종가와 같다\"**입니다. 우습게 들리지만 주가에서는 이 기준을 이기기가 생각보다 어렵습니다. 점수는 정확도 대신 **MAE**(평균 절대 오차)로 잽니다. 예측과 정답의 차이를 부호 없이 평균 낸 것이라 단위가 원이고, \"평균적으로 몇 원 빗나갔나\"로 읽으면 됩니다. 작을수록 좋습니다.",
+              "body": "타이타닉에서는 `train_test_split`이 승객을 무작위로 섞어 훈련과 테스트를 나눴습니다. 승객끼리는 순서가 없으니 괜찮았습니다. 주가는 다릅니다. 날짜를 무작위로 섞으면 6월 가격으로 훈련한 모델이 3월 가격을 맞히는 꼴이 됩니다. 미래를 보고 과거를 맞히는 것은 시험이 아닙니다. 그래서 시간 자료는 **앞쪽 기간으로 훈련하고 뒤쪽 기간으로 테스트**합니다. 여기서는 마지막 80거래일을 테스트로 떼어 둡니다.\n\n```comic-gen\n제목: 섞으면 점쟁이가 된다\n등장인물:\n  모델: {그림: 서버, 이름표: 모델}\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [{식별자: 모델, 표정: 기쁨}, 강사]\n    대사:\n      - {화자: 모델, 상대: 강사, 내용: \"날짜를 섞어서 나눴더니 5월 종가를 거의 다 맞혔어요!\"}\n      - {화자: 강사, 상대: 모델, 내용: \"훈련 자료에 6월 가격이 들어 있었죠?\"}\n  - 구성: 이전\n    인물: [{식별자: 모델, 표정: 슬픔}, {식별자: 강사, 손모양: 가리키는손}]\n    대사:\n      - {화자: 강사, 상대: 모델, 내용: \"미래를 보고 과거를 맞힌 거예요. 실제 내일은 그렇게 안 보여요.\"}\n      - {화자: 모델, 상대: 강사, 내용: \"앞 기간으로 배우고 뒤 기간으로 채점할게요.\"}\n```\n\n```comic-gen\n제목: 시간은 섞지 않는다\n등장인물:\n  준호:\n    그림: 사람\n    이름표: 준호 · 은행 직원\n    외형: {머리색: \"#303746\", 옷색: \"#b88646\"}\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [준호, 강사]\n    대사:\n      - 화자: 준호\n        상대: 강사\n        내용: |-\n          타이타닉처럼 train_test_split으로\n          섞으면 안 돼요?\n      - {화자: 강사, 상대: 준호, 내용: \"6월 가격으로 배워서 3월을 맞히게 돼요.\"}\n  - 구성: 이전\n    인물: [{식별자: 준호, 표정: 기쁨}, {식별자: 강사, 손모양: 가리키는손}]\n    대사:\n      - {화자: 준호, 상대: 강사, 내용: \"미래를 보고 과거를 맞히는 거네요.\"}\n      - 화자: 강사\n        상대: 준호\n        내용: |-\n          앞 기간으로 배우고 뒤 기간으로 채점해요.\n          그게 전부예요.\n```\n\n```interactive\n위젯: temporal\n```\n\n그런데 경계를 하루 잘못 그으면 작은 누수가 숨어듭니다. 테스트가 시작되는 날을 `test_start`라고 합시다. 그 바로 전날 행을 보세요. 입력 날짜는 테스트 전이니 훈련에 들어가도 될 것 같지만, 그 행의 **정답**은 `test_start` 당일의 종가입니다. 테스트 첫날의 답을 훈련에서 이미 본 셈입니다.\n\n| 행의 날짜 | 정답 날짜 | 훈련에 넣어도 되나 |\n| --- | --- | --- |\n| test_start 이틀 전 | test_start 하루 전 | 된다 |\n| test_start 하루 전 | **test_start** | 안 된다. 정답이 테스트 기간 |\n| test_start | test_start 다음 거래일 | 테스트 |\n\n그래서 훈련 조건은 둘입니다. 입력 날짜도 `test_start` 전, 그리고 `target_date`도 `test_start` 전. 앞 단원에서 `target_date`를 남겨 둔 이유가 이것입니다.\n\n```python\ntest_start = frame.index[-80]\ntrain_mask = (frame.index < test_start) & (frame['target_date'] < test_start)\ntest_mask = frame.index >= test_start\nX_train, X_test = X.loc[train_mask], X.loc[test_mask]\n```\n\n나눴으면 기준 모델입니다. 분류의 \"전원 사망\"에 해당하는 가장 단순한 예측은 **\"내일 종가는 오늘 종가와 같다\"**입니다. 우습게 들리지만 주가에서는 이 기준을 이기기가 생각보다 어렵습니다. 점수는 정확도 대신 **MAE**(평균 절대 오차)로 잽니다. 예측과 정답의 차이를 부호 없이 평균 낸 것이라 단위가 원이고, \"평균적으로 몇 원 빗나갔나\"로 읽으면 됩니다. 작을수록 좋습니다.",
               "check": {
                 "prompt": "\"내일 종가는 오늘 종가와 같다\"처럼 가장 단순한 예측을 두고 모델과 비교하는 것을 무엇이라고 하나요?",
                 "type": "short_answer",
@@ -12533,7 +12533,7 @@
                 {
                   "action": "say",
                   "target": "title",
-                  "text": "자, 3교시예요. 나누는 방법이 타이타닉하고 달라져요. 시간 자료는 섞으면 안 되거든요."
+                  "text": "자, 이 단원은 나누는 방법이 타이타닉하고 달라져요. 시간 자료는 섞으면 안 되거든요."
                 },
                 {
                   "action": "say",
@@ -12568,7 +12568,7 @@
                 {
                   "action": "say",
                   "target": "text:그래서 훈련 조건은 둘입니다",
-                  "text": "그래서 훈련 조건이 둘이에요. 입력 날짜도 test_start 전, target_date도 test_start 전. 아래 코드의 train_mask가 두 조건을 &로 이은 거예요. 2교시에 target_date를 남겨 둔 이유가 이거죠."
+                  "text": "그래서 훈련 조건이 둘이에요. 입력 날짜도 test_start 전, target_date도 test_start 전. 아래 코드의 train_mask가 두 조건을 &로 이은 거예요. 앞 단원에 target_date를 남겨 둔 이유가 이거죠."
                 },
                 {
                   "action": "say",
@@ -12616,7 +12616,7 @@
                 {
                   "action": "set_code",
                   "code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['종가']\nframe['return_1']=prices['종가'].pct_change()\nframe['ma5']=prices['종가'].rolling(5).mean()\nframe['lag_close_1']=prices['종가'].shift(1)\nframe['target_next_close']=prices['종가'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\n",
-                  "say": "준비 코드가 2교시에 만든 frame을 그대로 만들어 둬요. 여섯 열에 dropna까지요. 그대로 둘게요."
+                  "say": "준비 코드가 앞 단원에 만든 frame을 그대로 만들어 둬요. 여섯 열에 dropna까지요. 그대로 둘게요."
                 },
                 {
                   "action": "type_code",
@@ -12955,7 +12955,7 @@
             },
             {
               "id": "temporal-check",
-              "title": "3일차 3교시 점검",
+              "title": "단원 점검",
               "kind": "quiz",
               "questions": [
                 {
@@ -13103,7 +13103,7 @@
         },
         {
           "id": "regression-project",
-          "title": "3일차 · 4교시 — 회귀 비교와 최종 결과",
+          "title": "회귀 비교와 최종 결과",
           "content": "",
           "revision": 4,
           "activities": [
@@ -13180,7 +13180,7 @@
               "id": "regression-metrics",
               "title": "직선 맞추기, 그리고 기준보다 못한 결과도 그대로 보고하기",
               "kind": "concept",
-              "body": "마지막 단원입니다. 입력 네 열(오늘 종가, 수익률, 5일 평균, 어제 종가)로 내일 종가를 맞히는 회귀 모델을 세 개 돌리고, 3교시의 기준과 비교해서 결론을 씁니다.\n\n**선형 회귀**(`LinearRegression`)는 입력마다 가중치를 곱해 더한 값으로 정답을 맞힙니다. 입력이 하나면 점들 사이에 가장 잘 맞는 직선을 긋는 것이고, 넷이면 네 방향으로 기울어진 판을 맞추는 것입니다. 학습이 끝나면 `coef_`에 가중치 네 개가 남아 어느 입력이 얼마나 영향을 줬는지 읽을 수 있습니다. **릿지**(`Ridge`)와 **라쏘**(`Lasso`)는 같은 직선 맞추기에 **브레이크**를 단 것입니다. 가중치가 너무 커지면 벌점을 매겨, 훈련 자료의 우연한 흔들림까지 외우는 것을 막습니다. 라쏘는 브레이크가 세서 쓸모없는 입력의 가중치를 아예 0으로 만들기도 합니다. 입력 크기가 제각각이면 브레이크가 공평하지 않으니 분류에서처럼 `StandardScaler`와 묶어 씁니다.\n\n```python\nmodel = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))])\nmodel.fit(X_train, y_train)\nprediction = model.predict(X_test)\nmean_absolute_error(y_test, prediction)\n```\n\n점수는 셋을 함께 적습니다. **MAE**는 3교시 그대로, 하루 평균 몇 원 빗나갔나. **RMSE**는 차이를 제곱해 평균 낸 뒤 제곱근을 씌운 것이라 단위는 같은 원이지만 **큰 실수에 더 민감**합니다. 어쩌다 한 번 크게 틀리는 모델은 MAE보다 RMSE가 많이 커집니다. **R²**는 \"정답의 평균값으로만 찍었을 때보다 얼마나 나은가\"를 1을 만점으로 적은 것입니다. 평균보다 못하면 음수도 나옵니다. 주의할 점은 R²의 비교 대상이 \"평균으로 찍기\"이지 우리의 기준 \"오늘 종가 그대로\"가 아니라는 것입니다. R²가 높아 보여도 기준 MAE를 못 넘을 수 있습니다.\n\n```comic-gen\n제목: 평균 30개와 큰 실수\n등장인물:\n  공장장:\n    그림: 사람\n    이름표: 빵 공장장\n    외형: {피부색: \"#d6a279\", 머리모양: 민머리, 옷색: \"#8a6d4b\"}\n  민지:\n    그림: 사람\n    이름표: 민지 · 수강생\n    외형: {머리모양: 단발, 옷: 후드, 옷색: \"#4f8a8b\"}\n컷:\n  - 인물: [{식별자: 공장장, 표정: 어리둥절}, 민지]\n    대사:\n      - {화자: 공장장, 상대: 민지, 내용: \"MAE 30개면 뭐예요?\"}\n      - {화자: 민지, 상대: 공장장, 내용: \"하루 평균 30개를 더 굽거나 덜 굽는다는 뜻이에요.\"}\n  - 구성: 이전\n    인물: [공장장, {식별자: 민지, 손모양: 가리키는손}]\n    대사:\n      - {화자: 공장장, 상대: 민지, 내용: \"RMSE는 왜 더 커요?\"}\n      - {화자: 민지, 상대: 공장장, 내용: \"200개 빗나간 날에 벌점을 더 줘요. 큰 실수가 있으면 RMSE가 벌어져요.\"}\n```\n\n숫자가 현장에서 무슨 뜻인지 한 번 옮겨 봅니다. 크루아상 판매량 예측의 MAE가 30개라면 하루 평균 30개를 더 굽거나 덜 굽는다는 뜻입니다. 더 구우면 저녁에 폐기하고, 덜 구우면 오후에 빈 진열대 앞에서 손님을 돌려보냅니다. 평소에는 20개쯤 빗나가다가 명절 전날 하루만 300개 틀리는 모델은 MAE는 그럭저럭이지만 RMSE가 크게 뜁니다. 콜센터도 같습니다. 월요일 통화량 예측이 100통 빗나가면 자리가 비어 통화가 밀리거나, 반대로 고객이 대기음을 10분씩 듣습니다. 어느 지표를 더 무겁게 볼지는 \"가끔 크게 틀리는 것\"과 \"늘 조금씩 틀리는 것\" 중 어느 쪽이 현장에서 더 비싼지에 달려 있습니다.\n\n```comic-gen\n제목: 30개와 300개\n등장인물:\n  공장장:\n    그림: 사람\n    이름표: 빵 공장장\n    외형: {피부색: \"#d6a279\", 머리모양: 민머리, 옷색: \"#8a6d4b\"}\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [공장장, 강사]\n    대사:\n      - {화자: 공장장, 상대: 강사, 내용: \"MAE 30개면 쓸 만한가요?\"}\n      - 화자: 강사\n        상대: 공장장\n        내용: |-\n          하루 평균 30개를\n          더 굽거나 덜 굽는다는 뜻이죠.\n  - 구성: 이전\n    인물: [{식별자: 공장장, 표정: 슬픔}, {식별자: 강사, 손모양: 가리키는손}]\n    대사:\n      - {화자: 공장장, 상대: 강사, 내용: \"명절 전날은 300개나 틀렸는데요.\"}\n      - 화자: 강사\n        상대: 공장장\n        내용: |-\n          그런 날은 RMSE가 크게 뛰어요.\n          큰 실수에 민감하거든요.\n  - 구성: 이전\n    인물: [{식별자: 공장장, 표정: 보통}, {식별자: 강사, 손모양: null}]\n    대사:\n      - {화자: 공장장, 상대: 강사, 내용: \"그럼 어느 숫자를 봐야 하죠?\"}\n      - 화자: 강사\n        상대: 공장장\n        내용: |-\n          가끔 크게 틀리는 게 더 비싸면\n          RMSE를 보세요.\n```\n\n결론을 쓰는 순서는 셋입니다. ① 무엇을 언제 예측했고 훈련·테스트를 어떻게 나눴는지. ② 기준 MAE와 모델 MAE, 그 차이. ③ 이 파일, 이 기간에서만 본 결과라는 한계. 모델이 기준보다 나쁘면 **나쁘다고 적습니다.** 이 수업의 검사는 \"이기는 모델\"을 요구하지 않습니다. 같은 테스트 기간에서 정직하게 비교했는지를 봅니다. 테스트 점수가 마음에 안 든다고 테스트 기간을 바꿔 가며 다시 돌리는 것은, 모의고사 문제를 바꿔 가며 점수 좋은 것만 고르는 일입니다.",
+              "body": "마지막 단원입니다. 입력 네 열(오늘 종가, 수익률, 5일 평균, 어제 종가)로 내일 종가를 맞히는 회귀 모델을 세 개 돌리고, 앞 단원의 기준과 비교해서 결론을 씁니다.\n\n**선형 회귀**(`LinearRegression`)는 입력마다 가중치를 곱해 더한 값으로 정답을 맞힙니다. 입력이 하나면 점들 사이에 가장 잘 맞는 직선을 긋는 것이고, 넷이면 네 방향으로 기울어진 판을 맞추는 것입니다. 학습이 끝나면 `coef_`에 가중치 네 개가 남아 어느 입력이 얼마나 영향을 줬는지 읽을 수 있습니다. **릿지**(`Ridge`)와 **라쏘**(`Lasso`)는 같은 직선 맞추기에 **브레이크**를 단 것입니다. 가중치가 너무 커지면 벌점을 매겨, 훈련 자료의 우연한 흔들림까지 외우는 것을 막습니다. 라쏘는 브레이크가 세서 쓸모없는 입력의 가중치를 아예 0으로 만들기도 합니다. 입력 크기가 제각각이면 브레이크가 공평하지 않으니 분류에서처럼 `StandardScaler`와 묶어 씁니다.\n\n```python\nmodel = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))])\nmodel.fit(X_train, y_train)\nprediction = model.predict(X_test)\nmean_absolute_error(y_test, prediction)\n```\n\n점수는 셋을 함께 적습니다. **MAE**는 앞 단원 그대로, 하루 평균 몇 원 빗나갔나. **RMSE**는 차이를 제곱해 평균 낸 뒤 제곱근을 씌운 것이라 단위는 같은 원이지만 **큰 실수에 더 민감**합니다. 어쩌다 한 번 크게 틀리는 모델은 MAE보다 RMSE가 많이 커집니다. **R²**는 \"정답의 평균값으로만 찍었을 때보다 얼마나 나은가\"를 1을 만점으로 적은 것입니다. 평균보다 못하면 음수도 나옵니다. 주의할 점은 R²의 비교 대상이 \"평균으로 찍기\"이지 우리의 기준 \"오늘 종가 그대로\"가 아니라는 것입니다. R²가 높아 보여도 기준 MAE를 못 넘을 수 있습니다.\n\n```comic-gen\n제목: 평균 30개와 큰 실수\n등장인물:\n  공장장:\n    그림: 사람\n    이름표: 빵 공장장\n    외형: {피부색: \"#d6a279\", 머리모양: 민머리, 옷색: \"#8a6d4b\"}\n  민지:\n    그림: 사람\n    이름표: 민지 · 수강생\n    외형: {머리모양: 단발, 옷: 후드, 옷색: \"#4f8a8b\"}\n컷:\n  - 인물: [{식별자: 공장장, 표정: 어리둥절}, 민지]\n    대사:\n      - {화자: 공장장, 상대: 민지, 내용: \"MAE 30개면 뭐예요?\"}\n      - {화자: 민지, 상대: 공장장, 내용: \"하루 평균 30개를 더 굽거나 덜 굽는다는 뜻이에요.\"}\n  - 구성: 이전\n    인물: [공장장, {식별자: 민지, 손모양: 가리키는손}]\n    대사:\n      - {화자: 공장장, 상대: 민지, 내용: \"RMSE는 왜 더 커요?\"}\n      - {화자: 민지, 상대: 공장장, 내용: \"200개 빗나간 날에 벌점을 더 줘요. 큰 실수가 있으면 RMSE가 벌어져요.\"}\n```\n\n숫자가 현장에서 무슨 뜻인지 한 번 옮겨 봅니다. 크루아상 판매량 예측의 MAE가 30개라면 하루 평균 30개를 더 굽거나 덜 굽는다는 뜻입니다. 더 구우면 저녁에 폐기하고, 덜 구우면 오후에 빈 진열대 앞에서 손님을 돌려보냅니다. 평소에는 20개쯤 빗나가다가 명절 전날 하루만 300개 틀리는 모델은 MAE는 그럭저럭이지만 RMSE가 크게 뜁니다. 콜센터도 같습니다. 월요일 통화량 예측이 100통 빗나가면 자리가 비어 통화가 밀리거나, 반대로 고객이 대기음을 10분씩 듣습니다. 어느 지표를 더 무겁게 볼지는 \"가끔 크게 틀리는 것\"과 \"늘 조금씩 틀리는 것\" 중 어느 쪽이 현장에서 더 비싼지에 달려 있습니다.\n\n```comic-gen\n제목: 30개와 300개\n등장인물:\n  공장장:\n    그림: 사람\n    이름표: 빵 공장장\n    외형: {피부색: \"#d6a279\", 머리모양: 민머리, 옷색: \"#8a6d4b\"}\n  강사:\n    그림: 사람\n    이름표: 강사\n    외형: {옷: 재킷, 옷색: \"#5379a7\", 안경: true}\n컷:\n  - 인물: [공장장, 강사]\n    대사:\n      - {화자: 공장장, 상대: 강사, 내용: \"MAE 30개면 쓸 만한가요?\"}\n      - 화자: 강사\n        상대: 공장장\n        내용: |-\n          하루 평균 30개를\n          더 굽거나 덜 굽는다는 뜻이죠.\n  - 구성: 이전\n    인물: [{식별자: 공장장, 표정: 슬픔}, {식별자: 강사, 손모양: 가리키는손}]\n    대사:\n      - {화자: 공장장, 상대: 강사, 내용: \"명절 전날은 300개나 틀렸는데요.\"}\n      - 화자: 강사\n        상대: 공장장\n        내용: |-\n          그런 날은 RMSE가 크게 뛰어요.\n          큰 실수에 민감하거든요.\n  - 구성: 이전\n    인물: [{식별자: 공장장, 표정: 보통}, {식별자: 강사, 손모양: null}]\n    대사:\n      - {화자: 공장장, 상대: 강사, 내용: \"그럼 어느 숫자를 봐야 하죠?\"}\n      - 화자: 강사\n        상대: 공장장\n        내용: |-\n          가끔 크게 틀리는 게 더 비싸면\n          RMSE를 보세요.\n```\n\n결론을 쓰는 순서는 셋입니다. ① 무엇을 언제 예측했고 훈련·테스트를 어떻게 나눴는지. ② 기준 MAE와 모델 MAE, 그 차이. ③ 이 파일, 이 기간에서만 본 결과라는 한계. 모델이 기준보다 나쁘면 **나쁘다고 적습니다.** 이 수업의 검사는 \"이기는 모델\"을 요구하지 않습니다. 같은 테스트 기간에서 정직하게 비교했는지를 봅니다. 테스트 점수가 마음에 안 든다고 테스트 기간을 바꿔 가며 다시 돌리는 것은, 모의고사 문제를 바꿔 가며 점수 좋은 것만 고르는 일입니다.",
               "check": {
                 "prompt": "예측과 정답의 차이를 제곱해 평균 낸 뒤 제곱근을 씌운 지표로, 큰 실수에 더 민감한 것의 약어는 무엇인가요?",
                 "type": "short_answer",
@@ -13200,7 +13200,7 @@
                 {
                   "action": "say",
                   "target": "title",
-                  "text": "자, 마지막 단원이에요. 회귀 모델 세 개를 돌려서 3교시 기준과 비교하고 결론을 써요."
+                  "text": "자, 마지막 단원이에요. 회귀 모델 세 개를 돌려서 앞 단원 기준과 비교하고 결론을 써요."
                 },
                 {
                   "action": "say",
@@ -13263,7 +13263,7 @@
               "problem": {
                 "id": "linear-only",
                 "title": "선형 회귀 하나만 먼저",
-                "content": "### 목표\n\n`StandardScaler`와 `LinearRegression`을 `Pipeline`으로 묶어 `model`에 학습하세요. 테스트 예측을 `prediction`, MAE를 `linear_mae`에 저장해 출력하고, `model.named_steps['model'].coef_`로 가중치 네 개도 출력하세요.\n\n`linear_mae`를 3교시의 기준 MAE와 비교해 보세요. 가중치 네 개 중 어느 것이 가장 큰지도 보세요.\n\n### 힌트\n\n분류와 같은 흐름입니다. `Pipeline([('scale', StandardScaler()), ('model', LinearRegression())])` → `fit(X_train, y_train)` → `predict(X_test)`. 점수는 `mean_absolute_error(y_test, prediction)`.",
+                "content": "### 목표\n\n`StandardScaler`와 `LinearRegression`을 `Pipeline`으로 묶어 `model`에 학습하세요. 테스트 예측을 `prediction`, MAE를 `linear_mae`에 저장해 출력하고, `model.named_steps['model'].coef_`로 가중치 네 개도 출력하세요.\n\n`linear_mae`를 앞 단원의 기준 MAE와 비교해 보세요. 가중치 네 개 중 어느 것이 가장 큰지도 보세요.\n\n### 힌트\n\n분류와 같은 흐름입니다. `Pipeline([('scale', StandardScaler()), ('model', LinearRegression())])` → `fit(X_train, y_train)` → `predict(X_test)`. 점수는 `mean_absolute_error(y_test, prediction)`.",
                 "starter_code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['종가']\nframe['return_1']=prices['종가'].pct_change()\nframe['ma5']=prices['종가'].rolling(5).mean()\nframe['lag_close_1']=prices['종가'].shift(1)\nframe['target_next_close']=prices['종가'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\ntest_start=frame.index[-80]\ntrain_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\nX_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression,Ridge,Lasso\nfrom sklearn.metrics import mean_absolute_error,mean_squared_error,r2_score\n# model, prediction, linear_mae를 만들고 출력하세요\n",
                 "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['linear_mae', 'model', 'prediction', 'y_test']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    import numpy as np\n    assert len(s['prediction'])==80 and np.isfinite(s['linear_mae'])\n    assert len(s['model'].named_steps['model'].coef_)==4\n    assert abs(s['linear_mae']-float(np.abs(s['y_test'].to_numpy()-s['prediction']).mean()))<1e-8\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
                 "prompt": "scikit-learn. X_train, X_test, y_train, y_test가 있어(temporal split 완료). Pipeline([('scale', StandardScaler()), ('model', LinearRegression())])를 model에 fit. 테스트 예측을 prediction, mean_absolute_error를 linear_mae에 담아 출력하고 model.named_steps['model'].coef_도 출력.\n\n---\n코드만 줘",
@@ -13629,7 +13629,7 @@
             },
             {
               "id": "final-check",
-              "title": "3일차 4교시 점검",
+              "title": "단원 점검",
               "kind": "quiz",
               "questions": [
                 {
@@ -13975,7 +13975,7 @@
               "problem": {
                 "id": "window-rematch",
                 "title": "★ 도전 과제 · 창을 바꿔 다시 겨루기",
-                "content": "### 문제에서 필요한 설명\n\n주가 챕터 전체를 한 번에 복습합니다. 이번에는 이동평균 창을 5일에서 **10일**로 바꿉니다. 특징 만들기, 시간 분리(경계 하루 포함), 기준 모델, 릿지 비교, 보고 딕셔너리까지 직접 씁니다.\n\n### 목표\n\n1. `prices`에서 `frame`을 만드세요. 열은 `close`, `return_1`, `ma10`(`rolling(10).mean()`), `lag_close_1`, `target_next_close`, `target_date`이고 `dropna()` 뒤 `.copy()`입니다.\n2. `feature_columns = ['close', 'return_1', 'ma10', 'lag_close_1']`로 `X`, `y`를 만들고 마지막 80행을 테스트로 두되, 훈련은 입력 날짜와 `target_date`가 **모두** `test_start` 전인 행만 쓰세요.\n3. 기준 예측(오늘 종가)의 MAE를 `baseline_mae`, `StandardScaler`+`Ridge(alpha=1)` 파이프라인의 테스트 MAE를 `ridge_mae`에 담으세요.\n4. `report = {'window': 10, 'rows': len(frame), 'baseline_mae': ..., 'ridge_mae': ..., 'improved': ridge_mae < baseline_mae}`를 만들어 출력하세요.\n\n`frame`이 391행, 훈련 310행, 테스트 80행이면 분리가 맞은 것입니다. `improved`가 `False`여도 그대로 둡니다.\n\n### 힌트\n\n2교시의 여섯 열 만들기에서 `rolling(5)`만 `rolling(10)`으로 바꾸면 처음 아홉 행이 비어 391행이 남습니다. 3교시의 `train_mask = (frame.index < test_start) & (frame['target_date'] < test_start)`를 그대로 쓰세요.",
+                "content": "### 문제에서 필요한 설명\n\n주가 챕터 전체를 한 번에 복습합니다. 이번에는 이동평균 창을 5일에서 **10일**로 바꿉니다. 특징 만들기, 시간 분리(경계 하루 포함), 기준 모델, 릿지 비교, 보고 딕셔너리까지 직접 씁니다.\n\n### 목표\n\n1. `prices`에서 `frame`을 만드세요. 열은 `close`, `return_1`, `ma10`(`rolling(10).mean()`), `lag_close_1`, `target_next_close`, `target_date`이고 `dropna()` 뒤 `.copy()`입니다.\n2. `feature_columns = ['close', 'return_1', 'ma10', 'lag_close_1']`로 `X`, `y`를 만들고 마지막 80행을 테스트로 두되, 훈련은 입력 날짜와 `target_date`가 **모두** `test_start` 전인 행만 쓰세요.\n3. 기준 예측(오늘 종가)의 MAE를 `baseline_mae`, `StandardScaler`+`Ridge(alpha=1)` 파이프라인의 테스트 MAE를 `ridge_mae`에 담으세요.\n4. `report = {'window': 10, 'rows': len(frame), 'baseline_mae': ..., 'ridge_mae': ..., 'improved': ridge_mae < baseline_mae}`를 만들어 출력하세요.\n\n`frame`이 391행, 훈련 310행, 테스트 80행이면 분리가 맞은 것입니다. `improved`가 `False`여도 그대로 둡니다.\n\n### 힌트\n\n앞에서 만든 여섯 열에서 `rolling(5)`만 `rolling(10)`으로 바꾸면 처음 아홉 행이 비어 391행이 남습니다. 앞 단원의 `train_mask = (frame.index < test_start) & (frame['target_date'] < test_start)`를 그대로 쓰세요.",
                 "starter_code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import Ridge\nfrom sklearn.metrics import mean_absolute_error\n# frame, X_train, X_test, y_train, y_test, baseline_mae, ridge_mae, report를 만드세요\n",
                 "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['X_test', 'X_train', 'baseline_mae', 'frame', 'report', 'ridge_mae', 'y_test']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    import numpy as np\n    assert len(s['frame'])==391 and 'ma10' in s['frame'].columns and 'ma5' not in s['frame'].columns\n    assert len(s['X_train'])==310 and len(s['X_test'])==80 and list(s['X_train'].columns)==['close','return_1','ma10','lag_close_1']\n    assert s['frame'].loc[s['X_train'].index,'target_date'].max()<s['X_test'].index.min()\n    assert abs(s['baseline_mae']-float(np.abs(s['y_test'].to_numpy()-s['X_test']['close'].to_numpy()).mean()))<1e-6\n    r=s['report']; assert r['window']==10 and r['rows']==391 and abs(r['baseline_mae']-s['baseline_mae'])<1e-9 and abs(r['ridge_mae']-s['ridge_mae'])<1e-9 and r['improved']==(s['ridge_mae']<s['baseline_mae'])\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
                 "prompt": "pandas + scikit-learn. prices(날짜 인덱스, 종가). frame에 close, return_1(pct_change), ma10(rolling(10).mean()), lag_close_1(shift(1)), target_next_close(shift(-1)), target_date(날짜 shift(-1)) 만들고 dropna().copy(). feature_columns=['close','return_1','ma10','lag_close_1']. test_start = frame.index[-80], 훈련은 입력 날짜와 target_date 둘 다 test_start 전. baseline_mae = MAE(y_test, X_test['close']), StandardScaler+Ridge(alpha=1) 파이프라인 MAE를 ridge_mae. report = {'window':10,'rows':len(frame),'baseline_mae','ridge_mae','improved': ridge_mae < baseline_mae}. improved가 False여도 그대로.\n\n---\n코드만 줘",
@@ -13996,7 +13996,7 @@
                 {
                   "action": "say",
                   "target": "hint",
-                  "text": "2교시 여섯 열에서 rolling(5)만 rolling(10)으로 바꾸면 처음 아홉 행이 비어 391행이 남아요. train_mask는 3교시 그대로예요."
+                  "text": "앞에서 만든 여섯 열에서 rolling(5)만 rolling(10)으로 바꾸면 처음 아홉 행이 비어 391행이 남아요. train_mask는 앞 단원 그대로예요."
                 },
                 {
                   "action": "set_code",

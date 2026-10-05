@@ -1,9 +1,9 @@
-"""2일차 · 6교시 — 세 분류 모델과 기준 비교"""
+"""세 분류 모델과 기준 비교"""
 from kpc_course.dsl import *
 
 MODEL_PREP = TI + FEATURES + SPLIT + PREP
 
-UNIT = unit('classifiers', '2일차 · 6교시 — 세 분류 모델과 기준 비교', [
+UNIT = unit('classifiers', '세 분류 모델과 기준 비교', [
     concept('baselines', '"좋다"고 말하려면 비교할 기준이 있어야 한다',
         body="""
         손질이 끝났으니 모델을 고를 차례입니다. 이 수업에서는 세 가지를 씁니다. 수식 없이 각각이 무엇을 하는지만 잡아 두면 됩니다.
@@ -59,9 +59,9 @@ UNIT = unit('classifiers', '2일차 · 6교시 — 세 분류 모델과 기준 �
         accuracy_score(y_test, pred)
         ```
 
-        준비 코드의 `make_preprocessor()`는 5교시에서 만든 숫자용 묶음(채우기+표준화)과 글자용 묶음(채우기+One-hot)을 하나로 합친 손질기입니다. 그 뒤에 모델을 붙인 `Pipeline`을 쓰면 `fit` 한 번으로 손질과 학습이 끝나고, `predict` 한 번으로 손질과 예측이 끝납니다. 모델을 바꿀 때는 `('model', ...)` 자리만 바꿉니다.
+        준비 코드의 `make_preprocessor()`는 앞 단원에서 만든 숫자용 묶음(채우기+표준화)과 글자용 묶음(채우기+One-hot)을 하나로 합친 손질기입니다. 그 뒤에 모델을 붙인 `Pipeline`을 쓰면 `fit` 한 번으로 손질과 학습이 끝나고, `predict` 한 번으로 손질과 예측이 끝납니다. 모델을 바꿀 때는 `('model', ...)` 자리만 바꿉니다.
 
-        점수는 정확도(accuracy, 전체 중 맞힌 비율) 하나만 보지 않습니다. 생존자가 적은 자료에서는 생존자를 얼마나 잘 찾아냈는지를 따로 보는 F1 점수도 함께 적습니다. 자세한 뜻은 8교시에서 다룹니다. 지금은 "두 점수를 표로 나란히 적는다"까지만.
+        점수는 정확도(accuracy, 전체 중 맞힌 비율) 하나만 보지 않습니다. 생존자가 적은 자료에서는 생존자를 얼마나 잘 찾아냈는지를 따로 보는 F1 점수도 함께 적습니다. 자세한 뜻은 뒤 단원에서 다룹니다. 지금은 "두 점수를 표로 나란히 적는다"까지만.
         """,
         check=short('입력을 보지 않고 가장 많은 답만 찍는 기준 모델의 `scikit-learn` 이름은 무엇인가요?', ['DummyClassifier', 'Dummy', '더미 분류기', '더미분류기'],
                     '`DummyClassifier(strategy="most_frequent")`가 기준입니다. 이 점수를 넘지 못하는 모델은 아무것도 배우지 못한 것입니다.')),
@@ -224,7 +224,7 @@ UNIT = unit('classifiers', '2일차 · 6교시 — 세 분류 모델과 기준 �
         loaded.predict(X_new)                            # 훈련 없이 바로 예측
         ```
 
-        `joblib`은 `scikit-learn`과 함께 설치되는 저장 도구입니다. 저장하는 것은 모델 하나가 아니라 **파이프라인 전체**입니다. 그래서 5교시에 훈련 자료에서 정한 기준(나이의 중앙값, One-hot 열 목록, 표준화 기준)도 파일 안에 같이 들어가고, 새 자료에도 같은 손질이 그대로 적용됩니다. 손질과 모델을 한 줄로 묶어 둔 또 하나의 이유입니다.
+        `joblib`은 `scikit-learn`과 함께 설치되는 저장 도구입니다. 저장하는 것은 모델 하나가 아니라 **파이프라인 전체**입니다. 그래서 앞 단원에 훈련 자료에서 정한 기준(나이의 중앙값, One-hot 열 목록, 표준화 기준)도 파일 안에 같이 들어가고, 새 자료에도 같은 손질이 그대로 적용됩니다. 손질과 모델을 한 줄로 묶어 둔 또 하나의 이유입니다.
 
         현장에서는 이렇게 돌아갑니다. 빵 공장은 **매주 월요일에 한 번** 지난 기록으로 다시 훈련해 파일을 갈아 끼우고, **매일 새벽에는 불러와서 오늘 생산량만** 예측합니다. 콜센터의 월요일 인원 예측도 같은 모양입니다. AI에게 "해 줘"라고 시킬 때도 **"모델은 파일로 저장하고, 예측 스크립트는 불러오기만 하게"**라고 한 줄 보태면 매번 훈련하는 코드를 받지 않습니다.
 
@@ -244,7 +244,7 @@ UNIT = unit('classifiers', '2일차 · 6교시 — 세 분류 모델과 기준 �
         starter=MODEL_PREP + "import joblib\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import accuracy_score\n# model을 학습해 저장하고, loaded로 불러와 test_accuracy를 구하세요\n",
         solution=MODEL_PREP + "import joblib\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import accuracy_score\nmodel = Pipeline([('prepare', make_preprocessor()), ('model', LogisticRegression(max_iter=1000))])\nmodel.fit(X_train, y_train)\njoblib.dump(model, 'titanic_model.joblib')\nloaded = joblib.load('titanic_model.joblib')\ntest_accuracy = accuracy_score(y_test, loaded.predict(X_test))\nprint(f'불러온 모델의 테스트 정확도: {test_accuracy:.3f}')\n",
         check="from pathlib import Path\nassert Path('titanic_model.joblib').exists()\nassert (s['loaded'].predict(s['X_test'])==s['model'].predict(s['X_test'])).all()\nassert abs(s['test_accuracy']-(s['loaded'].predict(s['X_test'])==s['y_test']).mean())<1e-9"),
-    quiz('model-check', '2일차 6교시 점검',
+    quiz('model-check', '단원 점검',
         choice('`max_depth` 후보 중 하나를 고를 때 어떤 자료의 점수로 비교해야 하나요?',
                ['훈련 자료 안에서 다시 나눠 채점한 교차 검증 점수', '테스트 자료의 정확도', '훈련 자료 전체를 그대로 다시 채점한 점수'], 0,
                '테스트는 다 고른 뒤 한 번만 씁니다. 고르는 데 쓰면 더 이상 처음 보는 자료가 아닙니다. 훈련 자료를 그대로 채점하면 깊은 나무가 늘 이깁니다(외운 점수).' "\n\n**다른 보기는 왜 아닌가**\n\n- 「테스트 자료의 정확도」: 시험지를 보고 공부법을 고르는 셈이라 점수가 부풀려진다.\n- 「훈련 자료 전체」: 외운 점수라 깊을수록 좋아 보여 과적합을 고른다."),

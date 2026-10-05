@@ -11,22 +11,22 @@ baseline MAE 13637.5, Linear 13521, Ridge 13601, Lasso 13630 (ma5); Ridge 13859 
 """
 
 NARRATION = {
-    # ---- 3일차 3교시 — 시간 분리와 기준 모델 ----
+    # ---- 시간 분리와 기준 모델 ----
     "temporal-boundary": [
-        ("title", "자, 3교시예요. 나누는 방법이 타이타닉하고 달라져요. 시간 자료는 섞으면 안 되거든요."),
+        ("title", "자, 이 단원은 나누는 방법이 타이타닉하고 달라져요. 시간 자료는 섞으면 안 되거든요."),
         ("타이타닉에서는 train_test_split이 승객을 무작위로 섞어", "타이타닉은 승객을 무작위로 섞어도 됐어요. 승객끼리는 순서가 없으니까요. 주가는 날짜를 섞으면 6월 가격으로 배워서 3월을 맞히는 꼴이 돼요. 그래서 앞 기간으로 훈련, 뒤 기간으로 테스트예요."),
         ("제목: 섞으면 점쟁이가 된다", "만화 보세요. 5월 종가를 거의 다 맞혔다고 기뻐하는데, 훈련 자료에 6월 가격이 들어 있었던 거예요. 실제 내일은 그렇게 안 보이죠."),
         ("제목: 시간은 섞지 않는다", "준호 씨 질문도 같아요. 앞 기간으로 배우고 뒤 기간으로 채점한다, 그게 전부예요. 여기서는 마지막 80거래일을 테스트로 떼요."),
         ("위젯: temporal", "위젯을 단계마다 넘겨 보세요. 거래일 30일을 날짜순으로 세우고 뒤쪽 8일을 테스트로 떼요. 셋째 단계의 경계 바로 앞 하루, 그 칸이 지금부터 볼 문제예요."),
         ("그런데 경계를 하루 잘못 그으면 작은 누수가 숨어듭니다", "경계를 하루 잘못 그으면 작은 누수가 숨어들어요. 테스트 첫날을 test_start라고 하고 그 바로 전날 행을 보세요. 입력 날짜는 테스트 전인데, 정답은 test_start 당일 종가거든요."),
         ("안 된다. 정답이 테스트 기간", "표의 둘째 줄이에요. test_start 하루 전 행은 입력은 훈련처럼 보여도 정답이 테스트 기간이라 안 돼요. 테스트 첫날의 답을 훈련에서 미리 보는 셈이죠."),
-        ("그래서 훈련 조건은 둘입니다", "그래서 훈련 조건이 둘이에요. 입력 날짜도 test_start 전, target_date도 test_start 전. 아래 코드의 train_mask가 두 조건을 &로 이은 거예요. 2교시에 target_date를 남겨 둔 이유가 이거죠."),
+        ("그래서 훈련 조건은 둘입니다", "그래서 훈련 조건이 둘이에요. 입력 날짜도 test_start 전, target_date도 test_start 전. 아래 코드의 train_mask가 두 조건을 &로 이은 거예요. 앞 단원에 target_date를 남겨 둔 이유가 이거죠."),
         ("나눴으면 기준 모델입니다", "나눴으면 기준 모델이에요. 내일 종가는 오늘 종가와 같다, 분류의 전원 사망에 해당해요. 점수는 MAE, 예측과 정답의 차이를 부호 없이 평균 낸 거라 단위가 원이에요. 작을수록 좋아요."),
         ("check", "확인 문항이요. 가장 단순한 예측을 두고 모델과 비교하는 것, 분류에서도 썼던 그 이름이에요."),
     ],
     "test-start": [
         ("problem", "자, 첫 코딩이에요. 준비된 frame에서 마지막 80행의 첫 날짜를 test_start에 넣고, 그 날짜 이상인 행 수를 n_test에 담아 출력해요. 80이 나와야 맞아요."),
-        ("starter", "준비 코드가 2교시에 만든 frame을 그대로 만들어 둬요. 여섯 열에 dropna까지요. 그대로 둘게요."),
+        ("starter", "준비 코드가 앞 단원에 만든 frame을 그대로 만들어 둬요. 여섯 열에 dropna까지요. 그대로 둘게요."),
         ("code", "test_start = frame.index[-80]\n", "frame.index[-80], 뒤에서 80번째 날짜예요. 거기가 테스트 첫날이에요."),
         ("code", "n_test = int((frame.index >= test_start).sum())\nprint(test_start, n_test)\n", "frame.index >= test_start는 행마다 참·거짓이고, sum()이 참의 개수예요. int로 감싸 정수로 저장하고 출력해요."),
         ("output", "2026년 5월 11일, 그리고 80이 나왔죠? 그 날짜부터 끝까지가 테스트 자료예요."),
@@ -65,9 +65,9 @@ NARRATION = {
         ("output", "37.14쯤, 그리고 90이에요. 하루 평균 37통, 한 통 5분이면 세 시간 넘게 밀리거나 비는 거죠. 월요일만 보면 90통이라 더 커요."),
     ],
 
-    # ---- 3일차 4교시 — 회귀 비교와 최종 결과 ----
+    # ---- 회귀 비교와 최종 결과 ----
     "regression-metrics": [
-        ("title", "자, 마지막 단원이에요. 회귀 모델 세 개를 돌려서 3교시 기준과 비교하고 결론을 써요."),
+        ("title", "자, 마지막 단원이에요. 회귀 모델 세 개를 돌려서 앞 단원 기준과 비교하고 결론을 써요."),
         ("마지막 단원입니다", "입력 X는 네 열이에요. 오늘 종가, 수익률, 5일 평균, 어제 종가. 정답 y는 내일 종가고요."),
         ("선형 회귀(LinearRegression)는 입력마다 가중치를 곱해", "선형 회귀는 입력마다 가중치를 곱해 더해요. 입력이 넷이면 기울어진 판을 맞추는 거죠. 릿지와 라쏘는 같은 직선 맞추기에 브레이크를 단 거예요. 가중치가 너무 커지면 벌점을 줘서 우연한 흔들림까지 외우는 걸 막아요. 그래서 StandardScaler와 묶어 써요."),
         ("model = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))])", "코드는 분류 때랑 똑같은 모양이에요. Pipeline에 scale과 model, fit, predict, 그리고 지표 함수에 정답, 예측 순서."),
@@ -126,7 +126,7 @@ NARRATION = {
     # ---- ★ 도전 과제 (stock) ----
     "window-rematch": [
         ("problem", "자, 도전 과제예요. 주가 챕터를 한 번에 복습하는데 이동평균 창을 5일에서 10일로 바꿔요. 특징 만들기, 경계 하루까지 챙긴 시간 분리, 기준 모델, 릿지 비교, report까지 직접 써요."),
-        ("hint", "2교시 여섯 열에서 rolling(5)만 rolling(10)으로 바꾸면 처음 아홉 행이 비어 391행이 남아요. train_mask는 3교시 그대로예요."),
+        ("hint", "앞에서 만든 여섯 열에서 rolling(5)만 rolling(10)으로 바꾸면 처음 아홉 행이 비어 391행이 남아요. train_mask는 앞 단원 그대로예요."),
         ("starter", "준비 코드가 prices를 읽고 Pipeline, StandardScaler, Ridge, mean_absolute_error를 불러 뒀어요. frame은 이번엔 직접 만들어요."),
         ("code", "frame = pd.DataFrame(index=prices.index)\nframe['close'] = prices['종가']\nframe['return_1'] = prices['종가'].pct_change()\nframe['ma10'] = prices['종가'].rolling(10).mean()\nframe['lag_close_1'] = prices['종가'].shift(1)\n", "날짜 인덱스만 가진 빈 frame에 열을 하나씩 붙여요. close, pct_change의 return_1, 이번엔 rolling(10)으로 ma10, shift(1)로 어제 종가."),
         ("code", "frame['target_next_close'] = prices['종가'].shift(-1)\nframe['target_date'] = pd.Series(prices.index, index=prices.index).shift(-1)\nframe = frame.dropna().copy()\n", "정답은 shift(-1), 내일 종가예요. 부호를 틀리면 누수죠. target_date도 날짜를 하루 밀어 같이 두고, dropna로 빈 행을 떨어내요. 391행이 남아요."),

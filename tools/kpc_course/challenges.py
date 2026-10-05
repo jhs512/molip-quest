@@ -22,7 +22,7 @@ CHALLENGES = {
         7행 3열 표가 나오고 `best_day`가 `토`이면 맞게 한 것입니다.
         """,
         hint="""
-        `for day, sold in sales.items():`로 키와 값을 함께 꺼낼 수 있습니다. 최댓값 찾기는 3교시의 `highest` 패턴 그대로이고, 반복 안에서 `best_day = day`도 같이 갱신하면 됩니다.
+        `for day, sold in sales.items():`로 키와 값을 함께 꺼낼 수 있습니다. 최댓값 찾기는 앞에서 본 `highest` 패턴 그대로이고, 반복 안에서 `best_day = day`도 같이 갱신하면 됩니다.
         """,
         starter="import pandas as pd\nsales = {'월': 412, '화': 388, '수': 455, '목': 430, '금': 520, '토': 610, '일': 580}\nplans = []\ntotal_plan = 0\n# plans, total_plan, best_day, df를 만드세요\n",
         solution="import pandas as pd\nsales = {'월': 412, '화': 388, '수': 455, '목': 430, '금': 520, '토': 610, '일': 580}\nplans = []\ntotal_plan = 0\nbest_day = None\nbest_sold = 0\nfor day, sold in sales.items():\n    plan = round(sold * 1.1)\n    plans.append({'요일': day, '판매량': sold, '계획': plan})\n    total_plan += plan\n    if sold > best_sold:\n        best_sold = sold\n        best_day = day\ndf = pd.DataFrame(plans)\nprint(total_plan, best_day)\ndf\n",
@@ -42,7 +42,7 @@ CHALLENGES = {
         `n_missing`이 2, `rainy`가 15행, `saved`가 56행 5열이면 맞게 한 것입니다.
         """,
         hint="""
-        결측 세기는 `isna().sum()`, 채우기는 `fillna(중앙값)`을 **새 변수**에, 조건은 불리언 마스크, 둘 중 하나는 `isin(['토', '일'])`가 편합니다. 저장은 4교시의 `to_csv(index=False)`입니다.
+        결측 세기는 `isna().sum()`, 채우기는 `fillna(중앙값)`을 **새 변수**에, 조건은 불리언 마스크, 둘 중 하나는 `isin(['토', '일'])`가 편합니다. 저장은 앞 단원의 `to_csv(index=False)`입니다.
         """,
         starter=CROISSANT + "# n_missing, filled, rainy, weekend_mean, saved를 만드세요\n",
         solution=CROISSANT + "n_missing = int(sales['판매량'].isna().sum())\nfilled = sales.copy()\nfilled['판매량'] = filled['판매량'].fillna(sales['판매량'].median())\nrainy = filled[filled['날씨'] == '비']\nweekend_mean = filled[filled['요일'].isin(['토', '일'])]['판매량'].mean()\nfilled.to_csv('croissant_clean.csv', index=False)\nsaved = pd.read_csv('croissant_clean.csv')\nprint(n_missing, len(rainy), round(weekend_mean, 1), saved.shape)\n",
@@ -99,7 +99,7 @@ CHALLENGES = {
         `Dummy`의 정확도가 162/262이고 `best_model`이 `Dummy`가 아니면 맞게 한 것입니다.
         """,
         hint="""
-        5교시의 `make_preprocessor()`를 떠올리세요. 수치형은 `['객실등급','나이','형제배우자','부모자녀','요금']`, 범주형은 `['성별','탑승항구']`입니다. `Pipeline`은 모델마다 새로 만들어야 합니다(`preprocessor`는 같은 것을 다시 써도 됩니다. 매번 같은 훈련 자료로 다시 `fit`되기 때문입니다). `best_model = results['f1'].idxmax()`.
+        앞 단원의 `make_preprocessor()`를 떠올리세요. 수치형은 `['객실등급','나이','형제배우자','부모자녀','요금']`, 범주형은 `['성별','탑승항구']`입니다. `Pipeline`은 모델마다 새로 만들어야 합니다(`preprocessor`는 같은 것을 다시 써도 됩니다. 매번 같은 훈련 자료로 다시 `fit`되기 때문입니다). `best_model = results['f1'].idxmax()`.
         """,
         starter="import pandas as pd\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.compose import ColumnTransformer\nfrom sklearn.impute import SimpleImputer\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import OneHotEncoder, StandardScaler\nfrom sklearn.dummy import DummyClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.tree import DecisionTreeClassifier\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import accuracy_score, f1_score\n# X, y, 분할, preprocessor, models, results, best_model을 만드세요\n",
         solution="import pandas as pd\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.compose import ColumnTransformer\nfrom sklearn.impute import SimpleImputer\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import OneHotEncoder, StandardScaler\nfrom sklearn.dummy import DummyClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.tree import DecisionTreeClassifier\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import accuracy_score, f1_score\ntitanic = pd.read_csv('data/titanic.csv')\nfeatures = ['객실등급','성별','나이','형제배우자','부모자녀','요금','탑승항구']\nX = titanic[features].copy()\ny = titanic['생존'].astype(int)\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)\npreprocessor = ColumnTransformer([\n    ('numeric', Pipeline([('fill', SimpleImputer(strategy='median')), ('scale', StandardScaler())]), ['객실등급','나이','형제배우자','부모자녀','요금']),\n    ('category', Pipeline([('fill', SimpleImputer(strategy='most_frequent')), ('encode', OneHotEncoder(handle_unknown='ignore'))]), ['성별','탑승항구']),\n])\nmodels = {\n    'Dummy': DummyClassifier(strategy='most_frequent'),\n    'Logistic': LogisticRegression(max_iter=2000),\n    'Tree': DecisionTreeClassifier(max_depth=5, random_state=42),\n    'Forest': RandomForestClassifier(n_estimators=50, max_depth=5, random_state=42),\n}\nrows = {}\nfor name, model in models.items():\n    pipeline = Pipeline([('prepare', preprocessor), ('model', model)])\n    pipeline.fit(X_train, y_train)\n    pred = pipeline.predict(X_test)\n    rows[name] = {'accuracy': accuracy_score(y_test, pred), 'f1': f1_score(y_test, pred)}\nresults = pd.DataFrame(rows).T\nbest_model = results['f1'].idxmax()\nprint(best_model)\nresults\n",
@@ -137,7 +137,7 @@ CHALLENGES = {
         `frame`이 391행, 훈련 310행, 테스트 80행이면 분리가 맞은 것입니다. `improved`가 `False`여도 그대로 둡니다.
         """,
         hint="""
-        2교시의 여섯 열 만들기에서 `rolling(5)`만 `rolling(10)`으로 바꾸면 처음 아홉 행이 비어 391행이 남습니다. 3교시의 `train_mask = (frame.index < test_start) & (frame['target_date'] < test_start)`를 그대로 쓰세요.
+        앞에서 만든 여섯 열에서 `rolling(5)`만 `rolling(10)`으로 바꾸면 처음 아홉 행이 비어 391행이 남습니다. 앞 단원의 `train_mask = (frame.index < test_start) & (frame['target_date'] < test_start)`를 그대로 쓰세요.
         """,
         starter=ST + "from sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import Ridge\nfrom sklearn.metrics import mean_absolute_error\n# frame, X_train, X_test, y_train, y_test, baseline_mae, ridge_mae, report를 만드세요\n",
         solution=ST + "from sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import Ridge\nfrom sklearn.metrics import mean_absolute_error\nframe = pd.DataFrame(index=prices.index)\nframe['close'] = prices['종가']\nframe['return_1'] = prices['종가'].pct_change()\nframe['ma10'] = prices['종가'].rolling(10).mean()\nframe['lag_close_1'] = prices['종가'].shift(1)\nframe['target_next_close'] = prices['종가'].shift(-1)\nframe['target_date'] = pd.Series(prices.index, index=prices.index).shift(-1)\nframe = frame.dropna().copy()\nfeature_columns = ['close', 'return_1', 'ma10', 'lag_close_1']\nX = frame[feature_columns]\ny = frame['target_next_close']\ntest_start = frame.index[-80]\ntrain_mask = (frame.index < test_start) & (frame['target_date'] < test_start)\ntest_mask = frame.index >= test_start\nX_train, X_test = X.loc[train_mask], X.loc[test_mask]\ny_train, y_test = y.loc[train_mask], y.loc[test_mask]\nbaseline_mae = mean_absolute_error(y_test, X_test['close'].to_numpy())\nmodel = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))]).fit(X_train, y_train)\nridge_mae = mean_absolute_error(y_test, model.predict(X_test))\nreport = {'window': 10, 'rows': len(frame), 'baseline_mae': baseline_mae, 'ridge_mae': ridge_mae, 'improved': ridge_mae < baseline_mae}\nprint(report)\n",

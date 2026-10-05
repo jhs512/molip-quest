@@ -1,7 +1,7 @@
-"""2일차 · 4교시 — 입력과 정답 분리"""
+"""입력과 정답 분리"""
 from kpc_course.dsl import *
 
-UNIT = unit('features', '2일차 · 4교시 — 입력과 정답 분리', [
+UNIT = unit('features', '입력과 정답 분리', [
     concept('what-is-learning', '표에서 규칙을 찾아 빈칸을 채우는 것',
         body="""
         지금까지 "누가 살아남았나"를 표와 그림으로 들여다봤습니다. 이제 질문을 바꿉니다. **승객 정보만 주어졌을 때 생존 여부를 맞힐 수 있을까?** 사람이 규칙을 적는 대신, 컴퓨터가 1,309명의 기록을 보고 규칙을 스스로 찾게 하는 것이 머신러닝입니다. 거창해 보이지만 하는 일은 하나입니다. 표에서 **입력과 정답의 관계**를 찾아, 정답이 비어 있는 새 행의 빈칸을 채우는 것.
@@ -214,7 +214,7 @@ UNIT = unit('features', '2일차 · 4교시 — 입력과 정답 분리', [
         starter=TI + "# encoded를 만들고 head()를 확인하세요\n",
         solution=TI + "encoded = pd.get_dummies(titanic[['성별']])\nprint(encoded.shape)\nencoded.head()\n",
         check="assert sorted(s['encoded'].columns)==['성별_남성','성별_여성'] and s['encoded'].shape==(1309,2)\nassert (s['encoded'].astype(int).sum(axis=1)==1).all()"),
-    quiz('features-check', '2일차 4교시 점검',
+    quiz('features-check', '단원 점검',
         choice('생존/사망처럼 몇 가지 중 하나를 고르는 예측은 무엇이라고 하나요?',
                ['분류', '회귀', '군집'], 0,
                '고르는 것은 분류, 숫자를 맞히는 것은 회귀입니다. 뒤에 나올 주가는 회귀입니다.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「군집」: 정답 없이 비슷한 것끼리 묶는 일이다.\n- 「회귀」: 숫자를 맞힐 때 쓴다."),

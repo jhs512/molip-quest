@@ -14,7 +14,7 @@ def p(body, why):
 
 
 PROMPTS = {
-    # ---- 1일차 1교시 ----
+    # ----
     "hello": p("""
 파이썬에서 "Hello, KPC!" 출력하는 코드
 """, """
@@ -57,7 +57,7 @@ PROMPTS = {
 - `f-string` → 글자와 값을 섞는 표준 방법을 지정.
 - `콜론 뒤 공백 하나` → 띄어쓰기까지 채점한다.
 """),
-    # ---- 1일차 2교시 ----
+    # ----
     "list-index": p("""
 파이썬. prices = [10000, 10200, 10100] 에서 첫 값을 first, 마지막 값을 last에 담고 둘 다 출력.
 인덱스로 꺼내.
@@ -96,7 +96,7 @@ PROMPTS = {
 - `append` → 맨 뒤에 추가하는 메서드 지정.
 - `sum/len으로` → numpy·statistics를 끌어오지 않게.
 """),
-    # ---- 1일차 3교시 ----
+    # ----
     "simple-if": p("""
 파이썬. 표준 입력으로 가격(정수) 한 줄. 10000 이상이면 "기준 이상", 아니면 "기준 미만" 출력. if/else로.
 10000은 "기준 이상".
@@ -158,7 +158,7 @@ time.perf_counter()로 걸린 시간을 loop_seconds, numpy_seconds에 재서 �
 - `total`, `numpy_total`, `loop_seconds`, `numpy_seconds` → 검사기가 읽는 이름 넷.
 - `몇 배 빠른지` → 숫자 둘만 찍고 끝내지 않게.
 """),
-    # ---- 1일차 4교시 ----
+    # ----
     "inspect-frame": p("""
 pandas. orders DataFrame(열 product, price, quantity, 4행)이 있어. 행 수 n_rows, 열 수 n_columns, 열 이름 리스트 column_names에 담고 출력.
 shape와 columns 써.
@@ -199,7 +199,7 @@ pandas. data/titanic.csv를 read_csv로 읽어 titanic에 담고, titanic.shape 
 - `data/titanic.csv` → 경로를 그대로. 안 적으면 AI가 URL이나 다른 경로를 가정한다.
 - `shape`, `head()` → 새 자료를 받으면 처음 보는 두 가지.
 """),
-    # ---- 1일차 5교시 ----
+    # ----
     "count-missing": p("""
 pandas. orders DataFrame(price 열에 결측 1개). isna().sum()으로 열별 결측 개수를 missing_counts에 담고, price 열 결측 개수를 int로 n_missing_price에 담아 출력.
 """, """
@@ -237,7 +237,7 @@ pandas. orders(price 결측 1개). 결측을 중앙값으로 채운 표를 fille
 - `채운 표 filled`, `뺀 표 dropped` → 두 처리를 나란히. 결측 처리에 따라 합계가 달라진다는 걸 보이는 설계.
 - `.copy()` → 원본 보호.
 """),
-    # ---- 1일차 6교시 ----
+    # ----
     "string-to-int": p("""
 파이썬. price_text = '10,000'. 쉼표를 지우고 int로 바꿔 price에 담은 뒤 price * 3 출력.
 """, """
@@ -261,7 +261,7 @@ select와 select_one 써.
 - `data-code 속성` vs `.name 텍스트` → 속성과 글자를 구분해서 요청.
 - `딕셔너리로 rows에 모아 DataFrame` → 수집 결과를 표로 만드는 표준 패턴.
 """),
-    # ---- 1일차 7교시 ----
+    # ----
     "titanic-shape": p("""
 pandas. titanic = pd.read_csv('data/titanic.csv'). 행 수 n_rows, 열 수 n_columns, 열 이름 리스트 columns에 담고 출력.
 """, """
@@ -286,7 +286,7 @@ n_known + n_unknown == n_total 이어야 해.
 - `생존의 평균` → 0/1 열의 평균이 곧 비율.
 - `n_known + n_unknown == n_total` → 검산식을 주면 AI가 스스로 확인한다.
 """),
-    # ---- 1일차 8교시 ----
+    # ----
     "sex-counts": p("""
 pandas. titanic DataFrame. 성별 열 value_counts()를 gender_counts에 담고 출력.
 """, """
@@ -313,7 +313,7 @@ pandas. titanic DataFrame. pd.cut으로 나이를 bins=[0, 20, 40, 60, float('in
 - `bins=…, labels=…` → "20대, 30대"라고 하면 경계가 AI마다 다르다. 숫자로.
 - `right=False` → 20살이 `20~39`에 들어가게. 구간 문제의 단골 실수.
 """),
-    # ---- 2일차 1교시 ----
+    # ----
     "simple-bar": p("""
 matplotlib. names = ['A','B','C'], amounts = [30000,40000,60000]. fig, ax = plt.subplots()로 만들고 ax.bar로 막대그래프. ax.set(title='종목별 금액', ylabel='금액'). plt.show().
 """, """
@@ -330,7 +330,7 @@ pandas + matplotlib. titanic DataFrame. groupby('객실등급')['생존'].mean()
 """, """
 - 앞 프롬프트에서 열 이름과 축 이름만 바꿈.
 """),
-    # ---- 2일차 2교시 ----
+    # ----
     "age-hist": p("""
 pandas + seaborn. titanic DataFrame. 나이가 결측이 아닌 행만 known_age에 담고, fig, ax = plt.subplots() 뒤 sns.histplot(data=known_age, x='나이', bins=20, ax=ax). 축 이름과 제목 붙이고 plt.show().
 """, """
@@ -351,7 +351,7 @@ pandas + seaborn. titanic DataFrame. columns=['객실등급','나이','형제배
 - `vmin=-1, vmax=1` → 색 범위를 고정해야 다른 자료와 비교된다.
 - `annot=True` → 칸에 숫자.
 """),
-    # ---- 2일차 3교시 ----
+    # ----
     "embarked-rate": p("""
 pandas. titanic DataFrame. 탑승항구로 groupby한 생존의 agg(['count','mean'])을 by_port에 담고 마지막 줄에 by_port.
 """, """
@@ -369,7 +369,7 @@ pandas + matplotlib. titanic DataFrame. ['성별','객실등급'] groupby 생존
 - `wide.plot.bar(...)` → 표에서 바로 묶음 막대. 반환값을 `ax`에 담아야 검사기가 읽는다.
 - `rot=0` → x축 글자 안 눕히기.
 """),
-    # ---- 2일차 4교시 ----
+    # ----
     "drop-columns": p("""
 pandas. titanic DataFrame. drop(columns=[...])으로 생존, 이름, 티켓, 선실, 구명보트, 시신번호, 출신목적지 를 빼서 candidates에 담고 열 이름 출력. 7열 남아야 해.
 """, """
@@ -393,7 +393,7 @@ pandas. titanic DataFrame. pd.get_dummies(titanic[['성별']])로 성별 열을 
 """, """
 - `One-hot 인코딩` → 글자 열을 0/1 열로 바꾸는 표준 용어. `map({'남성':0})` 같은 임의 코드를 막는다.
 """),
-    # ---- 2일차 5교시 ----
+    # ----
     "stratified-split": p("""
 scikit-learn. X, y가 있어. train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)로 X_train, X_test, y_train, y_test 만들고 두 쪽 행 수와 y 평균(생존 비율) 출력.
 """, """
@@ -423,7 +423,7 @@ scikit-learn. X_train, X_test가 있고 numeric = ['객실등급','나이','형�
 - `Pipeline([...])` → 채우기와 표준화를 한 객체로. 단계가 늘면 순서가 꼬이니 묶는다.
 - `'fill'`, `'scale'` → 단계 이름. 나중에 이 이름으로 꺼낸다.
 """),
-    # ---- 2일차 6교시 ----
+    # ----
     "dummy-only": p("""
 scikit-learn. X_train, X_test, y_train, y_test가 있어. DummyClassifier(strategy='most_frequent')를 dummy에 만들어 fit하고 X_test 예측의 accuracy_score를 dummy_accuracy에 담아 출력.
 """, """
@@ -460,7 +460,7 @@ cross_val_score(cv=5) 평균을 cv_scores 딕셔너리에. 최고 깊이를 best
 - `random_state=42` → 후보마다 같은 조건.
 - `테스트 자료는 … 쓰지 마` → 튜닝과 채점을 분리한다.
 """),
-    # ---- 2일차 7교시 ----
+    # ----
     "credit-shape": p("""
 pandas. credit = pd.read_csv('data/credit.csv'), target = '다음달 부도'. 행 수 n_rows, 열 수 n_columns에 담고, credit[target].value_counts()를 target_counts에 담아 출력.
 """, """
@@ -488,7 +488,7 @@ pandas. credit DataFrame, target. 상환_9월로 groupby한 target의 agg(['coun
 - `count`도 같이 → 인원 적은 상태의 비율은 못 믿는다.
 - `상태 0의 부도율` → 집계표에서 특정 행 꺼내기(`.loc[0, 'mean']`).
 """),
-    # ---- 2일차 8교시 ----
+    # ----
     "manual-metrics": p("""
 파이썬. tp, fp, fn, tn = 2, 1, 1, 2. precision = tp/(tp+fp), recall = tp/(tp+fn), accuracy = (tp+tn)/(tp+fp+fn+tn) 계산해서 세 변수에 담고 출력.
 """, """
@@ -518,7 +518,7 @@ numpy. probabilities = np.array([0.1,0.35,0.49,0.51,0.8]). 0.5 이상이면 1 �
 """, """
 - `(p >= 0.5).astype(int)` → 임계값 적용을 벡터 연산 한 줄로. `int`까지 맞춰야 채점 통과.
 """),
-    # ---- 3일차 1교시 ----
+    # ----
     "stock-load": p("""
 pandas. data/stock.csv를 parse_dates=['날짜']로 읽고 set_index('날짜').sort_index()해서 prices에. 행·열 수를 n_rows, n_columns에 담고, 첫 날짜와 마지막 날짜 출력.
 """, """
@@ -535,7 +535,7 @@ pandas. prices(날짜 인덱스, 종가 열). 첫 날짜 first_date, 마지막 �
 """, """
 - `idxmax()` → 최댓값이 "언제"인지. 모르면 정렬해서 첫 행 꺼내는 긴 코드가 온다.
 """),
-    # ---- 3일차 2교시 ----
+    # ----
     "daily-return": p("""
 pandas. prices(날짜 인덱스, 종가 열). prices['종가'].pct_change()를 return_1 열로 추가하고 prices.head() 출력.
 """, """
@@ -554,10 +554,10 @@ pandas. prices(날짜 인덱스, 종가 열). prices['종가'].shift(1)을 lag_c
     "stock-frame": p("""
 pandas. prices(날짜 인덱스, 종가 열)와 빈 frame=pd.DataFrame(index=prices.index)가 있어. frame에 close(종가), return_1(pct_change), ma5(rolling(5).mean()), lag_close_1(shift(1)), target_next_close(shift(-1)), target_date(pd.Series(prices.index, index=prices.index).shift(-1)) 여섯 열을 만들고 frame = frame.dropna().copy(). 396행이어야 해.
 """, """
-- `target_date` → 정답 날짜를 남겨 둔다. 다음 교시의 경계 누수를 막기 위해.
+- `target_date` → 정답 날짜를 남겨 둔다. 다음 단원의 경계 누수를 막기 위해.
 - `dropna()` → 불완전한 행 제거. `396행` → 검산.
 """),
-    # ---- 3일차 3교시 ----
+    # ----
     "test-start": p("""
 pandas. frame(날짜 인덱스, 396행)이 있어. 마지막 80행의 첫 날짜를 test_start에 담고, 인덱스가 test_start 이상인 행 수를 int로 n_test에 담아 출력. frame.index[-80] 써.
 """, """
@@ -586,7 +586,7 @@ pandas + scikit-learn. calls DataFrame(열 week 1/2, weekday 월~일, calls). 1�
 """, """
 - `mean_absolute_error(this_week, last_week)` → 정답(이번 주), 예측(지난주). "지난주와 같다"가 기준 모델.
 """),
-    # ---- 3일차 4교시 ----
+    # ----
     "linear-only": p("""
 scikit-learn. X_train, X_test, y_train, y_test가 있어(temporal split 완료). Pipeline([('scale', StandardScaler()), ('model', LinearRegression())])를 model에 fit. 테스트 예측을 prediction, mean_absolute_error를 linear_mae에 담아 출력하고 model.named_steps['model'].coef_도 출력.
 """, """

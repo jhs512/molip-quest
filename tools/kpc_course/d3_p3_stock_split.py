@@ -1,9 +1,9 @@
-"""3일차 · 3교시 — 시간 분리와 기준 모델"""
+"""시간 분리와 기준 모델"""
 from kpc_course.dsl import *
 
 CALLS = PD + "calls = pd.DataFrame({'week': [1]*7 + [2]*7, 'weekday': ['월','화','수','목','금','토','일']*2, 'calls': [1320,980,940,910,1010,420,380, 1410,1020,960,890,1050,450,360]})\n"
 
-UNIT = unit('stock-split', '3일차 · 3교시 — 시간 분리와 기준 모델', [
+UNIT = unit('stock-split', '시간 분리와 기준 모델', [
     concept('temporal-boundary', '시간은 섞으면 안 되고, 경계의 하루도 조심해야 한다',
         body="""
         타이타닉에서는 `train_test_split`이 승객을 무작위로 섞어 훈련과 테스트를 나눴습니다. 승객끼리는 순서가 없으니 괜찮았습니다. 주가는 다릅니다. 날짜를 무작위로 섞으면 6월 가격으로 훈련한 모델이 3월 가격을 맞히는 꼴이 됩니다. 미래를 보고 과거를 맞히는 것은 시험이 아닙니다. 그래서 시간 자료는 **앞쪽 기간으로 훈련하고 뒤쪽 기간으로 테스트**합니다. 여기서는 마지막 80거래일을 테스트로 떼어 둡니다.
@@ -71,7 +71,7 @@ UNIT = unit('stock-split', '3일차 · 3교시 — 시간 분리와 기준 모�
         | test_start 하루 전 | **test_start** | 안 된다. 정답이 테스트 기간 |
         | test_start | test_start 다음 거래일 | 테스트 |
 
-        그래서 훈련 조건은 둘입니다. 입력 날짜도 `test_start` 전, 그리고 `target_date`도 `test_start` 전. 2교시에서 `target_date`를 남겨 둔 이유가 이것입니다.
+        그래서 훈련 조건은 둘입니다. 입력 날짜도 `test_start` 전, 그리고 `target_date`도 `test_start` 전. 앞 단원에서 `target_date`를 남겨 둔 이유가 이것입니다.
 
         ```python
         test_start = frame.index[-80]
@@ -174,7 +174,7 @@ UNIT = unit('stock-split', '3일차 · 3교시 — 시간 분리와 기준 모�
         starter=CALLS + "from sklearn.metrics import mean_absolute_error\n# last_week, this_week, baseline_mae, monday_error를 만드세요\n",
         solution=CALLS + "from sklearn.metrics import mean_absolute_error\nlast_week = calls[calls['week'] == 1]['calls'].to_numpy()\nthis_week = calls[calls['week'] == 2]['calls'].to_numpy()\nbaseline_mae = mean_absolute_error(this_week, last_week)\nmonday_error = abs(this_week[0] - last_week[0])\nprint(baseline_mae, monday_error)\n",
         check="import numpy as np\nassert np.array_equal(s['last_week'],[1320,980,940,910,1010,420,380]) and np.array_equal(s['this_week'],[1410,1020,960,890,1050,450,360])\nassert abs(s['baseline_mae']-260/7)<1e-8 and int(s['monday_error'])==90"),
-    quiz('temporal-check', '3일차 3교시 점검',
+    quiz('temporal-check', '단원 점검',
         choice('주가 자료를 `train_test_split`처럼 무작위로 섞어 나누면 어떤 문제가 생기나요?',
                ['미래 가격으로 훈련해 과거를 맞히게 되어 점수를 믿을 수 없다', '행 수가 줄어든다', '아무 문제 없다'], 0,
                '승객은 순서가 없지만 날짜는 순서가 있습니다. 시간 자료는 앞 기간으로 훈련하고 뒤 기간으로 테스트합니다.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「행 수가 줄어든다」: 행 수는 같다. 순서가 섞인다.\n- 「아무 문제 없다」: 미래로 과거를 맞히게 된다."),

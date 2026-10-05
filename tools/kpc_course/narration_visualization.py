@@ -1,5 +1,5 @@
 """해설 모드 scripts for chapter 4 (visualization): what the tutor says and types for each concept
-and coding problem of 2일차 1~3교시 plus the chapter challenge, keyed by activity id. Format and
+and coding problem of the three units plus the chapter challenge, keyed by activity id. Format and
 rules: narration.py.
 
 Voice: the instructor's (see .scratch/presenter-decks/spec.md): 해요체 구어, "자," opens a scene,
@@ -8,7 +8,7 @@ outputs say what to look at in the picture; printed tables say the numbers.
 """
 
 NARRATION = {
-    # ---- 2일차 1교시 — Figure·Axes와 막대그래프 ----
+    # ---- Figure·Axes와 막대그래프 ----
     "axes": [
         ("title", "자, 이제 표를 그림으로 바꿔요. 이 개념에서 외울 건 단어 둘이에요."),
         ("앞 단원에서 성별 생존율 표를 만들었습니다", "숫자 둘 비교하는 데는 표로 충분해요. 그런데 그룹이 넷, 여섯이 되면 눈이 못 따라가거든요. 그래서 그림이에요."),
@@ -51,7 +51,7 @@ NARRATION = {
         ("submit", "제출할게요."),
     ],
 
-    # ---- 2일차 2교시 — 분포와 관계 시각화 ----
+    # ---- 분포와 관계 시각화 ----
     "distribution-types": [
         ("title", "자, 막대그래프 하나로는 답 못 하는 질문이 있어요. 이 개념은 질문별로 그래프를 고르는 법이에요."),
         ("막대그래프는 \"그룹마다 값이 얼마인가\"에 답합니다", "막대는 그룹마다 값이 얼마인가에 답해요. 나이가 어떻게 퍼져 있나, 요금과 나이가 같이 움직이나는 다른 질문이거든요."),
@@ -95,7 +95,7 @@ NARRATION = {
         ("submit", "제출할게요. 검사기는 표 크기와 대각선, 색 범위를 봐요."),
     ],
 
-    # ---- 2일차 3교시 — 그림에서 근거 읽기 ----
+    # ---- 그림에서 근거 읽기 ----
     "observations": [
         ("title", "자, 이 단원은 만드는 법이 아니라 읽는 법이에요."),
         ("지금까지 표와 그래프를 여럿 만들었습니다", "분석 결과를 말할 때 세 가지를 따로 떼어 적으면 틀린 말을 안 하게 돼요."),

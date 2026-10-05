@@ -1,10 +1,10 @@
-"""1일차 · 5교시 — 조건 필터와 결측치"""
+"""조건 필터와 결측치"""
 from kpc_course.dsl import *
 
-UNIT = unit('missing', '1일차 · 5교시 — 조건 필터와 결측치', [
+UNIT = unit('missing', '조건 필터와 결측치', [
     concept('missing-values', '빈칸은 0이 아니다',
         body="""
-        4교시의 `orders` 표에는 가격이 비어 있는 거래가 한 건 있었습니다. 설문지를 떠올려 보세요. 어떤 사람이 나이 칸을 비워 두었다면 그 사람의 나이는 0살일까요? 아닙니다. **모른다**가 정답입니다. 표에서 비어 있는 칸을 결측(missing)이라고 부르고, `pandas`는 그 자리에 `NaN`이라고 표시합니다. 결측과 0을 혼동하면 평균이 엉뚱하게 낮아지고, 그 평균으로 한 모든 계산이 같이 틀어집니다.
+        앞 단원의 `orders` 표에는 가격이 비어 있는 거래가 한 건 있었습니다. 설문지를 떠올려 보세요. 어떤 사람이 나이 칸을 비워 두었다면 그 사람의 나이는 0살일까요? 아닙니다. **모른다**가 정답입니다. 표에서 비어 있는 칸을 결측(missing)이라고 부르고, `pandas`는 그 자리에 `NaN`이라고 표시합니다. 결측과 0을 혼동하면 평균이 엉뚱하게 낮아지고, 그 평균으로 한 모든 계산이 같이 틀어집니다.
 
         ```comic-gen
         제목: 빈칸은 0이 아니다
@@ -66,7 +66,7 @@ UNIT = unit('missing', '1일차 · 5교시 — 조건 필터와 결측치', [
               - {화자: 공장장, 상대: 강사, 내용: "빈칸은 0이 아니라 모름. 알겠어요."}
         ```
 
-        조건으로 행을 고르는 일도 한 단계 늘어납니다. 4교시에는 조건이 하나였지만, "가격이 12000 이상**이고** 수량이 2 이상"처럼 둘을 합칠 때는 각 조건을 괄호로 감싸고 `&`(그리고)로 잇습니다. "제품이 A**이거나** 수량이 1"은 `|`(또는)입니다. 괄호를 빼면 Python이 계산 순서를 다르게 읽어 오류가 납니다.
+        조건으로 행을 고르는 일도 한 단계 늘어납니다. 앞 단원에서는 조건이 하나였지만, "가격이 12000 이상**이고** 수량이 2 이상"처럼 둘을 합칠 때는 각 조건을 괄호로 감싸고 `&`(그리고)로 잇습니다. "제품이 A**이거나** 수량이 1"은 `|`(또는)입니다. 괄호를 빼면 Python이 계산 순서를 다르게 읽어 오류가 납니다.
 
         ```python
         both = orders.loc[(orders['price'] >= 12000) & (orders['quantity'] >= 2)]
@@ -147,7 +147,7 @@ UNIT = unit('missing', '1일차 · 5교시 — 조건 필터와 결측치', [
         starter=ORDERS + "# 두 처리 방법과 합계를 비교하세요\n",
         solution=ORDERS + "filled=orders.copy()\nfilled['price']=filled['price'].fillna(filled['price'].median())\nfilled['amount']=filled['price']*filled['quantity']\ndropped=orders.dropna(subset=['price']).copy()\ndropped['amount']=dropped['price']*dropped['quantity']\nfilled_total=filled['amount'].sum()\ndropped_total=dropped['amount'].sum()\nprint(filled_total,dropped_total)\nfilled\n",
         check="assert s['filled_total']==130000 and s['dropped_total']==118000\nassert len(s['filled'])==4 and len(s['dropped'])==3"),
-    quiz('missing-check', '5교시 점검',
+    quiz('missing-check', '단원 점검',
         choice('가격이 비어 있는 칸을 0으로 채우면 무슨 일이 생기나요?',
                ['"모른다"는 정보가 "공짜였다"로 바뀌어 평균이 내려간다', '빈 칸이 사라져 더 정확해진다', '아무 영향이 없다'], 0,
                '결측은 모른다는 뜻이고 0은 실제 값입니다. 0으로 채우면 없던 공짜 거래가 생긴 셈이라 평균과 합계가 왜곡됩니다.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「더 정확해진다」: 없는 값을 지어낸 것이라 더 틀려진다.\n- 「아무 영향이 없다」: 평균과 합계가 함께 내려간다."),

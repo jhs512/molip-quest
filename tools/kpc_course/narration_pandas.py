@@ -1,5 +1,5 @@
 """해설 모드 scripts for chapter 2 (pandas): what the tutor says and types for each concept and
-coding problem of 4교시(files)·5교시(missing)·6교시(html) and the chapter's challenge, keyed by
+coding problem of the three units (files, missing, html) and the chapter's challenge, keyed by
 activity id. Format and rules: narration.py.
 
 Voice: the instructor's (see .scratch/presenter-decks/spec.md): 해요체 구어, "자," opens a scene,
@@ -7,10 +7,10 @@ one or two short sentences per line, says what the student should look at right 
 """
 
 NARRATION = {
-    # ---- 1일차 4교시 — CSV·Excel과 행·열 선택 ----
+    # ---- CSV·Excel과 행·열 선택 ----
     "file-table": [
-        ("title", "자, 이번 교시는 파일이에요. 표를 파일로 저장하고, 파일을 표로 다시 여는 법이요."),
-        ("3교시의 표는 코드 안에 직접 적은 종목 세 개였습니다", "지금까지 표는 코드 안에 직접 적었죠? 진짜 분석은 남이 만든 파일에서 시작해요. 거래 내역은 Excel, 주가는 CSV로 오거든요."),
+        ("title", "자, 이 단원은 파일이에요. 표를 파일로 저장하고, 파일을 표로 다시 여는 법이요."),
+        ("앞 단원의 표는 코드 안에 직접 적은 종목 세 개였습니다", "지금까지 표는 코드 안에 직접 적었죠? 진짜 분석은 남이 만든 파일에서 시작해요. 거래 내역은 Excel, 주가는 CSV로 오거든요."),
         ("제목: 어디서 왔든 읽고 나면 같은 표", "만화를 보세요. CSV는 read_csv, Excel은 read_excel. 들어오는 길은 달라도 DataFrame이 된 뒤에는 똑같이 다뤄요."),
         ("CSV는 값을 쉼표로 구분해 한 줄에 한 행씩 적은", "CSV는 쉼표로 값을 나눈 글자 파일이에요. 메모장으로 열어도 읽혀요. Excel은 시트와 서식이 있어 복잡하지만, pandas로 읽으면 둘 다 같은 표가 돼요."),
         ("orders.to_csv('orders.csv', index=False)", "코드를 보세요. to_csv로 저장하고 read_csv로 다시 읽어요. 남이 만든 파일도 경로만 넘기면 똑같이 읽히죠."),
@@ -63,7 +63,7 @@ NARRATION = {
     "loc-condition": [
         ("problem", "자, 이번엔 자리 번호가 아니라 조건으로 행을 골라요. 수량이 3 이상인 거래만 many에 담고 표로 확인해요."),
         ("starter", "준비 코드의 orders 표는 그대로 둘게요."),
-        ("code", "many = orders.loc[orders['quantity'] >= 3]\nmany\n", "orders['quantity'] >= 3은 행마다 참 거짓을 매긴 거예요. 그걸 loc 안에 넣으면 참인 행만 남아요. 3교시의 if가 표 전체에 한꺼번에 걸리는 셈이죠."),
+        ("code", "many = orders.loc[orders['quantity'] >= 3]\nmany\n", "orders['quantity'] >= 3은 행마다 참 거짓을 매긴 거예요. 그걸 loc 안에 넣으면 참인 행만 남아요. 앞 단원의 if가 표 전체에 한꺼번에 걸리는 셈이죠."),
         ("output", "제품 A 두 건, 수량 3과 4만 남았죠? 왼쪽 행 번호가 0과 2인 것도 보세요. 원래 자리 번호가 그대로 따라와요."),
         ("submit", "제출할게요."),
     ],
@@ -76,10 +76,10 @@ NARRATION = {
         ("submit", "제출할게요. titanic이 1309행 14열인지 봐요."),
     ],
 
-    # ---- 1일차 5교시 — 조건 필터와 결측치 ----
+    # ---- 조건 필터와 결측치 ----
     "missing-values": [
-        ("title", "자, 이번 교시 주제는 빈칸이에요. 빈칸은 0이 아니다, 이 한 문장이요."),
-        ("4교시의 orders 표에는 가격이 비어 있는 거래가 한 건 있었습니다", "설문지에 나이 칸을 비워 둔 사람, 그 사람 나이가 0살일까요? 아니죠, 모른다예요. 이 빈 칸을 결측이라 부르고 pandas는 NaN으로 표시해요. 0과 섞으면 평균이 엉뚱하게 내려가요."),
+        ("title", "자, 이 단원 주제는 빈칸이에요. 빈칸은 0이 아니다, 이 한 문장이요."),
+        ("앞 단원의 orders 표에는 가격이 비어 있는 거래가 한 건 있었습니다", "설문지에 나이 칸을 비워 둔 사람, 그 사람 나이가 0살일까요? 아니죠, 모른다예요. 이 빈 칸을 결측이라 부르고 pandas는 NaN으로 표시해요. 0과 섞으면 평균이 엉뚱하게 내려가요."),
         ("제목: 빈칸은 0이 아니다", "만화를 보세요. 나이 빈칸을 0으로 채우면 0살 고객이 생기고 평균 나이가 확 내려가요. 모른다로 두고 먼저 몇 개인지 세는 거예요."),
         ("그러니 분석을 시작하기 전에 어디가 얼마나 비어 있는지부터 셉니다", "그래서 분석 전에 어디가 얼마나 비었는지부터 세요. isna()가 빈 칸을 True로 표시하고, 거기에 sum을 붙이면 열마다 결측 개수가 나와요."),
         ("filled = orders['price'].fillna(12000)", "코드 세 줄이요. 첫 줄이 세기, 둘째 줄 fillna가 채우기, 셋째 줄 dropna가 그 행 빼기예요."),
@@ -87,7 +87,7 @@ NARRATION = {
         ("제목: 빈칸을 0으로 넣으면", "빵 공장 만화요. 화요일 판매량을 안 적었는데 0으로 넣으면, 한 개도 못 판 날이 돼 버려요. 모르면 모른다로 두고 중앙값으로 채우거나 그 날을 빼는 거예요."),
         ("조건으로 행을 고르는 일도 한 단계 늘어납니다", "조건도 하나 늘어요. 두 조건을 합칠 땐 각각 괄호로 감싸고 그리고는 &, 또는은 |로 이어요. 괄호를 빼면 계산 순서가 달라져 오류가 나요."),
         ("both = orders.loc[(orders['price'] >= 12000) & (orders['quantity'] >= 2)]", "코드를 보세요. 괄호, &, 괄호. 아래 줄은 괄호, |, 괄호. 이 모양 그대로 외워 두면 돼요."),
-        ("check", "확인 문항이요. 표에서 비어 있는 칸을 부르는 말, 이 교시 제목에 있었죠?"),
+        ("check", "확인 문항이요. 표에서 비어 있는 칸을 부르는 말, 이 단원 제목에 있었죠?"),
     ],
     "count-missing": [
         ("problem", "자, 빈 칸 세기부터요. orders에서 열마다 결측이 몇 개인지 missing_counts에 담고, 그중 price 열의 개수를 정수로 n_missing_price에 담아 출력해요."),
@@ -140,10 +140,10 @@ NARRATION = {
         ("submit", "제출할게요. 두 합계와 두 표의 행 수를 봐요."),
     ],
 
-    # ---- 1일차 6교시 — 저장 HTML에서 데이터 수집 ----
+    # ---- 저장 HTML에서 데이터 수집 ----
     "html-selectors": [
-        ("title", "자, 이번 교시는 웹 페이지예요. 글자 덩어리에서 우리가 원하는 칸 두 개만 집어내요."),
-        ("지금까지의 표는 파일로 받았습니다", "어떤 숫자는 파일이 아니라 웹 페이지에만 있어요. 포털 시세 화면이 그렇죠. 화면의 정체는 HTML이라는 글자 파일인데, 광고, 메뉴, 제목이 수천 줄 섞여 있어요. 거기서 가격만 집어내는 게 이 교시 일이에요."),
+        ("title", "자, 이 단원은 웹 페이지예요. 글자 덩어리에서 우리가 원하는 칸 두 개만 집어내요."),
+        ("지금까지의 표는 파일로 받았습니다", "어떤 숫자는 파일이 아니라 웹 페이지에만 있어요. 포털 시세 화면이 그렇죠. 화면의 정체는 HTML이라는 글자 파일인데, 광고, 메뉴, 제목이 수천 줄 섞여 있어요. 거기서 가격만 집어내는 게 이 단원 일이에요."),
         ("제목: 수집은 네 단계", "만화를 보세요. 수집은 네 단계예요. 선택자로 찾고, 글자를 꺼내고, 숫자로 바꾸고, 표에 모아요."),
         ("HTML은 <li>, <span>처럼 꺾쇠로 감싼", "HTML은 꺾쇠로 감싼 태그로 내용을 묶어요. 앱이 준비한 prices.html은 종목 하나가 li 하나고, 그 안에 이름 span과 가격 b가 있어요."),
         ('<li data-code="A"><span class="name">가상A</span><b>10,000</b></li>', "실제 파일이에요. ul의 id가 prices, li에 data-code 속성, span의 class가 name, b 안에 10,000. 이 구조를 눈에 담아 두세요."),
@@ -173,7 +173,7 @@ NARRATION = {
     "select-prices": [
         ("problem", "자, 두 종목의 가격을 전부 뽑아 숫자 리스트로 만들어요. #prices li b로 가격 요소를 모두 찾고, 하나씩 글자를 꺼내 쉼표를 지우고 int로 바꿔 prices에 모아요."),
         ("starter", "준비 코드가 soup까지 만들어 뒀어요. 그대로 둘게요."),
-        ("code", "prices = []\nfor tag in soup.select('#prices li b'):\n    prices.append(int(tag.get_text(strip=True).replace(',', '')))\n", "빈 리스트를 만들고 for로 b 요소를 하나씩 돌아요. 안에서는 글자 꺼내기, 쉼표 지우기, int, append. 3교시의 for와 append가 그대로 쓰이죠."),
+        ("code", "prices = []\nfor tag in soup.select('#prices li b'):\n    prices.append(int(tag.get_text(strip=True).replace(',', '')))\n", "빈 리스트를 만들고 for로 b 요소를 하나씩 돌아요. 안에서는 글자 꺼내기, 쉼표 지우기, int, append. 앞 단원의 for와 append가 그대로 쓰이죠."),
         ("code", "print(prices)\n", "리스트를 출력해요."),
         ("output", "[10000, 20000]이 나왔죠? 쉼표 없는 정수 둘이에요."),
         ("submit", "제출할게요."),
@@ -183,7 +183,7 @@ NARRATION = {
         ("starter", "준비 코드가 html 글자까지 읽어 뒀어요. 이번엔 soup부터 여러분이 만들어요."),
         ("code", "soup=BeautifulSoup(html,'html.parser')\n", "1단계 읽기요. BeautifulSoup에 html 글자와 파서 이름을 넘겨 soup를 만들어요."),
         ("code", "rows=[]\nfor item in soup.select('#prices li'):\n    rows.append({'code':item['data-code'],'name':item.select_one('.name').get_text(strip=True),'price':int(item.select_one('b').get_text(strip=True).replace(',',''))})\n", "2, 3, 4단계가 한 번에요. li마다 딕셔너리 하나. 코드는 item['data-code']로 속성에서, 이름은 .name의 글자, 가격은 b의 글자에서 쉼표를 지우고 int. 그걸 rows에 append해요."),
-        ("code", "df=pd.DataFrame(rows)\ndf\n", "딕셔너리 리스트를 DataFrame에 넣으면 표가 돼요. 3교시에서 본 그대로죠."),
+        ("code", "df=pd.DataFrame(rows)\ndf\n", "딕셔너리 리스트를 DataFrame에 넣으면 표가 돼요. 앞 단원에서 본 그대로죠."),
         ("output", "2행 3열 표가 나왔죠? code A, B, name 가상A, 가상B, price 10000, 20000. 웹 페이지 글자가 숫자 든 표가 됐어요."),
         ("submit", "제출할게요. 세 열의 값을 다 봐요."),
     ],

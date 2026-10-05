@@ -1,10 +1,10 @@
-"""1일차 · 7교시 — 실제 데이터와 Target"""
+"""실제 데이터와 Target"""
 from kpc_course.dsl import *
 
-UNIT = unit('titanic-structure', '1일차 · 7교시 — 실제 데이터와 Target', [
+UNIT = unit('titanic-structure', '실제 데이터와 Target', [
     concept('target', '우리가 맞히고 싶은 칸부터 정하기',
         body="""
-        4교시 끝에 잠깐 열어 봤던 `data/titanic.csv`로 돌아갑니다. 1912년 타이타닉호에 탔던 승객 1,309명의 기록입니다. 한 사람이 한 행이고, 열에는 객실 등급(`객실등급`), 성별(`성별`), 나이(`나이`), 함께 탄 형제·배우자 수(`형제배우자`), 부모·자녀 수(`부모자녀`), 요금(`요금`), 탑승 항구(`탑승항구`) 같은 정보가 있습니다. 그리고 `생존` 열이 있습니다. 0이면 사망, 1이면 생존입니다.
+        앞 단원 끝에 잠깐 열어 봤던 `data/titanic.csv`로 돌아갑니다. 1912년 타이타닉호에 탔던 승객 1,309명의 기록입니다. 한 사람이 한 행이고, 열에는 객실 등급(`객실등급`), 성별(`성별`), 나이(`나이`), 함께 탄 형제·배우자 수(`형제배우자`), 부모·자녀 수(`부모자녀`), 요금(`요금`), 탑승 항구(`탑승항구`) 같은 정보가 있습니다. 그리고 `생존` 열이 있습니다. 0이면 사망, 1이면 생존입니다.
 
         ```comic-gen
         제목: 먼저 정할 것
@@ -41,7 +41,7 @@ UNIT = unit('titanic-structure', '1일차 · 7교시 — 실제 데이터와 Tar
         titanic.isna().sum()               # 열마다 빈 칸 개수
         ```
 
-        타깃이 0과 1뿐이면 평균이 곧 비율입니다. 1이 세 명, 0이 일곱 명이면 평균은 0.3이고 생존율 30%입니다. 이 단원의 미션은 이 표를 숫자로 더듬어 보는 것입니다. 몇 명인지, 몇 명이 살아남았는지, 어느 칸이 얼마나 비어 있는지. 특히 나이는 꽤 많이 비어 있는데, 5교시에서 배운 대로 빈 나이는 0살이 아니라 "모름"입니다.
+        타깃이 0과 1뿐이면 평균이 곧 비율입니다. 1이 세 명, 0이 일곱 명이면 평균은 0.3이고 생존율 30%입니다. 이 단원의 미션은 이 표를 숫자로 더듬어 보는 것입니다. 몇 명인지, 몇 명이 살아남았는지, 어느 칸이 얼마나 비어 있는지. 특히 나이는 꽤 많이 비어 있는데, 앞 단원에서 배운 대로 빈 나이는 0살이 아니라 "모름"입니다.
         """,
         check=short('모델이 맞히려는 칸, 이 자료에서는 `생존` 열을 가리키는 영어 용어는 무엇인가요?', ['target', '타깃', '타겟', '목표 변수', '목표변수'],
                     '타깃(target)은 맞히려는 정답 칸입니다. 나머지 열 중 "맞히는 시점에 알 수 있는 것"만 재료로 씁니다.')),
@@ -52,7 +52,7 @@ UNIT = unit('titanic-structure', '1일차 · 7교시 — 실제 데이터와 Tar
         1309행 14열이고 열 이름 중에 `생존`이 있으면 맞게 한 것입니다.
         """,
         hint="""
-        4교시와 같습니다. `n_rows, n_columns = titanic.shape`, `columns = list(titanic.columns)`.
+        앞 단원과 같습니다. `n_rows, n_columns = titanic.shape`, `columns = list(titanic.columns)`.
         """,
         starter=TI + "# n_rows, n_columns, columns를 만들고 출력하세요\n",
         solution=TI + "n_rows, n_columns = titanic.shape\ncolumns = list(titanic.columns)\nprint(n_rows, n_columns)\nprint(columns)\n",
@@ -93,7 +93,7 @@ UNIT = unit('titanic-structure', '1일차 · 7교시 — 실제 데이터와 Tar
         starter=TI + "# 인원과 생존율을 계산하세요\n",
         solution=TI + "n_total=len(titanic)\nn_known=int(titanic['나이'].notna().sum())\nn_unknown=int(titanic['나이'].isna().sum())\nsurvival_rate=titanic['생존'].mean()\nprint(n_total,n_known,n_unknown)\nprint(f'{survival_rate:.2%}')\n",
         check="assert (s['n_total'],s['n_known'],s['n_unknown'])==(1309,1046,263)\nassert abs(s['survival_rate']-500/1309)<1e-10"),
-    quiz('target-check', '7교시 점검',
+    quiz('target-check', '단원 점검',
         short('이 자료는 몇 명(몇 행)의 기록인가요?', ['1309', '1,309', '1309명'],
               '`titanic.shape`의 첫 값이 1309입니다. 모든 비율은 이 분모를 기준으로 읽습니다.'),
         choice("`생존`의 평균이 0.38이라는 것은 무슨 뜻인가요?",

@@ -1,5 +1,5 @@
 """해설 모드 scripts for chapter 5 (modeling): what the tutor says and types for each concept and
-coding problem of 2일차 4~6교시 (features, preprocessing, classifiers) and the chapter's challenge,
+coding problem of the three units (features, preprocessing, classifiers) and the chapter's challenge,
 keyed by activity id. Format and rules: narration.py.
 
 Voice: the instructor's (see .scratch/presenter-decks/spec.md): 해요체 구어, "자," opens a scene,
@@ -13,7 +13,7 @@ values the solution actually prints with data/titanic.csv.
 """
 
 NARRATION = {
-    # ---- 2일차 4교시 — 입력과 정답 분리 ----
+    # ---- 입력과 정답 분리 ----
     "what-is-learning": [
         ("title", "자, 여기서부터 머신러닝이에요. 하는 일은 하나, 표에서 규칙을 찾아 빈칸을 채우는 거예요."),
         ('지금까지 "누가 살아남았나"를 표와 그림으로', "지금까진 누가 살아남았나를 표로 들여다봤죠? 이제 질문을 바꿔요. 승객 정보만 보고 생존을 맞힐 수 있을까. 사람이 규칙을 적는 대신 컴퓨터가 1,309명 기록에서 규칙을 찾는 거예요."),
@@ -72,10 +72,10 @@ NARRATION = {
         ("submit", "제출하면 열 두 개와 행마다 합이 1인지 확인해요. 다음 단원의 OneHotEncoder가 같은 일을 모델 흐름 안에서 해요."),
     ],
 
-    # ---- 2일차 5교시 — 분리와 전처리 Pipeline ----
+    # ---- 분리와 전처리 Pipeline ----
     "fit-train": [
         ("title", "자, 이 단원에서 가장 중요한 한 문장이에요. 기준은 훈련 자료에서만 정한다."),
-        ("4교시에서 입력 X와 정답 y를 만들었습니다", "4교시에 만든 X와 y를 훈련 자료와 테스트 자료로 나눠요. train_test_split에 맡기는데 인자 셋만 알면 돼요. test_size=0.2는 20%를 테스트로, stratify=y는 양쪽 생존 비율을 비슷하게, random_state=42는 누가 돌려도 똑같이 나뉘게 하는 고정 번호예요."),
+        ("앞 단원에서 입력 X와 정답 y를 만들었습니다", "앞 단원에 만든 X와 y를 훈련 자료와 테스트 자료로 나눠요. train_test_split에 맡기는데 인자 셋만 알면 돼요. test_size=0.2는 20%를 테스트로, stratify=y는 양쪽 생존 비율을 비슷하게, random_state=42는 누가 돌려도 똑같이 나뉘게 하는 고정 번호예요."),
         ("위젯: stratify", "위젯을 보세요. stratify를 끄면 우연히 한쪽에 생존자가 몰릴 수 있어요. 켜면 양쪽 비율이 같아지죠?"),
         ("제목: 기준은 훈련 자료에서만", "만화 그림을 보세요. 훈련 자료에는 fit_transform, 중앙값을 정하고 채워요. 테스트 자료에는 transform, 같은 중앙값으로 채우기만 해요."),
         ("나눈 다음에 손질을 시작합니다", "나눈 다음에 손질을 시작해요. 중앙값이 얼마인가, 어떤 값들이 있는가, 이렇게 기준을 정하는 일 자체가 자료를 들여다보는 학습이거든요. 테스트 나이까지 넣어 중앙값을 구하면 모의고사를 미리 본 셈, 작은 누수예요."),
@@ -114,7 +114,7 @@ NARRATION = {
         ("submit", "제출하면 모양과 빈칸 여부, imputer의 중앙값이 훈련 자료 것인지 확인해요."),
     ],
     "onehot-fit": [
-        ("problem", "자, 4교시의 get_dummies를 모델 흐름에 맞는 도구로 바꿔요. OneHotEncoder를 encoder에 만들고, 훈련 성별에 fit_transform, 테스트 성별에 transform한 결과를 train_encoded, test_encoded에 담아 shape를 출력하면 돼요."),
+        ("problem", "자, 앞 단원의 get_dummies를 모델 흐름에 맞는 도구로 바꿔요. OneHotEncoder를 encoder에 만들고, 훈련 성별에 fit_transform, 테스트 성별에 transform한 결과를 train_encoded, test_encoded에 담아 shape를 출력하면 돼요."),
         ("starter", "준비 코드가 분리까지 끝내고 OneHotEncoder를 불러왔어요. 그대로 둘게요."),
         ("code", "encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)\n", "OneHotEncoder에 인자 둘이에요. handle_unknown='ignore'는 테스트에 처음 보는 값이 나와도 오류 대신 0으로 두라는 뜻, sparse_output=False는 보통 배열로 달라는 뜻이에요."),
         ("code", "train_encoded = encoder.fit_transform(X_train[['성별']])\n", "훈련에는 fit_transform. 어떤 값들이 있나, 여성과 남성이구나, 이걸 훈련에서 정하고 바로 바꿔요."),
@@ -145,7 +145,7 @@ NARRATION = {
         ("submit", "제출하면 모양과 빈칸 여부, 훈련 평균이 0인지, 단계 이름이 fill, scale인지 확인해요."),
     ],
 
-    # ---- 2일차 6교시 — 세 분류 모델과 기준 비교 ----
+    # ---- 세 분류 모델과 기준 비교 ----
     "baselines": [
         ("title", "자, 모델 세 개를 소개하고, 그 전에 꼭 재야 하는 기준 모델 이야기예요."),
         ("손질이 끝났으니 모델을 고를 차례입니다", "손질이 끝났으니 모델을 골라요. 세 가지를 쓸 건데, 수식 없이 각각 뭘 하는지만 잡으면 돼요."),
@@ -154,8 +154,8 @@ NARRATION = {
         ("모델이 몇 개든 비교 방식은 하나입니다", "비교 방식은 하나예요. 같은 훈련 자료로 배우고 같은 테스트 자료로 채점한다. 그런데 정확도 78%가 좋은 걸까요? 테스트 262명 중 사망이 162명이라 전원 사망으로 찍어도 62%거든요. 그래서 가장 많은 답만 찍는 DummyClassifier를 기준 모델로 먼저 돌려요."),
         ("제목: 팀장의 감과 모델", "만화를 보세요. 콜센터 팀장은 월요일 인력을 지난주 월요일과 같게 짜요. 그게 기준 모델이에요. 민지의 예측 모델이 이것보다 더 빗나가면 팀장의 감보다 못한 거죠."),
         ("model = Pipeline([('prepare', make_preprocessor()), ('model', LogisticRegression(max_iter=2000))])", "코드를 보세요. 손질기 뒤에 모델을 붙인 Pipeline이에요. fit 한 번에 손질과 학습, predict 한 번에 손질과 예측이 끝나요."),
-        ("준비 코드의 make_preprocessor()는 5교시에서", "준비 코드의 make_preprocessor()가 5교시의 숫자용 묶음과 글자용 묶음을 합친 손질기예요. 모델을 바꿀 때는 model 자리만 바꾸면 돼요."),
-        ("점수는 정확도(accuracy, 전체 중 맞힌 비율) 하나만 보지 않습니다", "점수는 정확도 하나만 보지 않아요. 생존자가 적은 자료라 생존자를 얼마나 잘 찾았는지 보는 F1도 같이 적어요. 뜻은 8교시에서 하고, 지금은 두 점수를 표에 나란히 적는다까지만이에요."),
+        ("준비 코드의 make_preprocessor()는 앞 단원에서", "준비 코드의 make_preprocessor()가 앞 단원의 숫자용 묶음과 글자용 묶음을 합친 손질기예요. 모델을 바꿀 때는 model 자리만 바꾸면 돼요."),
+        ("점수는 정확도(accuracy, 전체 중 맞힌 비율) 하나만 보지 않습니다", "점수는 정확도 하나만 보지 않아요. 생존자가 적은 자료라 생존자를 얼마나 잘 찾았는지 보는 F1도 같이 적어요. 뜻은 앞 단원에서 하고, 지금은 두 점수를 표에 나란히 적는다까지만이에요."),
         ("check", "확인 문항이요. 입력을 보지 않고 가장 많은 답만 찍는 기준 모델의 scikit-learn 이름이에요."),
     ],
     "dummy-only": [
@@ -234,9 +234,9 @@ NARRATION = {
     # ---- 5장 도전 과제 ----
     "full-comparison": [
         ("problem", "자, 5장을 한 번에 복습해요. 이번엔 준비 코드가 거의 없어요. 자료 읽기부터 X와 y, 층화 분할, 손질기, 네 모델 비교표까지 직접 써요. 순서를 틀리면 조용한 누수가 생기니까 하나씩 가요."),
-        ("hint", "5교시의 make_preprocessor를 떠올리세요. 숫자 열 다섯은 중앙값 채우기와 표준화, 글자 열 둘은 최빈값 채우기와 One-hot이에요. Pipeline은 모델마다 새로 만들고, best_model은 results의 f1에서 idxmax예요."),
+        ("hint", "앞 단원의 make_preprocessor를 떠올리세요. 숫자 열 다섯은 중앙값 채우기와 표준화, 글자 열 둘은 최빈값 채우기와 One-hot이에요. Pipeline은 모델마다 새로 만들고, best_model은 results의 f1에서 idxmax예요."),
         ("starter", "준비 코드는 import 열한 줄뿐이에요. 그대로 둘게요."),
-        ("code", "titanic = pd.read_csv('data/titanic.csv')\nfeatures = ['객실등급','성별','나이','형제배우자','부모자녀','요금','탑승항구']\nX = titanic[features].copy()\ny = titanic['생존'].astype(int)\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)\n", "4교시와 5교시 그대로예요. 자료를 읽고, 사고 전에 알 수 있는 일곱 열로 X, 생존을 정수로 y. 그리고 test_size=0.2, stratify=y, random_state=42로 나눠요. 손질보다 분할이 먼저죠."),
+        ("code", "titanic = pd.read_csv('data/titanic.csv')\nfeatures = ['객실등급','성별','나이','형제배우자','부모자녀','요금','탑승항구']\nX = titanic[features].copy()\ny = titanic['생존'].astype(int)\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)\n", "앞 두 단원 그대로예요. 자료를 읽고, 사고 전에 알 수 있는 일곱 열로 X, 생존을 정수로 y. 그리고 test_size=0.2, stratify=y, random_state=42로 나눠요. 손질보다 분할이 먼저죠."),
         ("code", "preprocessor = ColumnTransformer([\n    ('numeric', Pipeline([('fill', SimpleImputer(strategy='median')), ('scale', StandardScaler())]), ['객실등급','나이','형제배우자','부모자녀','요금']),\n    ('category', Pipeline([('fill', SimpleImputer(strategy='most_frequent')), ('encode', OneHotEncoder(handle_unknown='ignore'))]), ['성별','탑승항구']),\n])\n", "손질기예요. ColumnTransformer에 묶음 둘을 넣어요. numeric은 숫자 열 다섯에 중앙값 채우기와 표준화, category는 성별과 탑승항구에 최빈값 채우기와 One-hot이에요. 이름, 묶음, 열 목록, 이 셋이 한 쌍이에요."),
         ("code", "models = {\n    'Dummy': DummyClassifier(strategy='most_frequent'),\n    'Logistic': LogisticRegression(max_iter=2000),\n    'Tree': DecisionTreeClassifier(max_depth=5, random_state=42),\n    'Forest': RandomForestClassifier(n_estimators=50, max_depth=5, random_state=42),\n}\n", "모델 넷이에요. Dummy는 가장 많은 답 찍기, 기준 모델이죠. Logistic은 반복 2000회, Tree는 깊이 5, Forest는 트리 50개에 깊이 5, 난수 42예요."),
         ("code", "rows = {}\nfor name, model in models.items():\n    pipeline = Pipeline([('prepare', preprocessor), ('model', model)])\n    pipeline.fit(X_train, y_train)\n    pred = pipeline.predict(X_test)\n    rows[name] = {'accuracy': accuracy_score(y_test, pred), 'f1': f1_score(y_test, pred)}\n", "반복문이에요. 모델마다 손질기와 묶은 Pipeline을 새로 만들어 같은 훈련 자료로 fit, 같은 테스트 자료로 predict해요. preprocessor는 같은 걸 다시 써도 돼요. 매번 훈련 자료로 다시 fit되거든요. 이름마다 accuracy와 f1을 rows에 담아요."),

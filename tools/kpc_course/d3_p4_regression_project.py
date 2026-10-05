@@ -1,12 +1,12 @@
-"""3일차 · 4교시 — 회귀 비교와 최종 결과"""
+"""회귀 비교와 최종 결과"""
 from kpc_course.dsl import *
 
 STOCK_MODEL = ST_FRAME + TIME_SPLIT + REG
 
-UNIT = unit('regression-project', '3일차 · 4교시 — 회귀 비교와 최종 결과', [
+UNIT = unit('regression-project', '회귀 비교와 최종 결과', [
     concept('regression-metrics', '직선 맞추기, 그리고 기준보다 못한 결과도 그대로 보고하기',
         body="""
-        마지막 단원입니다. 입력 네 열(오늘 종가, 수익률, 5일 평균, 어제 종가)로 내일 종가를 맞히는 회귀 모델을 세 개 돌리고, 3교시의 기준과 비교해서 결론을 씁니다.
+        마지막 단원입니다. 입력 네 열(오늘 종가, 수익률, 5일 평균, 어제 종가)로 내일 종가를 맞히는 회귀 모델을 세 개 돌리고, 앞 단원의 기준과 비교해서 결론을 씁니다.
 
         **선형 회귀**(`LinearRegression`)는 입력마다 가중치를 곱해 더한 값으로 정답을 맞힙니다. 입력이 하나면 점들 사이에 가장 잘 맞는 직선을 긋는 것이고, 넷이면 네 방향으로 기울어진 판을 맞추는 것입니다. 학습이 끝나면 `coef_`에 가중치 네 개가 남아 어느 입력이 얼마나 영향을 줬는지 읽을 수 있습니다. **릿지**(`Ridge`)와 **라쏘**(`Lasso`)는 같은 직선 맞추기에 **브레이크**를 단 것입니다. 가중치가 너무 커지면 벌점을 매겨, 훈련 자료의 우연한 흔들림까지 외우는 것을 막습니다. 라쏘는 브레이크가 세서 쓸모없는 입력의 가중치를 아예 0으로 만들기도 합니다. 입력 크기가 제각각이면 브레이크가 공평하지 않으니 분류에서처럼 `StandardScaler`와 묶어 씁니다.
 
@@ -17,7 +17,7 @@ UNIT = unit('regression-project', '3일차 · 4교시 — 회귀 비교와 최�
         mean_absolute_error(y_test, prediction)
         ```
 
-        점수는 셋을 함께 적습니다. **MAE**는 3교시 그대로, 하루 평균 몇 원 빗나갔나. **RMSE**는 차이를 제곱해 평균 낸 뒤 제곱근을 씌운 것이라 단위는 같은 원이지만 **큰 실수에 더 민감**합니다. 어쩌다 한 번 크게 틀리는 모델은 MAE보다 RMSE가 많이 커집니다. **R²**는 "정답의 평균값으로만 찍었을 때보다 얼마나 나은가"를 1을 만점으로 적은 것입니다. 평균보다 못하면 음수도 나옵니다. 주의할 점은 R²의 비교 대상이 "평균으로 찍기"이지 우리의 기준 "오늘 종가 그대로"가 아니라는 것입니다. R²가 높아 보여도 기준 MAE를 못 넘을 수 있습니다.
+        점수는 셋을 함께 적습니다. **MAE**는 앞 단원 그대로, 하루 평균 몇 원 빗나갔나. **RMSE**는 차이를 제곱해 평균 낸 뒤 제곱근을 씌운 것이라 단위는 같은 원이지만 **큰 실수에 더 민감**합니다. 어쩌다 한 번 크게 틀리는 모델은 MAE보다 RMSE가 많이 커집니다. **R²**는 "정답의 평균값으로만 찍었을 때보다 얼마나 나은가"를 1을 만점으로 적은 것입니다. 평균보다 못하면 음수도 나옵니다. 주의할 점은 R²의 비교 대상이 "평균으로 찍기"이지 우리의 기준 "오늘 종가 그대로"가 아니라는 것입니다. R²가 높아 보여도 기준 MAE를 못 넘을 수 있습니다.
 
         ```comic-gen
         제목: 평균 30개와 큰 실수
@@ -92,7 +92,7 @@ UNIT = unit('regression-project', '3일차 · 4교시 — 회귀 비교와 최�
         goal="""
         `StandardScaler`와 `LinearRegression`을 `Pipeline`으로 묶어 `model`에 학습하세요. 테스트 예측을 `prediction`, MAE를 `linear_mae`에 저장해 출력하고, `model.named_steps['model'].coef_`로 가중치 네 개도 출력하세요.
 
-        `linear_mae`를 3교시의 기준 MAE와 비교해 보세요. 가중치 네 개 중 어느 것이 가장 큰지도 보세요.
+        `linear_mae`를 앞 단원의 기준 MAE와 비교해 보세요. 가중치 네 개 중 어느 것이 가장 큰지도 보세요.
         """,
         hint="""
         분류와 같은 흐름입니다. `Pipeline([('scale', StandardScaler()), ('model', LinearRegression())])` → `fit(X_train, y_train)` → `predict(X_test)`. 점수는 `mean_absolute_error(y_test, prediction)`.
@@ -179,7 +179,7 @@ UNIT = unit('regression-project', '3일차 · 4교시 — 회귀 비교와 최�
         starter=STOCK_MODEL + "models={'Linear':LinearRegression(),'Ridge':Ridge(alpha=1)}\n# maes, report를 만들고 결론 세 줄을 출력하세요\n",
         solution=STOCK_MODEL + "models={'Linear':LinearRegression(),'Ridge':Ridge(alpha=1)}\nbaseline_mae=mean_absolute_error(y_test,X_test['close'])\nmaes={}\nfor name,estimator in models.items():\n    model=Pipeline([('scale',StandardScaler()),('model',estimator)])\n    model.fit(X_train,y_train)\n    maes[name]=mean_absolute_error(y_test,model.predict(X_test))\nbest_model=min(maes,key=maes.get)\nreport={'test_days':len(X_test),'baseline_mae':baseline_mae,'best_model':best_model,'best_mae':maes[best_model],'improved':bool(maes[best_model]<baseline_mae)}\nprint(f\"다음 거래일 종가를 예측했고, 마지막 {report['test_days']}거래일을 테스트로 두었으며 훈련 정답은 모두 테스트 시작 전이다.\")\nprint(f\"기준 예측(오늘 종가 그대로) MAE {baseline_mae:.0f}원, 최선 모델 {best_model} MAE {maes[best_model]:.0f}원.\")\nprint('최선 모델이 기준보다 오차를 줄였다.' if report['improved'] else '최선 모델도 기준보다 오차를 줄이지 못했다. 이 파일, 이 기간의 결과다.')\n",
         check="import numpy as np\nr=s['report']\nassert {'test_days','baseline_mae','best_model','best_mae','improved'}<=set(r)\nassert r['test_days']==80\nassert abs(r['baseline_mae']-float(np.abs(s['y_test'].to_numpy()-s['X_test']['close'].to_numpy()).mean()))<1e-8\nassert set(s['maes'])=={'Linear','Ridge'} and all(np.isfinite(v) for v in s['maes'].values())\nassert r['best_model']==min(s['maes'],key=s['maes'].get) and abs(r['best_mae']-min(s['maes'].values()))<1e-9\nassert r['improved']==(r['best_mae']<r['baseline_mae'])"),
-    quiz('final-check', '3일차 4교시 점검',
+    quiz('final-check', '단원 점검',
         short('예측과 정답의 차이를 부호 없이 평균 낸, 원 단위로 읽는 지표의 약어는 무엇인가요?', ['MAE', 'mae', 'mean absolute error'],
               'MAE는 "하루 평균 몇 원 빗나갔나"입니다. 주가 챕터 내내 기준과 모델을 비교한 잣대입니다.'),
         choice('R²가 음수로 나왔습니다. 무슨 뜻인가요?',

@@ -1,10 +1,10 @@
-"""1일차 · 4교시 — CSV·Excel과 행·열 선택"""
+"""CSV·Excel과 행·열 선택"""
 from kpc_course.dsl import *
 
-UNIT = unit('files', '1일차 · 4교시 — CSV·Excel과 행·열 선택', [
+UNIT = unit('files', 'CSV·Excel과 행·열 선택', [
     concept('file-table', '표를 파일로 저장하고 다시 열기',
         body="""
-        3교시의 표는 코드 안에 직접 적은 종목 세 개였습니다. 그런데 진짜 분석은 남이 만들어 둔 파일에서 시작합니다. 거래 내역은 Excel로 오고, 주가는 CSV로 내려받고, 설문 결과는 또 다른 CSV입니다. 곧 쓸 타이타닉 승객 기록도 1,309줄짜리 CSV 파일입니다. 그러니 "파일을 표로 읽어 오는 법"과 "표를 파일로 저장하는 법"이 먼저입니다.
+        앞 단원의 표는 코드 안에 직접 적은 종목 세 개였습니다. 그런데 진짜 분석은 남이 만들어 둔 파일에서 시작합니다. 거래 내역은 Excel로 오고, 주가는 CSV로 내려받고, 설문 결과는 또 다른 CSV입니다. 곧 쓸 타이타닉 승객 기록도 1,309줄짜리 CSV 파일입니다. 그러니 "파일을 표로 읽어 오는 법"과 "표를 파일로 저장하는 법"이 먼저입니다.
 
         ```comic-gen
         제목: 어디서 왔든 읽고 나면 같은 표
@@ -109,7 +109,7 @@ UNIT = unit('files', '1일차 · 4교시 — CSV·Excel과 행·열 선택', [
         제품 A 두 건(수량 3과 4)만 남으면 맞게 한 것입니다.
         """,
         hint="""
-        `orders['quantity'] >= 3`은 행마다 참·거짓을 매긴 결과입니다. 이걸 `orders.loc[...]` 안에 넣으면 참인 행만 남습니다. 3교시의 `if`가 표 전체에 한꺼번에 적용되는 셈입니다.
+        `orders['quantity'] >= 3`은 행마다 참·거짓을 매긴 결과입니다. 이걸 `orders.loc[...]` 안에 넣으면 참인 행만 남습니다. 앞 단원의 `if`가 표 전체에 한꺼번에 적용되는 셈입니다.
         """,
         starter=ORDERS + "# many를 만들고 표를 표시하세요\n",
         solution=ORDERS + "many = orders.loc[orders['quantity'] >= 3]\nmany\n",
@@ -126,7 +126,7 @@ UNIT = unit('files', '1일차 · 4교시 — CSV·Excel과 행·열 선택', [
         starter='import pandas as pd\n# titanic을 읽고 shape와 head()를 확인하세요\n',
         solution="import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nprint(titanic.shape)\ntitanic.head()\n",
         check="assert s['titanic'].shape==(1309,14)"),
-    quiz('files-check', '4교시 점검',
+    quiz('files-check', '단원 점검',
         choice("`orders.to_csv('orders.csv')`처럼 `index=False`를 빼고 저장한 파일을 다시 읽으면 어떻게 되나요?",
                ['`Unnamed: 0`이라는 열이 하나 더 생긴다', '아무 차이가 없다', '파일이 저장되지 않는다'], 0,
                '행 번호가 데이터처럼 저장돼서 다시 읽을 때 이름 없는 열이 하나 늘어납니다. 그래서 저장할 때 `index=False`를 붙입니다.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「저장되지 않는다」: 저장은 되지만 열이 하나 늘어난다.\n- 「아무 차이가 없다」: 다시 읽으면 Unnamed: 0 열이 생겨 4열이 된다."),

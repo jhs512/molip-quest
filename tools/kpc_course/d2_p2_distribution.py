@@ -1,7 +1,7 @@
-"""2일차 · 2교시 — 분포와 관계 시각화"""
+"""분포와 관계 시각화"""
 from kpc_course.dsl import *
 
-UNIT = unit('distribution', '2일차 · 2교시 — 분포와 관계 시각화', [
+UNIT = unit('distribution', '분포와 관계 시각화', [
     concept('distribution-types', '질문이 다르면 그래프도 다르다',
         body="""
         막대그래프는 "그룹마다 값이 얼마인가"에 답합니다. 그런데 자료를 보다 보면 다른 종류의 질문이 생깁니다. 승객 나이는 어떻게 퍼져 있을까? 요금이 비싼 사람이 나이도 많을까? 여섯 개의 열 중 어느 둘이 같이 움직일까? 질문이 다르면 그래프도 달라야 합니다. 이 단원에서 세 가지를 익힙니다.
@@ -49,7 +49,7 @@ UNIT = unit('distribution', '2일차 · 2교시 — 분포와 관계 시각화',
         sns.heatmap(corr, annot=True, vmin=-1, vmax=1, ax=ax)   # 히트맵. corr: 상관계수 표
         ```
 
-        `seaborn`은 `matplotlib` 위에서 표 열 이름만으로 그래프를 그려 주는 도구입니다. `ax=ax`로 어느 그래프 영역에 그릴지 알려 주면 1교시의 뼈대와 그대로 어울립니다. 마지막으로 해석의 선 하나. 요금과 생존의 상관계수가 양수라는 것은 "요금이 비싼 사람 중에 생존자가 많았다"는 관찰이지 "요금을 더 내면 산다"는 뜻이 아닙니다. 상관은 함께 변하는 경향이고, 원인은 다른 문제입니다.
+        `seaborn`은 `matplotlib` 위에서 표 열 이름만으로 그래프를 그려 주는 도구입니다. `ax=ax`로 어느 그래프 영역에 그릴지 알려 주면 앞 단원의 뼈대와 그대로 어울립니다. 마지막으로 해석의 선 하나. 요금과 생존의 상관계수가 양수라는 것은 "요금이 비싼 사람 중에 생존자가 많았다"는 관찰이지 "요금을 더 내면 산다"는 뜻이 아닙니다. 상관은 함께 변하는 경향이고, 원인은 다른 문제입니다.
         """,
         check=short('나이처럼 연속으로 이어지는 값을 같은 폭의 구간으로 잘라 각 구간의 개수를 막대로 그린 그래프를 무엇이라고 하나요?', ['히스토그램', 'histogram'],
                     '히스토그램은 구간(`bins`)마다 개수를 셉니다. 구간 수를 바꾸면 같은 자료도 다르게 보이므로 구간 수를 함께 적습니다.')),
@@ -93,7 +93,7 @@ UNIT = unit('distribution', '2일차 · 2교시 — 분포와 관계 시각화',
         starter=TI + PLOT + "columns=['객실등급','나이','형제배우자','부모자녀','요금','생존']\n# corr, fig, ax를 만드세요\n",
         solution=TI + PLOT + "columns=['객실등급','나이','형제배우자','부모자녀','요금','생존']\ncorr=titanic[columns].corr()\nfig,ax=plt.subplots()\nsns.heatmap(corr,annot=True,vmin=-1,vmax=1,center=0,cmap='coolwarm',ax=ax)\nplt.show()\n",
         check="assert s['corr'].shape==(6,6)\nassert all(abs(s['corr'].iloc[i,i]-1)<1e-9 for i in range(6))\nassert len(s['ax'].collections)>0 and s['ax'].collections[0].get_clim()==(-1,1)"),
-    quiz('distribution-check', '2일차 2교시 점검',
+    quiz('distribution-check', '단원 점검',
         choice('"요금이 비싼 사람이 나이도 많을까?"에 답하려면 어떤 그래프가 맞나요?',
                ['산점도. 승객마다 (나이, 요금)을 점으로 찍는다', '막대그래프. 요금별 평균 나이를 막대로', '히스토그램. 요금을 구간으로 자른다'], 0,
                '두 숫자 열이 같이 움직이는지 보는 질문에는 산점도입니다. 막대는 그룹별 값, 히스토그램은 한 열의 퍼짐을 봅니다.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「막대그래프」: 요금을 그룹으로 묶어야 해 개별 관계가 사라진다.\n- 「히스토그램」: 한 열의 퍼짐만 보여 준다."),

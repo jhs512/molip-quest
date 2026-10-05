@@ -1,7 +1,7 @@
-"""3일차 · 2교시 — 수익률·이동평균·lag"""
+"""수익률·이동평균·lag"""
 from kpc_course.dsl import *
 
-UNIT = unit('stock-features', '3일차 · 2교시 — 수익률·이동평균·lag', [
+UNIT = unit('stock-features', '수익률·이동평균·lag', [
     concept('lag-target', '과거 열은 입력, 미래 열은 정답',
         body="""
         타이타닉에서는 입력 열이 이미 표에 있었습니다. 주가 표에는 종가 하나뿐이라 입력도, 정답도 **우리가 만들어야** 합니다. 재료는 "어제보다 얼마나 올랐나"(수익률), "최근 며칠 평균은 얼마인가"(이동평균), "어제 종가는 얼마였나"(전일 종가)이고, 정답은 "내일 종가는 얼마인가"입니다. 전부 종가 열을 위아래로 밀어서 만듭니다.
@@ -123,7 +123,7 @@ UNIT = unit('stock-features', '3일차 · 2교시 — 수익률·이동평균·l
         starter=ST + "frame=pd.DataFrame(index=prices.index)\n# 여섯 열을 만들고 불완전한 행을 제외하세요\n",
         solution=ST_FRAME + "print(frame.shape)\nframe.head()\n",
         check="assert s['frame'].shape==(396,6)\nassert s['frame'].notna().all().all()\nassert (s['frame']['target_date']>s['frame'].index).all()\nassert s['frame']['ma5'].iloc[0]==s['prices']['종가'].iloc[:5].mean()"),
-    quiz('feature-time-check', '3일차 2교시 점검',
+    quiz('feature-time-check', '단원 점검',
         choice('`target_next_close`를 입력 `X`에도 넣으면 어떻게 되나요?',
                ['내일 종가로 내일 종가를 맞히는 누수가 된다', '정확도가 조금 오른다', '아무 문제 없다'], 0,
                '정답을 입력에 넣는 것이라 앞서 배운 누수 그대로입니다. 숫자가 거의 완벽하게 맞지만 쓸모없는 모델이 됩니다.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「조금 오른다」: 거의 완벽하게 맞지만 쓸모없다.\n- 「아무 문제 없다」: 내일 값은 오늘 저녁에 모른다."),

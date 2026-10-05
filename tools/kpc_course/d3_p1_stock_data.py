@@ -1,7 +1,7 @@
-"""3일차 · 1교시 — 주가 파일과 시점"""
+"""주가 파일과 시점"""
 from kpc_course.dsl import *
 
-UNIT = unit('stock-data', '3일차 · 1교시 — 주가 파일과 시점', [
+UNIT = unit('stock-data', '주가 파일과 시점', [
     concept('saved-prices', '오늘 저녁에 아는 것으로 내일을 맞힌다',
         body="""
         마지막 챕터입니다. 지금까지 익힌 흐름, 즉 자료를 읽고, 입력과 정답을 나누고, 훈련과 테스트를 나누고, 기준 모델과 비교하는 흐름을 주가에 그대로 적용합니다. 다른 점은 하나뿐입니다. 타이타닉의 정답은 "생존/사망" 중 하나를 **고르는** 분류였고, 이번 정답은 "다음 거래일 종가"라는 **숫자**입니다. 숫자를 맞히는 것을 회귀라고 하며, 점수를 재는 방법이 달라집니다.
@@ -121,7 +121,7 @@ UNIT = unit('stock-data', '3일차 · 1교시 — 주가 파일과 시점', [
         starter=ST + "# first_date, last_date, max_close, max_date를 만들고 출력하세요\n",
         solution=ST + "first_date = prices.index.min()\nlast_date = prices.index.max()\nmax_close = prices['종가'].max()\nmax_date = prices['종가'].idxmax()\nprint(first_date, last_date)\nprint(max_close, max_date)\n",
         check="import pandas as pd\nassert s['first_date']==pd.Timestamp('2025-01-13') and s['last_date']==pd.Timestamp('2026-09-04')\nassert s['max_close']==362500 and s['max_date']==pd.Timestamp('2026-06-18')"),
-    quiz('stock-data-check', '3일차 1교시 점검',
+    quiz('stock-data-check', '단원 점검',
         choice('금요일 저녁에 예측하는 "다음 거래일 종가"는 언제의 종가인가요?',
                ['월요일(다음 거래일)', '토요일(다음 날)', '금요일 당일'], 0,
                '주말과 휴장일에는 가격이 없습니다. 정답은 다음 달력 날짜가 아니라 다음 거래일의 종가입니다.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「금요일 당일」: 이미 아는 값이다.\n- 「토요일」: 장이 열리지 않아 가격이 없다."),

@@ -1,10 +1,10 @@
-"""1일차 · 8교시 — 그룹별 생존율"""
+"""그룹별 생존율"""
 from kpc_course.dsl import *
 
-UNIT = unit('titanic-groups', '1일차 · 8교시 — 그룹별 생존율', [
+UNIT = unit('titanic-groups', '그룹별 생존율', [
     concept('denominator', '비율 뒤에는 항상 "몇 명 중"이 붙어야 한다',
         body="""
-        7교시에서 전체 생존율을 구했습니다. 그런데 "전체 38%"라는 숫자 하나로는 아무 질문에도 답할 수 없습니다. 여성과 남성은 달랐을까? 1등실과 3등실은? 아이와 노인은? 이런 질문에 답하려면 표를 **그룹으로 나눠서** 각 그룹의 생존율을 따로 구해야 합니다. 그 도구가 `groupby`입니다.
+        앞 단원에서 전체 생존율을 구했습니다. 그런데 "전체 38%"라는 숫자 하나로는 아무 질문에도 답할 수 없습니다. 여성과 남성은 달랐을까? 1등실과 3등실은? 아이와 노인은? 이런 질문에 답하려면 표를 **그룹으로 나눠서** 각 그룹의 생존율을 따로 구해야 합니다. 그 도구가 `groupby`입니다.
 
         ```comic-gen
         제목: 몇 명 중에?
@@ -76,7 +76,7 @@ UNIT = unit('titanic-groups', '1일차 · 8교시 — 그룹별 생존율', [
         여성과 남성의 인원이 꽤 다르다는 것을 눈으로 확인해 두세요. 이 숫자가 다음 미션의 분모입니다.
         """,
         hint="""
-        7교시의 `value_counts()`와 같습니다. 열만 `성별`로 바꾸세요.
+        앞 단원의 `value_counts()`와 같습니다. 열만 `성별`로 바꾸세요.
         """,
         starter=TI + "# gender_counts를 만들고 출력하세요\n",
         solution=TI + "gender_counts = titanic['성별'].value_counts()\nprint(gender_counts)\n",
@@ -129,7 +129,7 @@ UNIT = unit('titanic-groups', '1일차 · 8교시 — 그룹별 생존율', [
         starter=TI + "# age_group과 age_summary를 만드세요\n",
         solution=TI + "titanic['age_group']=pd.cut(titanic['나이'],bins=[0,20,40,60,float('inf')],labels=['0~19','20~39','40~59','60+'],right=False)\nage_summary=titanic.groupby('age_group',observed=True)['생존'].agg(['count','sum','mean'])\nage_summary\n",
         check="assert s['age_summary']['count'].sum()==1046\nassert s['titanic']['age_group'].isna().sum()==263\nassert str(s['titanic'].loc[s['titanic']['나이']==20,'age_group'].iloc[0])=='20~39'"),
-    quiz('groups-check', '8교시 점검',
+    quiz('groups-check', '단원 점검',
         choice('"여성의 생존율이 남성보다 높다"는 표에서 바로 말할 수 있는 것은 무엇인가요?',
                ['이 자료에서 그렇게 관찰되었다', '여성이라는 것이 생존의 원인이다', '남성은 구조를 받지 못했다'], 0,
                '한 표는 관찰입니다. 원인을 말하려면 등급·나이 같은 다른 조건을 함께 나눠 봐야 합니다.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「남성은 구조를 받지 못했다」: 자료에 없는 사실을 단정한 것이다.\n- 「여성이라는 것이 원인」: 상관을 원인으로 바꾼 것이다."),

@@ -1,7 +1,7 @@
-"""2일차 · 7교시 — 부도 정의와 연체 이력"""
+"""부도 정의와 연체 이력"""
 from kpc_course.dsl import *
 
-UNIT = unit('credit-target', '2일차 · 7교시 — 부도 정의와 연체 이력', [
+UNIT = unit('credit-target', '부도 정의와 연체 이력', [
     concept('credit-definition', '지난달 연체와 다음 달 부도는 다른 칸이다',
         body="""
         타이타닉으로 분류의 흐름을 익혔으니 금융 자료에 옮겨 봅니다. `data/credit.csv`는 신용카드 고객 3만 명의 기록으로, 한 사람이 한 행입니다. 맞히려는 칸은 `다음달 부도`, **다음 달에 카드 대금을 못 갚는지**입니다. 1이면 부도, 0이면 정상 상환입니다. 열 이름에 공백이 있어 점으로 이어 부를 수 없으니 준비 코드가 `target` 변수에 이름을 담아 두었고, `credit[target]`으로 꺼냅니다.
@@ -136,7 +136,7 @@ UNIT = unit('credit-target', '2일차 · 7교시 — 부도 정의와 연체 이
         starter=CR + "# pay0_summary, rate_0, rate_2를 만들고 출력하세요\n",
         solution=CR + "pay0_summary = credit.groupby('상환_9월')[target].agg(['count','mean'])\nrate_0 = pay0_summary.loc[0,'mean']\nrate_2 = pay0_summary.loc[2,'mean']\nprint(pay0_summary)\nprint(rate_0, rate_2)\n",
         check="assert s['pay0_summary']['count'].sum()==30000\nassert s['rate_2']>s['rate_0']\nassert abs(s['rate_0']-0.128113)<1e-5 and abs(s['rate_2']-0.691414)<1e-5"),
-    quiz('credit-check', '2일차 7교시 점검',
+    quiz('credit-check', '단원 점검',
         choice('`상환_9월`을 입력에 넣어도 누수가 아닌 이유는 무엇인가요?',
                ['지난달까지의 기록이라 다음 달 부도를 맞히는 시점에 알 수 있다', '숫자라서', '값이 작아서'], 0,
                '누수는 맞히는 시점에 알 수 없는 정보입니다. 지난달 연체 기록은 이미 알고 있는 과거이고, 다음 달 결과만 타깃입니다.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「숫자라서」: 자료형은 누수와 무관하다.\n- 「값이 작아서」: 크기도 무관하다. 시점이 기준이다."),

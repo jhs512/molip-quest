@@ -1,10 +1,10 @@
-"""1일차 · 3교시 — 조건·반복과 DataFrame"""
+"""조건·반복과 DataFrame"""
 from kpc_course.dsl import *
 
 HOLDINGS = "holdings = [{'name':'A','price':10000,'quantity':3},{'name':'B','price':20000,'quantity':2},{'name':'C','price':15000,'quantity':4}]\n"
 HOLDINGS_WITH_AMOUNT = "holdings = [{'name':'A','price':10000,'quantity':3,'amount':30000},{'name':'B','price':20000,'quantity':2,'amount':40000},{'name':'C','price':15000,'quantity':4,'amount':60000}]\n"
 
-UNIT = unit('control', '1일차 · 3교시 — 조건·반복과 DataFrame', [
+UNIT = unit('control', '조건·반복과 DataFrame', [
     concept('flow', '조건에 따라 고르고, 여러 값에 같은 일을 반복하기',
         body="""
         지금까지의 코드는 위에서 아래로 한 번 흘러가면 끝이었습니다. 그런데 "가격이 만 원 이상일 때만 알려 줘"처럼 **경우에 따라 다르게** 하고 싶을 때가 있고, "사흘치 가격을 하나씩 다 더해 줘"처럼 **같은 일을 여러 번** 하고 싶을 때가 있습니다. 전자가 `if`, 후자가 `for`입니다.
@@ -75,7 +75,7 @@ UNIT = unit('control', '1일차 · 3교시 — 조건·반복과 DataFrame', [
         tests=[io('10200\n', '기준 이상\n'), io('9900\n', '기준 미만\n'), io('10000\n', '기준 이상\n')]),
     coding('for-sum', '반복문으로 합계 누적하기',
         goal="""
-        2교시에서는 `sum()`이 합계를 구해 줬습니다. 이번에는 그 일을 직접 합니다. `prices`의 값을 `for`로 하나씩 꺼내 `total`에 더한 뒤, 반복이 끝나면 `total`을 출력하세요.
+        앞 단원에서는 `sum()`이 합계를 구해 줬습니다. 이번에는 그 일을 직접 합니다. `prices`의 값을 `for`로 하나씩 꺼내 `total`에 더한 뒤, 반복이 끝나면 `total`을 출력하세요.
 
         결과는 40200입니다. `sum()`을 쓰지 않고 누적하세요.
         """,
@@ -291,7 +291,7 @@ UNIT = unit('control', '1일차 · 3교시 — 조건·반복과 DataFrame', [
         starter='import time\nimport numpy as np\nvalues = list(range(1_000_000))\narray = np.array(values)\n# total, loop_seconds, numpy_total, numpy_seconds를 만들고 출력하세요\n',
         solution="import time\nimport numpy as np\nvalues = list(range(1_000_000))\narray = np.array(values)\nstart = time.perf_counter()\ntotal = 0\nfor value in values:\n    total += value\nloop_seconds = time.perf_counter() - start\nstart = time.perf_counter()\nnumpy_total = array.sum()\nnumpy_seconds = time.perf_counter() - start\nprint(f'반복문 {loop_seconds:.4f}초, 넘파이 {numpy_seconds:.4f}초')\nprint(f'넘파이가 {loop_seconds / numpy_seconds:.0f}배 빠르다')\n",
         check="assert s['total']==499999500000 and int(s['numpy_total'])==499999500000\nassert s['loop_seconds']>s['numpy_seconds']>0"),
-    quiz('control-check', '3교시 점검',
+    quiz('control-check', '단원 점검',
         choice('`if price >= 10000:`에서 `price`가 정확히 10000이면 어떻게 되나요?',
                ['조건이 참이라 아래 줄이 실행된다', '조건이 거짓이라 건너뛴다', '같은 값은 오류가 난다'], 0,
                '`>=`는 "이상"이라 같은 값도 포함합니다. 같은 값을 빼고 싶을 때만 `>`를 씁니다.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「거짓이라 건너뛴다」: 그건 `>`일 때 이야기다.\n- 「같은 값은 오류」: 비교는 참·거짓만 돌려주고 오류를 내지 않는다."),

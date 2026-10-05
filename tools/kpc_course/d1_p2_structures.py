@@ -1,12 +1,12 @@
-"""1일차 · 2교시 — 변수와 자료구조"""
+"""변수와 자료구조"""
 from kpc_course.dsl import *
 
 HOLDINGS = "holdings = [{'name':'A','price':10000,'quantity':3},{'name':'B','price':20000,'quantity':2},{'name':'C','price':15000,'quantity':4}]\n"
 
-UNIT = unit('structures', '1일차 · 2교시 — 변수와 자료구조', [
+UNIT = unit('structures', '변수와 자료구조', [
     concept('values', '값이 여러 개면 리스트, 이름표가 있으면 딕셔너리',
         body="""
-        1교시에서는 값 하나에 이름 하나를 붙였습니다. 그런데 어떤 주식의 사흘치 가격을 다루려면 `price1`, `price2`, `price3`을 따로 만들어야 할까요? 백 일치라면요? 그래서 값 여러 개를 **한 줄로 세워 한 이름에** 담는 방법이 있습니다. 바로 리스트입니다.
+        앞 단원에서는 값 하나에 이름 하나를 붙였습니다. 그런데 어떤 주식의 사흘치 가격을 다루려면 `price1`, `price2`, `price3`을 따로 만들어야 할까요? 백 일치라면요? 그래서 값 여러 개를 **한 줄로 세워 한 이름에** 담는 방법이 있습니다. 바로 리스트입니다.
 
         ```comic-gen
         제목: 값 백 개에 이름 백 개?
@@ -130,7 +130,7 @@ UNIT = unit('structures', '1일차 · 2교시 — 변수와 자료구조', [
         starter='prices = [10000, 10200, 10100]\n# 값을 추가하고 count, average를 계산하세요\n',
         solution='prices = [10000, 10200, 10100]\nprices.append(10300)\ncount = len(prices)\naverage = sum(prices)/count\nprint(count, average)\n',
         check="assert s['prices']==[10000,10200,10100,10300] and s['count']==4 and s['average']==10150"),
-    quiz('structure-check', '2교시 점검',
+    quiz('structure-check', '단원 점검',
         short('리스트에서 첫 번째 값의 자리 번호(인덱스)는 몇인가요?', ['0'],
               'Python의 자리 번호는 0부터 시작합니다. 세 값이 든 리스트의 마지막 자리는 2입니다.'),
         choice("""

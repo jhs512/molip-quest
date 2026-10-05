@@ -5,7 +5,7 @@ import re
 NL = chr(10)
 
 # Tooling and trivia that students never touch in this course.
-FORBIDDEN = ["uv", "Anaconda", "Jupyter", "Selenium", "yfinance", "FinanceDataReader", "폰트", "891행", "번째 보기"]
+FORBIDDEN = ["uv", "Anaconda", "Jupyter", "Selenium", "yfinance", "FinanceDataReader", "폰트", "891행", "번째 보기", "교시", "일차"]
 FENCED = re.compile(r"```.*?```", re.S)
 INLINE_CODE = re.compile(r"`[^`\n]+`")
 

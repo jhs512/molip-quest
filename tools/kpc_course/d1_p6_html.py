@@ -1,9 +1,9 @@
-"""1일차 · 6교시 — 저장 HTML에서 데이터 수집"""
+"""저장 HTML에서 데이터 수집"""
 from kpc_course.dsl import *
 
 SOUP = PD + "from pathlib import Path\nfrom bs4 import BeautifulSoup\nhtml=Path('data/prices.html').read_text(encoding='utf-8')\nsoup=BeautifulSoup(html,'html.parser')\n"
 
-UNIT = unit('html', '1일차 · 6교시 — 저장 HTML에서 데이터 수집', [
+UNIT = unit('html', '저장 HTML에서 데이터 수집', [
     concept('html-selectors', '웹 페이지는 글자 덩어리, 우리가 원하는 건 그중 두 칸',
         body="""
         지금까지의 표는 파일로 받았습니다. 그런데 어떤 숫자는 파일이 아니라 **웹 페이지에만** 있습니다. 포털의 시세 화면이 그렇습니다. 브라우저가 보여 주는 화면의 정체는 HTML이라는 글자 파일이고, 그 안에 가격이 적혀 있습니다. 문제는 가격 말고도 광고, 메뉴, 제목 같은 글자가 수천 줄 섞여 있다는 것입니다. 거기서 원하는 칸만 집어내는 것이 이 단원의 일입니다.
@@ -83,7 +83,7 @@ UNIT = unit('html', '1일차 · 6교시 — 저장 HTML에서 데이터 수집',
         goal="""
         이번에는 두 종목의 가격을 전부 뽑아 숫자 리스트로 만듭니다. `#prices li b`로 가격 요소를 모두 찾고, 하나씩 글자를 꺼내 쉼표를 지우고 `int()`로 바꾼 값을 `prices` 리스트에 모으세요.
 
-        `prices`가 `[10000, 20000]`이면 맞게 한 것입니다. 3교시의 `for`와 `append`가 그대로 쓰입니다.
+        `prices`가 `[10000, 20000]`이면 맞게 한 것입니다. 앞 단원의 `for`와 `append`가 그대로 쓰입니다.
         """,
         hint="""
         `prices = []`로 빈 리스트를 만들고 `for tag in soup.select('#prices li b'):`로 돌면서 `prices.append(int(tag.get_text(strip=True).replace(',', '')))`를 하세요.
@@ -95,7 +95,7 @@ UNIT = unit('html', '1일차 · 6교시 — 저장 HTML에서 데이터 수집',
         goal="""
         네 단계를 한 번에 합니다. `data/prices.html`을 읽어 `soup`를 만들고, `#prices li`를 하나씩 돌면서 종목 코드(`data-code` 속성), 이름(`.name`), 가격(`b`, 쉼표 없는 정수)을 담은 딕셔너리를 `rows` 리스트에 모은 뒤, `rows`로 `df`를 만드세요.
 
-        `df`가 2행이고 `price` 열이 10000, 20000이면 맞게 한 것입니다. 딕셔너리 리스트가 표가 되는 것은 3교시에서 본 그대로입니다.
+        `df`가 2행이고 `price` 열이 10000, 20000이면 맞게 한 것입니다. 딕셔너리 리스트가 표가 되는 것은 앞 단원에서 본 그대로입니다.
         """,
         hint="""
         `soup = BeautifulSoup(html, 'html.parser')`로 시작합니다. `for item in soup.select('#prices li'):` 안에서 코드는 `item['data-code']`, 이름은 `item.select_one('.name').get_text(strip=True)`, 가격은 `int(item.select_one('b').get_text(strip=True).replace(',', ''))`로 꺼내 `{'code': ..., 'name': ..., 'price': ...}` 딕셔너리를 `rows`에 `append`하세요. 마지막에 `df = pd.DataFrame(rows)`.
@@ -103,7 +103,7 @@ UNIT = unit('html', '1일차 · 6교시 — 저장 HTML에서 데이터 수집',
         starter=PD + "from pathlib import Path\nfrom bs4 import BeautifulSoup\nhtml=Path('data/prices.html').read_text(encoding='utf-8')\n# soup, rows, df를 만드세요\n",
         solution=PD + "from pathlib import Path\nfrom bs4 import BeautifulSoup\nhtml=Path('data/prices.html').read_text(encoding='utf-8')\nsoup=BeautifulSoup(html,'html.parser')\nrows=[]\nfor item in soup.select('#prices li'):\n    rows.append({'code':item['data-code'],'name':item.select_one('.name').get_text(strip=True),'price':int(item.select_one('b').get_text(strip=True).replace(',',''))})\ndf=pd.DataFrame(rows)\ndf\n",
         check="assert s['df']['code'].tolist()==['A','B']\nassert s['df']['price'].tolist()==[10000,20000]\nassert s['df']['name'].tolist()==['가상A','가상B']"),
-    quiz('html-check', '6교시 점검',
+    quiz('html-check', '단원 점검',
         short('`id`가 `prices`인 요소를 고르는 선택자를 기호까지 포함해 쓰면 무엇인가요?', ['#prices'],
               '`#`은 id를 뜻합니다. class를 고를 때는 `.name`처럼 점을 씁니다.'),
         choice("`int('10,000')`을 실행하면 어떻게 되나요?",
@@ -119,7 +119,7 @@ UNIT = unit('html', '1일차 · 6교시 — 저장 HTML에서 데이터 수집',
                ['`<li data-code="A">`처럼 태그에 붙은 속성 값', '`li` 안의 글자', '종목 가격'], 0,
                '꺾쇠 안에 `이름="값"` 꼴로 붙은 것이 속성입니다. 태그 사이의 글자는 `get_text()`로 꺼냅니다.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「종목 가격」: 가격은 b 태그 안의 글자다.\n- 「li 안의 글자」: 글자는 get_text()로 꺼낸다. 속성과 다르다."),
         short('수집한 딕셔너리 리스트 `rows`를 표로 만드는 코드는 `pd.________(rows)`입니다. 빈칸은?', ['DataFrame'],
-              '3교시와 같습니다. 딕셔너리 하나가 한 행이 되어 `DataFrame`이 만들어집니다.'),
+              '앞 단원과 같습니다. 딕셔너리 하나가 한 행이 되어 `DataFrame`이 만들어집니다.'),
         choice("""**프롬프트 고르기** · 저장된 HTML에서 `#prices li` 안의 가격을 숫자 리스트로 모아야 합니다. 어떤 프롬프트가 한 번에 맞는 코드를 줄까요?""",
                ["""파이썬 BeautifulSoup. soup 객체가 있어. "#prices li b" 요소들의 텍스트를 쉼표 제거 후 int로 바꿔 prices 리스트에 모아 출력. 결과 [10000, 20000]. 코드만""", """웹에서 가격 긁어 줘""", """HTML 파싱하는 법 알려 줘""", """가격 뽑아서 리스트로 만들어 줘"""], 0,
                """정답은 선택자, 추출 → 정리 → 변환 → 저장 네 단계, 결과 변수와 기대값이 다 있습니다. 수집 프롬프트는 선택자를 주는 것이 절반입니다.

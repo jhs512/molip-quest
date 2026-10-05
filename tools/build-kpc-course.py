@@ -19,7 +19,7 @@ if problems and not os.environ.get("KPC_LENIENT"):
 course = dict(
     id="kpc-finance-2026",
     title="KPC · 머신러닝을 활용한 금융데이터 분석",
-    description="3일 · 20시간 · 7챕터. 개념을 확인하고 독립된 main.py 미션과 퀴즈를 클리어하세요.",
+    description="7챕터 · 20단원. 개념을 확인하고 독립된 main.py 미션과 퀴즈를 클리어하세요.",
     chapters=chapters,
 )
 (ROOT / "courses/kpc-finance.json").write_text(json.dumps(course, ensure_ascii=False, indent=2), encoding="utf-8")

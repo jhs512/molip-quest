@@ -1,4 +1,4 @@
-"""해설 모드 scripts for the credit chapter (2일차 7·8교시 + ★ 도전 과제): what the tutor says
+"""해설 모드 scripts for the credit chapter (부도 정의, 네 지표 + ★ 도전 과제): what the tutor says
 and types for each concept and coding problem, keyed by activity id. Format and rules: narration.py.
 
 Voice: the instructor's (see .scratch/presenter-decks/spec.md): 해요체 구어, "자," opens a scene,
@@ -7,7 +7,7 @@ words stay as they are: 입력 X, 정답 y, 훈련 자료/테스트 자료, 기�
 """
 
 NARRATION = {
-    # ---- 2일차 7교시 — 부도 정의와 연체 이력 ----
+    # ---- 부도 정의와 연체 이력 ----
     "credit-definition": [
         ("title", "자, 타이타닉에서 익힌 분류를 이번엔 돈 문제에 써요. 제목부터 보세요. 지난달 연체와 다음 달 부도는 다른 칸이에요."),
         ("타이타닉으로 분류의 흐름을 익혔으니 금융 자료에 옮겨 봅니다", "credit.csv는 카드 고객 3만 명, 한 사람이 한 행이에요. 맞힐 칸은 다음달 부도, 1이면 부도 0이면 정상이에요. 열 이름에 공백이 있어서 target 변수에 담아 credit[target]으로 꺼내요."),
@@ -65,7 +65,7 @@ NARRATION = {
         ("submit", "제출할게요."),
     ],
 
-    # ---- 2일차 8교시 — 네 지표와 확률 기준 ----
+    # ---- 네 지표와 확률 기준 ----
     "manual-metrics": [
         ("problem", "자, 이 단원은 개념 없이 문제 안에서 설명해요. 부도율이 22%니까 전원 정상이라고 찍어도 정확도 78%예요. 그래서 맞힘과 틀림을 네 칸으로 나눠요. 그게 혼동행렬이에요. 위 설명과 만화를 읽고, 작은 숫자로 정밀도, 재현율, 정확도를 손으로 계산해요."),
         ("hint", "정밀도 분모는 부도라고 경고한 수 tp 더하기 fp, 재현율 분모는 진짜 부도 수 tp 더하기 fn이에요. 만화에서 보낸 경고 중 맞은 비율, 진짜 부도 중 잡은 비율, 그거예요."),
@@ -88,7 +88,7 @@ NARRATION = {
     ],
     "credit-model": [
         ("problem", "자, 진짜 자료예요. 준비 코드가 상환_9월, 신용한도, 나이 세 열로 훈련 자료와 테스트 자료를 나눠 뒀어요. 기준 모델 Dummy와 Logistic을 각각 StandardScaler와 묶은 Pipeline으로 학습해서 네 지표를 results 표로 만들면 돼요."),
-        ("hint", "앞 교시의 표 만들기 패턴 그대로예요. 정밀도, 재현율, F1에 zero_division=0을 주면 기준 모델처럼 TP가 0일 때 경고 없이 0이 나와요."),
+        ("hint", "앞 단원의 표 만들기 패턴 그대로예요. 정밀도, 재현율, F1에 zero_division=0을 주면 기준 모델처럼 TP가 0일 때 경고 없이 0이 나와요."),
         ("starter", "준비 코드는 불러오기, 입력 X, 정답 y, 그리고 train_test_split이에요. 그대로 둘게요."),
         ("code", "models={'Dummy':DummyClassifier(strategy='most_frequent'),'Logistic':LogisticRegression(max_iter=2000)}\nrows=[]\n", "모델 두 개를 딕셔너리에 담아요. Dummy는 가장 많은 답, 그러니까 전원 정상으로 찍는 기준 모델이에요. 결과 행을 모을 빈 리스트 rows도 만들고요."),
         ("code", "for name,estimator in models.items():\n    model=Pipeline([('scale',StandardScaler()),('model',estimator)])\n    model.fit(X_train,y_train)\n    pred=model.predict(X_test)\n", "모델마다 돌면서 StandardScaler와 묶은 Pipeline을 만들어요. fit은 훈련 자료로만, predict는 테스트 자료로. 이 순서가 누수를 막아요."),

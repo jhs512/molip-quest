@@ -1,10 +1,10 @@
-"""2일차 · 5교시 — 분리와 전처리 Pipeline"""
+"""분리와 전처리 Pipeline"""
 from kpc_course.dsl import *
 
-UNIT = unit('preprocessing', '2일차 · 5교시 — 분리와 전처리 Pipeline', [
+UNIT = unit('preprocessing', '분리와 전처리 Pipeline', [
     concept('fit-train', '기준은 훈련 자료에서만 정한다',
         body="""
-        4교시에서 입력 `X`와 정답 `y`를 만들었습니다. 이제 둘을 훈련 자료와 테스트 자료로 나눕니다. 손으로 자르지 않고 `train_test_split`에 맡기는데, 인자 세 개의 뜻만 알면 됩니다. `test_size=0.2`는 20%를 테스트로 떼어 두라는 것, `stratify=y`는 두 쪽의 생존 비율이 비슷하게 섞으라는 것, `random_state=42`는 누가 실행해도 똑같이 나뉘게 하는 고정 번호입니다. 돌려주는 순서는 훈련 입력, 테스트 입력, 훈련 정답, 테스트 정답입니다.
+        앞 단원에서 입력 `X`와 정답 `y`를 만들었습니다. 이제 둘을 훈련 자료와 테스트 자료로 나눕니다. 손으로 자르지 않고 `train_test_split`에 맡기는데, 인자 세 개의 뜻만 알면 됩니다. `test_size=0.2`는 20%를 테스트로 떼어 두라는 것, `stratify=y`는 두 쪽의 생존 비율이 비슷하게 섞으라는 것, `random_state=42`는 누가 실행해도 똑같이 나뉘게 하는 고정 번호입니다. 돌려주는 순서는 훈련 입력, 테스트 입력, 훈련 정답, 테스트 정답입니다.
 
         ```interactive
         위젯: stratify
@@ -139,7 +139,7 @@ UNIT = unit('preprocessing', '2일차 · 5교시 — 분리와 전처리 Pipelin
         check="import numpy as np\nassert s['train_values'].shape==(1047,2) and s['test_values'].shape==(262,2)\nassert np.isfinite(s['train_values']).all() and np.isfinite(s['test_values']).all()\nassert np.allclose(s['imputer'].statistics_,s['X_train'][['나이','요금']].median().to_numpy())"),
     coding('onehot-fit', '글자 열을 훈련 기준으로 One-hot',
         goal="""
-        4교시의 `get_dummies`를 모델 흐름에 맞는 도구로 바꿉니다. `OneHotEncoder(handle_unknown='ignore', sparse_output=False)`를 `encoder`에 만들고, `X_train[['성별']]`에 `fit_transform`한 결과를 `train_encoded`, `X_test[['성별']]`에 `transform`한 결과를 `test_encoded`에 저장해 `shape`를 출력하세요.
+        앞 단원의 `get_dummies`를 모델 흐름에 맞는 도구로 바꿉니다. `OneHotEncoder(handle_unknown='ignore', sparse_output=False)`를 `encoder`에 만들고, `X_train[['성별']]`에 `fit_transform`한 결과를 `train_encoded`, `X_test[['성별']]`에 `transform`한 결과를 `test_encoded`에 저장해 `shape`를 출력하세요.
 
         두 결과 모두 열이 2개(여성, 남성)이면 맞게 한 것입니다.
         """,
@@ -232,7 +232,7 @@ UNIT = unit('preprocessing', '2일차 · 5교시 — 분리와 전처리 Pipelin
         starter=TI + FEATURES + SPLIT + "from sklearn.impute import SimpleImputer\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nnumeric = ['객실등급','나이','형제배우자','부모자녀','요금']\n# numeric_pipeline, train_values, test_values를 만드세요\n",
         solution=TI + FEATURES + SPLIT + "from sklearn.impute import SimpleImputer\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nnumeric = ['객실등급','나이','형제배우자','부모자녀','요금']\nnumeric_pipeline = Pipeline([('fill', SimpleImputer(strategy='median')), ('scale', StandardScaler())])\ntrain_values = numeric_pipeline.fit_transform(X_train[numeric])\ntest_values = numeric_pipeline.transform(X_test[numeric])\nprint(train_values.shape, test_values.shape)\n",
         check="import numpy as np\nassert s['train_values'].shape==(1047,5) and s['test_values'].shape==(262,5)\nassert np.isfinite(s['train_values']).all() and np.isfinite(s['test_values']).all()\nassert np.allclose(s['train_values'].mean(axis=0),0,atol=1e-8)\nassert list(s['numeric_pipeline'].named_steps)==['fill','scale']"),
-    quiz('pipeline-check', '2일차 5교시 점검',
+    quiz('pipeline-check', '단원 점검',
         choice('올바른 손질 순서는 어느 것인가요?',
                ['훈련·테스트를 먼저 나누고, 훈련에서 `fit`, 테스트에는 `transform`', '전체 자료에서 `fit`한 뒤 나눈다', '테스트에서 `fit`하고 훈련에 `transform`'], 0,
                '기준을 정하는 `fit`에 테스트가 섞이면 모의고사를 미리 본 셈입니다. 나누는 것이 먼저입니다.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「테스트에서 fit」: 기준을 테스트로 정하는 누수다.\n- 「전체에서 fit한 뒤 나눈다」: 테스트 자료가 기준에 섞인다."),

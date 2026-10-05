@@ -6,7 +6,7 @@ one or two short sentences per line, says what the student should look at right 
 """
 
 NARRATION = {
-    # ---- 1일차 1교시 — 내 코드의 첫 실행 ----
+    # ---- 내 코드의 첫 실행 ----
     "runtime": [
         ("title", "자, 이 수업이 끝나면 여러분 손에 뭐가 남는지부터 볼게요."),
         ("이 수업이 끝날 때, 여러분의 main.py는", "수업 끝에는 여러분의 main.py가 주가 파일을 읽어서 내일 종가를 맞히고, 얼마나 빗나갔는지까지 숫자로 보고해요. 거기까지 세 토막이에요."),
@@ -76,10 +76,10 @@ NARRATION = {
         ("code", "print(f'금액: {amount}원')\n", "따옴표 앞에 f를 붙이고, 값이 들어갈 자리를 중괄호로 표시해요. 중괄호 안의 amount가 실제 값으로 바뀌어요."),
         ("output", "금액: 30000원, 형식 그대로 나왔죠? 띄어쓰기까지 글자 단위로 채점하니까 그대로 맞춰야 해요."),
     ],
-    # ---- 1일차 2교시 — 변수와 자료구조 ----
+    # ---- 변수와 자료구조 ----
     "values": [
-        ("title", "자, 2교시는 값을 담는 그릇이 두 개 늘어요. 리스트와 딕셔너리예요."),
-        ("1교시에서는 값 하나에 이름 하나를 붙였습니다", "1교시엔 값 하나에 이름 하나였죠? 백 일치 가격이면 변수가 백 개예요. 그래서 값 여러 개를 한 줄로 세워 이름 하나에 담아요. 그게 리스트예요."),
+        ("title", "자, 이 단원은 값을 담는 그릇이 두 개 늘어요. 리스트와 딕셔너리예요."),
+        ("앞 단원에서는 값 하나에 이름 하나를 붙였습니다", "앞 단원엔 값 하나에 이름 하나였죠? 백 일치 가격이면 변수가 백 개예요. 그래서 값 여러 개를 한 줄로 세워 이름 하나에 담아요. 그게 리스트예요."),
         ("제목: 값 백 개에 이름 백 개?", "만화를 보세요. 첫 값은 prices[0], 마지막은 prices[-1]이에요. 자리는 0부터 세거든요."),
         ("prices = [10000, 10200, 10100]", "코드를 보세요. 대괄호 안에 값을 쉼표로 늘어놓으면 리스트예요. len이 개수, sum이 합계, append가 맨 뒤에 하나 붙이기예요."),
         ("리스트의 자리는 0부터 셉니다", "자리는 0부터예요. 첫 값이 prices[0], 둘째가 prices[1]. 셋이 들었는데 prices[3]을 부르면 IndexError가 나요."),
@@ -107,7 +107,7 @@ NARRATION = {
         ("starter", "준비 코드의 holding은 그대로 둘게요. name, price, quantity 세 키가 있어요."),
         ("code", "amount = holding['price'] * holding['quantity']\n", "대괄호 안에 키를 따옴표째 적어요. holding['price']가 10000, holding['quantity']가 3이죠. 따옴표를 빼면 price라는 변수를 찾다가 NameError가 나요."),
         ("code", "print(amount)\n", "amount를 출력해요."),
-        ("output", "30000이 나왔죠? 1교시에 변수로 했던 계산을 키로 한 거예요."),
+        ("output", "30000이 나왔죠? 앞 단원에 변수로 했던 계산을 키로 한 거예요."),
     ],
     "holdings-access": [
         ("problem", "자, 둘을 합쳐요. holdings는 종목 딕셔너리 세 개가 든 리스트예요. 두 번째 종목 이름을 second_name, 세 번째 종목 가격을 third_price에 담아 출력하면 돼요."),
@@ -133,9 +133,9 @@ NARRATION = {
         ("code", "print(count, average)\n", "둘을 출력해요."),
         ("output", "4 10150.0이 나왔죠? 나눗셈 결과라 소수점이 붙어요. 그래도 10150이면 맞아요."),
     ],
-    # ---- 1일차 3교시 — 조건·반복과 DataFrame ----
+    # ---- 조건·반복과 DataFrame ----
     "flow": [
-        ("title", "자, 3교시는 코드의 흐름을 바꿔요. 조건에 따라 고르는 if, 여러 값에 반복하는 for예요."),
+        ("title", "자, 이 단원은 코드의 흐름을 바꿔요. 조건에 따라 고르는 if, 여러 값에 반복하는 for예요."),
         ("지금까지의 코드는 위에서 아래로 한 번 흘러가면 끝이었습니다", "지금까진 위에서 아래로 한 번 흐르면 끝이었죠? 만 원 이상일 때만, 이게 if예요. 사흘치를 하나씩 다, 이게 for예요."),
         ("제목: 고르기와 반복하기", "만화 세 번째 컷을 보세요. 네 칸 들여쓴 줄만 if에 딸린 일로 알아들어요. 들여쓰기가 문법이거든요."),
         ("if price >= 10000:", "코드를 보세요. if 뒤에 조건, 콜론, 다음 줄은 네 칸 들여서 할 일. 거짓일 때 할 일은 else 아래예요."),
@@ -155,7 +155,7 @@ NARRATION = {
         ("output", "기준 이상이 나왔죠? 제출하면 세 입력으로 테스트해요. 10000도 기준 이상이어야 해요."),
     ],
     "for-sum": [
-        ("problem", "자, 2교시엔 sum()이 합계를 내 줬죠? 이번엔 그 일을 직접 해요. prices 값을 for로 하나씩 꺼내 total에 더하고, 끝나면 total을 출력하면 돼요. sum()은 안 써요."),
+        ("problem", "자, 앞 단원엔 sum()이 합계를 내 줬죠? 이번엔 그 일을 직접 해요. prices 값을 for로 하나씩 꺼내 total에 더하고, 끝나면 total을 출력하면 돼요. sum()은 안 써요."),
         ("starter", "준비 코드 두 줄, prices와 total = 0은 그대로 둘게요. total은 반복 전에 한 번만 만들어요."),
         ("code", "for price in prices:\n    total += price\n", "for price in prices 콜론. 들여쓴 줄에서 total += price. 네 번 돌면서 합이 쌓여요."),
         ("code", "print(total)\n", "print는 들여쓰기 없이 반복문 밖이에요. 그래야 마지막에 한 번만 찍혀요."),
@@ -188,7 +188,7 @@ NARRATION = {
     "holdings-amounts": [
         ("problem", "자, 리스트 안이 숫자가 아니라 딕셔너리여도 for는 똑같이 돌아요. holdings 세 종목을 돌면서 가격 곱하기 수량을 각 종목의 amount 키에 넣으면 돼요."),
         ("starter", "준비 코드의 holdings는 그대로 둘게요. 세 종목이에요."),
-        ("code", "for holding in holdings:\n    holding['amount'] = holding['price'] * holding['quantity']\n", "for holding in holdings 콜론. holding에 딕셔너리가 하나씩 들어와요. 안에서 새 키 amount에 가격 곱하기 수량을 넣어요. 2교시 holding 미션을 세 번 돈 거예요."),
+        ("code", "for holding in holdings:\n    holding['amount'] = holding['price'] * holding['quantity']\n", "for holding in holdings 콜론. holding에 딕셔너리가 하나씩 들어와요. 안에서 새 키 amount에 가격 곱하기 수량을 넣어요. 앞 단원 holding 미션을 세 번 돈 거예요."),
         ("code", "print(holdings)\n", "반복이 끝난 뒤 리스트 전체를 출력해요."),
         ("output", "세 딕셔너리에 amount가 30000, 40000, 60000으로 붙었죠? 합계는 다음 미션이에요."),
     ],
@@ -248,7 +248,7 @@ NARRATION = {
     # ---- 도전 과제 ----
     "week-plan": [
         ("problem", "자, 도전 과제예요. 빵 공장 지난주 요일별 판매량이 sales 딕셔너리에 있어요. 규칙은 판매량의 1.1배를 반올림해 굽기. 1장에서 배운 걸 전부 써서 plans, total_plan, best_day, df 넷을 만들어요."),
-        ("hint", "sales.items()로 키와 값을 함께 꺼내요. 최댓값은 3교시 highest 패턴 그대로예요."),
+        ("hint", "sales.items()로 키와 값을 함께 꺼내요. 최댓값은 앞에서 본 highest 패턴 그대로예요."),
         ("starter", "준비 코드 네 줄은 그대로 둘게요. plans는 빈 리스트, total_plan은 0으로 시작해요."),
         ("code", "best_day = None\nbest_sold = 0\n", "최댓값 찾기용 그릇 둘을 먼저 만들어요. 아직 요일이 없으니 best_day는 None, best_sold는 0이에요."),
         ("code", "for day, sold in sales.items():\n    plan = round(sold * 1.1)\n    plans.append({'요일': day, '판매량': sold, '계획': plan})\n", "sales.items()는 키와 값을 쌍으로 꺼내요. 요일이 day, 판매량이 sold예요. 1.1배를 반올림해 plan에, 세 키짜리 딕셔너리를 plans에 append해요. 이 키가 그대로 열 이름이 돼요."),

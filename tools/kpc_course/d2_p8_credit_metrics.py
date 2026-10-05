@@ -1,12 +1,12 @@
-"""2일차 · 8교시 — 네 지표와 확률 기준"""
+"""네 지표와 확률 기준"""
 from kpc_course.dsl import *
 
 CREDIT_SPLIT = CR + "from sklearn.model_selection import train_test_split\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\n"
 
-UNIT = unit('credit-metrics', '2일차 · 8교시 — 네 지표와 확률 기준', [
+UNIT = unit('credit-metrics', '네 지표와 확률 기준', [
     coding('manual-metrics', '혼동행렬로 네 지표 손계산',
         intro="""
-        이 단원은 개념 미션 없이 문제 안에서 설명합니다. 7교시의 부도율은 약 22%였습니다. 뒤집으면 **전원 "정상"이라고 찍어도 정확도 78%**라는 뜻입니다. 그런데 그 모델은 부도 고객을 한 명도 찾아내지 못합니다. 카드사가 원하는 것은 정확도가 아니라 "부도 날 사람을 미리 찾는 것"이므로, 정확도 하나로는 모델을 평가할 수 없습니다. 그래서 맞힘과 틀림을 네 칸으로 나눠 봅니다.
+        이 단원은 개념 미션 없이 문제 안에서 설명합니다. 앞 단원의 부도율은 약 22%였습니다. 뒤집으면 **전원 "정상"이라고 찍어도 정확도 78%**라는 뜻입니다. 그런데 그 모델은 부도 고객을 한 명도 찾아내지 못합니다. 카드사가 원하는 것은 정확도가 아니라 "부도 날 사람을 미리 찾는 것"이므로, 정확도 하나로는 모델을 평가할 수 없습니다. 그래서 맞힘과 틀림을 네 칸으로 나눠 봅니다.
 
         부도(1)를 양성이라고 부르기로 하고, 실제와 예측을 표로 놓으면 이렇게 됩니다. 이 표가 혼동행렬입니다.
 
@@ -77,7 +77,7 @@ UNIT = unit('credit-metrics', '2일차 · 8교시 — 네 지표와 확률 기�
         기준 모델의 정확도는 78% 근처인데 재현율은 0입니다. 로지스틱 회귀가 재현율을 얼마나 끌어올리는지, 그 대가로 정확도는 어떻게 되는지 보세요.
         """,
         hint="""
-        6교시의 표 만들기 패턴 그대로입니다. `for name, estimator in models.items():` 안에서 `Pipeline([('scale', StandardScaler()), ('model', estimator)])`를 만들어 `fit`, `predict`하고 네 지표를 딕셔너리로 `rows`에 모읍니다. 정밀도·재현율·F1에는 `zero_division=0`을 주면 기준 모델처럼 TP가 0일 때 경고 없이 0이 나옵니다.
+        앞 단원의 표 만들기 패턴 그대로입니다. `for name, estimator in models.items():` 안에서 `Pipeline([('scale', StandardScaler()), ('model', estimator)])`를 만들어 `fit`, `predict`하고 네 지표를 딕셔너리로 `rows`에 모읍니다. 정밀도·재현율·F1에는 `zero_division=0`을 주면 기준 모델처럼 TP가 0일 때 경고 없이 0이 나옵니다.
         """,
         starter=CREDIT_SPLIT + "from sklearn.dummy import DummyClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import accuracy_score,precision_score,recall_score,f1_score\nX=credit[['상환_9월','신용한도','나이']]\ny=credit[target]\nX_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.2,stratify=y,random_state=42)\n# models와 results를 만드세요\n",
         solution=CREDIT_SPLIT + "from sklearn.dummy import DummyClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import accuracy_score,precision_score,recall_score,f1_score\nX=credit[['상환_9월','신용한도','나이']]\ny=credit[target]\nX_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.2,stratify=y,random_state=42)\nmodels={'Dummy':DummyClassifier(strategy='most_frequent'),'Logistic':LogisticRegression(max_iter=2000)}\nrows=[]\nfor name,estimator in models.items():\n    model=Pipeline([('scale',StandardScaler()),('model',estimator)])\n    model.fit(X_train,y_train)\n    pred=model.predict(X_test)\n    rows.append({'model':name,'accuracy':accuracy_score(y_test,pred),'precision':precision_score(y_test,pred,zero_division=0),'recall':recall_score(y_test,pred,zero_division=0),'f1':f1_score(y_test,pred,zero_division=0)})\nresults=pd.DataFrame(rows).set_index('model')\nresults\n",
@@ -134,7 +134,7 @@ UNIT = unit('credit-metrics', '2일차 · 8교시 — 네 지표와 확률 기�
         starter='import numpy as np\nprobabilities=np.array([0.1,0.35,0.49,0.51,0.8])\n# pred_05, pred_03을 만드세요\n',
         solution='import numpy as np\nprobabilities=np.array([0.1,0.35,0.49,0.51,0.8])\npred_05=(probabilities>=0.5).astype(int)\npred_03=(probabilities>=0.3).astype(int)\nprint(pred_05.sum(),pred_03.sum())\n',
         check="assert s['pred_05'].tolist()==[0,0,0,1,1]\nassert s['pred_03'].tolist()==[0,1,1,1,1]"),
-    quiz('metrics-check', '2일차 8교시 점검',
+    quiz('metrics-check', '단원 점검',
         choice('부도율 22%인 자료에서 전원 "정상"으로 찍은 모델의 정확도와 재현율은 각각 얼마인가요?',
                ['정확도 약 78%, 재현율 0', '정확도 0, 재현율 약 78%', '둘 다 약 78%'], 0,
                '정상이 78%라 정확도는 78%지만, 부도를 한 명도 못 찾으니 재현율은 0입니다. 정확도만 보면 속습니다.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「둘 다 78%」: 재현율은 부도를 찾은 비율이라 0이다.\n- 「정확도 0」: 정상을 다 맞혀 정확도는 78%다."),
