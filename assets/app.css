@@ -662,3 +662,7 @@ html.fx-still .assistant-tts-dot { animation: none; }
 .separate-practice-nav .curriculum-toggle { position:static; margin-left:auto; }
 
 
+
+.update-check { display: flex; flex-direction: column; gap: 4px; margin: 0 0 12px; }
+.update-check button { font-size: 12px; padding: 4px 10px; align-self: flex-start; }
+.update-status { color: #7f98ad; font-size: 11.5px; line-height: 1.4; }

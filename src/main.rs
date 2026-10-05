@@ -1,6 +1,6 @@
 #![cfg_attr(all(windows, not(debug_assertions)), windows_subsystem = "windows")]
 
-mod collection;
+mod practice;
 mod ui;
 use dioxus::prelude::*;
 use molip_quest::Course;
@@ -121,7 +121,6 @@ window.molipVoice && molipVoice.setName({});",
         document::eval(include_str!("../assets/layout/victory.js"));
         // Reward effects on or off, as saved from the home screen.
         document::eval(&molip_quest::prefs::Prefs::load().script());
-        document::eval(include_str!("../assets/layout/collection.js"));
         document::eval(include_str!("../assets/layout/diagrams.js"));
         document::eval(include_str!("../assets/layout/interactive.js"));
         document::eval(include_str!("../assets/layout/agent.js"));
@@ -228,15 +227,27 @@ fn tts_response(
 enum View {
     Home,
     Learning,
+    Practice,
     Gallery(ui::GalleryKind),
     Avatars,
-    Collection,
 }
 
 /// Auto-update (src/updater.rs). On start a newer release is installed without asking: the
 /// panel shows the download, then the app closes and the new build opens. Later, a release that
 /// appears while the app runs is offered in a banner (지금 업데이트 / 나중에). Development
 /// builds never see this.
+/// "HH:MM" of the local time, for the update status line.
+fn chrono_like_now() -> String {
+    let secs = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or(0) as i64;
+    // Local offset from the C runtime is not available without a crate; show Korean time
+    // (UTC+9), the class's time zone.
+    let local = secs + 9 * 3600;
+    format!("{:02}:{:02}", local / 3600 % 24, local / 60 % 60)
+}
+
 #[cfg(feature = "desktop")]
 #[derive(Clone, PartialEq)]
 enum UpdatePhase {
@@ -288,17 +299,31 @@ fn UpdateGate() -> Element {
             }
         });
     });
-    // Check on start, then every ten minutes while the app runs.
+    // Check on start, then every three minutes while the app runs, or at once when the
+    // sidebar's 업데이트 확인 bumps the request counter. The outcome goes to the status line.
+    let request = use_context::<Signal<u32>>();
+    let mut status = use_context::<Signal<String>>();
     use_future(move || async move {
         let mut first = true;
+        let mut seen = *request.peek();
         loop {
             if updater::enabled() {
-                let found = tokio::task::spawn_blocking(updater::check)
+                status.set("업데이트 확인 중…".into());
+                let result = tokio::task::spawn_blocking(updater::check)
                     .await
-                    .ok()
-                    .and_then(Result::ok)
-                    .flatten();
-                if let Some(found) = found {
+                    .unwrap_or_else(|e| Err(e.to_string()));
+                let stamp = chrono_like_now();
+                match &result {
+                    Ok(Some(found)) => {
+                        status.set(format!("새 버전 있음 · {} ({stamp} 확인)", found.title))
+                    }
+                    Ok(None) => status.set(format!(
+                        "최신 버전입니다 · 빌드 {} ({stamp} 확인)",
+                        updater::current_build()
+                    )),
+                    Err(e) => status.set(format!("확인 실패 · {e} ({stamp})")),
+                }
+                if let Ok(Some(found)) = result {
                     let known = release.peek().as_ref().map(|r| r.build);
                     let idle = matches!(*phase.peek(), UpdatePhase::Hidden | UpdatePhase::Offered);
                     if idle && known != Some(found.build) && *dismissed.peek() != found.build {
@@ -310,9 +335,18 @@ fn UpdateGate() -> Element {
                         }
                     }
                 }
+            } else {
+                status.set("개발 빌드는 업데이트를 확인하지 않습니다".into());
             }
             first = false;
-            tokio::time::sleep(std::time::Duration::from_secs(600)).await;
+            // Three minutes, cut short by a 업데이트 확인 press.
+            for _ in 0..180 {
+                tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+                if *request.peek() != seen {
+                    seen = *request.peek();
+                    break;
+                }
+            }
         }
     });
     let Some(found) = release() else {
@@ -381,6 +415,9 @@ fn Workspace() -> Element {
     let mut home_epoch = use_signal(|| 0u32);
     // Reward effects: animation and sound switches shown on the home card.
     let mut prefs = use_signal(molip_quest::prefs::Prefs::load);
+    // Update check on demand (sidebar button) and its last outcome, shared with UpdateGate.
+    let mut update_request = use_context_provider(|| Signal::new(0u32));
+    let update_status = use_context_provider(|| Signal::new(String::new()));
     let course = use_hook(|| {
         let source = if let Ok(path) = std::env::var("MOLIP_COURSE_PATH") {
             std::fs::read_to_string(path).map_err(|e| e.to_string())?
@@ -394,14 +431,22 @@ fn Workspace() -> Element {
             rsx! { main { h1 {"수업을 불러올 수 없습니다."} p {"{error}"} ui::DoctorPanel {} } }
         }
         Ok(course) => {
-            rsx! { div { class: match view() { View::Home => "shell", View::Learning => "shell practice-shell", View::Gallery(_) | View::Avatars | View::Collection => "shell practice-shell gallery-shell" },
+            rsx! { div { class: match view() { View::Home => "shell", View::Learning | View::Practice => "shell practice-shell", View::Gallery(_) | View::Avatars => "shell practice-shell gallery-shell" },
                 UpdateGate {}
                 aside { class:"sidebar", div {class:"brand", "몰입 퀘스트"} h3 {"KPC 금융 데이터 분석"} p {"7챕터 · 20단원"}
                     p {class:"build-number", {let build = molip_quest::updater::current_build(); if build > 0 {format!("빌드 {build} · 새 버전은 자동으로 설치됩니다")} else {"개발 빌드".to_string()}}}
+                    div {class:"update-check",
+                        button {onclick:move |_| update_request += 1, "업데이트 확인"}
+                        span {class:"update-status", "{update_status}"}
+                    }
                     if ui::VIEW_ONLY { p {class:"view-only-note","Android 열람 모드 · 모든 단원과 미션이 열려 있습니다. 개념과 퀴즈를 풀고, 코딩 미션은 읽고 넘어갑니다. 코드 실행·채점은 데스크톱 앱에서 하세요."} }
                     ui::DoctorPanel {} }
                 main {
                     match view() {
+                        View::Practice => rsx! {
+                            button {class:"classroom-back", onclick:move |_|view.set(View::Home), "← 클래스룸"}
+                            practice::PracticeView {}
+                        },
                         View::Learning => rsx! {
                             button {class:"classroom-back", onclick:move |_|view.set(View::Home), "← 클래스룸"}
                             Learning { course:course.clone(),start_unit:study_target().0,start_mission:study_target().1 }
@@ -413,10 +458,6 @@ fn Workspace() -> Element {
                         View::Avatars => rsx! {
                             button {class:"classroom-back", onclick:move |_|view.set(View::Home), "← 클래스룸"}
                             ui::AvatarGallery { course:course.clone() }
-                        },
-                        View::Collection => rsx! {
-                            button {class:"classroom-back",onclick:move |_|view.set(View::Home),"← 클래스룸"}
-                            collection::Collection {course:course.clone(),onstudy:move |target|{study_target.set(target);view.set(View::Learning);}}
                         },
                         View::Home => rsx! {
                             h1 {"KPC 학습 여정"} p {"개념을 확인하고 코딩 미션과 퀴즈를 클리어하며 성장하세요."}
@@ -445,7 +486,7 @@ fn Workspace() -> Element {
                                 p {{format!("{} 단원",course.total_units())}}
                                 div {class:"course-actions",
                                     button {class:"primary",onclick:move |_|{study_target.set((String::new(),usize::MAX));view.set(View::Learning);},"학습 시작 · 이어하기"}
-                                    button {class:"gallery-link",onclick:move |_|view.set(View::Collection),"분석가 도감"}
+                                    button {class:"gallery-link",onclick:move |_|view.set(View::Practice),"도전 과제"}
                                     for kind in ui::GalleryKind::ALL {
                                         button {class:"gallery-link",onclick:move |_|view.set(View::Gallery(kind)),{kind.label()}}
                                     }
