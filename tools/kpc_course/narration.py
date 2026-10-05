@@ -323,6 +323,11 @@ def attach(chapters, solutions):
     orphan = sorted(set(table) - used)
     if orphan:
         raise SystemExit(f"narration: 미션에 없는 해설 항목 {orphan}")
+    # A cache file whose mission is gone (renamed or removed) would silently rot: refuse it.
+    if CACHE_DIR.exists():
+        orphan_files = sorted(p.stem for p in CACHE_DIR.glob("*.json") if p.stem not in used)
+        if orphan_files:
+            raise SystemExit(f"narration: 미션에 없는 해설 캐시 파일 {orphan_files} (tools/kpc_course/narration_cache에서 지우세요)")
     if missing:
         print(f"narration: 해설 없는 미션 {len(missing)}개 (lenient): {', '.join(missing[:8])}{' …' if len(missing) > 8 else ''}")
     if stale_entries:

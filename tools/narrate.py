@@ -6,6 +6,7 @@ changed since its script was written, with the Claude CLI installed on this comp
     python tools/narrate.py --ids hello numbers-text
     python tools/narrate.py --import     # move the hand-written narration_*.py entries into the cache
     python tools/narrate.py --check      # list what is stale, write nothing
+    python tools/narrate.py --stamp hello   # keep a hand-edited entry, re-record its hash
 
 Each mission's script lives in tools/kpc_course/narration_cache/<id>.json with the hash of the
 content it was written for (narration.source_hash). The build (tools/build-kpc-course.py)
@@ -54,8 +55,7 @@ def run_solution(problem, solution):
         env = dict(os.environ, MPLBACKEND="Agg")
         prelude = ("import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as _plt; "
                    "_plt.rcParams['font.family'] = ['Malgun Gothic', 'Apple SD Gothic Neo', 'AppleGothic', 'NanumGothic', 'Noto Sans KR', 'Noto Sans CJK KR', 'DejaVu Sans']; "
-                   "_plt.rcParams['axes.unicode_minus'] = False
-")
+                   "_plt.rcParams['axes.unicode_minus'] = False\n")
         result = subprocess.run([python_executable(), "-X", "utf8", "-c", prelude + solution], input=stdin, capture_output=True,
                                 text=True, encoding="utf-8", timeout=120, cwd=str(ROOT / "courses"), env=env)
         out = (result.stdout + ("\n" + result.stderr if result.returncode else "")).strip()
@@ -192,6 +192,7 @@ def main():
     parser.add_argument("--ids", nargs="*", default=[], help="이 미션들만")
     parser.add_argument("--import", dest="import_modules", action="store_true", help="narration_*.py의 손글 항목을 캐시로 옮긴다")
     parser.add_argument("--check", action="store_true", help="낡은 항목만 나열한다")
+    parser.add_argument("--stamp", nargs="*", help="손으로 고친 해설을 그대로 두고 해시만 지금 내용으로 다시 찍는다 (미션 id들)")
     parser.add_argument("--jobs", type=int, default=4)
     args = parser.parse_args()
 
@@ -202,6 +203,18 @@ def main():
         solution = solutions[activity["problem"]["id"]] if activity["kind"] == "coding" else None
         hash_ = narration.source_hash(activity, solution)
         entry, status = narration.entry_for(activity, solution)
+        if args.stamp is not None:
+            if activity["id"] in args.stamp:
+                if entry is None:
+                    print(f"  ! {activity['id']}: 해설이 없습니다")
+                    continue
+                error = validate(activity, entry, solution)
+                if error:
+                    print(f"  ! {activity['id']}: {error}")
+                    continue
+                narration.write_cache(activity["id"], hash_, entry, "hand")
+                print(f"  → {activity['id']} (해시 갱신)")
+            continue
         if args.import_modules:
             if status == "module":
                 error = validate(activity, entry, solution)
@@ -220,7 +233,7 @@ def main():
             continue
         if wanted:
             todo.append((unit, activity, solution, hash_, status))
-    if args.import_modules or args.check:
+    if args.import_modules or args.check or args.stamp is not None:
         return
     print(f"{len(todo)}개 미션의 해설을 다시 씁니다 (Claude CLI, 동시 {args.jobs})")
 
