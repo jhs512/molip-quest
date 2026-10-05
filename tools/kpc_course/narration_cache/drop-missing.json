@@ -1,28 +1,41 @@
 {
  "hash": "d12de36b208f1a90",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 두 번째 길, 빼기예요. 가격이 비어 있는 행을 제외한 표를 dropped에, 남은 행 수를 n_left에 담아 출력하고 표도 봐요."
+   "자, 두 번째 길이에요. 빈 행을 아예 빼 버리는 거예요. 가격이 빈 행을 뺀 표를 dropped에 담고, 남은 행 수를 n_left에 담아 출력하면 돼요."
+  ],
+  [
+   "hint",
+   "dropna에 subset을 주면 그 열이 빈 행만 빼요. subset을 빼면 어느 열이든 빈 행을 전부 빼거든요."
   ],
   [
    "starter",
-   "준비 코드의 orders 표는 그대로 둘게요."
+   "준비 코드는 그대로 둘게요. orders 표에 네 줄이 있고, C의 가격이 None으로 비어 있어요."
   ],
   [
    "code",
    "dropped = orders.dropna(subset=['price'])\n",
-   "dropna에 subset으로 price를 주면 가격이 빈 행만 빼요. subset을 빼면 어느 열이든 빈 행을 다 빼는데, 열이 많은 표에선 크게 달라져요."
+   "dropna에 subset으로 price를 줘요. price가 빈 행만 빠진 표가 dropped에 담겨요."
   ],
   [
    "code",
-   "n_left = len(dropped)\nprint(n_left)\ndropped\n",
-   "len으로 남은 행 수를 세고, 출력한 뒤 마지막 줄에 dropped를 적어요."
+   "n_left = len(dropped)\nprint(n_left)\n",
+   "len으로 남은 행 수를 세서 n_left에 담고 출력해요."
+  ],
+  [
+   "code",
+   "dropped\n",
+   "마지막 줄에 dropped를 적으면 표도 같이 보여요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "3이 나오고 아래 표엔 A, B, A 세 건만 남았죠? C가 빠졌어요."
+   "3이 나왔죠? 네 줄 중에 가격이 빈 C 한 줄이 빠진 거예요. 아래 표에도 세 줄만 남았어요."
   ],
   [
    "submit",

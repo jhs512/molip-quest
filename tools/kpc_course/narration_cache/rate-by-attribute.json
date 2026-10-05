@@ -1,37 +1,50 @@
 {
  "hash": "79689f19f41a4d3f",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 이번엔 고객 속성별 부도율이에요. 성별, 학력은 코드 그대로 묶고, 나이는 다섯 구간으로 잘라서 묶어요."
+   "자, 이번엔 고객 속성마다 부도율이 얼마나 다른지 봐요. 성별, 학력, 나이대 세 가지로 묶어서 타깃의 평균을 구하면 돼요."
+  ],
+  [
+   "hint",
+   "묶는 열만 바꿔서 groupby를 세 번 쓰는 거예요. 나이만 먼저 pd.cut으로 구간 열을 만들어 두면 돼요."
   ],
   [
    "starter",
-   "준비 코드는 credit 표와 target 이름이에요. 그대로 둘게요."
+   "준비 코드엔 credit 표를 읽어 오고, 타깃 열 이름을 target에 담아 둔 세 줄이 있어요. 그대로 둘게요."
   ],
   [
    "code",
    "rate_by_sex = credit.groupby('성별')[target].mean()\nrate_by_education = credit.groupby('학력')[target].mean()\n",
-   "groupby로 묶고 타깃의 평균. 0과 1의 평균이 곧 부도율이죠? 성별로 한 번, 학력으로 한 번이에요."
+   "성별과 학력은 코드 그대로 묶어요. groupby로 묶고 target 열의 평균을 내면 그 묶음의 부도율이거든요."
   ],
   [
    "code",
    "credit['나이대'] = pd.cut(credit['나이'], bins=[20, 30, 40, 50, 60, 80], right=False, labels=['20대', '30대', '40대', '50대', '60대 이상'])\n",
-   "나이는 pd.cut으로 구간 열을 만들어요. right=False라 20 이상 30 미만이 20대예요. 타이타닉 나이 구간과 같은 방법이에요."
+   "나이는 숫자라서 먼저 구간으로 잘라요. bins가 경계, right=False는 왼쪽 경계를 포함한다는 뜻이에요. labels로 구간 이름을 붙이면 새 열 나이대가 생겨요."
   ],
   [
    "code",
-   "rate_by_age = credit.groupby('나이대', observed=True)[target].mean()\nprint(rate_by_sex)\nprint(rate_by_education)\nprint(rate_by_age)\n",
-   "구간 열로 묶어 평균을 내고 셋을 출력해요. observed=True는 빈 구간을 빼라는 뜻이에요."
+   "rate_by_age = credit.groupby('나이대', observed=True)[target].mean()\n",
+   "이제 나이대로 묶어요. observed=True는 빈 구간을 빼라는 뜻이거든요."
+  ],
+  [
+   "code",
+   "print(rate_by_sex)\nprint(rate_by_education)\nprint(rate_by_age)\n",
+   "셋을 차례로 출력하면 돼요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "남성 24.2%, 여성 20.8%. 나이대는 30대가 20.3%로 가장 낮고 60대 이상이 28.3%예요. 차이가 있긴 한데, 다음 미션에서 볼 연체 이력 차이(11.7% 대 42.7%)에 비하면 작죠?"
+   "성별은 1이 0.24, 2가 0.21로 조금 달라요. 학력은 코드마다 차이가 더 커요. 나이대는 30대가 0.20으로 가장 낮고, 60대 이상이 0.28로 가장 높죠? 이 차이를 기억해 두세요. 다음 미션에서 연체 이력 차이와 견줘요."
   ],
   [
    "submit",
-   "제출할게요. 검사는 성별 인덱스, 나이대 다섯 구간, 남성과 60대 이상 비율을 봐요."
+   "제출할게요."
   ]
  ]
 }

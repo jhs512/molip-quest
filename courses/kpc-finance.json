@@ -10014,37 +10014,37 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 앞서 만든 종목 세 개의 금액으로 첫 막대그래프를 그려요. 종이를 만들고, 막대를 그리고, 이름을 붙이고, 띄우는 네 줄이거든요."
+                  "text": "자, 앞서 만든 종목 세 개의 금액으로 첫 막대그래프를 그려요. 종이를 펴고, 막대를 세우고, 제목을 붙이고, 띄우는 네 줄이에요."
                 },
                 {
                   "action": "say",
                   "target": "hint",
-                  "text": "순서는 subplots, bar, set, show예요. 개념의 네 줄 그대로죠?"
+                  "text": "순서는 subplots, bar, set, show예요. set의 괄호 안에 title과 ylabel을 쉼표로 나란히 적으면 돼요."
                 },
                 {
                   "action": "set_code",
                   "code": "import matplotlib.pyplot as plt\nnames = ['A', 'B', 'C']\namounts = [30000, 40000, 60000]\n",
-                  "say": "import와 names, amounts 리스트는 준비되어 있어요. 그대로 둘게요."
+                  "say": "plt를 들여온 줄과 names, amounts 리스트는 준비되어 있어요. 그대로 둘게요."
                 },
                 {
                   "action": "type_code",
                   "code": "fig, ax = plt.subplots()\n",
-                  "say": "plt.subplots()로 종이 fig와 그래프 영역 ax를 한 번에 받아요. 그림은 늘 이 줄로 시작하거든요."
+                  "say": "plt.subplots()로 종이 fig와 그래프 영역 ax를 한 번에 받아요. 앞으로 그리는 건 전부 ax에 하거든요."
                 },
                 {
                   "action": "type_code",
                   "code": "ax.bar(names, amounts)\n",
-                  "say": "ax.bar에 이름 리스트와 금액 리스트를 넘겨요. 이름 하나에 막대 하나가 서죠?"
+                  "say": "ax.bar에 이름 리스트와 금액 리스트를 넣으면 막대 세 개가 서요. 첫 번째가 가로, 두 번째가 높이예요."
                 },
                 {
                   "action": "type_code",
                   "code": "ax.set(title='종목별 금액', ylabel='금액')\n",
-                  "say": "ax.set() 괄호 안에 title과 ylabel을 쉼표로 나란히 적어요. 제목과 y축 이름이 한 줄에 붙어요."
+                  "say": "ax.set 한 줄로 제목과 y축 이름을 같이 붙여요. 괄호 안에 title과 ylabel을 쉼표로 나란히 적죠?"
                 },
                 {
                   "action": "type_code",
                   "code": "plt.show()\n",
-                  "say": "마지막에 plt.show()로 그림을 띄우면 돼요."
+                  "say": "마지막에 plt.show()로 그림을 화면에 띄워요. 이 줄이 없으면 그려 놓고도 안 보이거든요."
                 },
                 {
                   "action": "run",
@@ -10053,7 +10053,7 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "막대 세 개가 섰죠? A, B, C 순서로 30000, 40000, 60000 높이예요. 위에 제목 종목별 금액, 왼쪽에 금액이 보이면 맞게 한 거예요."
+                  "text": "막대 세 개가 30000, 40000, 60000 높이로 섰죠? 위에 종목별 금액 제목, 왼쪽에 금액이 보이면 맞게 한 거예요."
                 },
                 {
                   "action": "submit",
@@ -10083,37 +10083,42 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 앞 단원의 성별 생존율 표를 이번엔 막대그래프로 바꿔 볼게요. 여성과 남성 막대가 퍼센트 높이로 서면 돼요."
+                  "text": "자, 앞 단원에서 만든 성별 생존율 표를 그래프로 바꿔요. 숫자 표보다 막대 높이로 보면 차이가 한눈에 들어오거든요."
+                },
+                {
+                  "action": "say",
+                  "target": "hint",
+                  "text": "생존율은 앞 단원과 똑같이 구하고, 퍼센트로 보이게 100을 곱해서 막대로 그리면 돼요."
                 },
                 {
                   "action": "set_code",
                   "code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n",
-                  "say": "준비 코드엔 titanic 표와 matplotlib, seaborn이 이미 들어와 있어요. 그대로 두고 아래에 이어 쓸게요."
+                  "say": "준비 코드엔 titanic 표를 읽는 줄과 plt, sns를 불러오는 줄이 있어요. 그대로 둘게요."
                 },
                 {
                   "action": "type_code",
                   "code": "rates=titanic.groupby('성별')['생존'].mean()\n",
-                  "say": "먼저 성별로 묶어서 생존 평균을 내요. 앞 단원과 똑같은 한 줄이거든요."
+                  "say": "성별로 묶어서 생존의 평균을 내면 생존율이 돼요. 이걸 rates에 담아요."
                 },
                 {
                   "action": "type_code",
                   "code": "fig,ax=plt.subplots()\n",
-                  "say": "자, 그림판을 하나 펼쳐요. fig가 종이, ax가 그 위의 그래프 칸이에요."
+                  "say": "그림판 하나를 열어요. fig가 종이, ax가 그릴 칸이에요."
                 },
                 {
                   "action": "type_code",
                   "code": "ax.bar(rates.index,rates*100)\n",
-                  "say": "ax.bar로 막대를 세워요. x는 성별 이름, 높이는 rates에 100을 곱한 퍼센트죠?"
+                  "say": "x축은 rates의 이름표인 성별이고, 높이는 rates에 100을 곱한 퍼센트예요."
                 },
                 {
                   "action": "type_code",
                   "code": "ax.set(xlabel='성별',ylabel='생존율 (%)',ylim=(0,100),title='성별 생존율')\n",
-                  "say": "ax.set 한 줄로 축 이름과 제목을 붙여요. ylim을 0부터 100으로 잡아야 퍼센트가 한눈에 보이거든요."
+                  "say": "축 이름과 제목을 붙이고, ylim으로 y축을 0부터 100까지로 고정해요. 퍼센트니까 그래야 공정하게 보이죠?"
                 },
                 {
                   "action": "type_code",
                   "code": "plt.show()\n",
-                  "say": "마지막으로 plt.show()로 그래프를 띄우면 돼요."
+                  "say": "마지막으로 plt.show()로 그림을 띄워요."
                 },
                 {
                   "action": "run",
@@ -10122,7 +10127,7 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "막대 둘이 섰죠? 여성 막대가 남성보다 훨씬 높고, y축이 0에서 100까지 퍼센트로 읽히는지 보세요."
+                  "text": "막대 둘이 떴죠? 여성 막대가 남성 막대보다 훨씬 높고, y축은 0에서 100까지예요."
                 },
                 {
                   "action": "submit",
@@ -10152,32 +10157,32 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 성별로 그렸던 생존율 막대를 이번엔 객실 등급으로 그려요. 1등급에서 3등급으로 갈수록 막대가 낮아지는지 보는 게 목표거든요."
+                  "text": "자, 성별로 그렸던 생존율 그래프를 이번엔 객실 등급으로 그려요. 1등급에서 3등급으로 갈수록 막대가 낮아지는지 보는 게 목표거든요."
                 },
                 {
                   "action": "say",
                   "target": "hint",
-                  "text": "groupby('성별')을 groupby('객실등급')으로 바꾸면 돼요. 다만 등급 1·2·3은 숫자라서 x축 간격이 어색해질 수 있어요."
+                  "text": "성별 그래프 코드에서 groupby 안의 열 이름만 바꾸면 돼요. 등급 1·2·3은 숫자라서 x축에 그대로 넘기면 간격이 어색해지거든요."
                 },
                 {
                   "action": "set_code",
                   "code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n",
-                  "say": "titanic 표를 읽는 줄과 matplotlib, seaborn 불러오는 줄은 준비돼 있어요. 그대로 둘게요."
+                  "say": "준비 코드는 그대로 둘게요. titanic 표를 읽어 두었고, matplotlib과 seaborn도 불러와 있어요."
                 },
                 {
                   "action": "type_code",
                   "code": "rates = titanic.groupby('객실등급')['생존'].mean()\n",
-                  "say": "객실등급으로 묶고 생존 열의 평균을 내요. 그게 등급별 생존율이거든요."
+                  "say": "객실등급으로 묶고 생존 열의 평균을 내요. 생존이 0과 1이라 평균이 곧 생존율이거든요."
                 },
                 {
                   "action": "type_code",
                   "code": "fig, ax = plt.subplots()\nax.bar(rates.index.astype(str), rates * 100)\n",
-                  "say": "도화지를 만들고 막대를 그려요. 등급은 astype(str)로 글자로 바꿔 넘기고, 높이는 rates * 100으로 퍼센트로 만들어요."
+                  "say": "도화지를 만들고 막대를 그려요. 등급은 astype(str)로 글자로 바꿔서 넘기고, 생존율엔 100을 곱해 퍼센트로 만들어요."
                 },
                 {
                   "action": "type_code",
                   "code": "ax.set(xlabel='객실등급', ylabel='생존율 (%)', ylim=(0, 100), title='Survival by class')\nplt.show()\n",
-                  "say": "축 이름과 제목을 붙이고 y축 범위는 0부터 100으로 고정해요. 그리고 plt.show()로 보여 주면 돼요."
+                  "say": "축 이름과 y축 범위 0~100을 한 번에 정해요. 그리고 plt.show()로 그래프를 띄우면 돼요."
                 },
                 {
                   "action": "run",
@@ -10186,7 +10191,7 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "막대 세 개가 나왔죠? 1등급, 2등급, 3등급 순서로 갈수록 막대가 낮아지는지 보세요. y축이 0에서 100까지라 비율로 바로 읽히거든요."
+                  "text": "막대 세 개가 나왔죠? 1, 2, 3 순서로 막대가 점점 낮아지는지 보세요. 등급이 좋을수록 생존율이 높았다는 뜻이에요."
                 },
                 {
                   "action": "submit",
@@ -11076,32 +11081,37 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 이번엔 나이가 어떻게 퍼져 있는지 그림으로 봐요. 나이를 아는 승객만 골라서 히스토그램을 그릴 거거든요."
+                  "text": "자, 이번엔 나이가 어떻게 퍼져 있는지 히스토그램으로 봐요. 나이를 아는 승객만 골라서 구간 20개로 그릴 거예요."
                 },
                 {
                   "action": "say",
                   "target": "hint",
-                  "text": "빈 나이는 dropna로 빼고, 막대는 bins=20으로 스무 개를 만들어요. 막대 높이를 전부 더하면 1046이 돼요."
+                  "text": "힌트대로 dropna로 빈 나이를 빼고, sns.histplot에 bins=20을 주면 돼요."
                 },
                 {
                   "action": "set_code",
                   "code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n",
-                  "say": "준비 코드엔 titanic 표를 읽고 plt와 sns를 불러온 네 줄이 있어요. 그대로 둘게요."
+                  "say": "준비 코드엔 titanic 표를 읽고 plt와 sns를 불러오는 줄이 있어요. 그대로 둘게요."
                 },
                 {
                   "action": "type_code",
                   "code": "known_age=titanic.dropna(subset=['나이'])\n",
-                  "say": "먼저 나이가 빈 승객을 빼요. subset에 나이 열을 주면 그 열이 빈 줄만 빠져서 known_age에 담기거든요."
+                  "say": "먼저 나이가 비어 있는 승객을 빼요. subset에 '나이'만 주면 그 열이 빈 행만 빠지거든요."
                 },
                 {
                   "action": "type_code",
-                  "code": "fig,ax=plt.subplots()\nsns.histplot(data=known_age,x='나이',bins=20,ax=ax)\n",
-                  "say": "도화지와 축을 만들고, sns.histplot에 known_age와 x로 나이를 줘요. bins=20이면 나이를 구간 스무 개로 나눠 세죠."
+                  "code": "fig,ax=plt.subplots()\n",
+                  "say": "그림 한 장과 축 하나를 만들어요. 이 ax 위에 그릴 거예요."
+                },
+                {
+                  "action": "type_code",
+                  "code": "sns.histplot(data=known_age,x='나이',bins=20,ax=ax)\n",
+                  "say": "자, histplot에 known_age를 주고 x는 '나이'예요. bins=20이면 나이를 구간 20개로 나눠 세죠."
                 },
                 {
                   "action": "type_code",
                   "code": "ax.set(xlabel='나이',ylabel='Passenger count',title='Known ages only')\nplt.show()\n",
-                  "say": "ax.set으로 축 이름과 제목을 붙이고, plt.show()로 그림을 띄우면 돼요."
+                  "say": "축 이름과 제목을 한 번에 붙이고 plt.show()로 띄우면 돼요."
                 },
                 {
                   "action": "run",
@@ -11110,7 +11120,7 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "막대 스무 개짜리 히스토그램이 나왔죠? 어느 나이대 막대가 제일 높은지, 사람이 어디에 몰려 있는지 보세요."
+                  "text": "막대 20개짜리 히스토그램이 떴죠? 막대 높이를 다 더하면 나이를 아는 인원 1046이에요. 어느 나이대 막대가 제일 높은지 보세요."
                 },
                 {
                   "action": "submit",
@@ -11140,32 +11150,42 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 이번엔 승객 한 명을 점 하나로 찍어 봐요. 나이와 요금이 둘 다 기록된 승객만 골라서 산점도를 그리는 거거든요."
+                  "text": "자, 이번엔 승객 한 명을 점 하나로 찍어 봐요. 나이와 요금이 둘 다 기록된 승객만 골라서 산점도를 그릴 거예요."
                 },
                 {
                   "action": "say",
                   "target": "hint",
-                  "text": "힌트는 dropna의 subset에 열 두 개를 넣는 거예요. 점이 겹치면 alpha로 반투명하게 그리면 돼요."
+                  "text": "힌트를 보세요. dropna의 subset에 열 두 개를 넣으면 둘 다 값이 있는 행만 남거든요."
                 },
                 {
                   "action": "set_code",
                   "code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n",
-                  "say": "준비 코드엔 titanic 표 읽기와 matplotlib, seaborn 불러오기가 들어 있어요. 그대로 둘게요."
+                  "say": "준비 코드엔 pandas로 titanic을 읽어 두고, matplotlib과 seaborn을 불러 놓았어요. 그대로 둘게요."
                 },
                 {
                   "action": "type_code",
                   "code": "known = titanic.dropna(subset=['나이', '요금'])\n",
-                  "say": "subset에 나이와 요금을 같이 넣어요. 둘 다 값이 있는 행만 known에 남거든요."
+                  "say": "먼저 나이와 요금이 모두 있는 행만 known에 담아요. subset에 두 열을 같이 넣으면 돼요."
                 },
                 {
                   "action": "type_code",
-                  "code": "fig, ax = plt.subplots()\nax.scatter(known['나이'], known['요금'], alpha=0.4)\n",
-                  "say": "scatter에 x로 나이, y로 요금을 넘겨요. alpha를 0.4로 두면 겹친 데가 진하게 보이죠?"
+                  "code": "fig, ax = plt.subplots()\n",
+                  "say": "그림 한 장을 준비해요. 축은 ax에 받아 둘게요."
                 },
                 {
                   "action": "type_code",
-                  "code": "ax.set(xlabel='나이', ylabel='요금', title='Age vs fare')\nplt.show()\n",
-                  "say": "축 이름을 나이와 요금으로 붙이고 show로 띄우면 돼요."
+                  "code": "ax.scatter(known['나이'], known['요금'], alpha=0.4)\n",
+                  "say": "x에 나이, y에 요금을 넣고 점을 찍어요. 점이 많이 겹치니까 alpha를 0.4로 반투명하게 했어요."
+                },
+                {
+                  "action": "type_code",
+                  "code": "ax.set(xlabel='나이', ylabel='요금', title='Age vs fare')\n",
+                  "say": "x축 이름은 나이, y축 이름은 요금으로 붙여요. 제목도 한 줄에 같이 넣으면 돼요."
+                },
+                {
+                  "action": "type_code",
+                  "code": "plt.show()\n",
+                  "say": "마지막으로 띄워요."
                 },
                 {
                   "action": "run",
@@ -11174,7 +11194,7 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "1045명이 점으로 찍힌 산점도가 떴죠? 나이가 커질수록 점이 위로 올라가는지, 아니면 그냥 아래쪽에 깔려 있는지 보세요."
+                  "text": "산점도가 떴죠? 1045명이 점으로 찍혔어요. 겹친 데가 진하게 보이거든요. 점들이 어떤 모양을 이루는지, 아니면 아무 모양도 없는지 보세요."
                 },
                 {
                   "action": "submit",
@@ -11204,37 +11224,37 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 준비된 여섯 개 숫자 열로 상관계수 표를 만들고, 그걸 색으로 칠한 히트맵을 띄워요. 표만 보면 숫자 서른여섯 개가 늘어서 있거든요. 색을 입히면 방향이 한눈에 보여요."
+                  "text": "자, 이번엔 숫자 열 여섯 개의 상관계수를 한눈에 봐요. 표를 색으로 칠한 히트맵이거든요."
                 },
                 {
                   "action": "say",
                   "target": "hint",
-                  "text": "상관계수 표는 titanic[columns].corr() 한 줄이에요. 그리는 건 sns.heatmap에 맡기면 돼요."
+                  "text": "corr()로 상관계수 표를 만들고, sns.heatmap으로 그리면 돼요. 양수는 붉게, 음수는 푸르게 칠해져요."
                 },
                 {
                   "action": "set_code",
                   "code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\nimport seaborn as sns\ncolumns=['객실등급','나이','형제배우자','부모자녀','요금','생존']\n",
-                  "say": "준비 코드엔 pandas, matplotlib, seaborn이 들어와 있고, titanic 표도 읽어 두었어요. columns엔 객실등급, 나이, 형제배우자, 부모자녀, 요금, 생존, 이렇게 숫자 열 여섯 개가 담겨 있어요."
+                  "say": "준비 코드엔 titanic 자료와 그릴 도구들이 있어요. columns엔 숫자 열 여섯 개의 이름이 들어 있죠?"
                 },
                 {
                   "action": "type_code",
                   "code": "corr=titanic[columns].corr()\n",
-                  "say": "titanic에서 columns의 여섯 열만 꺼내고, 바로 corr()를 붙여요. 여섯 열끼리 짝지은 상관계수가 6 곱하기 6 표로 나와서 corr에 담기거든요."
+                  "say": "titanic에서 columns의 여섯 열만 골라 corr()을 불러요. 그 결과 6×6 상관계수 표를 corr에 담아요."
                 },
                 {
                   "action": "type_code",
                   "code": "fig,ax=plt.subplots()\n",
-                  "say": "그림을 그릴 도화지 fig와 축 ax를 먼저 만들어요."
+                  "say": "그림을 그릴 도화지 fig와 축 ax를 하나 만들어요."
                 },
                 {
                   "action": "type_code",
                   "code": "sns.heatmap(corr,annot=True,vmin=-1,vmax=1,center=0,cmap='coolwarm',ax=ax)\n",
-                  "say": "sns.heatmap에 corr를 넘겨요. annot=True면 칸마다 숫자를 써 주고, vmin=-1, vmax=1로 색 범위를 상관계수 범위에 맞춰요. center=0에 cmap='coolwarm'이면 양수는 붉게, 음수는 푸르게 칠해져요. ax=ax로 아까 만든 축에 그려요."
+                  "say": "sns.heatmap에 corr을 넘겨요. annot=True면 칸마다 숫자가 찍히고, vmin과 vmax를 -1, 1로 두면 색 눈금이 상관계수 범위에 맞춰지거든요. center=0에 coolwarm이면 양수는 붉게, 음수는 푸르게 칠해져요."
                 },
                 {
                   "action": "type_code",
                   "code": "plt.show()\n",
-                  "say": "마지막으로 plt.show()로 그림을 띄워요."
+                  "say": "plt.show()로 그림을 띄워요."
                 },
                 {
                   "action": "run",
@@ -11243,7 +11263,7 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "6 곱하기 6 히트맵이 떴죠? 대각선이 전부 1이면 맞게 만든 거예요. 자기 자신과의 상관계수니까요. 이제 생존 행을 따라가 보세요. 붉은 칸은 같이 올라가는 열, 푸른 칸은 반대로 움직이는 열이에요. 색이 가장 진한 칸이 생존과 가장 같이 움직이는 열이에요."
+                  "text": "6×6 히트맵이 나왔죠? 대각선이 전부 1이면 맞게 만든 거예요. 생존 행을 따라가 보세요. 가장 붉은 칸과 가장 푸른 칸이 생존과 같이 움직이는 열이에요."
                 },
                 {
                   "action": "submit",
@@ -11772,32 +11792,37 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 방금 만든 넓은 표를 그래프로 바꿔요. 성별마다 등급 막대 세 개가 묶여서 나오거든요."
+                  "text": "자, 방금 만든 넓은 표를 그래프로 바꿔요. 성별마다 객실등급 막대 세 개가 묶이게 그릴 거예요."
+                },
+                {
+                  "action": "say",
+                  "target": "hint",
+                  "text": "wide까지는 앞 미션과 같고, 이번엔 100을 곱해 퍼센트로 둬요. wide.plot.bar가 돌려주는 ax에 이름과 제목을 붙이면 돼요."
                 },
                 {
                   "action": "set_code",
                   "code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n",
-                  "say": "pandas와 matplotlib, seaborn은 이미 불러와 있어요. titanic 표도 읽어 두었죠? 그대로 둘게요."
+                  "say": "titanic 표를 읽고 pyplot을 plt로 가져오는 준비 코드는 그대로 둘게요."
                 },
                 {
                   "action": "type_code",
-                  "code": "grouped=titanic.groupby(['성별','객실등급'])['생존'].agg(['count','mean'])\nwide=grouped['mean'].unstack('객실등급')*100\n",
-                  "say": "앞 미션과 같이 grouped와 wide를 만들어요. 이번엔 끝에 100을 곱해서 퍼센트로 두는 거예요."
+                  "code": "grouped=titanic.groupby(['성별','객실등급'])['생존'].agg(['count','mean'])\n",
+                  "say": "성별과 객실등급 둘로 묶어서 생존의 개수와 평균을 같이 구해요. 앞 미션과 똑같죠?"
+                },
+                {
+                  "action": "type_code",
+                  "code": "wide=grouped['mean'].unstack('객실등급')*100\n",
+                  "say": "평균만 꺼내 객실등급을 열로 펼치고, 100을 곱해 퍼센트로 만들어요."
                 },
                 {
                   "action": "type_code",
                   "code": "ax=wide.plot.bar(ylim=(0,100),rot=0)\n",
-                  "say": "wide.plot.bar로 막대를 그려요. ylim은 y축을 0에서 100으로 고정하고, rot=0은 글자를 눕히지 않아요. 돌려받은 그래프 영역을 ax에 담아요."
+                  "say": "넓은 표를 막대그래프로 그려요. y축은 0에서 100까지, rot=0이면 x축 글자가 눕지 않아요. ax에 그래프 영역이 담기거든요."
                 },
                 {
                   "action": "type_code",
-                  "code": "ax.set(ylabel='생존율 (%)',title='성별·객실등급별 생존율 (%)')\n",
-                  "say": "그 ax에 set으로 y축 이름과 제목을 한 번에 붙여요."
-                },
-                {
-                  "action": "type_code",
-                  "code": "plt.show()\n",
-                  "say": "마지막으로 plt.show()로 띄우면 돼요."
+                  "code": "ax.set(ylabel='생존율 (%)',title='성별·객실등급별 생존율 (%)')\nplt.show()\n",
+                  "say": "그 ax에 y축 이름과 제목을 한 번에 붙이고, plt.show()로 띄우면 돼요."
                 },
                 {
                   "action": "run",
@@ -11806,7 +11831,7 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "막대 여섯 개가 보이죠? 성별마다 등급 막대 세 개가 묶여 있어요. 등급을 나눈 뒤에도 성별 차이가 남는지, 그 차이가 등급마다 비슷한지 읽어 보세요."
+                  "text": "막대 여섯 개가 보이죠? 성별 두 묶음에 객실등급 막대가 세 개씩이에요. 등급을 나눈 뒤에도 성별 차이가 남아 있는지, 그 차이가 등급마다 비슷한지 읽어 보세요."
                 },
                 {
                   "action": "submit",
@@ -12059,42 +12084,42 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 도전 과제예요. 종이 한 장에 그래프 두 개를 나란히 그려요. 묶음 막대와 히스토그램을 한 Figure에 담는 거거든요."
+                  "text": "자, 도전 과제예요. 보고서 한 장엔 보통 그래프가 둘 이상 들어가거든요. 4장에서 배운 묶음 막대와 히스토그램을 한 종이에 나란히 그려요."
                 },
                 {
                   "action": "say",
                   "target": "hint",
-                  "text": "힌트를 보세요. wide는 groupby 뒤에 unstack으로 펼치고 100을 곱해요. 히스토그램엔 ax=ax2를 꼭 넣어야 해요."
+                  "text": "힌트의 두 줄을 그대로 쓰면 돼요. ax=ax2가 빠지면 엉뚱한 곳에 그려지니까 꼭 챙겨요."
                 },
                 {
                   "action": "set_code",
                   "code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n",
-                  "say": "준비 코드는 그대로 둘게요. pandas로 titanic을 읽어 두고, matplotlib의 plt와 seaborn의 sns를 불러왔어요."
+                  "say": "titanic을 읽어 두고, plt와 sns까지 불러 둔 준비 코드는 그대로 둘게요."
                 },
                 {
                   "action": "type_code",
                   "code": "wide = titanic.groupby(['객실등급', '성별'])['생존'].mean().unstack('성별') * 100\nknown_age = titanic[titanic['나이'].notna()]\n",
-                  "say": "먼저 자료를 준비해요. 객실등급과 성별로 묶어 생존율을 구하고, unstack으로 성별을 열로 펼친 뒤 100을 곱해 퍼센트로 만들어요. known_age는 나이가 기록된 승객만 남긴 거예요."
+                  "say": "자, 먼저 자료 둘을 준비해요. wide는 객실등급과 성별로 묶은 생존율을 퍼센트로 펼친 표예요. known_age는 나이가 기록된 승객만 남긴 거예요."
                 },
                 {
                   "action": "type_code",
                   "code": "fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4))\n",
-                  "say": "자, 종이를 펴요. plt.subplots(1, 2)가 한 줄에 영역 두 개를 만들어요. 왼쪽이 ax1, 오른쪽이 ax2예요."
+                  "say": "plt.subplots(1, 2)가 종이 한 장에 영역 두 개를 나란히 만들어요. 왼쪽이 ax1, 오른쪽이 ax2예요."
                 },
                 {
                   "action": "type_code",
                   "code": "wide.plot.bar(ax=ax1, ylim=(0, 100), rot=0)\nax1.set_ylabel('생존율 (%)')\nax1.set_title('등급과 성별에 따른 생존율')\n",
-                  "say": "왼쪽 영역이에요. ax=ax1로 자리를 정하고 y축은 0에서 100까지로 고정해요. y축 이름과 제목은 ax1에 직접 붙이면 돼요."
+                  "say": "왼쪽 영역이에요. ax=ax1로 자리를 정해서 묶음 막대를 그리고, y축 이름과 제목을 붙여요."
                 },
                 {
                   "action": "type_code",
                   "code": "sns.histplot(data=known_age, x='나이', bins=20, ax=ax2)\nax2.set_title('나이 분포')\n",
-                  "say": "오른쪽 영역이에요. 나이를 bins=20으로 스무 칸에 나눠 그려요. ax=ax2가 빠지면 엉뚱한 곳에 그려지거든요. 제목도 ax2에 붙여요."
+                  "say": "오른쪽 영역이에요. bins=20으로 나이를 스무 칸으로 나눠요. ax=ax2가 핵심이거든요."
                 },
                 {
                   "action": "type_code",
                   "code": "plt.show()\n",
-                  "say": "마지막으로 plt.show()로 종이를 띄워요."
+                  "say": "마지막에 plt.show()로 띄우면 돼요."
                 },
                 {
                   "action": "run",
@@ -12103,7 +12128,7 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "그림 한 장에 그래프가 둘 보이죠? 왼쪽엔 등급 셋에 성별 둘, 막대 여섯 개가 보이면 돼요. 오른쪽엔 나이 막대가 스무 개 서 있으면 맞게 한 거예요."
+                  "text": "그림 한 장이 떴죠? 왼쪽에 막대 여섯 개, 오른쪽에 막대 스무 개가 보이면 맞게 한 거예요."
                 },
                 {
                   "action": "submit",
@@ -19389,35 +19414,45 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 날짜순 자료는 선그래프예요. fig, ax를 만들고 종가를 선으로 그려요. x축 이름 날짜, y축 이름 종가를 붙이면 돼요."
+                  "text": "자, 날짜순 자료는 선그래프가 어울리거든요. 종가를 선으로 그려 볼게요."
+                },
+                {
+                  "action": "say",
+                  "target": "hint",
+                  "text": "막대그래프 뼈대에서 ax.bar를 ax.plot으로 바꾸면 돼요."
                 },
                 {
                   "action": "set_code",
                   "code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\nimport matplotlib.pyplot as plt\n",
-                  "say": "준비 코드가 prices를 읽고 matplotlib까지 불러 뒀어요. 그대로 둘게요."
+                  "say": "준비 코드는 그대로 둘게요. prices는 날짜 인덱스로 정렬돼 있고, plt도 불러와 있어요."
                 },
                 {
                   "action": "type_code",
-                  "code": "fig, ax = plt.subplots()\nax.plot(prices.index, prices['종가'])\n",
-                  "say": "뼈대는 막대그래프 때랑 같아요. ax.bar 대신 ax.plot이에요. x에 날짜 인덱스, y에 종가 열이에요."
+                  "code": "fig, ax = plt.subplots()\n",
+                  "say": "자, 먼저 fig와 ax를 만들어요. 그림 한 장과 그릴 칸이죠?"
+                },
+                {
+                  "action": "type_code",
+                  "code": "ax.plot(prices.index, prices['종가'])\n",
+                  "say": "ax.plot에 x로 prices.index, y로 prices['종가']를 넣어요. 날짜순으로 점을 이어 선이 되거든요."
                 },
                 {
                   "action": "type_code",
                   "code": "ax.set(xlabel='날짜', ylabel='종가', title='Close price')\nplt.show()\n",
-                  "say": "ax.set으로 축 이름과 제목을 한 번에 붙이고, plt.show()로 띄워요."
+                  "say": "ax.set으로 x축 이름 날짜, y축 이름 종가를 붙여요. plt.show로 띄우면 돼요."
                 },
                 {
                   "action": "run",
-                  "say": "자, 실행해 볼게요."
+                  "say": "실행해 볼게요."
                 },
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "401개 점을 이은 선 하나가 보이죠? 2025년엔 5만 원대였다가 2026년 중반에 36만 원 넘게 올라가요. 1년 8개월의 움직임이에요."
+                  "text": "401개 점을 이은 선 하나가 보이죠? 1년 8개월 동안 가격이 어떻게 움직였는지 보세요."
                 },
                 {
                   "action": "submit",
-                  "say": "제출할게요. 검사는 선이 하나이고 점이 401개인지, y축 이름이 종가인지 봐요."
+                  "say": "제출할게요."
                 }
               ]
             },
@@ -19443,36 +19478,41 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 양 끝 날짜를 first_date와 last_date에, 가장 높았던 종가를 max_close에, 그 날짜를 max_date에 담고 출력해요."
+                  "text": "자, 이번엔 자료가 어느 기간인지, 종가가 언제 가장 높았는지를 꺼내 볼게요. 날짜가 인덱스니까 양 끝 날짜는 인덱스에서, 최고 종가는 종가 열에서 찾으면 돼요."
                 },
                 {
                   "action": "set_code",
                   "code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\n",
-                  "say": "준비 코드가 prices를 읽어 뒀어요. 그대로 둘게요."
+                  "say": "준비 코드는 그대로 둘게요. stock.csv를 읽어서 날짜를 인덱스로 세우고 순서대로 정렬까지 해 뒀거든요."
                 },
                 {
                   "action": "type_code",
                   "code": "first_date = prices.index.min()\nlast_date = prices.index.max()\n",
-                  "say": "날짜 인덱스의 min과 max가 양 끝 날짜예요. 정렬돼 있으니 첫 행과 마지막 행이기도 하죠."
+                  "say": "날짜 인덱스의 .min()과 .max()가 양 끝 날짜예요. 첫 날짜는 first_date, 마지막 날짜는 last_date에 담아요."
                 },
                 {
                   "action": "type_code",
-                  "code": "max_close = prices['종가'].max()\nmax_date = prices['종가'].idxmax()\n",
-                  "say": "종가 열의 max는 값이고, idxmax는 그 값이 있는 행 이름이에요. 행 이름이 날짜니까 날짜가 나와요."
+                  "code": "max_close = prices['종가'].max()\n",
+                  "say": "종가 열의 .max()는 가장 높았던 값이에요. max_close에 넣어요."
+                },
+                {
+                  "action": "type_code",
+                  "code": "max_date = prices['종가'].idxmax()\n",
+                  "say": ".idxmax()는 그 값이 있는 행 이름이에요. 행 이름이 날짜니까 최고 종가의 날짜가 나오죠?"
                 },
                 {
                   "action": "type_code",
                   "code": "print(first_date, last_date)\nprint(max_close, max_date)\n",
-                  "say": "네 개를 두 줄로 출력해요."
+                  "say": "양 끝 날짜를 한 줄에, 최고 종가와 그 날짜를 다음 줄에 출력해요."
                 },
                 {
                   "action": "run",
-                  "say": "자, 실행해 볼게요."
+                  "say": "실행해 볼게요."
                 },
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "2025년 1월 13일부터 2026년 9월 4일이죠? 최고 종가는 362500, 2026년 6월 18일이에요. 그래프의 꼭대기와 맞춰 보세요."
+                  "text": "2025년 1월 13일부터 2026년 9월 4일까지의 자료예요. 최고 종가는 362500이고, 2026년 6월 18일이었죠? 그래프에서 그 날짜의 봉우리를 찾아 보세요."
                 },
                 {
                   "action": "submit",
@@ -19808,52 +19848,42 @@
                 {
                   "action": "say",
                   "target": "title",
-                  "text": "자, 이번엔 입력과 정답을 우리 손으로 만들어요. 과거 열은 입력, 미래 열은 정답이에요."
+                  "text": "자, 이 개념에서 볼 건 하나예요. 종가 열 하나를 밀어서 입력과 정답을 만드는 거예요."
                 },
                 {
                   "action": "say",
                   "target": "text:타이타닉에서는 입력 열이 이미 표에 있었어요",
-                  "text": "주가 표에서 우리가 쓰는 건 종가 하나예요. 어제보다 얼마나 올랐나, 최근 며칠 평균, 어제 종가가 입력 재료고, 내일 종가가 정답이에요. 전부 종가 열을 위아래로 밀어서 만들어요."
-                },
-                {
-                  "action": "say",
-                  "target": "text:위젯: moving",
-                  "text": "위젯을 만져 보세요. 열을 한 칸 밀면 각 행 옆에 어느 날 값이 오는지 보여요."
+                  "text": "주가 표엔 종가 하나만 있거든요. 수익률, 이동평균, 전일 종가가 입력이고, 내일 종가가 정답이에요."
                 },
                 {
                   "action": "say",
                   "target": "text:제목: 아래로 밀면 어제, 위로 밀면 내일",
-                  "text": "만화를 보세요. shift(1)은 어제 값을 오늘 줄로, shift(-1)은 내일 값을 오늘 줄로 가져와요. 내일 값은 정답이죠? 입력에 넣으면 답을 보고 답을 맞히는 누수예요."
+                  "text": "만화를 보세요. shift(1)은 어제 값을, shift(-1)은 내일 값을 오늘 줄로 가져와요. 내일 값을 입력에 넣으면 누수죠."
                 },
                 {
                   "action": "say",
                   "target": "text:shift(1)은 열을 한 칸 아래로 밀어요",
-                  "text": "표를 보세요. shift(1)은 열을 한 칸 아래로 밀어서 각 행에 어제 종가를 놓아요. 첫 행은 어제가 없어 빈칸이에요. shift(-1)은 위로 밀어 내일 종가를 놓고, 마지막 행이 비어요."
-                },
-                {
-                  "action": "say",
-                  "target": "text:제목: 한 칸 아래로, 한 칸 위로",
-                  "text": "같은 밀기인데 하나는 과거라 입력, 하나는 미래라 정답이에요. 이 둘을 헷갈리면 누수가 그대로 재현돼요."
+                  "text": "표에서 확인해 보세요. 아래로 밀면 어제라서 입력, 위로 밀면 내일이라서 정답이에요. 첫 행과 마지막 행은 빈칸이고요."
                 },
                 {
                   "action": "say",
                   "target": "text:prices['return_1'] = prices['종가'].pct_change()",
-                  "text": "코드 네 줄이 재료 네 개예요. pct_change가 어제 대비 수익률, rolling(5).mean()이 최근 5거래일 평균, shift(1)이 어제 종가, shift(-1)이 내일 종가예요."
+                  "text": "코드 네 줄이 재료 셋과 정답 하나예요. 마지막 줄 shift(-1)만 정답이라는 걸 기억하세요."
                 },
                 {
                   "action": "say",
                   "target": "text:pct_change()는 어제 대비 수익률이라 첫 행이 비어요",
-                  "text": "pct_change는 첫 행이 비고, rolling(5)는 다섯 개가 모여야 해서 처음 네 행이 비어요. 네 열을 다 만든 뒤 dropna로 한 번에 정리하면 돼요."
+                  "text": "수익률은 첫 행, 5일 평균은 처음 네 행이 비어요. 네 열을 다 만든 뒤 dropna()로 한 번에 정리하면 돼요."
                 },
                 {
                   "action": "say",
                   "target": "text:마지막으로 정답이 어느 날짜의 값인지도 표에 적어 둬요",
-                  "text": "정답이 어느 날짜 값인지도 target_date 열에 적어 둬요. 하루 어긋난 정답은 숫자만 보면 모르거든요. 다음 단원에서 훈련과 테스트를 나눌 때 꼭 써요."
+                  "text": "target_date 열에 정답 날짜를 적어 둬요. 하루 어긋나면 다른 문제를 푸는 거거든요."
                 },
                 {
                   "action": "say",
                   "target": "quiz:1",
-                  "text": "확인 문항이요. 한 칸 위로 밀어 내일 종가를 놓는 shift의 괄호 안 숫자예요."
+                  "text": "확인 문항이요. 다음 거래일 종가를 가져오는 건 위로 미는 거죠? 그래서 -1이에요."
                 },
                 {
                   "action": "answer_quiz",
@@ -20274,31 +20304,36 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 첫 재료예요. 종가의 pct_change()를 return_1 열로 추가하고 head()로 확인해요."
+                  "text": "자, 첫 재료예요. 종가가 어제보다 얼마나 올랐는지를 return_1 열로 만들 거거든요."
+                },
+                {
+                  "action": "say",
+                  "target": "examples",
+                  "text": "첫 행은 어제가 없어 비어 있고, 둘째 행은 (53900 − 54100) / 54100, 약 −0.0037이에요."
                 },
                 {
                   "action": "set_code",
                   "code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\n",
-                  "say": "준비 코드가 prices를 읽어 뒀어요. 그대로 둘게요."
+                  "say": "준비 코드는 그대로 둘게요. stock.csv를 읽어 날짜를 인덱스로 두고 정렬까지 해 뒀거든요."
                 },
                 {
                   "action": "type_code",
                   "code": "prices['return_1'] = prices['종가'].pct_change()\n",
-                  "say": "대괄호에 새 이름 return_1을 적어 넣으면 새 열이 생겨요. pct_change()가 행마다 오늘 빼기 어제, 나누기 어제를 계산해요."
+                  "say": "대괄호에 새 이름 return_1을 적으면 새 열이 생겨요. 오른쪽 pct_change()가 (오늘 − 어제) / 어제를 행마다 계산해요."
                 },
                 {
                   "action": "type_code",
                   "code": "prices.head()\n",
-                  "say": "마지막 줄에 head()를 두면 표로 보여 줘요."
+                  "say": "head()로 앞 다섯 행을 꺼내 볼게요."
                 },
                 {
                   "action": "run",
-                  "say": "자, 실행해 볼게요."
+                  "say": "실행해 볼게요."
                 },
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "맨 오른쪽 return_1 열을 보세요. 첫 행은 어제가 없어 NaN이고, 둘째 행은 마이너스 0.0037이에요. 54100에서 53900으로 0.37% 내린 거죠."
+                  "text": "표가 나왔죠? 맨 오른쪽 return_1 열을 보세요. 첫 행은 NaN으로 비어 있고, 둘째 행부터 작은 소수가 들어 있어요."
                 },
                 {
                   "action": "submit",
@@ -20328,35 +20363,40 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 둘째 재료예요. 종가의 rolling(5).mean()을 ma5 열로 추가하고 head(6)으로 확인해요."
+                  "text": "자, 둘째 재료예요. 종가를 최근 5거래일 평균으로 바꿔서 ma5 열로 붙일 거예요."
+                },
+                {
+                  "action": "say",
+                  "target": "hint",
+                  "text": "rolling(5)가 오늘 포함 최근 5행이라는 창을 만들어요. 창이 다 안 찬 앞쪽 네 행은 빈칸이 되거든요."
                 },
                 {
                   "action": "set_code",
                   "code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\n",
-                  "say": "준비 코드가 prices를 읽어 뒀어요. 그대로 둘게요."
+                  "say": "읽어서 날짜를 인덱스로 두고 정렬한 prices는 준비돼 있어요. 그대로 둘게요."
                 },
                 {
                   "action": "type_code",
                   "code": "prices['ma5'] = prices['종가'].rolling(5).mean()\n",
-                  "say": "rolling(5)가 오늘 포함 최근 5행이라는 창을 만들고, mean()이 그 평균을 내요. 창이 한 칸씩 내려가며 계산되는 거예요."
+                  "say": "종가 열에 rolling(5)로 창을 만들고 mean()으로 평균을 내요. 그걸 ma5 열에 넣으면 돼요."
                 },
                 {
                   "action": "type_code",
                   "code": "prices.head(6)\n",
-                  "say": "앞 여섯 행을 봐요. 창이 처음 꽉 차는 다섯째 행을 보려는 거예요."
+                  "say": "앞 여섯 행만 꺼내서 확인해 볼게요."
                 },
                 {
                   "action": "run",
-                  "say": "자, 실행해 볼게요."
+                  "say": "실행해 볼게요."
                 },
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "ma5 열이요. 처음 네 행은 NaN이고, 다섯째 행이 53940이에요. 첫 다섯 종가의 평균이죠. 여섯째 행은 한 칸 내려간 창의 평균 53800이에요."
+                  "text": "ma5 열을 보세요. 처음 네 행은 NaN이고, 다섯째 행에 첫 5개 종가의 평균 53940이 나왔죠?"
                 },
                 {
                   "action": "submit",
-                  "say": "제출할게요. 검사는 빈칸이 정확히 네 개인지도 봐요."
+                  "say": "제출할게요."
                 }
               ]
             },
@@ -20382,36 +20422,41 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 밀기 두 번이에요. 종가의 shift(1)을 lag_close_1 열로, shift(-1)을 target_next_close 열로 추가해요."
+                  "text": "자, 밀기 두 번이에요. 종가를 아래로 한 칸 밀면 어제 종가, 위로 한 칸 밀면 내일 종가거든요. 둘을 새 열로 추가해요."
+                },
+                {
+                  "action": "say",
+                  "target": "hint",
+                  "text": "shift(1)은 아래로 한 칸, 어제 값이에요. shift(-1)은 위로 한 칸, 내일 값이고요. 개념의 표를 옆에 두세요."
                 },
                 {
                   "action": "set_code",
                   "code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\n",
-                  "say": "준비 코드가 prices를 읽어 뒀어요. 그대로 둘게요."
+                  "say": "준비 코드에서 stock.csv를 읽어 날짜를 인덱스로 두고 정렬해 놨어요. 이 두 줄은 그대로 둘게요."
                 },
                 {
                   "action": "type_code",
                   "code": "prices['lag_close_1']=prices['종가'].shift(1)\n",
-                  "say": "shift(1)은 한 칸 아래로예요. 각 행에 어제 종가가 와요. 과거니까 입력이에요."
+                  "say": "종가를 shift(1)로 아래로 한 칸 밀어 lag_close_1 열에 넣어요. 첫 행은 어제가 없으니 비거든요."
                 },
                 {
                   "action": "type_code",
                   "code": "prices['target_next_close']=prices['종가'].shift(-1)\n",
-                  "say": "shift(-1)은 한 칸 위로예요. 각 행에 내일 종가가 와요. 미래니까 이게 정답이고, 입력엔 절대 안 넣어요."
+                  "say": "이번엔 shift(-1)로 위로 한 칸 밀어 target_next_close 열에 넣어요. 마지막 행은 내일이 없으니 비죠?"
                 },
                 {
                   "action": "type_code",
                   "code": "prices.head()\n",
-                  "say": "head()로 앞쪽을 봐요. tail()로 바꾸면 마지막 행도 볼 수 있어요."
+                  "say": "head()로 앞쪽 다섯 행을 보면 돼요."
                 },
                 {
                   "action": "run",
-                  "say": "자, 실행해 볼게요."
+                  "say": "실행해 볼게요."
                 },
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "첫 행의 lag_close_1은 NaN, target_next_close는 53900이죠? 둘째 행의 lag_close_1은 첫 행 종가 54100이에요. 마지막 행은 target_next_close가 비어요."
+                  "text": "표가 나왔죠? 첫 행의 lag_close_1은 비어 있고, 둘째 행의 lag_close_1은 첫 행 종가 54100이에요. 맞게 민 거예요."
                 },
                 {
                   "action": "submit",
@@ -20441,50 +20486,60 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 재료를 한 표에 모아요. 빈 표 frame에 close, return_1, ma5, lag_close_1, target_next_close, target_date 여섯 열을 만들고, 빈칸 있는 행을 빼요."
+                  "text": "자, 지금까지 만든 재료를 빈 표 frame에 모아요. 여섯 열을 채우고 빈칸이 있는 행을 빼는 거예요."
+                },
+                {
+                  "action": "say",
+                  "target": "hint",
+                  "text": "네 재료는 앞 미션들 그대로예요. 왼쪽만 frame[...]으로 바꾸면 돼요."
                 },
                 {
                   "action": "set_code",
                   "code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\nframe=pd.DataFrame(index=prices.index)\n",
-                  "say": "준비 코드가 prices를 읽고, 날짜 인덱스만 있는 빈 표 frame을 만들어 뒀어요. 그대로 둘게요."
+                  "say": "준비 코드가 prices를 읽고, 같은 날짜 인덱스로 빈 표 frame을 만들어 뒀어요."
                 },
                 {
                   "action": "type_code",
                   "code": "frame['close']=prices['종가']\nframe['return_1']=prices['종가'].pct_change()\n",
-                  "say": "close는 오늘 종가 그대로, return_1은 앞 미션의 pct_change예요."
+                  "say": "오늘 종가와 수익률이에요. 왼쪽이 frame 열이 된 것만 달라요."
                 },
                 {
                   "action": "type_code",
                   "code": "frame['ma5']=prices['종가'].rolling(5).mean()\nframe['lag_close_1']=prices['종가'].shift(1)\n",
-                  "say": "ma5는 최근 5거래일 평균, lag_close_1은 shift(1), 어제 종가예요. 여기까지 입력 네 열이에요."
+                  "say": "이동평균과 어제 종가예요. 앞 미션에서 만든 그대로거든요."
                 },
                 {
                   "action": "type_code",
-                  "code": "frame['target_next_close']=prices['종가'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\n",
-                  "say": "정답은 shift(-1), 내일 종가예요. 날짜 인덱스도 pd.Series로 열로 만들어 똑같이 shift(-1)하면 정답의 날짜 target_date가 돼요."
+                  "code": "frame['target_next_close']=prices['종가'].shift(-1)\n",
+                  "say": "정답 y예요. shift(-1)로 내일 종가를 오늘 행에 당겨 와요."
+                },
+                {
+                  "action": "type_code",
+                  "code": "frame['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\n",
+                  "say": "날짜 인덱스를 pd.Series로 열로 만들고 똑같이 shift(-1)해요. 정답이 어느 날짜 건지 남겨 두는 거죠."
                 },
                 {
                   "action": "type_code",
                   "code": "frame=frame.dropna().copy()\n",
-                  "say": "dropna로 빈칸 있는 행을 한 번에 빼요. copy()를 붙여 독립된 표로 만들어 둬요."
+                  "say": "dropna로 빈칸이 있는 행을 빼고, copy로 독립된 표로 만들어요."
                 },
                 {
                   "action": "type_code",
                   "code": "print(frame.shape)\nframe.head()\n",
-                  "say": "크기를 찍고 표를 봐요."
+                  "say": "행과 열 개수를 찍고 앞부분을 봐요."
                 },
                 {
                   "action": "run",
-                  "say": "자, 실행해 볼게요."
+                  "say": "실행해 볼게요."
                 },
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "(396, 6)이죠? 401행에서 앞 네 행과 마지막 한 행이 빠졌어요. 첫 행이 1월 17일이고 target_date는 1월 20일, 다음 거래일이에요. 주말을 건너뛰었죠?"
+                  "text": "(396, 6)이 나왔죠? 401행에서 앞 네 행과 마지막 한 행이 빠진 거예요. target_date가 인덱스 날짜보다 뒤인지 보세요."
                 },
                 {
                   "action": "submit",
-                  "say": "제출할게요. 검사는 396행 6열에 빈칸이 없는지, target_date가 모두 인덱스 날짜보다 뒤인지 봐요."
+                  "say": "제출할게요."
                 }
               ]
             },
@@ -20771,57 +20826,52 @@
                 {
                   "action": "say",
                   "target": "title",
-                  "text": "자, 이 단원은 나누는 방법이 타이타닉하고 달라져요. 시간 자료는 섞으면 안 되거든요."
+                  "text": "자, 이 개념에서 볼 건 둘이에요. 시간은 섞지 않는다, 그리고 경계의 하루를 조심한다."
                 },
                 {
                   "action": "say",
-                  "target": "text:타이타닉에서는 train_test_split이 승객을 무작위로 섞었어요",
-                  "text": "타이타닉은 승객을 무작위로 섞어도 됐어요. 승객끼리는 순서가 없으니까요. 주가는 날짜를 섞으면 6월 가격으로 배워서 3월을 맞히는 꼴이 돼요. 그래서 앞 기간으로 학습, 뒤 기간으로 테스트예요."
+                  "target": "text:타이타닉에서는 train_test_split이 승객을",
+                  "text": "타이타닉은 승객끼리 순서가 없어서 섞어도 됐죠? 주가는 달라요. 날짜를 섞으면 6월 가격으로 배워서 3월을 맞히는 꼴이 되거든요. 그래서 앞쪽 기간으로 학습하고 뒤쪽 기간으로 테스트해요. 여기서는 마지막 80거래일을 테스트로 떼어 둬요."
                 },
                 {
                   "action": "say",
                   "target": "text:제목: 섞으면 점쟁이가 된다",
-                  "text": "만화 보세요. 5월 종가를 거의 다 맞혔다고 기뻐하는데, 훈련 자료에 6월 가격이 들어 있었던 거예요. 실제 내일은 그렇게 안 보이죠."
+                  "text": "만화를 보세요. 날짜를 섞었더니 5월 종가를 다 맞혔다고 기뻐하죠? 훈련 자료에 6월 가격이 들어 있었던 거예요. 미래를 보고 과거를 맞힌 거라 실제 내일은 그렇게 안 보여요."
                 },
                 {
                   "action": "say",
                   "target": "text:제목: 시간은 섞지 않는다",
-                  "text": "준호 씨 질문도 같아요. 앞 기간으로 배우고 뒤 기간으로 채점한다, 그게 전부예요. 여기서는 마지막 80거래일을 테스트로 떼요."
+                  "text": "준호 씨 질문이 딱 여러분 질문이에요. 답은 하나예요. 앞 기간으로 배우고 뒤 기간으로 채점해요. 그게 전부예요."
                 },
                 {
                   "action": "say",
-                  "target": "text:위젯: temporal",
-                  "text": "위젯을 단계마다 넘겨 보세요. 거래일 30일을 날짜순으로 세우고 뒤쪽 8일을 테스트로 떼요. 셋째 단계의 경계 바로 앞 하루, 그 칸이 지금부터 볼 문제예요."
+                  "target": "text:그런데 경계를 하루 잘못 그으면",
+                  "text": "자, 경계를 보세요. 테스트 시작일 바로 전날 행은 입력 날짜가 테스트 전이라 괜찮아 보이죠? 그런데 그 행의 정답은 test_start 당일 종가거든요. 테스트 첫날의 답을 훈련에서 이미 본 셈이에요."
                 },
                 {
                   "action": "say",
-                  "target": "text:그런데 경계를 하루 잘못 그으면 작은 누수가 숨어들어요",
-                  "text": "경계를 하루 잘못 그으면 작은 누수가 숨어들어요. 테스트 첫날을 test_start라고 하고 그 바로 전날 행을 보세요. 입력 날짜는 테스트 전인데, 정답은 test_start 당일 종가거든요."
+                  "target": "text:그래서 훈련 조건은 둘이에요.",
+                  "text": "그래서 훈련 조건이 둘이에요. 입력 날짜도 test_start 전, target_date도 test_start 전. 앞에서 target_date를 남겨 둔 이유가 바로 이거예요."
                 },
                 {
                   "action": "say",
-                  "target": "text:안 된다. 정답이 테스트 기간",
-                  "text": "표의 둘째 줄이에요. test_start 하루 전 행은 입력은 훈련처럼 보여도 정답이 테스트 기간이라 안 돼요. 테스트 첫날의 답을 훈련에서 미리 보는 셈이죠."
+                  "target": "text:train_mask = (frame.index < test_start) & (frame['target_date'] < test_start)",
+                  "text": "코드를 보세요. train_mask에 조건 두 개를 &로 묶었죠? 그리고 test_start 이후는 전부 테스트예요."
                 },
                 {
                   "action": "say",
-                  "target": "text:그래서 훈련 조건은 둘이에요",
-                  "text": "그래서 훈련 조건이 둘이에요. 입력 날짜도 test_start 전, target_date도 test_start 전. 아래 코드의 train_mask가 두 조건을 &로 이은 거예요. 앞 단원에 target_date를 남겨 둔 이유가 이거죠."
-                },
-                {
-                  "action": "say",
-                  "target": "text:나눴으면 기준 모델이에요",
-                  "text": "나눴으면 기준 모델이에요. 내일 종가는 오늘 종가와 같다, 분류의 전원 사망에 해당해요."
+                  "target": "text:나눴으면 기준 모델이에요.",
+                  "text": "나눴으면 기준 모델이에요. 가장 단순한 예측은 내일 종가는 오늘 종가와 같다예요. 우습게 들리지만 주가에서는 이 기준을 이기기가 생각보다 어렵거든요."
                 },
                 {
                   "action": "say",
                   "target": "text:점수는 정확도 대신 MAE",
-                  "text": "점수는 MAE예요. 예측과 정답의 차이를 부호 없이 평균 낸 거라 단위가 원이에요. 작을수록 좋아요."
+                  "text": "점수는 MAE로 재요. 예측과 정답의 차이를 부호 없이 평균 낸 거라 단위가 원이에요. 평균 몇 원 빗나갔나로 읽으면 되고, 작을수록 좋아요."
                 },
                 {
                   "action": "say",
                   "target": "quiz:1",
-                  "text": "확인 문항이요. 가장 단순한 예측을 두고 모델과 비교하는 것, 분류에서도 썼던 그 이름이에요."
+                  "text": "확인 문항이요. 가장 단순한 예측을 두고 모델과 비교하는 것, 방금 봤죠?"
                 },
                 {
                   "action": "answer_quiz",
@@ -21203,35 +21253,45 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 첫 코딩이에요. 준비된 frame에서 마지막 80행의 첫 날짜를 test_start에 넣고, 그 날짜 이상인 행 수를 n_test에 담아 출력해요. 80이 나와야 맞아요."
+                  "text": "자, 준비된 frame에서 마지막 80행을 테스트 자료로 떼어 낼 거예요. 그 첫 날짜를 test_start에 담고, 그 날짜 이상인 행 수를 세면 돼요."
+                },
+                {
+                  "action": "say",
+                  "target": "hint",
+                  "text": "frame.index[-80]이 뒤에서 80번째 날짜거든요. 날짜 비교는 행마다 참·거짓이 나오고, .sum()이 참의 개수예요."
                 },
                 {
                   "action": "set_code",
                   "code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['종가']\nframe['return_1']=prices['종가'].pct_change()\nframe['ma5']=prices['종가'].rolling(5).mean()\nframe['lag_close_1']=prices['종가'].shift(1)\nframe['target_next_close']=prices['종가'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\n",
-                  "say": "준비 코드가 앞 단원에 만든 frame을 그대로 만들어 둬요. 여섯 열에 dropna까지요. 그대로 둘게요."
+                  "say": "준비 코드가 frame을 다 만들어 놨어요. 종가와 수익률, 이동평균, 다음 날 정답까지 들어 있고 빈 행은 이미 지웠죠?"
                 },
                 {
                   "action": "type_code",
                   "code": "test_start = frame.index[-80]\n",
-                  "say": "frame.index[-80], 뒤에서 80번째 날짜예요. 거기가 테스트 첫날이에요."
+                  "say": "뒤에서 80번째 날짜를 test_start에 넣어요. 여기부터가 테스트 자료 시작이죠."
                 },
                 {
                   "action": "type_code",
-                  "code": "n_test = int((frame.index >= test_start).sum())\nprint(test_start, n_test)\n",
-                  "say": "frame.index >= test_start는 행마다 참·거짓이고, sum()이 참의 개수예요. int로 감싸 정수로 저장하고 출력해요."
+                  "code": "n_test = int((frame.index >= test_start).sum())\n",
+                  "say": "날짜가 test_start 이상인 행을 참으로 표시하고, .sum()으로 세요. int()로 감싸서 정수로 담아요."
+                },
+                {
+                  "action": "type_code",
+                  "code": "print(test_start, n_test)\n",
+                  "say": "시작 날짜와 행 수를 같이 찍어 볼게요."
                 },
                 {
                   "action": "run",
-                  "say": "자, 실행해 볼게요."
+                  "say": "실행해 볼게요."
                 },
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "2026년 5월 11일, 그리고 80이 나왔죠? 그 날짜부터 끝까지가 테스트 자료예요."
+                  "text": "2026-05-11이 시작일이고, 80이 나왔죠? 마지막 80행을 정확히 떼어 낸 거예요."
                 },
                 {
                   "action": "submit",
-                  "say": "제출해서 채점할게요."
+                  "say": "제출할게요."
                 }
               ]
             },
@@ -21257,50 +21317,50 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 이제 진짜로 나눠요. 입력 날짜와 target_date가 모두 test_start 전인 행이 train_mask, 입력 날짜가 test_start 이상이면 test_mask예요. 그걸로 X_train, X_test, y_train, y_test를 만들어요."
+                  "text": "자, 훈련 자료랑 테스트 자료를 나눠요. 이번엔 입력 날짜만 보는 게 아니라 정답 날짜까지 봐야 해요."
                 },
                 {
                   "action": "say",
                   "target": "hint",
-                  "text": "개념의 네 줄 그대로예요. 같은 마스크로 입력과 정답을 함께 골라야 행이 어긋나지 않아요."
+                  "text": "두 조건을 괄호로 감싸서 &로 이으면 돼요. 입력이랑 정답은 같은 마스크로 함께 골라야 행이 안 어긋나거든요."
                 },
                 {
                   "action": "set_code",
                   "code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['종가']\nframe['return_1']=prices['종가'].pct_change()\nframe['ma5']=prices['종가'].rolling(5).mean()\nframe['lag_close_1']=prices['종가'].shift(1)\nframe['target_next_close']=prices['종가'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\n",
-                  "say": "준비 코드가 frame에 이어 feature_columns 네 열로 입력 X, target_next_close로 정답 y까지 만들어 뒀어요."
+                  "say": "준비 코드엔 특징 표 frame이랑 입력 X, 정답 y가 이미 있어요. target_date 열도 들어 있고요. 그대로 둘게요."
                 },
                 {
                   "action": "type_code",
                   "code": "test_start=frame.index[-80]\n",
-                  "say": "앞 미션 그대로, test_start부터요."
+                  "say": "먼저 테스트 시작일을 정해요. 뒤에서 80번째 날짜를 test_start로 잡는 거예요."
                 },
                 {
                   "action": "type_code",
                   "code": "train_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\n",
-                  "say": "train_mask는 조건 둘을 괄호로 감싸 &로 이어요. 입력 날짜도, target_date도 test_start 전. test_mask는 입력 날짜가 test_start 이상이면 돼요."
+                  "say": "train_mask는 두 조건을 모두 만족해야 해요. 입력 날짜도, target_date도 test_start 전이어야 하거든요. test_mask는 입력 날짜가 test_start 이상인 행이면 돼요."
                 },
                 {
                   "action": "type_code",
                   "code": "X_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\n",
-                  "say": "같은 마스크로 X와 y를 같이 골라요. 그래야 입력과 정답의 행이 어긋나지 않거든요."
+                  "say": "같은 마스크로 X랑 y를 함께 골라요. 그래야 입력과 정답의 행이 짝이 맞죠?"
                 },
                 {
                   "action": "type_code",
                   "code": "print(len(X_train),len(X_test))\nprint(frame.loc[train_mask,'target_date'].max(),X_test.index.min())\n",
-                  "say": "행 수를 찍고, 훈련 정답의 마지막 날짜와 테스트 첫 날짜도 나란히 찍어 봐요."
+                  "say": "두 쪽 행 수를 찍고요. 훈련 정답의 마지막 날짜랑 테스트 첫 날짜도 나란히 출력해 볼게요."
                 },
                 {
                   "action": "run",
-                  "say": "자, 실행해 볼게요."
+                  "say": "실행해 볼게요."
                 },
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "315하고 80이에요. 396에서 경계 하루가 빠진 거죠. 둘째 줄은 5월 8일과 5월 11일, 훈련 정답이 테스트 시작보다 앞이에요."
+                  "text": "315 80이 나왔죠? 396행에서 경계 하루가 빠진 거예요. 훈련 정답 마지막이 5월 8일, 테스트 첫날이 5월 11일이에요. 정답이 테스트 전에서 끝나니까 누수가 없는 거거든요."
                 },
                 {
                   "action": "submit",
-                  "say": "제출해서 채점할게요."
+                  "say": "제출할게요."
                 }
               ]
             },
@@ -21404,40 +21464,40 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 기준 예측의 오차를 손으로 계산해요. 테스트 기간에서 내일 종가는 오늘 종가라고 하면 예측값이 X_test의 close예요. 정답 y_test와의 차이에 abs()를 붙여 errors에, 그 평균을 manual_mae에 담아요."
-                },
-                {
-                  "action": "say",
-                  "target": "hint",
-                  "text": "위젯과 만화 보셨죠? 플러스 500, 마이너스 500을 그냥 평균 내면 0이에요. 부호를 떼고 평균 내는 게 MAE예요."
+                  "text": "자, 기준 예측이 얼마나 빗나가는지 직접 계산해요. 내일 종가는 오늘 종가라고 보니까, 예측값은 X_test의 close 열이거든요."
                 },
                 {
                   "action": "set_code",
                   "code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['종가']\nframe['return_1']=prices['종가'].pct_change()\nframe['ma5']=prices['종가'].rolling(5).mean()\nframe['lag_close_1']=prices['종가'].shift(1)\nframe['target_next_close']=prices['종가'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\ntest_start=frame.index[-80]\ntrain_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\nX_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\n",
-                  "say": "준비 코드가 frame 만들기와 시간 분리까지 다 해 뒀어요. X_test, y_test가 준비돼 있어요."
+                  "say": "준비 코드엔 X_test와 y_test가 이미 나뉘어 있어요. 그대로 두고 아래에 이어서 쓰면 돼요."
                 },
                 {
                   "action": "type_code",
                   "code": "errors = (y_test - X_test['close']).abs()\n",
-                  "say": "y_test에서 X_test의 close를 빼고 abs()로 부호를 떼요. 80일치 오차가 전부 0 이상이 되죠."
+                  "say": "정답 y_test에서 예측값을 빼고 .abs()로 부호를 떼요. 이게 날마다의 오차예요."
                 },
                 {
                   "action": "type_code",
-                  "code": "manual_mae = errors.mean()\nprint(manual_mae)\n",
-                  "say": "그 평균이 MAE예요. 이름은 거창한데 하는 일은 차이의 절댓값을 평균 낸다, 두 단계뿐이죠."
+                  "code": "manual_mae = errors.mean()\n",
+                  "say": "그 오차들의 평균이 MAE거든요. manual_mae에 담아요."
+                },
+                {
+                  "action": "type_code",
+                  "code": "print(manual_mae)\n",
+                  "say": "숫자 하나만 찍어 볼게요."
                 },
                 {
                   "action": "run",
-                  "say": "자, 실행해 볼게요."
+                  "say": "실행해 볼게요."
                 },
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "13637.5가 나왔어요. 오늘 종가 그대로 찍으면 하루 평균 만 삼천육백 원쯤 빗나간다는 뜻이에요."
+                  "text": "13637.5가 나왔죠? 하루에 평균 13637.5원 빗나간다는 뜻이에요."
                 },
                 {
                   "action": "submit",
-                  "say": "제출해서 채점할게요."
+                  "say": "제출할게요. 다음 미션에서 함수로 구한 값과 비교해 봐요."
                 }
               ]
             },
@@ -21463,35 +21523,45 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 같은 값을 이번엔 scikit-learn 함수로 구해요. X_test의 close를 배열로 바꿔 baseline_pred에, mean_absolute_error(y_test, baseline_pred)를 baseline_mae에 담아 출력해요."
+                  "text": "자, 앞 미션에서 손으로 구한 기준 모델 점수를 이번엔 scikit-learn 함수로 똑같이 구해요. 같은 숫자가 나와야 하거든요."
+                },
+                {
+                  "action": "say",
+                  "target": "hint",
+                  "text": "지표 함수는 앞서처럼 정답, 예측 순서예요. mean_absolute_error(y_test, 예측)이죠."
                 },
                 {
                   "action": "set_code",
                   "code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['종가']\nframe['return_1']=prices['종가'].pct_change()\nframe['ma5']=prices['종가'].rolling(5).mean()\nframe['lag_close_1']=prices['종가'].shift(1)\nframe['target_next_close']=prices['종가'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\ntest_start=frame.index[-80]\ntrain_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\nX_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\nfrom sklearn.metrics import mean_absolute_error\n",
-                  "say": "준비 코드 끝에 mean_absolute_error를 불러오는 줄이 있어요. 그대로 둘게요."
+                  "say": "준비 코드엔 특징 만들기와 훈련 자료, 테스트 자료 나누기가 다 되어 있어요. mean_absolute_error도 이미 불러왔으니 그대로 둘게요."
                 },
                 {
                   "action": "type_code",
                   "code": "baseline_pred=X_test['close'].to_numpy()\n",
-                  "say": "to_numpy()로 배열로 바꿔요. 기준 예측은 오늘 종가 그대로니까 close 열이 곧 예측이에요."
+                  "say": "기준 예측은 오늘 종가 그대로예요. X_test의 close를 to_numpy로 배열로 바꿔 baseline_pred에 담아요."
                 },
                 {
                   "action": "type_code",
-                  "code": "baseline_mae=mean_absolute_error(y_test,baseline_pred)\nprint(baseline_mae)\n",
-                  "say": "지표 함수는 정답, 예측 순서예요. 분류 때 accuracy_score와 같죠."
+                  "code": "baseline_mae=mean_absolute_error(y_test,baseline_pred)\n",
+                  "say": "이제 함수에 정답 y_test를 먼저, 예측 baseline_pred를 뒤에 넣으면 돼요. 결과는 baseline_mae에 저장해요."
+                },
+                {
+                  "action": "type_code",
+                  "code": "print(baseline_mae)\n",
+                  "say": "마지막 줄에서 점수를 출력해요."
                 },
                 {
                   "action": "run",
-                  "say": "자, 실행해 볼게요."
+                  "say": "실행해 볼게요."
                 },
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "13637.5, 앞 미션의 manual_mae와 똑같아요. 이 숫자가 이 챕터의 모든 모델이 넘어야 할 선이에요."
+                  "text": "13637.5가 나왔죠? 앞 미션의 manual_mae와 똑같은 숫자예요. 이 선을 이 챕터의 모든 모델이 넘어야 하거든요."
                 },
                 {
                   "action": "submit",
-                  "say": "제출해서 채점할게요."
+                  "say": "제출할게요."
                 }
               ]
             },
@@ -21517,40 +21587,45 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 잠깐 콜센터로 가요. 2주치 일별 통화량이 있고, 팀장은 지난주 같은 요일과 같다고 보고 상담원을 배치해 왔어요. 이 방법이 얼마나 빗나가는지가 통화량 모델이 넘어야 할 선이에요."
+                  "text": "자, 주가에서 잠깐 벗어나 콜센터로 가 볼게요. 어느 카드사 콜센터의 2주치 일별 통화량이 준비돼 있어요. 팀장은 매주 지난주 같은 요일과 같다고 보고 상담원을 배치해 왔거든요. 이 방법이 얼마나 빗나가는지가 통화량 예측 모델이 넘어야 할 선이에요."
                 },
                 {
                   "action": "set_code",
                   "code": "import pandas as pd\ncalls = pd.DataFrame({'week': [1]*7 + [2]*7, 'weekday': ['월','화','수','목','금','토','일']*2, 'calls': [1320,980,940,910,1010,420,380, 1410,1020,960,890,1050,450,360]})\nfrom sklearn.metrics import mean_absolute_error\n",
-                  "say": "준비 코드가 calls 표를 만들어요. week, weekday, calls 세 열에 14행이에요. mean_absolute_error도 불러왔어요."
+                  "say": "준비 코드엔 2주치 통화량 표 calls와 mean_absolute_error가 들어 있어요. 그대로 두고 아래에 이어 쓸게요."
                 },
                 {
                   "action": "type_code",
                   "code": "last_week = calls[calls['week'] == 1]['calls'].to_numpy()\nthis_week = calls[calls['week'] == 2]['calls'].to_numpy()\n",
-                  "say": "week가 1인 행의 calls가 last_week, 2인 행이 this_week예요. 조건으로 행을 고르고 열 하나를 배열로 꺼내요."
+                  "say": "week가 1인 줄만 골라 calls 열을 배열로 꺼내요. 그게 last_week예요. 2주차도 같은 모양으로 this_week에 담으면 돼요."
                 },
                 {
                   "action": "type_code",
                   "code": "baseline_mae = mean_absolute_error(this_week, last_week)\n",
-                  "say": "정답은 이번 주, 예측은 지난주예요. 순서 조심하세요. 정답, 예측."
+                  "say": "1주차 값을 2주차 예측으로 쓰는 게 기준 모델이죠? 지표 함수는 정답, 예측 순서니까 정답은 this_week, 예측은 last_week예요."
                 },
                 {
                   "action": "type_code",
-                  "code": "monday_error = abs(this_week[0] - last_week[0])\nprint(baseline_mae, monday_error)\n",
-                  "say": "월요일은 두 배열의 첫 값이라 인덱스 0이에요. 그 하루의 차이만 절댓값으로 따로 봐요."
+                  "code": "monday_error = abs(this_week[0] - last_week[0])\n",
+                  "say": "월요일은 두 배열의 첫 값이에요. 차이에 abs를 씌워 월요일 하루 오차만 따로 둘게요."
+                },
+                {
+                  "action": "type_code",
+                  "code": "print(baseline_mae, monday_error)\n",
+                  "say": "두 값을 나란히 출력해요."
                 },
                 {
                   "action": "run",
-                  "say": "자, 실행해 볼게요."
+                  "say": "실행해 볼게요."
                 },
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "37.14쯤, 그리고 90이에요. 하루 평균 37통, 한 통 5분이면 세 시간 넘게 밀리거나 비는 거죠. 월요일만 보면 90통이라 더 커요."
+                  "text": "37.14와 90이 나왔죠? 평균으론 하루 37건 정도 빗나가는데, 월요일만 보면 90건이에요. 한 건에 5분이면 월요일엔 450분이 밀리거나 비는 거거든요."
                 },
                 {
                   "action": "submit",
-                  "say": "제출해서 채점할게요."
+                  "say": "제출할게요."
                 }
               ]
             },
@@ -21851,62 +21926,42 @@
                 {
                   "action": "say",
                   "target": "title",
-                  "text": "자, 마지막 단원이에요. 회귀 모델 세 개를 돌려서 앞 단원 기준과 비교하고 결론을 써요."
+                  "text": "자, 마지막 단원이에요. 입력 네 열로 내일 종가를 맞히는 회귀 모델 셋을 돌리고, 기준과 비교해 결론을 써요."
                 },
                 {
                   "action": "say",
-                  "target": "text:마지막 단원이에요",
-                  "text": "입력 X는 네 열이에요. 오늘 종가, 수익률, 5일 평균, 어제 종가. 정답 y는 내일 종가고요."
-                },
-                {
-                  "action": "say",
-                  "target": "text:선형 회귀(LinearRegression)는 입력마다 가중치를 곱해",
-                  "text": "선형 회귀는 입력마다 가중치를 곱해 더해요. 입력이 넷이면 기울어진 판을 맞추는 거죠."
+                  "target": "text:선형 회귀(LinearRegression)는",
+                  "text": "선형 회귀는 입력마다 가중치를 곱해 더해요. 학습이 끝나면 coef_에 가중치 네 개가 남거든요."
                 },
                 {
                   "action": "say",
                   "target": "text:릿지(Ridge)와 라쏘(Lasso)는",
-                  "text": "릿지와 라쏘는 같은 직선 맞추기에 브레이크를 단 거예요. 가중치가 너무 커지면 벌점을 줘서 우연한 흔들림까지 외우는 걸 막아요. 그래서 StandardScaler와 묶어 써요."
+                  "text": "릿지와 라쏘는 같은 직선 맞추기에 브레이크를 단 거예요. 입력 크기가 제각각이면 공평하지 않아서 StandardScaler와 묶어 쓰죠."
                 },
                 {
                   "action": "say",
-                  "target": "text:model = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))])",
-                  "text": "코드는 분류 때랑 똑같은 모양이에요. Pipeline에 scale과 model, fit, predict, 그리고 지표 함수에 정답, 예측 순서."
-                },
-                {
-                  "action": "say",
-                  "target": "text:점수는 셋을 함께 적어요",
-                  "text": "점수는 셋을 같이 적어요. MAE는 하루 평균 몇 원. RMSE는 제곱해서 평균 내니까 큰 실수에 민감해요."
+                  "target": "text:점수는 셋을 함께 적어요.",
+                  "text": "점수는 MAE, RMSE, R² 셋을 같이 적어요. RMSE는 제곱해서 평균 내니까 큰 실수에 더 민감하거든요."
                 },
                 {
                   "action": "say",
                   "target": "text:R²(결정계수)는",
-                  "text": "R²는 평균으로 찍었을 때보다 얼마나 나은가, 1이 만점이에요. 주의할 건 R²의 비교 대상이 우리 기준인 오늘 종가가 아니라는 거예요."
-                },
-                {
-                  "action": "say",
-                  "target": "text:제목: 평균 30개와 큰 실수",
-                  "text": "만화 보세요. 빵 공장 MAE 30개는 하루 평균 30개를 더 굽거나 덜 굽는다는 뜻이고, 200개 빗나간 날이 있으면 RMSE가 벌어져요."
-                },
-                {
-                  "action": "say",
-                  "target": "text:숫자가 현장에서 무슨 뜻인지 한 번 옮겨 볼게요",
-                  "text": "현장으로 옮기면요. 더 구우면 저녁에 폐기, 덜 구우면 빈 진열대예요. 콜센터는 상담원이 모자라 고객이 대기음을 듣거나, 남아서 자리가 비죠. 가끔 크게 틀리는 게 비싸면 RMSE를 더 무겁게 봐요."
+                  "text": "R²의 비교 대상은 평균으로 찍기지 우리 기준이 아니에요. R²가 높아 보여도 기준 MAE를 못 넘을 수 있죠."
                 },
                 {
                   "action": "say",
                   "target": "text:제목: 30개와 300개",
-                  "text": "명절 전날 300개 틀린 날, 그런 날이 RMSE를 크게 띄워요. 어느 숫자를 볼지는 현장에서 어느 실수가 더 비싼지에 달려 있어요."
+                  "text": "만화를 보세요. 평소엔 조금 빗나가다 명절 전날 300개 틀리면 RMSE가 크게 뛰어요. 가끔 크게 틀리는 게 더 비싸면 RMSE를 보면 돼요."
                 },
                 {
                   "action": "say",
-                  "target": "text:결론을 쓰는 순서는 셋이에요",
-                  "text": "결론은 세 줄이에요. 무엇을 언제 예측해 어떻게 나눴나, 기준 MAE와 모델 MAE, 그리고 한계. 기준보다 나쁘면 나쁘다고 적어요. 테스트 기간을 바꿔 가며 다시 돌리는 건 모의고사 문제를 고르는 거예요."
+                  "target": "text:결론을 쓰는 순서는 셋이에요.",
+                  "text": "결론은 무엇을 어떻게 나눠 예측했는지, 기준과 모델의 MAE 차이, 그리고 한계 순서로 써요. 기준보다 나쁘면 나쁘다고 적으면 돼요."
                 },
                 {
                   "action": "say",
                   "target": "quiz:1",
-                  "text": "확인 문항이요. 제곱해서 평균 내고 제곱근을 씌운 지표, 큰 실수에 민감한 그 약어예요."
+                  "text": "확인 문항이요. 제곱해 평균 내고 제곱근을 씌운, 큰 실수에 민감한 지표. 방금 봤죠?"
                 },
                 {
                   "action": "answer_quiz",
@@ -21939,40 +21994,45 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 선형 회귀 하나만 먼저 돌려요. StandardScaler와 LinearRegression을 Pipeline으로 묶어 model에 학습하고, 예측을 prediction, MAE를 linear_mae에 담아 출력해요. 가중치 네 개도 찍어 봐요."
+                  "text": "자, 회귀도 분류와 같은 흐름이에요. 표준화와 선형 회귀를 Pipeline으로 묶어 학습하고, 테스트 예측의 MAE를 재 볼게요."
                 },
                 {
                   "action": "set_code",
                   "code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['종가']\nframe['return_1']=prices['종가'].pct_change()\nframe['ma5']=prices['종가'].rolling(5).mean()\nframe['lag_close_1']=prices['종가'].shift(1)\nframe['target_next_close']=prices['종가'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\ntest_start=frame.index[-80]\ntrain_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\nX_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression,Ridge,Lasso\nfrom sklearn.metrics import mean_absolute_error,mean_squared_error,r2_score\n",
-                  "say": "준비 코드가 frame, 시간 분리, 그리고 회귀 모델과 지표 함수 불러오기까지 해 뒀어요. 그대로 둘게요."
+                  "say": "준비 코드가 특징 네 개와 훈련 자료, 테스트 자료까지 다 만들어 놨어요. 필요한 import도 끝났으니 모델만 만들면 돼요."
                 },
                 {
                   "action": "type_code",
-                  "code": "model = Pipeline([('scale', StandardScaler()), ('model', LinearRegression())])\nmodel.fit(X_train, y_train)\n",
-                  "say": "분류와 같은 흐름이에요. scale 다음 model, fit은 훈련 자료로만."
+                  "code": "model = Pipeline([('scale', StandardScaler()), ('model', LinearRegression())])\n",
+                  "say": "scale 단계와 model 단계를 순서대로 묶어서 model에 담아요."
                 },
                 {
                   "action": "type_code",
-                  "code": "prediction = model.predict(X_test)\nlinear_mae = mean_absolute_error(y_test, prediction)\n",
-                  "say": "테스트 자료로 예측하고, 정답 y_test, 예측 순서로 MAE를 구해요."
+                  "code": "model.fit(X_train, y_train)\nprediction = model.predict(X_test)\n",
+                  "say": "훈련 자료로 fit하고, 테스트 자료로 predict하면 돼요."
                 },
                 {
                   "action": "type_code",
-                  "code": "print(linear_mae)\nprint(model.named_steps['model'].coef_)\n",
-                  "say": "named_steps로 파이프라인 안의 모델을 꺼내면 coef_에 가중치 네 개가 있어요."
+                  "code": "linear_mae = mean_absolute_error(y_test, prediction)\nprint(linear_mae)\n",
+                  "say": "정답 y_test와 예측의 차이를 평균 낸 게 MAE거든요. linear_mae에 담아 출력해요."
+                },
+                {
+                  "action": "type_code",
+                  "code": "print(model.named_steps['model'].coef_)\n",
+                  "say": "named_steps로 안쪽 선형 회귀를 꺼내서 가중치 네 개를 봐요."
                 },
                 {
                   "action": "run",
-                  "say": "자, 실행해 볼게요."
+                  "say": "실행해 볼게요."
                 },
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "13521 정도예요. 기준 13637.5보다 백 원쯤 작죠. 가중치는 첫 번째 close가 53196으로 압도적이에요. 오늘 종가가 거의 다 한 거예요."
+                  "text": "MAE가 13520 정도 나왔죠? 앞 단원의 기준 MAE와 비교해 보세요. 가중치는 첫 번째 close가 53196으로 가장 커요."
                 },
                 {
                   "action": "submit",
-                  "say": "제출해서 채점할게요."
+                  "say": "제출할게요."
                 }
               ]
             },
@@ -21998,50 +22058,50 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 분류 비교표를 회귀로 다시 만들어요. Linear, Ridge, Lasso 세 모델을 StandardScaler와 묶어 학습하고, 기준 예측 Baseline까지 네 예측의 MAE, RMSE, R2를 results 표에 모아요."
+                  "text": "자, 분류에서 만든 비교표를 이번엔 회귀로 만들어요. 기준 예측과 세 모델을 한 표에 놓고 MAE, RMSE, R2를 나란히 보는 거예요."
                 },
                 {
                   "action": "set_code",
                   "code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['종가']\nframe['return_1']=prices['종가'].pct_change()\nframe['ma5']=prices['종가'].rolling(5).mean()\nframe['lag_close_1']=prices['종가'].shift(1)\nframe['target_next_close']=prices['종가'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\ntest_start=frame.index[-80]\ntrain_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\nX_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression,Ridge,Lasso\nfrom sklearn.metrics import mean_absolute_error,mean_squared_error,r2_score\n",
-                  "say": "준비 코드는 앞 미션과 같아요. 분리된 네 자료와 회귀 도구들이 준비돼 있어요."
+                  "say": "준비 코드에 프레임과 훈련 자료, 테스트 자료가 다 나뉘어 있어요. Pipeline, StandardScaler, 세 모델, 점수 함수도 이미 불러와 있고요."
                 },
                 {
                   "action": "type_code",
                   "code": "models={'Linear':LinearRegression(),'Ridge':Ridge(alpha=1),'Lasso':Lasso(alpha=10,max_iter=20000,tol=0.001)}\n",
-                  "say": "models 딕셔너리에 세 모델을 이름표 붙여 넣어요. 라쏘는 계산이 끝까지 가라고 max_iter와 tol을 넉넉히 줬어요."
+                  "say": "먼저 models 딕셔너리에 세 모델을 이름표와 같이 넣어요. Ridge는 alpha 1, Lasso는 alpha 10에 max_iter와 tol까지 하이퍼파라미터를 정해 두거든요."
                 },
                 {
                   "action": "type_code",
                   "code": "predictions={'Baseline':X_test['close'].to_numpy()}\nfitted={}\n",
-                  "say": "predictions는 기준 예측 Baseline으로 시작해요. 오늘 종가 그대로죠. fitted는 학습한 모델을 보관할 빈 딕셔너리예요."
+                  "say": "predictions는 기준 예측으로 시작해요. 오늘 종가 close를 그대로 내일 값으로 쓰는 기준 모델이죠? fitted는 학습한 모델을 담을 빈 딕셔너리예요."
                 },
                 {
                   "action": "type_code",
                   "code": "for name,estimator in models.items():\n    model=Pipeline([('scale',StandardScaler()),('model',estimator)])\n    model.fit(X_train,y_train)\n    predictions[name]=model.predict(X_test)\n    fitted[name]=model\n",
-                  "say": "첫 반복이에요. 모델마다 파이프라인을 만들어 fit하고, 테스트 예측을 predictions에, 모델은 fitted에 넣어요."
+                  "say": "모델마다 StandardScaler와 묶은 Pipeline을 만들어 훈련 자료로 fit해요. 테스트 예측은 predictions에, 학습한 모델은 fitted에 이름표로 보관하면 돼요."
                 },
                 {
                   "action": "type_code",
                   "code": "rows=[]\nfor name,pred in predictions.items():\n    rows.append({'model':name,'MAE':mean_absolute_error(y_test,pred),'RMSE':mean_squared_error(y_test,pred)**0.5,'R2':r2_score(y_test,pred)})\n",
-                  "say": "둘째 반복은 네 예측을 채점해요. RMSE는 mean_squared_error에 0.5 제곱, 그게 제곱근이에요. 전부 정답, 예측 순서죠."
+                  "say": "둘째 반복은 네 예측을 하나씩 꺼내 점수를 매겨요. RMSE는 mean_squared_error에 0.5 제곱을 해서 제곱근을 구하거든요. 한 예측에 행 하나씩 rows에 쌓여요."
                 },
                 {
                   "action": "type_code",
                   "code": "results=pd.DataFrame(rows).set_index('model')\nresults\n",
-                  "say": "rows를 DataFrame으로 만들고 model을 인덱스로 세워요. 마지막 줄에 results만 두면 표로 보여 줘요."
+                  "say": "rows를 DataFrame으로 만들고 model 열을 인덱스로 세우면 네 행 세 열 표가 돼요."
                 },
                 {
                   "action": "run",
-                  "say": "자, 실행해 볼게요."
+                  "say": "실행해 볼게요."
                 },
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "네 행 세 열이죠? MAE는 Linear 13521, Ridge 13601, Lasso 13630, 셋 다 기준 13637.5를 아슬아슬하게 넘어요. 그런데 RMSE는 기준이 17408로 가장 작아요. 큰 실수는 모델 쪽이 더 한 거죠."
+                  "text": "네 행 세 열 표가 나왔죠? Baseline 행과 세 모델 행의 MAE를 비교해서 기준을 넘는 모델이 있는지 보세요. 그리고 각 행에서 RMSE가 MAE보다 얼마나 큰지도 보시면 돼요."
                 },
                 {
                   "action": "submit",
-                  "say": "제출해서 채점할게요."
+                  "say": "제출할게요."
                 }
               ]
             },
@@ -22137,40 +22197,50 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 비교를 참·거짓 하나로 정리해요. 기준 MAE를 baseline_mae, Ridge(alpha=1) 파이프라인의 MAE를 ridge_mae에 담고, ridge_mae < baseline_mae를 improved에 넣어 세 값을 출력해요. False여도 틀린 게 아니에요."
+                  "text": "자, 비교를 참·거짓 하나로 정리해요. 기준 예측의 MAE와 릿지의 MAE를 구해서, 릿지가 더 작은지 improved에 담는 거예요."
+                },
+                {
+                  "action": "say",
+                  "target": "hint",
+                  "text": "improved가 False로 나와도 틀린 게 아니에요. 그게 이 기간의 사실이거든요. 검사는 계산이 맞는지만 봐요."
                 },
                 {
                   "action": "set_code",
                   "code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['종가']\nframe['return_1']=prices['종가'].pct_change()\nframe['ma5']=prices['종가'].rolling(5).mean()\nframe['lag_close_1']=prices['종가'].shift(1)\nframe['target_next_close']=prices['종가'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\ntest_start=frame.index[-80]\ntrain_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\nX_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression,Ridge,Lasso\nfrom sklearn.metrics import mean_absolute_error,mean_squared_error,r2_score\n",
-                  "say": "준비 코드는 그대로예요. 분리된 자료와 회귀 도구가 있어요."
+                  "say": "준비 코드는 그대로 둘게요. 훈련 자료와 테스트 자료가 나뉘어 있고, Pipeline, StandardScaler, Ridge, mean_absolute_error까지 다 불러와 있어요."
                 },
                 {
                   "action": "type_code",
                   "code": "baseline_mae = mean_absolute_error(y_test, X_test['close'])\n",
-                  "say": "기준부터요. 정답 y_test, 예측은 오늘 종가 close."
+                  "say": "기준 모델부터 구해요. 오늘 종가 close를 그대로 내일 예측으로 쓴 MAE를 baseline_mae에 넣어요."
                 },
                 {
                   "action": "type_code",
-                  "code": "ridge = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))])\nridge.fit(X_train, y_train)\nridge_mae = mean_absolute_error(y_test, ridge.predict(X_test))\n",
-                  "say": "릿지 파이프라인을 학습하고 테스트 예측으로 MAE를 구해요. 비교는 같은 y_test로요."
+                  "code": "ridge = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))])\nridge.fit(X_train, y_train)\n",
+                  "say": "릿지는 스케일을 맞추는 StandardScaler 뒤에 Ridge(alpha=1)을 붙인 파이프라인이에요. 훈련 자료로 학습시켜요."
+                },
+                {
+                  "action": "type_code",
+                  "code": "ridge_mae = mean_absolute_error(y_test, ridge.predict(X_test))\n",
+                  "say": "테스트 자료를 예측해서 정답 y_test와 비교한 MAE를 ridge_mae에 넣어요."
                 },
                 {
                   "action": "type_code",
                   "code": "improved = bool(ridge_mae < baseline_mae)\nprint(baseline_mae, ridge_mae, improved)\n",
-                  "say": "작으면 True, 아니면 False. bool로 감싸 파이썬 참·거짓으로 만들어요."
+                  "say": "ridge_mae가 baseline_mae보다 작은지를 bool로 감싸 improved에 담고, 세 값을 출력하면 돼요."
                 },
                 {
                   "action": "run",
-                  "say": "자, 실행해 볼게요."
+                  "say": "실행해 볼게요."
                 },
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "13637.5, 13601, True예요. 이 기간에서 릿지가 36원쯤 줄였어요. 만화처럼 False가 나오는 기간도 있어요. 그때는 그대로 적는 거예요."
+                  "text": "기준 MAE가 13637.5, 릿지 MAE가 약 13601이죠? 조금 작아서 improved가 True로 나왔어요. False였어도 그대로 적으면 돼요."
                 },
                 {
                   "action": "submit",
-                  "say": "제출해서 채점할게요."
+                  "say": "제출할게요."
                 }
               ]
             },
@@ -22196,45 +22266,45 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 마지막 그래프예요. 릿지로 예측을 구하고, target_date를 인덱스로 actual과 prediction 두 열을 가진 comparison 표를 만들어요. 두 선을 같은 날짜 축에 그리고 x축 이름은 정답 날짜예요."
+                  "text": "자, 마지막 그래프예요. 릿지로 예측한 선을 실제 다음 종가 위에 겹쳐 그려요. x축은 입력 날짜가 아니라 정답 날짜거든요."
                 },
                 {
                   "action": "set_code",
                   "code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['종가']\nframe['return_1']=prices['종가'].pct_change()\nframe['ma5']=prices['종가'].rolling(5).mean()\nframe['lag_close_1']=prices['종가'].shift(1)\nframe['target_next_close']=prices['종가'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\ntest_start=frame.index[-80]\ntrain_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\nX_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression,Ridge,Lasso\nfrom sklearn.metrics import mean_absolute_error,mean_squared_error,r2_score\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n",
-                  "say": "준비 코드가 모델 재료에 matplotlib, seaborn까지 불러 뒀어요. 그대로 둘게요."
+                  "say": "준비 코드엔 frame과 target_date, 훈련 자료와 테스트 자료 나누기, 그리고 Pipeline과 Ridge, plt까지 다 들어 있어요. 그대로 두면 돼요."
                 },
                 {
                   "action": "type_code",
                   "code": "model=Pipeline([('scale',StandardScaler()),('model',Ridge(alpha=1))])\nmodel.fit(X_train,y_train)\nprediction=model.predict(X_test)\n",
-                  "say": "릿지 파이프라인, 앞 미션과 같아요. 학습하고 테스트 예측을 prediction에 담아요."
+                  "say": "먼저 릿지 파이프라인을 만들어 훈련 자료로 학습하고, 테스트 자료로 prediction을 구해요."
                 },
                 {
                   "action": "type_code",
                   "code": "comparison=pd.DataFrame({'actual':y_test.to_numpy(),'prediction':prediction},index=pd.DatetimeIndex(frame.loc[test_mask,'target_date']))\n",
-                  "say": "comparison 표의 인덱스가 핵심이에요. 입력 날짜가 아니라 target_date. 실제값도 예측값도 다음 거래일의 값이니까 그 날짜 위에 놓는 거죠."
+                  "say": "이제 비교 표예요. actual엔 실제 다음 종가, prediction엔 예측을 넣고요. 인덱스는 정답 날짜인 target_date로 잡는 게 핵심이에요."
                 },
                 {
                   "action": "type_code",
                   "code": "fig,ax=plt.subplots()\nax.plot(comparison.index,comparison['actual'],label='Actual next close')\nax.plot(comparison.index,comparison['prediction'],label='Ridge')\n",
-                  "say": "subplots로 종이와 영역을 만들고, 같은 날짜 축에 실제 선과 예측 선을 하나씩 그려요. label이 범례에 들어가요."
+                  "say": "fig, ax를 만들고 같은 날짜 축에 선 두 개를 그려요. 실제 선 하나, 릿지 예측 선 하나거든요."
                 },
                 {
                   "action": "type_code",
                   "code": "ax.set(xlabel='정답 날짜',ylabel='Price',title='Held-out next trading day')\nax.legend()\nplt.show()\ncomparison.head()\n",
-                  "say": "set으로 축 이름과 제목을 붙이고 legend로 범례를 켜요. plt.show() 뒤에 comparison.head()로 표 앞 다섯 줄도 봐요."
+                  "say": "x축 이름을 정답 날짜로 붙이고, 범례를 켜고 보여 줘요. 마지막에 comparison.head()로 표 앞부분도 확인하고요."
                 },
                 {
                   "action": "run",
-                  "say": "자, 실행해 볼게요."
+                  "say": "실행해 볼게요."
                 },
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "그래프가 나왔죠? 두 선이 거의 붙어 다니다 5월 15일처럼 급락한 날에 벌어져요. 표 첫 줄은 5월 12일, 실제 279000에 예측 282582예요."
+                  "text": "그래프에 두 선이 겹쳐 보이죠? 예측이 실제를 얼마나 따라가는지, 어느 구간에서 벌어지는지 보세요. 아래 표는 날짜마다 actual과 prediction이 나란히 있어요."
                 },
                 {
                   "action": "submit",
-                  "say": "제출해서 채점할게요."
+                  "say": "제출할게요."
                 }
               ]
             },
@@ -22260,45 +22330,45 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 수업의 결론을 코드로 써요. models의 Linear와 Ridge를 학습해 MAE를 maes에 모으고, 기준과 비교해 report 딕셔너리 다섯 키를 채워요. 그리고 결론 세 줄을 출력해요."
+                  "text": "자, 마지막이에요. 수업의 결론을 코드로 적어요. 숫자 다섯 개를 report에 모으고, 결론 세 줄을 출력하면 돼요."
                 },
                 {
                   "action": "set_code",
                   "code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\nframe=pd.DataFrame(index=prices.index)\nframe['close']=prices['종가']\nframe['return_1']=prices['종가'].pct_change()\nframe['ma5']=prices['종가'].rolling(5).mean()\nframe['lag_close_1']=prices['종가'].shift(1)\nframe['target_next_close']=prices['종가'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\nframe=frame.dropna().copy()\nfeature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\ntest_start=frame.index[-80]\ntrain_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\nX_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression,Ridge,Lasso\nfrom sklearn.metrics import mean_absolute_error,mean_squared_error,r2_score\nmodels={'Linear':LinearRegression(),'Ridge':Ridge(alpha=1)}\n",
-                  "say": "준비 코드 끝에 models 딕셔너리가 있어요. Linear와 Ridge 둘이에요. 그대로 둘게요."
+                  "say": "준비 코드엔 지금까지 만든 특징 네 개와 훈련 자료, 테스트 자료가 다 들어 있어요. models엔 Linear와 Ridge가 있고요."
                 },
                 {
                   "action": "type_code",
                   "code": "baseline_mae=mean_absolute_error(y_test,X_test['close'])\nmaes={}\n",
-                  "say": "기준 MAE를 먼저 구하고, 모델 점수를 모을 빈 딕셔너리 maes를 둬요."
+                  "say": "기준 모델부터요. 오늘 종가를 그대로 내일 예측으로 쓰고 MAE를 재요. 그리고 모델별 점수를 담을 빈 딕셔너리 maes를 둬요."
                 },
                 {
                   "action": "type_code",
                   "code": "for name,estimator in models.items():\n    model=Pipeline([('scale',StandardScaler()),('model',estimator)])\n    model.fit(X_train,y_train)\n    maes[name]=mean_absolute_error(y_test,model.predict(X_test))\n",
-                  "say": "비교표 때와 같은 반복이에요. 모델마다 파이프라인으로 학습해 테스트 MAE를 maes에 넣어요."
+                  "say": "모델 두 개를 돌아요. 스케일러와 모델을 파이프라인으로 묶고, 훈련 자료로 학습한 뒤 테스트 MAE를 이름별로 넣어요."
                 },
                 {
                   "action": "type_code",
                   "code": "best_model=min(maes,key=maes.get)\nreport={'test_days':len(X_test),'baseline_mae':baseline_mae,'best_model':best_model,'best_mae':maes[best_model],'improved':bool(maes[best_model]<baseline_mae)}\n",
-                  "say": "min에 key=maes.get을 주면 값이 가장 작은 키, 즉 MAE가 가장 작은 모델 이름이 나와요. report에 다섯 값을 담아요."
+                  "say": "MAE가 가장 작은 이름을 best_model로 뽑아요. 그다음 숫자 다섯 개를 report에 담아요. improved는 최선 MAE가 기준보다 작은지를 bool로 적는 거거든요."
                 },
                 {
                   "action": "type_code",
                   "code": "print(f\"다음 거래일 종가를 예측했고, 마지막 {report['test_days']}거래일을 테스트로 두었으며 훈련 정답은 모두 테스트 시작 전이다.\")\nprint(f\"기준 예측(오늘 종가 그대로) MAE {baseline_mae:.0f}원, 최선 모델 {best_model} MAE {maes[best_model]:.0f}원.\")\nprint('최선 모델이 기준보다 오차를 줄였다.' if report['improved'] else '최선 모델도 기준보다 오차를 줄이지 못했다. 이 파일, 이 기간의 결과다.')\n",
-                  "say": "결론 세 줄이에요. 무엇을 언제 예측해 어떻게 나눴나, 기준과 최선 모델 MAE, 그리고 개선 여부. improved가 False면 못 줄였다고 그대로 찍어요."
+                  "say": "결론 세 줄이에요. 무엇을 언제 예측하고 어떻게 나눴는지, 기준 MAE와 최선 MAE, 그리고 개선했는지를 improved에 따라 골라 출력해요."
                 },
                 {
                   "action": "run",
-                  "say": "자, 실행해 볼게요."
+                  "say": "실행해 볼게요."
                 },
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "마지막 80거래일, 기준 13638원, 최선 모델 Linear 13521원, 기준보다 오차를 줄였다. 백 원 남짓이지만 정직하게 적은 숫자예요."
+                  "text": "마지막 80거래일이 테스트였죠? 기준 MAE 13638원, 최선 모델 Linear MAE 13521원이에요. 아주 조금이지만 기준보다 줄였다고 나왔어요. 이 파일, 이 기간의 결과라는 걸 기억하세요."
                 },
                 {
                   "action": "submit",
-                  "say": "제출해서 채점할게요."
+                  "say": "제출할게요. 다섯 숫자가 실제 계산과 맞으면 정답이에요."
                 }
               ]
             },
@@ -22758,55 +22828,75 @@
                 {
                   "action": "say",
                   "target": "problem",
-                  "text": "자, 도전 과제예요. 주가 챕터를 한 번에 복습하는데 이동평균 창을 5일에서 10일로 바꿔요. 입력 열 만들기, 경계 하루를 빼는 시간 분리, 기준 모델, 릿지 비교, report까지 직접 써요."
+                  "text": "자, 주가 챕터를 통째로 복습해요. 이번엔 이동평균 창을 5일에서 10일로 바꿔서 다시 겨뤄 볼게요."
                 },
                 {
                   "action": "say",
                   "target": "hint",
-                  "text": "앞에서 만든 여섯 열에서 rolling(5)만 rolling(10)으로 바꾸면 처음 아홉 행이 비어 391행이 남아요. train_mask는 앞 단원 그대로예요."
+                  "text": "앞에서 만든 여섯 열에서 rolling(5)만 rolling(10)으로 바꾸면 돼요. 분리 마스크도 그대로 쓰거든요."
                 },
                 {
                   "action": "set_code",
                   "code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import Ridge\nfrom sklearn.metrics import mean_absolute_error\n",
-                  "say": "준비 코드가 prices를 읽고 Pipeline, StandardScaler, Ridge, mean_absolute_error를 불러 뒀어요. frame은 이번엔 직접 만들어요."
+                  "say": "준비 코드에 prices 읽기와 Pipeline, StandardScaler, Ridge, mean_absolute_error가 들어가 있어요. 그대로 둘게요."
                 },
                 {
                   "action": "type_code",
-                  "code": "frame = pd.DataFrame(index=prices.index)\nframe['close'] = prices['종가']\nframe['return_1'] = prices['종가'].pct_change()\nframe['ma10'] = prices['종가'].rolling(10).mean()\nframe['lag_close_1'] = prices['종가'].shift(1)\n",
-                  "say": "날짜 인덱스만 가진 빈 frame에 열을 하나씩 붙여요. close, pct_change의 return_1, 이번엔 rolling(10)으로 ma10, shift(1)로 어제 종가."
+                  "code": "frame = pd.DataFrame(index=prices.index)\nframe['close'] = prices['종가']\nframe['return_1'] = prices['종가'].pct_change()\n",
+                  "say": "자, 날짜만 가진 빈 표를 만들고 종가와 하루 수익률을 넣어요."
+                },
+                {
+                  "action": "type_code",
+                  "code": "frame['ma10'] = prices['종가'].rolling(10).mean()\nframe['lag_close_1'] = prices['종가'].shift(1)\n",
+                  "say": "여기가 바뀌는 곳이에요. rolling(10)으로 열흘 평균을 내고, 어제 종가를 shift(1)로 가져와요."
                 },
                 {
                   "action": "type_code",
                   "code": "frame['target_next_close'] = prices['종가'].shift(-1)\nframe['target_date'] = pd.Series(prices.index, index=prices.index).shift(-1)\nframe = frame.dropna().copy()\n",
-                  "say": "정답은 shift(-1), 내일 종가예요. 부호를 틀리면 누수죠. target_date도 날짜를 하루 밀어 같이 두고, dropna로 빈 행을 떨어내요. 391행이 남아요."
+                  "say": "정답 y는 내일 종가라 shift(-1)이에요. 정답 날짜도 함께 넣고 dropna로 빈 행을 지우면 391행이 남아요."
                 },
                 {
                   "action": "type_code",
-                  "code": "feature_columns = ['close', 'return_1', 'ma10', 'lag_close_1']\nX = frame[feature_columns]\ny = frame['target_next_close']\ntest_start = frame.index[-80]\ntrain_mask = (frame.index < test_start) & (frame['target_date'] < test_start)\ntest_mask = frame.index >= test_start\n",
-                  "say": "입력 X 네 열, 정답 y. test_start는 뒤에서 80번째 날짜고, train_mask는 입력 날짜와 target_date 둘 다 test_start 전이에요. 경계 하루를 빼는 조건이죠."
+                  "code": "feature_columns = ['close', 'return_1', 'ma10', 'lag_close_1']\nX = frame[feature_columns]\ny = frame['target_next_close']\n",
+                  "say": "입력 X는 네 열, 정답 y는 내일 종가예요. 이름이 ma10으로 바뀐 걸 잊지 마세요."
                 },
                 {
                   "action": "type_code",
-                  "code": "X_train, X_test = X.loc[train_mask], X.loc[test_mask]\ny_train, y_test = y.loc[train_mask], y.loc[test_mask]\nbaseline_mae = mean_absolute_error(y_test, X_test['close'].to_numpy())\n",
-                  "say": "같은 마스크로 X와 y를 갈라요. 훈련 310, 테스트 80. 기준 MAE는 오늘 종가 그대로예요."
+                  "code": "test_start = frame.index[-80]\ntrain_mask = (frame.index < test_start) & (frame['target_date'] < test_start)\ntest_mask = frame.index >= test_start\n",
+                  "say": "마지막 80행이 테스트 자료예요. 훈련은 입력 날짜와 target_date가 모두 test_start 전인 행만 써서 경계 하루를 빼요. 누수를 막는 거거든요."
                 },
                 {
                   "action": "type_code",
-                  "code": "model = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))]).fit(X_train, y_train)\nridge_mae = mean_absolute_error(y_test, model.predict(X_test))\nreport = {'window': 10, 'rows': len(frame), 'baseline_mae': baseline_mae, 'ridge_mae': ridge_mae, 'improved': ridge_mae < baseline_mae}\nprint(report)\n",
-                  "say": "릿지 파이프라인을 학습해 ridge_mae를 구하고, report 딕셔너리에 window 10, 행 수, 두 MAE, improved를 담아 출력해요."
+                  "code": "X_train, X_test = X.loc[train_mask], X.loc[test_mask]\ny_train, y_test = y.loc[train_mask], y.loc[test_mask]\n",
+                  "say": "마스크로 훈련 자료와 테스트 자료를 갈라요. 훈련 310행, 테스트 80행이면 맞아요."
+                },
+                {
+                  "action": "type_code",
+                  "code": "baseline_mae = mean_absolute_error(y_test, X_test['close'].to_numpy())\n",
+                  "say": "기준 모델은 오늘 종가를 그대로 내일 예측으로 쓰는 거예요. 그 MAE를 먼저 재요."
+                },
+                {
+                  "action": "type_code",
+                  "code": "model = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))]).fit(X_train, y_train)\nridge_mae = mean_absolute_error(y_test, model.predict(X_test))\n",
+                  "say": "StandardScaler와 Ridge를 파이프라인으로 묶어 훈련 자료로 fit하고, 테스트 MAE를 ridge_mae에 담아요."
+                },
+                {
+                  "action": "type_code",
+                  "code": "report = {'window': 10, 'rows': len(frame), 'baseline_mae': baseline_mae, 'ridge_mae': ridge_mae, 'improved': ridge_mae < baseline_mae}\nprint(report)\n",
+                  "say": "보고 딕셔너리예요. window는 10, improved는 릿지가 기준 모델보다 나은지 비교한 결과를 그대로 담아요."
                 },
                 {
                   "action": "run",
-                  "say": "자, 실행해 볼게요."
+                  "say": "실행해 볼게요."
                 },
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "rows 391, 기준 13637.5, 릿지 13859, improved False예요. 창을 10일로 바꾸니 릿지가 기준을 못 넘었어요. 그래도 그대로 적는 거예요. 이 파일, 이 기간의 결과거든요."
+                  "text": "rows가 391이죠? baseline_mae는 13637.5, ridge_mae는 13858.95 정도예요. 기준 모델이 더 낫네요. improved는 False예요. 그래도 그대로 두면 돼요."
                 },
                 {
                   "action": "submit",
-                  "say": "제출해서 채점할게요."
+                  "say": "제출할게요."
                 }
               ]
             }

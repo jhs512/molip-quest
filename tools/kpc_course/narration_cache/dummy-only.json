@@ -1,37 +1,50 @@
 {
  "hash": "b43663ae9083f977",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 기준 모델만 먼저 돌려요. DummyClassifier를 most_frequent 전략으로 dummy에 만들고, 훈련 자료로 학습해서 테스트 정확도를 dummy_accuracy에 담아 출력하면 돼요. 입력을 안 보니까 손질도 필요 없어요."
+   "자, 이번엔 기준 모델만 먼저 돌려요. 찍기 점수부터 재는 거거든요."
+  ],
+  [
+   "hint",
+   "입력을 안 보니 손질이 필요 없어요. fit 하고 predict 하면 끝이에요."
   ],
   [
    "starter",
-   "준비 코드가 분리까지 끝내고 DummyClassifier와 accuracy_score를 불러왔어요. 그대로 둘게요."
+   "데이터 읽기, 입력 X와 정답 y, 훈련 자료와 테스트 자료 나누기까지 준비되어 있어요. DummyClassifier와 accuracy_score도 불러와 뒀어요."
   ],
   [
    "code",
    "dummy = DummyClassifier(strategy='most_frequent')\n",
-   "DummyClassifier에 strategy='most_frequent'를 줘요. 가장 많은 답만 찍는 모델이에요."
+   "most_frequent는 제일 많은 답으로만 찍는 모델이에요. dummy라는 이름표에 담아요."
   ],
   [
    "code",
    "dummy.fit(X_train, y_train)\n",
-   "fit은 형식상 해요. 훈련 정답에서 뭐가 가장 많은지만 세는 거예요. 사망이죠."
+   "훈련 자료로 학습해요. 사실 제일 많은 답이 뭔지만 세는 거죠."
   ],
   [
    "code",
-   "dummy_accuracy = accuracy_score(y_test, dummy.predict(X_test))\nprint(dummy_accuracy)\n",
-   "테스트를 예측하면 전부 0이 나와요. 그걸 테스트 정답과 비교한 비율이 dummy_accuracy예요."
+   "dummy_accuracy = accuracy_score(y_test, dummy.predict(X_test))\n",
+   "테스트 자료를 예측하고, 정답 y_test와 맞춰 본 정확도를 dummy_accuracy에 담아요."
+  ],
+  [
+   "code",
+   "print(dummy_accuracy)\n",
+   "그다음 줄에서 꺼내 출력해요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "0.618, 약 62%예요. 테스트 262명 중 사망 162명이라 162 나누기 262죠. 이 숫자가 이 단원의 기준 모델의 점수예요. 이걸 못 넘는 모델은 아무것도 못 배운 거예요."
+   "0.618이 나왔죠? 테스트 262명 중 사망 162명, 162/262예요. 이게 이 단원의 기준 모델 점수예요."
   ],
   [
    "submit",
-   "제출하면 162 나누기 262와 같은지, 예측이 전부 0인지 확인해요."
+   "제출할게요."
   ]
  ]
 }

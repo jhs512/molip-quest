@@ -1,32 +1,45 @@
 {
  "hash": "d3ef55e0022d2dee",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 첫 미션은 표의 크기와 열 이름 확인이에요. 준비된 orders 표의 행 수, 열 수, 열 이름 리스트를 세 변수에 담아 출력하면 돼요."
+   "자, 표를 받으면 제일 먼저 크기부터 봐요. 몇 행 몇 열인지, 열 이름이 뭔지요. 네 건의 거래가 든 orders 표로 해 볼게요."
+  ],
+  [
+   "hint",
+   "orders.shape는 (4, 3) 같은 쌍이거든요. 두 이름으로 한 번에 나눠 담으면 돼요."
   ],
   [
    "starter",
-   "준비 코드가 orders 표를 만들어 뒀어요. 거래 네 건이고, C의 가격이 비어 있다는 점 눈여겨보세요."
+   "import와 orders 표를 만드는 두 줄은 준비돼 있어요. 가격 하나가 None으로 비어 있죠? 그대로 둘게요."
   ],
   [
    "code",
-   "n_rows, n_columns = orders.shape\ncolumn_names = list(orders.columns)\n",
-   "orders.shape는 (4, 3) 같은 쌍이라 두 변수에 한 번에 나눠 담아요. 열 이름은 orders.columns를 list로 감싸 리스트로 만들어요."
+   "n_rows, n_columns = orders.shape\n",
+   "shape가 주는 쌍을 n_rows와 n_columns에 한 번에 나눠 담아요."
+  ],
+  [
+   "code",
+   "column_names = list(orders.columns)\n",
+   "orders.columns를 list로 감싸면 열 이름 리스트가 돼요."
   ],
   [
    "code",
    "print(n_rows, n_columns, column_names)\n",
-   "세 값을 쉼표로 이어 한 줄에 출력해요."
+   "세 값을 한 줄에 출력하면 돼요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "4 3 그리고 product, price, quantity가 나왔죠? 4행 3열이에요."
+   "4 3 그리고 product, price, quantity가 나왔죠? 빈 가격이 있어도 행 수는 그대로 4예요."
   ],
   [
    "submit",
-   "제출할게요. 검사는 세 변수의 값을 봐요."
+   "제출할게요."
   ]
  ]
 }

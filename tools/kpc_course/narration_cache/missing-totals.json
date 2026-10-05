@@ -1,42 +1,46 @@
 {
  "hash": "6a927c30473b528e",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 두 길을 나란히 비교해요. 중앙값으로 채운 filled와 빈 행을 뺀 dropped를 만들고, 각각 가격 곱하기 수량 열 amount를 만들어 합계를 비교해요."
+   "자, 이번엔 두 길을 나란히 놓고 비교해요. 결측을 채운 표 filled, 빈 행을 뺀 표 dropped예요. 각 표에 가격 × 수량 열 amount를 만들고 합계를 비교하죠."
   ],
   [
    "starter",
-   "준비 코드의 orders 표는 그대로 둘게요."
+   "준비 코드에 orders 표가 있어요. 네 건 중 C 상품의 가격이 비어 있죠? 이 두 줄은 그대로 둘게요."
   ],
   [
    "code",
-   "filled=orders.copy()\nfilled['price']=filled['price'].fillna(filled['price'].median())\nfilled['amount']=filled['price']*filled['quantity']\n",
-   "먼저 채우기 길이요. orders를 copy해서 filled를 만들고, price의 빈칸을 중앙값으로 채운 뒤 amount 열을 만들어요. 열끼리 곱하면 행마다 계산돼요."
+   "filled=orders.copy()\nfilled['price']=filled['price'].fillna(filled['price'].median())\n",
+   "먼저 orders를 복사해서 filled를 만들어요. 가격의 빈칸은 중앙값으로 채우거든요."
+  ],
+  [
+   "code",
+   "filled['amount']=filled['price']*filled['quantity']\n",
+   "채운 표에 amount 열을 만들어요. 가격 곱하기 수량이죠."
   ],
   [
    "code",
    "dropped=orders.dropna(subset=['price']).copy()\ndropped['amount']=dropped['price']*dropped['quantity']\n",
-   "다음은 빼기 길이요. dropna로 가격이 빈 행을 뺀 표에 copy()를 붙여 dropped를 만들고, 같은 amount 열을 만들어요."
+   "다른 길은 가격이 빈 행을 빼는 거예요. dropna에 subset으로 price를 주고, 같은 amount 열을 만들어요."
   ],
   [
    "code",
-   "filled_total=filled['amount'].sum()\ndropped_total=dropped['amount'].sum()\n",
-   "두 표의 amount를 각각 sum해서 합계 둘을 만들어요."
+   "filled_total=filled['amount'].sum()\ndropped_total=dropped['amount'].sum()\nprint(filled_total,dropped_total)\nfilled\n",
+   "두 표의 amount 합계를 각각 담아서 출력해요. 마지막 줄은 채운 표를 보여 주는 거고요."
   ],
   [
-   "code",
-   "print(filled_total,dropped_total)\nfilled\n",
-   "두 합계를 나란히 출력하고 filled를 표로 봐요."
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "130000과 118000, 12000 차이가 나죠? 어느 쪽도 진짜 전체 금액은 아니에요. 빈칸 하나를 어떻게 다루기로 했는지에 따라 답이 달라지니까, 보고서에는 그 선택을 적어야 해요."
+   "130000.0과 118000.0이 나왔죠? 채운 쪽이 12000 더 커요. 빈칸 하나를 어떻게 다루느냐에 따라 합계가 달라지거든요. 어느 쪽도 진짜 전체 금액은 아니에요. 그래서 보고서에는 이 선택을 적어야 해요."
   ],
   [
    "submit",
-   "제출할게요. 두 합계와 두 표의 행 수를 봐요."
+   "제출할게요."
   ]
  ]
 }

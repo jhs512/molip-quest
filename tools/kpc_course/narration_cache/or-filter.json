@@ -1,23 +1,36 @@
 {
  "hash": "297d33bb01e39af1",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 이번엔 또는이에요. 제품이 A이거나 수량이 1인 거래를 either에 담고 표로 확인해요."
+   "자, 이번엔 \"또는\"이에요. 제품이 A이거나 수량이 1인 거래를 either에 담으면 돼요."
+  ],
+  [
+   "hint",
+   "&가 \"그리고\", |가 \"또는\"이에요. 조건마다 괄호를 꼭 치세요. 없으면 파이썬이 'A' | orders['quantity']를 먼저 계산하려다 오류가 나거든요."
   ],
   [
    "starter",
-   "준비 코드의 orders 표는 그대로 둘게요."
+   "준비 코드엔 orders 표가 들어 있어요. product, price, quantity 세 열이 네 건이죠? 그대로 둘게요."
   ],
   [
    "code",
-   "either = orders.loc[(orders['product'] == 'A') | (orders['quantity'] == 1)]\neither\n",
-   "&가 그리고, |가 또는이에요. 괄호는 똑같이 조건마다 쳐요. 괄호가 없으면 'A' | orders['quantity']를 먼저 계산하려다 오류가 나거든요."
+   "either = orders.loc[(orders['product'] == 'A') | (orders['quantity'] == 1)]\n",
+   "조건 두 개를 각각 괄호로 감싸고 |로 이어요. 둘 중 하나만 참이어도 그 행이 남거든요."
+  ],
+  [
+   "code",
+   "either\n",
+   "마지막 줄에 either만 적으면 표가 화면에 나와요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "A, A, C 세 건이 남았죠? 앞의 둘은 제품이 A라서, C는 수량이 1이라서 들어왔어요."
+   "표를 보세요. 제품이 A인 두 건과 수량이 1인 C 한 건, 그러니까 A, A, C 세 건이 남았죠?"
   ],
   [
    "submit",

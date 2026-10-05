@@ -1,42 +1,51 @@
 {
  "hash": "ce81a73bfb392c1b",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 진짜 자료예요. 준비 코드가 상환_9월, 신용한도, 나이 세 열로 훈련 자료와 테스트 자료를 나눠 뒀어요. 기준 모델 Dummy와 Logistic을 각각 StandardScaler와 묶은 Pipeline으로 훈련해서 네 지표를 results 표로 만들면 돼요."
+   "자, 이제 진짜 자료예요. 부도 모델과 기준 모델을 네 지표로 나란히 비교해 볼 거거든요."
   ],
   [
    "hint",
-   "앞 단원의 표 만들기 패턴 그대로예요. 정밀도, 재현율, F1에 zero_division=0을 주면 기준 모델처럼 TP가 0일 때 경고 없이 0이 나와요."
+   "앞 단원의 표 만들기 패턴 그대로예요. 정밀도·재현율·F1에는 zero_division=0을 주면 돼요."
   ],
   [
    "starter",
-   "준비 코드는 불러오기, 입력 X, 정답 y, 그리고 train_test_split이에요. 그대로 둘게요."
+   "준비 코드가 상환_9월, 신용한도, 나이 세 열을 입력 X로 삼았어요. 훈련 자료와 테스트 자료도 나눠 뒀고요."
   ],
   [
    "code",
    "models={'Dummy':DummyClassifier(strategy='most_frequent'),'Logistic':LogisticRegression(max_iter=2000)}\nrows=[]\n",
-   "모델 두 개를 딕셔너리에 담아요. Dummy는 가장 많은 답, 그러니까 전원 정상으로 찍는 기준 모델이에요. 결과 행을 모을 빈 리스트 rows도 만들고요."
+   "models에 기준 모델 Dummy와 Logistic을 넣어요. 결과를 모을 rows도 빈 목록으로 준비하고요."
   ],
   [
    "code",
-   "for name,estimator in models.items():\n    model=Pipeline([('scale',StandardScaler()),('model',estimator)])\n    model.fit(X_train,y_train)\n    pred=model.predict(X_test)\n",
-   "모델마다 돌면서 StandardScaler와 묶은 Pipeline을 만들어요. fit은 훈련 자료로만, predict는 테스트 자료로. 이 순서가 누수를 막아요."
+   "for name,estimator in models.items():\n    model=Pipeline([('scale',StandardScaler()),('model',estimator)])\n",
+   "모델마다 돌면서 StandardScaler와 묶은 Pipeline을 만들어요. 크기 맞추기와 모델이 한 묶음이 되는 거죠."
+  ],
+  [
+   "code",
+   "    model.fit(X_train,y_train)\n    pred=model.predict(X_test)\n",
+   "훈련 자료로 fit하고, 테스트 자료로 predict해요. 늘 하던 순서죠?"
   ],
   [
    "code",
    "    rows.append({'model':name,'accuracy':accuracy_score(y_test,pred),'precision':precision_score(y_test,pred,zero_division=0),'recall':recall_score(y_test,pred,zero_division=0),'f1':f1_score(y_test,pred,zero_division=0)})\n",
-   "네 지표를 딕셔너리 한 줄로 rows에 붙여요. 정답 y_test, 예측 pred 순서고요. zero_division=0은 TP가 0일 때 경고 대신 0을 적으라는 뜻이에요."
+   "네 지표를 딕셔너리 하나로 묶어 rows에 넣어요. zero_division=0을 주면 기준 모델처럼 TP가 0일 때도 경고 없이 0이 나오거든요."
   ],
   [
    "code",
    "results=pd.DataFrame(rows).set_index('model')\nresults\n",
-   "rows를 DataFrame으로 만들고 model 열을 행 이름으로 세워요. 마지막 줄에 results만 적으면 표로 떠요."
+   "rows를 DataFrame으로 만들고 model 열을 행 이름으로 세워요. 그게 results 표예요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "표를 보세요. Dummy는 정확도 0.779인데 정밀도, 재현율, F1이 전부 0이에요. 부도를 한 명도 못 찾은 거죠. Logistic은 정확도 0.810, 재현율 0.258, 정밀도 0.691이에요. 정확도는 조금 오르고 재현율은 0에서 26%로 올라왔어요."
+   "표가 나왔죠? Dummy 행을 보세요. 정확도는 78% 근처인데 재현율은 0이에요. Logistic 행에서 재현율이 얼마나 올라갔는지, 그 대가로 정확도가 어떻게 됐는지 보면 돼요."
   ],
   [
    "submit",

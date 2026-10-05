@@ -1,27 +1,40 @@
 {
  "hash": "26be03c81186e5b2",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 비율 전에 분모부터 세요. 성별 열의 value_counts()를 gender_counts에 담아 출력하면 돼요. 이 숫자가 다음 미션의 분모예요."
+   "자, 비율을 구하기 전에 분모부터 세 봐요. 성별 열에 여성과 남성이 각각 몇 명인지 세는 거거든요."
+  ],
+  [
+   "hint",
+   "앞 단원의 value_counts()와 같아요. 열만 성별로 바꾸면 돼요."
   ],
   [
    "starter",
-   "준비 코드는 그대로 둘게요."
+   "준비 코드에서 titanic.csv를 읽어 titanic에 넣어 뒀어요. 그대로 둘게요."
   ],
   [
    "code",
-   "gender_counts = titanic['성별'].value_counts()\nprint(gender_counts)\n",
-   "앞 단원 value_counts와 같아요. 열만 성별로 바꿨어요. 바로 출력해요."
+   "gender_counts = titanic['성별'].value_counts()\n",
+   "titanic에서 성별 열만 꺼내 value_counts()를 붙여요. 값마다 몇 번 나왔는지 세서 gender_counts에 넣는 거죠."
+  ],
+  [
+   "code",
+   "print(gender_counts)\n",
+   "그다음 줄에서 꺼내 출력해요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "남성 843, 여성 466이에요. 인원이 거의 두 배 차이죠? 이 둘이 다음 생존율의 분모예요."
+   "남성 843, 여성 466이 나왔죠? 인원이 꽤 달라요. 이 숫자가 다음 미션의 분모예요."
   ],
   [
    "submit",
-   "제출할게요. 466과 843을 검사해요."
+   "제출할게요."
   ]
  ]
 }

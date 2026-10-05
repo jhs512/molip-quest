@@ -1,33 +1,46 @@
 {
  "hash": "dccef297214216db",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 선형 회귀 하나만 먼저 돌려요. StandardScaler와 LinearRegression을 Pipeline으로 묶어 model에 학습하고, 예측을 prediction, MAE를 linear_mae에 담아 출력해요. 가중치 네 개도 찍어 봐요."
+   "자, 회귀도 분류와 같은 흐름이에요. 표준화와 선형 회귀를 Pipeline으로 묶어 학습하고, 테스트 예측의 MAE를 재 볼게요."
   ],
   [
    "starter",
-   "준비 코드가 frame, 시간 분리, 그리고 회귀 모델과 지표 함수 불러오기까지 해 뒀어요. 그대로 둘게요."
+   "준비 코드가 특징 네 개와 훈련 자료, 테스트 자료까지 다 만들어 놨어요. 필요한 import도 끝났으니 모델만 만들면 돼요."
   ],
   [
    "code",
-   "model = Pipeline([('scale', StandardScaler()), ('model', LinearRegression())])\nmodel.fit(X_train, y_train)\n",
-   "분류와 같은 흐름이에요. scale 다음 model, fit은 훈련 자료로만."
+   "model = Pipeline([('scale', StandardScaler()), ('model', LinearRegression())])\n",
+   "scale 단계와 model 단계를 순서대로 묶어서 model에 담아요."
   ],
   [
    "code",
-   "prediction = model.predict(X_test)\nlinear_mae = mean_absolute_error(y_test, prediction)\n",
-   "테스트 자료로 예측하고, 정답 y_test, 예측 순서로 MAE를 구해요."
+   "model.fit(X_train, y_train)\nprediction = model.predict(X_test)\n",
+   "훈련 자료로 fit하고, 테스트 자료로 predict하면 돼요."
   ],
   [
    "code",
-   "print(linear_mae)\nprint(model.named_steps['model'].coef_)\n",
-   "named_steps로 파이프라인 안의 모델을 꺼내면 coef_에 가중치 네 개가 있어요."
+   "linear_mae = mean_absolute_error(y_test, prediction)\nprint(linear_mae)\n",
+   "정답 y_test와 예측의 차이를 평균 낸 게 MAE거든요. linear_mae에 담아 출력해요."
+  ],
+  [
+   "code",
+   "print(model.named_steps['model'].coef_)\n",
+   "named_steps로 안쪽 선형 회귀를 꺼내서 가중치 네 개를 봐요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "13521 정도예요. 기준 13637.5보다 백 원쯤 작죠. 가중치는 첫 번째 close가 53196으로 압도적이에요. 오늘 종가가 거의 다 한 거예요."
+   "MAE가 13520 정도 나왔죠? 앞 단원의 기준 MAE와 비교해 보세요. 가중치는 첫 번째 close가 53196으로 가장 커요."
+  ],
+  [
+   "submit",
+   "제출할게요."
   ]
  ]
 }

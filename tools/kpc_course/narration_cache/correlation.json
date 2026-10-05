@@ -1,29 +1,38 @@
 {
  "hash": "ee582aeaf92ea94b",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 산점도를 열 쌍마다 그리는 대신 상관계수 표를 만들어 색으로 봐요. 숫자 열 여섯 개예요."
+   "자, 이번엔 숫자 열 여섯 개의 상관계수를 한눈에 봐요. 표를 색으로 칠한 히트맵이거든요."
+  ],
+  [
+   "hint",
+   "corr()로 상관계수 표를 만들고, sns.heatmap으로 그리면 돼요. 양수는 붉게, 음수는 푸르게 칠해져요."
   ],
   [
    "starter",
-   "준비 코드에 columns 리스트가 있어요. 그대로 둘게요."
+   "준비 코드엔 titanic 자료와 그릴 도구들이 있어요. columns엔 숫자 열 여섯 개의 이름이 들어 있죠?"
   ],
   [
    "code",
    "corr=titanic[columns].corr()\n",
-   "여섯 열만 골라서 corr()을 붙이면 6 곱하기 6 상관계수 표가 corr에 들어가요."
+   "titanic에서 columns의 여섯 열만 골라 corr()을 불러요. 그 결과 6×6 상관계수 표를 corr에 담아요."
   ],
   [
    "code",
-   "fig,ax=plt.subplots()\nsns.heatmap(corr,annot=True,vmin=-1,vmax=1,center=0,cmap='coolwarm',ax=ax)\n",
-   "sns.heatmap에 corr를 넘겨요. annot은 칸에 숫자 쓰기, vmin과 vmax는 색 범위를 -1에서 1로 고정, coolwarm은 양수가 붉고 음수가 푸른 색이에요."
+   "fig,ax=plt.subplots()\n",
+   "그림을 그릴 도화지 fig와 축 ax를 하나 만들어요."
+  ],
+  [
+   "code",
+   "sns.heatmap(corr,annot=True,vmin=-1,vmax=1,center=0,cmap='coolwarm',ax=ax)\n",
+   "sns.heatmap에 corr을 넘겨요. annot=True면 칸마다 숫자가 찍히고, vmin과 vmax를 -1, 1로 두면 색 눈금이 상관계수 범위에 맞춰지거든요. center=0에 coolwarm이면 양수는 붉게, 음수는 푸르게 칠해져요."
   ],
   [
    "code",
    "plt.show()\n",
-   "띄워요."
+   "plt.show()로 그림을 띄워요."
   ],
   [
    "run",
@@ -31,11 +40,11 @@
   ],
   [
    "output",
-   "대각선이 전부 1로 붉죠? 생존 행을 보세요. 요금이 0.24로 제일 붉고, 객실등급이 -0.31로 제일 푸르러요. 등급 숫자가 커질수록 생존이 줄어든다는 거예요."
+   "6×6 히트맵이 나왔죠? 대각선이 전부 1이면 맞게 만든 거예요. 생존 행을 따라가 보세요. 가장 붉은 칸과 가장 푸른 칸이 생존과 같이 움직이는 열이에요."
   ],
   [
    "submit",
-   "제출할게요. 검사기는 표 크기와 대각선, 색 범위를 봐요."
+   "제출할게요."
   ]
  ]
 }

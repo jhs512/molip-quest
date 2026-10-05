@@ -1,37 +1,41 @@
 {
  "hash": "75436e7f1e371909",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 같은 표를 CSV와 Excel 두 형식으로 저장하고 각각 다시 읽어요. 형식이 달라도 읽고 나면 같은 DataFrame이라는 걸 눈으로 확인하는 거예요."
+   "자, 같은 표를 CSV와 Excel 두 형식으로 저장하고, 다시 읽어서 비교해 볼게요. 형식이 달라도 읽고 나면 같은 DataFrame이라는 걸 눈으로 확인하는 거예요."
   ],
   [
    "starter",
-   "준비 코드의 orders 표는 그대로 둘게요."
+   "준비 코드에 orders 표가 있어요. product, price, quantity 세 열에 네 줄이고, price엔 None이 하나 들어 있거든요."
   ],
   [
    "code",
    "orders.to_csv('orders.csv',index=False)\norders.to_excel('orders.xlsx',index=False)\n",
-   "저장 두 줄이요. to_csv와 to_excel, 확장자만 다르고 쓰는 법은 같아요. 둘 다 index=False예요."
+   "저장은 to_csv와 to_excel이에요. 둘 다 index=False를 줘서 줄 번호는 빼고 저장해요."
   ],
   [
    "code",
    "csv_df=pd.read_csv('orders.csv')\nexcel_df=pd.read_excel('orders.xlsx')\n",
-   "읽기도 두 줄이요. read_csv와 read_excel로 각각 읽어 csv_df, excel_df에 담아요."
+   "읽기는 read_csv와 read_excel이죠. 확장자만 다르고 쓰는 법은 같아요."
   ],
   [
    "code",
    "print(csv_df.shape, excel_df.shape)\ncsv_df\n",
-   "두 표의 크기를 나란히 출력하고, 마지막 줄에 csv_df를 적어 표를 봐요."
+   "두 표의 크기를 나란히 찍고, csv_df를 마지막 줄에 두어 표를 보여 줘요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "(4, 3) (4, 3), 크기가 똑같죠? 아래 표도 원래 orders와 같아요. 어디서 왔든 표가 된 다음은 같다, 이거예요."
+   "(4, 3) (4, 3)이 나왔죠? 두 표 다 네 줄 세 열이에요. 아래 표의 product 열도 A, B, A, C 그대로고요."
   ],
   [
    "submit",
-   "제출할게요. 두 표의 크기와 product 열이 같은지 봐요."
+   "제출할게요."
   ]
  ]
 }

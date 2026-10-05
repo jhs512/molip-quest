@@ -1,29 +1,38 @@
 {
  "hash": "669e746a57b09265",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 승객 나이가 어떻게 퍼져 있는지 봐요. 빈 나이를 뺀 승객을 known_age에 담고, 구간 20개짜리 히스토그램을 그려요."
+   "자, 이번엔 나이가 어떻게 퍼져 있는지 히스토그램으로 봐요. 나이를 아는 승객만 골라서 구간 20개로 그릴 거예요."
+  ],
+  [
+   "hint",
+   "힌트대로 dropna로 빈 나이를 빼고, sns.histplot에 bins=20을 주면 돼요."
   ],
   [
    "starter",
-   "준비 코드는 그대로 둘게요. seaborn이 sns로 들어와 있어요."
+   "준비 코드엔 titanic 표를 읽고 plt와 sns를 불러오는 줄이 있어요. 그대로 둘게요."
   ],
   [
    "code",
    "known_age=titanic.dropna(subset=['나이'])\n",
-   "dropna에 subset으로 나이를 주면 나이가 빈 263명만 빠져요. 1046명이 남죠."
+   "먼저 나이가 비어 있는 승객을 빼요. subset에 '나이'만 주면 그 열이 빈 행만 빠지거든요."
   ],
   [
    "code",
-   "fig,ax=plt.subplots()\nsns.histplot(data=known_age,x='나이',bins=20,ax=ax)\n",
-   "종이와 영역을 만들고 sns.histplot에 표, 열 이름, bins 20을 넘겨요. ax=ax가 빠지면 다른 곳에 그려서 검사기가 못 찾아요."
+   "fig,ax=plt.subplots()\n",
+   "그림 한 장과 축 하나를 만들어요. 이 ax 위에 그릴 거예요."
+  ],
+  [
+   "code",
+   "sns.histplot(data=known_age,x='나이',bins=20,ax=ax)\n",
+   "자, histplot에 known_age를 주고 x는 '나이'예요. bins=20이면 나이를 구간 20개로 나눠 세죠."
   ],
   [
    "code",
    "ax.set(xlabel='나이',ylabel='Passenger count',title='Known ages only')\nplt.show()\n",
-   "축 이름과 제목을 붙이고 띄워요."
+   "축 이름과 제목을 한 번에 붙이고 plt.show()로 띄우면 돼요."
   ],
   [
    "run",
@@ -31,11 +40,11 @@
   ],
   [
    "output",
-   "막대 스무 개가 20대 초반에서 30대 초반 사이에 제일 높죠? 그 네 구간에 500명 넘게 몰려 있어요. 60세 넘어가면 거의 없어요."
+   "막대 20개짜리 히스토그램이 떴죠? 막대 높이를 다 더하면 나이를 아는 인원 1046이에요. 어느 나이대 막대가 제일 높은지 보세요."
   ],
   [
    "submit",
-   "제출할게요. 검사기는 1046명과 막대 20개를 확인해요."
+   "제출할게요."
   ]
  ]
 }

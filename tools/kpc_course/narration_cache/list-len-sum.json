@@ -1,28 +1,41 @@
 {
  "hash": "c8a90593940b59c8",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 같은 리스트로 며칠치인지, 다 더하면 얼마인지 구해요. 개수는 count, 합계는 total에 담아 출력하면 돼요."
+   "자, 이번엔 같은 리스트에서 두 가지를 구해요. 며칠치인가, 그리고 다 더하면 얼마인가예요."
   ],
   [
    "starter",
-   "준비 코드의 prices는 그대로 둘게요."
+   "prices 리스트 세 개 값은 준비되어 있어요. 그대로 둘게요."
   ],
   [
    "code",
-   "count = len(prices)\ntotal = sum(prices)\n",
-   "len(prices)가 개수, sum(prices)가 합계예요. 둘 다 리스트를 괄호에 넣기만 하면 돼요."
+   "count = len(prices)\n",
+   "len(prices)가 개수예요. 리스트 안에 몇 개 들었는지 세서 count에 넣어요."
+  ],
+  [
+   "code",
+   "total = sum(prices)\n",
+   "sum(prices)는 합계거든요. 전부 더한 값을 total에 담아요."
   ],
   [
    "code",
    "print(count, total)\n",
-   "두 값을 한 줄에 출력해요."
+   "print에 쉼표로 둘을 넘기면 한 줄에 나란히 찍혀요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "3 30300이 나왔어요. 사흘치고, 합이 30300이죠."
+   "3 30300이 나왔죠? 개수 3, 합계 30300이면 맞게 한 거예요."
+  ],
+  [
+   "submit",
+   "제출할게요."
   ]
  ]
 }

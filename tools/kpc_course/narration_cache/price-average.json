@@ -1,33 +1,46 @@
 {
  "hash": "4db3b0a4ffb057e9",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 넷째 날 가격 10300이 들어왔어요. prices 맨 뒤에 추가하고, 개수를 count, 평균을 average에 담아 둘 다 출력하면 돼요."
+   "자, 넷째 날 가격 10300이 들어왔어요. prices 맨 뒤에 붙이고, 개수랑 평균을 내서 둘 다 출력하면 돼요."
   ],
   [
    "starter",
-   "준비 코드의 prices는 사흘치 그대로 둘게요."
+   "준비 코드엔 사흘치 가격 prices가 이미 있어요. 이 줄은 그대로 둘게요."
   ],
   [
    "code",
    "prices.append(10300)\n",
-   "append가 맨 뒤에 값 하나를 붙여요. 이제 넷이에요."
+   "append로 맨 뒤에 10300을 붙여요. 이제 prices엔 값이 네 개거든요."
   ],
   [
    "code",
-   "count = len(prices)\naverage = sum(prices)/count\n",
-   "개수는 len으로요. 평균은 합계 나누기 개수예요. 파이썬 기본에 average 함수는 없어서 sum을 count로 직접 나눠요."
+   "count = len(prices)\n",
+   "len으로 개수를 세서 count에 담아요."
+  ],
+  [
+   "code",
+   "average = sum(prices)/count\n",
+   "평균은 합계 나누기 개수죠? sum으로 합계를 내고 count로 나눠요."
   ],
   [
    "code",
    "print(count, average)\n",
-   "둘을 출력해요."
+   "마지막으로 count와 average를 한 줄에 출력해요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "4 10150.0이 나왔죠? 나눗셈 결과라 소수점이 붙어요. 그래도 10150이면 맞아요."
+   "4 10150.0이 나왔죠? 나눗셈이라 10150.0으로 보여도 괜찮아요."
+  ],
+  [
+   "submit",
+   "제출할게요."
   ]
  ]
 }

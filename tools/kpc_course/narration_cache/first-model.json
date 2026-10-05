@@ -1,42 +1,50 @@
 {
  "hash": "166b37345e3c96ed",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 손질을 배우기 전에 모델을 한 번 돌려 봐요. 빈칸 없고 이미 숫자인 객실등급, 형제배우자, 부모자녀 세 열만 써요. LogisticRegression을 만들고 학습해서 테스트 정확도를 accuracy에 담으면 돼요."
+   "자, 손질을 배우기 전에 모델이 실제로 어떻게 돌아가는지 한 번 봐요. 빈칸이 없고 이미 숫자인 열 객실등급, 형제배우자, 부모자녀 세 개만 쓸 거예요."
+  ],
+  [
+   "hint",
+   "모델은 늘 세 단계예요. 만들기, 학습, 예측이거든요. 그다음 정확도를 재면 돼요."
   ],
   [
    "starter",
-   "준비 코드가 분리까지 끝내고 simple에 세 열 이름을 담아 뒀어요. 그대로 둘게요."
+   "준비 코드엔 훈련 자료와 테스트 자료가 나뉘어 있고, 세 열 이름이 simple에 담겨 있어요. 그대로 둘게요."
   ],
   [
    "code",
    "model = LogisticRegression(max_iter=1000)\n",
-   "모델은 늘 세 단계예요. 먼저 만들기. LogisticRegression에 max_iter=1000을 줘서 model에 담아요."
+   "자, 먼저 모델을 만들어요. LogisticRegression에 max_iter=1000을 주고 model에 넣어요."
   ],
   [
    "code",
    "model.fit(X_train[simple], y_train)\n",
-   "둘째, 학습. fit에 훈련 입력과 훈련 정답을 넣어요. X_train에서 simple 세 열만 골라 넣는 거예요."
+   "학습이에요. 훈련 자료에서 simple 세 열만 입력 X로, y_train을 정답 y로 줘요."
   ],
   [
    "code",
    "pred = model.predict(X_test[simple])\n",
-   "셋째, 예측. predict에 테스트 입력을 넣으면 262명의 예측이 나와요. 정답은 안 보여 주죠."
+   "예측이에요. 테스트 자료의 같은 세 열을 넣으면 pred에 예측이 나와요."
   ],
   [
    "code",
    "accuracy = accuracy_score(y_test, pred)\nprint(accuracy)\n",
-   "accuracy_score에 테스트 정답과 예측을 넣으면 일치한 비율이에요. 그게 정확도죠."
+   "accuracy_score에 테스트 정답과 예측을 주면 일치한 비율이 나와요. 그걸 accuracy에 담고 출력하면 돼요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "0.672, 약 67%예요. 재료가 셋뿐이니 높지 않죠? 이 숫자를 기억해 두세요. 남은 미션은 이걸 올리는 일이에요."
+   "0.67 정도가 나왔죠? 재료가 셋뿐이니 높지 않아요. 이 숫자를 기억해 두세요. 남은 미션은 이 숫자를 올리는 일이거든요."
   ],
   [
    "submit",
-   "제출하면 model이 열 셋으로 배웠는지, accuracy가 맞게 계산됐는지 확인해요."
+   "제출할게요."
   ]
  ]
 }

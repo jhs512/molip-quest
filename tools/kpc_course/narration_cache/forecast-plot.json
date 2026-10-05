@@ -1,38 +1,46 @@
 {
  "hash": "d5205647cccc61a3",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 마지막 그래프예요. 릿지로 예측을 구하고, target_date를 인덱스로 actual과 prediction 두 열을 가진 comparison 표를 만들어요. 두 선을 같은 날짜 축에 그리고 x축 이름은 정답 날짜예요."
+   "자, 마지막 그래프예요. 릿지로 예측한 선을 실제 다음 종가 위에 겹쳐 그려요. x축은 입력 날짜가 아니라 정답 날짜거든요."
   ],
   [
    "starter",
-   "준비 코드가 모델 재료에 matplotlib, seaborn까지 불러 뒀어요. 그대로 둘게요."
+   "준비 코드엔 frame과 target_date, 훈련 자료와 테스트 자료 나누기, 그리고 Pipeline과 Ridge, plt까지 다 들어 있어요. 그대로 두면 돼요."
   ],
   [
    "code",
    "model=Pipeline([('scale',StandardScaler()),('model',Ridge(alpha=1))])\nmodel.fit(X_train,y_train)\nprediction=model.predict(X_test)\n",
-   "릿지 파이프라인, 앞 미션과 같아요. 학습하고 테스트 예측을 prediction에 담아요."
+   "먼저 릿지 파이프라인을 만들어 훈련 자료로 학습하고, 테스트 자료로 prediction을 구해요."
   ],
   [
    "code",
    "comparison=pd.DataFrame({'actual':y_test.to_numpy(),'prediction':prediction},index=pd.DatetimeIndex(frame.loc[test_mask,'target_date']))\n",
-   "comparison 표의 인덱스가 핵심이에요. 입력 날짜가 아니라 target_date. 실제값도 예측값도 다음 거래일의 값이니까 그 날짜 위에 놓는 거죠."
+   "이제 비교 표예요. actual엔 실제 다음 종가, prediction엔 예측을 넣고요. 인덱스는 정답 날짜인 target_date로 잡는 게 핵심이에요."
   ],
   [
    "code",
    "fig,ax=plt.subplots()\nax.plot(comparison.index,comparison['actual'],label='Actual next close')\nax.plot(comparison.index,comparison['prediction'],label='Ridge')\n",
-   "subplots로 종이와 영역을 만들고, 같은 날짜 축에 실제 선과 예측 선을 하나씩 그려요. label이 범례에 들어가요."
+   "fig, ax를 만들고 같은 날짜 축에 선 두 개를 그려요. 실제 선 하나, 릿지 예측 선 하나거든요."
   ],
   [
    "code",
    "ax.set(xlabel='정답 날짜',ylabel='Price',title='Held-out next trading day')\nax.legend()\nplt.show()\ncomparison.head()\n",
-   "set으로 축 이름과 제목을 붙이고 legend로 범례를 켜요. plt.show() 뒤에 comparison.head()로 표 앞 다섯 줄도 봐요."
+   "x축 이름을 정답 날짜로 붙이고, 범례를 켜고 보여 줘요. 마지막에 comparison.head()로 표 앞부분도 확인하고요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "그래프가 나왔죠? 두 선이 거의 붙어 다니다 5월 15일처럼 급락한 날에 벌어져요. 표 첫 줄은 5월 12일, 실제 279000에 예측 282582예요."
+   "그래프에 두 선이 겹쳐 보이죠? 예측이 실제를 얼마나 따라가는지, 어느 구간에서 벌어지는지 보세요. 아래 표는 날짜마다 actual과 prediction이 나란히 있어요."
+  ],
+  [
+   "submit",
+   "제출할게요."
   ]
  ]
 }

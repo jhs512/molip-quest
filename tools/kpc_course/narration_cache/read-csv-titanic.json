@@ -1,32 +1,45 @@
 {
  "hash": "83097f732e49f57c",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 이제 진짜 파일이에요. 앱이 준비한 data/titanic.csv를 읽어 titanic에 담고, shape를 출력한 뒤 head()로 앞 5행을 봐요."
+   "자, 이제 진짜 파일이에요. 앱이 준비해 둔 data/titanic.csv를 읽어 titanic에 담고, 모양을 확인해 볼게요."
+  ],
+  [
+   "hint",
+   "경로는 따옴표로 감싸서 넘기면 돼요. data/ 폴더 안에 있으니까 data/를 빼면 파일을 못 찾거든요."
   ],
   [
    "starter",
-   "준비 코드는 import 한 줄뿐이에요. 그대로 둘게요."
+   "import pandas as pd 한 줄은 준비돼 있어요. 그대로 둘게요."
   ],
   [
    "code",
    "titanic = pd.read_csv('data/titanic.csv')\n",
-   "read_csv에 경로를 따옴표로 감싸 넘겨요. 자료가 data 폴더 안에 있어서 data/를 빼면 파일을 못 찾아요."
+   "pd.read_csv에 파일 경로를 넘기면 표가 돼요. 그걸 titanic에 담아요."
   ],
   [
    "code",
-   "print(titanic.shape)\ntitanic.head()\n",
-   "shape를 출력하고 마지막 줄에 head()를 적어요. 앞 5행이 표로 떠요."
+   "print(titanic.shape)\n",
+   "shape를 출력하면 행과 열의 개수가 나오거든요."
+  ],
+  [
+   "code",
+   "titanic.head()\n",
+   "마지막 줄에 titanic.head()를 적으면 앞 5행을 보여 줘요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "(1309, 14), 1309명에 열이 14개예요. 열 이름을 훑어 보세요. 객실등급, 생존, 이름, 성별, 나이, 요금. 이 표가 분류 챕터까지 우리 주인공이에요."
+   "(1309, 14)이 나왔죠? 1309행 14열이에요. 그 아래 표의 열 이름들을 한 번 훑어 두세요."
   ],
   [
    "submit",
-   "제출할게요. titanic이 1309행 14열인지 봐요."
+   "이 표가 분류 챕터까지 우리의 주인공이에요. 제출할게요."
   ]
  ]
 }

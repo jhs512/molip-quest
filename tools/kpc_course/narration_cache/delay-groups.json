@@ -1,33 +1,41 @@
 {
  "hash": "5bf588997329e4d6",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 여섯 달 중 한 번이라도 연체한 적이 있는지를 새 열 has_delay로 만들어요. 그걸로 묶어 타깃의 count, sum, mean을 summary에 담으면 돼요."
+   "자, 여섯 달 중 한 번이라도 연체한 사람을 가려낼 거예요. 연체는 값이 1 이상이거든요."
+  ],
+  [
+   "hint",
+   "여섯 열에 한꺼번에 조건을 걸고, 행마다 하나라도 참인지 any로 묻는 거예요."
   ],
   [
    "starter",
-   "준비 코드에 pay_columns가 있어요. 상환_9월부터 상환_4월까지 여섯 열 이름이에요. 그대로 둘게요."
+   "credit, target, 그리고 상환 열 여섯 개를 담은 pay_columns가 준비되어 있어요."
   ],
   [
    "code",
    "credit['has_delay']=(credit[pay_columns]>=1).any(axis=1)\n",
-   "credit[pay_columns] >= 1은 여섯 열 전부에 참, 거짓을 매긴 표예요. any(axis=1)은 행마다 하나라도 참이면 참. 그걸 새 열에 넣어요."
+   "여섯 열 전부에 >= 1을 매기면 참·거짓 표가 나와요. any(axis=1)이 행마다 하나라도 참이면 참으로 접어 주죠? 그걸 새 열 has_delay에 넣어요."
   ],
   [
    "code",
    "summary=credit.groupby('has_delay')[target].agg(['count','sum','mean'])\n",
-   "has_delay로 묶고 agg에 세 개를 한 번에 넘겨요. 몇 명 중 몇 명이 부도고 비율은 얼마인지 한 표에 나오거든요."
+   "이제 has_delay로 묶어요. 타깃의 count, sum, mean을 한 번에 agg로 뽑아 summary에 담으면 돼요."
   ],
   [
    "code",
    "summary\n",
-   "마지막 줄에 summary만 적으면 표로 보여 줘요."
+   "마지막 줄에 summary만 적으면 표가 화면에 나와요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "표를 보세요. 연체 경험 없는 쪽은 19931명 중 부도율 약 11.7%, 있는 쪽은 10069명 중 약 42.7%예요. 네 배 가까이 차이 나죠?"
+   "행이 둘인 표가 나왔죠? False는 연체 경험이 없는 그룹, True는 있는 그룹이에요. mean 열에서 두 그룹의 부도율 차이를 비교해 보세요."
   ],
   [
    "submit",

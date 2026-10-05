@@ -1,38 +1,51 @@
 {
  "hash": "5179184a940b154b",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 시합이에요. 0부터 999,999까지가 리스트 values와 넘파이 배열 array에 있어요. for로 더한 합계와 시간을 total, loop_seconds에, array.sum() 결과와 시간을 numpy_total, numpy_seconds에 담고 몇 배 빠른지 출력하면 돼요."
+   "자, 같은 합계를 두 방법으로 구하고 시간을 재요. 0부터 999,999까지가 리스트 values와 넘파이 배열 array에 들어 있거든요."
   ],
   [
    "starter",
-   "준비 코드 네 줄, time과 numpy 가져오기, values와 array는 그대로 둘게요."
+   "준비 코드 네 줄은 그대로 둘게요. time과 넘파이를 불러오고, values와 array를 만들어 두었어요."
   ],
   [
    "code",
-   "start = time.perf_counter()\n",
-   "시간 재기는 시작 시각을 start에 적어 두는 걸로 시작해요. time.perf_counter()가 지금 시각이에요."
+   "start = time.perf_counter()\ntotal = 0\nfor value in values:\n    total += value\n",
+   "자, 시계를 먼저 켜요. time.perf_counter()가 지금 시각을 start에 담거든요. 그다음 for 반복문으로 values를 하나씩 total에 더해요."
   ],
   [
    "code",
-   "total = 0\nfor value in values:\n    total += value\nloop_seconds = time.perf_counter() - start\n",
-   "반복문으로 백만 번 누적해요. 끝나면 지금 시각에서 start를 빼요. 그게 걸린 초예요."
+   "loop_seconds = time.perf_counter() - start\n",
+   "다 더했으면 지금 시각에서 start를 빼요. 그게 반복문에 걸린 초고, loop_seconds에 담아요."
   ],
   [
    "code",
    "start = time.perf_counter()\nnumpy_total = array.sum()\nnumpy_seconds = time.perf_counter() - start\n",
-   "같은 방식으로 array.sum() 한 줄을 감싸요. start를 다시 찍는 거 보이죠?"
+   "이번엔 넘파이 차례예요. 시계를 다시 켜고 array.sum() 한 줄로 합계를 구해요. 걸린 초는 numpy_seconds에 담으면 돼요."
   ],
   [
    "code",
-   "print(f'반복문 {loop_seconds:.4f}초, 넘파이 {numpy_seconds:.4f}초')\nprint(f'넘파이가 {loop_seconds / numpy_seconds:.0f}배 빠르다')\n",
-   "f-문자열에서 콜론 뒤 .4f는 소수 네 자리, .0f는 정수로 반올림이에요. 배수는 반복문 시간 나누기 넘파이 시간이에요."
+   "print(f'반복문 {loop_seconds:.4f}초, 넘파이 {numpy_seconds:.4f}초')\n",
+   "두 시간을 출력해요. 콜론 뒤에 .4f를 쓰면 소수 네 자리까지 보여 주거든요."
+  ],
+  [
+   "code",
+   "print(f'넘파이가 {loop_seconds / numpy_seconds:.0f}배 빠르다')\n",
+   "마지막으로 몇 배 빠른지예요. loop_seconds를 numpy_seconds로 나누고 .0f로 소수점을 없애요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "두 줄 나왔죠? 반복문은 백분의 몇 초, 넘파이는 만분의 몇 초, 수십 배에서 백 배쯤이에요. 숫자는 컴퓨터마다 달라요. 합계는 둘 다 499,999,500,000이에요."
+   "반복문은 0.0408초, 넘파이는 0.0005초가 나왔죠? 넘파이가 82배 빠르다고 찍혔어요. 이 배수는 컴퓨터마다 달라요."
+  ],
+  [
+   "submit",
+   "제출할게요."
   ]
  ]
 }

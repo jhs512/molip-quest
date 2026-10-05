@@ -1,28 +1,40 @@
 {
  "hash": "7cd9b1ddab61a666",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 금액까지 든 holdings를 DataFrame으로 만들어 df에 담고, 마지막 줄에 df를 적어 표를 띄우면 돼요."
+   "자, 이번엔 holdings를 표로 띄워 볼 거예요. 세 종목이 세 줄짜리 표가 되는 거죠."
+  ],
+  [
+   "hint",
+   "힌트대로 pd.DataFrame(holdings) 한 줄이면 돼요. print()나 합계는 필요 없어요."
   ],
   [
    "starter",
-   "준비 코드에 import pandas as pd와 holdings가 있어요. 그대로 둘게요."
+   "준비 코드엔 pandas가 pd로 들어와 있고, holdings엔 금액까지 든 종목 세 개가 있어요."
   ],
   [
    "code",
    "df = pd.DataFrame(holdings)\n",
-   "pd.DataFrame에 딕셔너리 리스트를 넘겨요. 키가 열 이름이 돼요."
+   "홀딩스 목록을 DataFrame으로 바꿔서 df에 넣어요. 딕셔너리 하나가 표의 한 행이 되거든요."
   ],
   [
    "code",
    "df\n",
-   "마지막 줄에 df만 적어요. print 없이요. 그래야 앱이 표로 그려 줘요."
+   "마지막 줄에 df만 적으면 표가 떠요. print()는 안 써도 돼요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "표가 나왔죠? 3행 4열, 열 이름이 name, price, quantity, amount 순이에요. 왼쪽 0, 1, 2는 행 번호 인덱스예요."
+   "3행 4열 표가 나왔죠? 열 이름이 name, price, quantity, amount 순인지 보세요."
+  ],
+  [
+   "submit",
+   "제출할게요."
   ]
  ]
 }

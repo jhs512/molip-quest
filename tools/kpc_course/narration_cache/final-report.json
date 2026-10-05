@@ -1,38 +1,46 @@
 {
  "hash": "d26676619a027f36",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 수업의 결론을 코드로 써요. models의 Linear와 Ridge를 학습해 MAE를 maes에 모으고, 기준과 비교해 report 딕셔너리 다섯 키를 채워요. 그리고 결론 세 줄을 출력해요."
+   "자, 마지막이에요. 수업의 결론을 코드로 적어요. 숫자 다섯 개를 report에 모으고, 결론 세 줄을 출력하면 돼요."
   ],
   [
    "starter",
-   "준비 코드 끝에 models 딕셔너리가 있어요. Linear와 Ridge 둘이에요. 그대로 둘게요."
+   "준비 코드엔 지금까지 만든 특징 네 개와 훈련 자료, 테스트 자료가 다 들어 있어요. models엔 Linear와 Ridge가 있고요."
   ],
   [
    "code",
    "baseline_mae=mean_absolute_error(y_test,X_test['close'])\nmaes={}\n",
-   "기준 MAE를 먼저 구하고, 모델 점수를 모을 빈 딕셔너리 maes를 둬요."
+   "기준 모델부터요. 오늘 종가를 그대로 내일 예측으로 쓰고 MAE를 재요. 그리고 모델별 점수를 담을 빈 딕셔너리 maes를 둬요."
   ],
   [
    "code",
    "for name,estimator in models.items():\n    model=Pipeline([('scale',StandardScaler()),('model',estimator)])\n    model.fit(X_train,y_train)\n    maes[name]=mean_absolute_error(y_test,model.predict(X_test))\n",
-   "비교표 때와 같은 반복이에요. 모델마다 파이프라인으로 학습해 테스트 MAE를 maes에 넣어요."
+   "모델 두 개를 돌아요. 스케일러와 모델을 파이프라인으로 묶고, 훈련 자료로 학습한 뒤 테스트 MAE를 이름별로 넣어요."
   ],
   [
    "code",
    "best_model=min(maes,key=maes.get)\nreport={'test_days':len(X_test),'baseline_mae':baseline_mae,'best_model':best_model,'best_mae':maes[best_model],'improved':bool(maes[best_model]<baseline_mae)}\n",
-   "min에 key=maes.get을 주면 값이 가장 작은 키, 즉 MAE가 가장 작은 모델 이름이 나와요. report에 다섯 값을 담아요."
+   "MAE가 가장 작은 이름을 best_model로 뽑아요. 그다음 숫자 다섯 개를 report에 담아요. improved는 최선 MAE가 기준보다 작은지를 bool로 적는 거거든요."
   ],
   [
    "code",
    "print(f\"다음 거래일 종가를 예측했고, 마지막 {report['test_days']}거래일을 테스트로 두었으며 훈련 정답은 모두 테스트 시작 전이다.\")\nprint(f\"기준 예측(오늘 종가 그대로) MAE {baseline_mae:.0f}원, 최선 모델 {best_model} MAE {maes[best_model]:.0f}원.\")\nprint('최선 모델이 기준보다 오차를 줄였다.' if report['improved'] else '최선 모델도 기준보다 오차를 줄이지 못했다. 이 파일, 이 기간의 결과다.')\n",
-   "결론 세 줄이에요. 무엇을 언제 예측해 어떻게 나눴나, 기준과 최선 모델 MAE, 그리고 개선 여부. improved가 False면 못 줄였다고 그대로 찍어요."
+   "결론 세 줄이에요. 무엇을 언제 예측하고 어떻게 나눴는지, 기준 MAE와 최선 MAE, 그리고 개선했는지를 improved에 따라 골라 출력해요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "마지막 80거래일, 기준 13638원, 최선 모델 Linear 13521원, 기준보다 오차를 줄였다. 백 원 남짓이지만 정직하게 적은 숫자예요."
+   "마지막 80거래일이 테스트였죠? 기준 MAE 13638원, 최선 모델 Linear MAE 13521원이에요. 아주 조금이지만 기준보다 줄였다고 나왔어요. 이 파일, 이 기간의 결과라는 걸 기억하세요."
+  ],
+  [
+   "submit",
+   "제출할게요. 다섯 숫자가 실제 계산과 맞으면 정답이에요."
   ]
  ]
 }

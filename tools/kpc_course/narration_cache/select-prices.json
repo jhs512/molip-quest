@@ -1,28 +1,42 @@
 {
  "hash": "3e2688597950ee98",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 두 종목의 가격을 전부 뽑아 숫자 리스트로 만들어요. #prices li b로 가격 요소를 모두 찾고, 하나씩 글자를 꺼내 쉼표를 지우고 int로 바꿔 prices에 모아요."
+   "자, 이번엔 두 종목 가격을 전부 뽑아 숫자 리스트로 만들어요. 앞 단원의 for와 append가 그대로 쓰이거든요."
   ],
   [
    "starter",
-   "준비 코드가 soup까지 만들어 뒀어요. 그대로 둘게요."
+   "html을 읽어 soup까지 만든 준비 코드는 그대로 둘게요."
   ],
   [
    "code",
-   "prices = []\nfor tag in soup.select('#prices li b'):\n    prices.append(int(tag.get_text(strip=True).replace(',', '')))\n",
-   "빈 리스트를 만들고 for로 b 요소를 하나씩 돌아요. 안에서는 글자 꺼내기, 쉼표 지우기, int, append. 앞 단원의 for와 append가 그대로 쓰이죠."
+   "prices = []\n",
+   "먼저 빈 리스트 prices를 만들어요. 여기에 가격을 하나씩 모을 거거든요."
+  ],
+  [
+   "code",
+   "for tag in soup.select('#prices li b'):\n",
+   "select로 가격 요소를 모두 찾아서 tag 하나씩 돌아요."
+  ],
+  [
+   "code",
+   "    prices.append(int(tag.get_text(strip=True).replace(',', '')))\n",
+   "글자를 꺼내 쉼표를 지우고 int로 바꿔서 prices에 붙여요."
   ],
   [
    "code",
    "print(prices)\n",
-   "리스트를 출력해요."
+   "다 모였는지 prices를 찍어 볼게요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "[10000, 20000]이 나왔죠? 쉼표 없는 정수 둘이에요."
+   "[10000, 20000]이 나왔죠? 두 종목 가격이 숫자 리스트로 모였어요."
   ],
   [
    "submit",

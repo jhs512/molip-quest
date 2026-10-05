@@ -1,33 +1,50 @@
 {
  "hash": "a71118eb8628e2ba",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 비교를 참·거짓 하나로 정리해요. 기준 MAE를 baseline_mae, Ridge(alpha=1) 파이프라인의 MAE를 ridge_mae에 담고, ridge_mae < baseline_mae를 improved에 넣어 세 값을 출력해요. False여도 틀린 게 아니에요."
+   "자, 비교를 참·거짓 하나로 정리해요. 기준 예측의 MAE와 릿지의 MAE를 구해서, 릿지가 더 작은지 improved에 담는 거예요."
+  ],
+  [
+   "hint",
+   "improved가 False로 나와도 틀린 게 아니에요. 그게 이 기간의 사실이거든요. 검사는 계산이 맞는지만 봐요."
   ],
   [
    "starter",
-   "준비 코드는 그대로예요. 분리된 자료와 회귀 도구가 있어요."
+   "준비 코드는 그대로 둘게요. 훈련 자료와 테스트 자료가 나뉘어 있고, Pipeline, StandardScaler, Ridge, mean_absolute_error까지 다 불러와 있어요."
   ],
   [
    "code",
    "baseline_mae = mean_absolute_error(y_test, X_test['close'])\n",
-   "기준부터요. 정답 y_test, 예측은 오늘 종가 close."
+   "기준 모델부터 구해요. 오늘 종가 close를 그대로 내일 예측으로 쓴 MAE를 baseline_mae에 넣어요."
   ],
   [
    "code",
-   "ridge = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))])\nridge.fit(X_train, y_train)\nridge_mae = mean_absolute_error(y_test, ridge.predict(X_test))\n",
-   "릿지 파이프라인을 학습하고 테스트 예측으로 MAE를 구해요. 비교는 같은 y_test로요."
+   "ridge = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))])\nridge.fit(X_train, y_train)\n",
+   "릿지는 스케일을 맞추는 StandardScaler 뒤에 Ridge(alpha=1)을 붙인 파이프라인이에요. 훈련 자료로 학습시켜요."
+  ],
+  [
+   "code",
+   "ridge_mae = mean_absolute_error(y_test, ridge.predict(X_test))\n",
+   "테스트 자료를 예측해서 정답 y_test와 비교한 MAE를 ridge_mae에 넣어요."
   ],
   [
    "code",
    "improved = bool(ridge_mae < baseline_mae)\nprint(baseline_mae, ridge_mae, improved)\n",
-   "작으면 True, 아니면 False. bool로 감싸 파이썬 참·거짓으로 만들어요."
+   "ridge_mae가 baseline_mae보다 작은지를 bool로 감싸 improved에 담고, 세 값을 출력하면 돼요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "13637.5, 13601, True예요. 이 기간에서 릿지가 36원쯤 줄였어요. 만화처럼 False가 나오는 기간도 있어요. 그때는 그대로 적는 거예요."
+   "기준 MAE가 13637.5, 릿지 MAE가 약 13601이죠? 조금 작아서 improved가 True로 나왔어요. False였어도 그대로 적으면 돼요."
+  ],
+  [
+   "submit",
+   "제출할게요."
   ]
  ]
 }

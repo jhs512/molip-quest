@@ -1,33 +1,41 @@
 {
  "hash": "a4b880a51be22690",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 같은 계산을 scikit-learn 함수로 해요. 정답 y_true와 예측 y_pred 여섯 개로 네 지표를 metrics 딕셔너리에 담고, 혼동행렬을 matrix에 담아 둘 다 출력하면 돼요."
+   "자, 앞에서 손으로 센 네 지표를 이번엔 scikit-learn 함수로 구해요. 정답 y_true와 예측 y_pred 여섯 개는 그대로예요."
+  ],
+  [
+   "hint",
+   "지표 함수는 전부 정답, 예측 순서로 넣어요. 앞뒤가 바뀌면 precision과 recall이 서로 뒤바뀌거든요."
   ],
   [
    "starter",
-   "준비 코드가 함수 다섯 개를 불러오고 y_true, y_pred를 만들어 뒀어요. 그대로 둘게요."
+   "import 한 줄과 y_true, y_pred 두 줄은 준비돼 있어요. 그대로 둘게요."
   ],
   [
    "code",
    "metrics={'accuracy':accuracy_score(y_true,y_pred),'precision':precision_score(y_true,y_pred),'recall':recall_score(y_true,y_pred),'f1':f1_score(y_true,y_pred)}\n",
-   "지표 함수는 전부 정답, 예측 순서로 넣어요. 네 개를 같은 이름의 키로 딕셔너리에 담아요. 순서를 바꾸면 정밀도와 재현율이 뒤바뀌거든요."
+   "네 함수에 전부 y_true, y_pred 순서로 넣고, 같은 이름의 키로 metrics 딕셔너리에 담아요."
   ],
   [
    "code",
    "matrix=confusion_matrix(y_true,y_pred,labels=[0,1])\n",
-   "혼동행렬도 정답, 예측 순서예요. labels를 0, 1로 주면 행과 열 순서가 고정돼요. 왼쪽 위가 TN, 오른쪽 아래가 TP예요."
+   "혼동행렬도 같은 순서로 넣어요. labels=[0, 1]이 행과 열 순서를 0, 1로 고정하거든요."
   ],
   [
    "code",
    "print(metrics)\nprint(matrix)\n",
-   "딕셔너리와 행렬을 차례로 출력해요."
+   "둘 다 출력하면 돼요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "네 지표가 전부 0.6666이고, 행렬이 2 1, 1 2죠? TN 2, FP 1, FN 1, TP 2. 앞 미션과 같은 상황이에요."
+   "네 지표가 전부 0.6666이죠? 행렬은 [[2 1], [1 2]]라서 TN 2, FP 1, FN 1, TP 2예요. 앞 미션에서 손으로 센 값과 같아요."
   ],
   [
    "submit",

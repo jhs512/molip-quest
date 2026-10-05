@@ -1,37 +1,41 @@
 {
  "hash": "fc9c693f1daaaf59",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 이번엔 저장 파일이 아니라 지금 시세예요. FinanceDataReader로 삼성전자를 올해 1월부터 받아요."
+   "자, 이번엔 저장 파일이 아니라 지금 이 순간의 시세를 받아 봐요. 삼성전자 종목 코드 005930을 올해 1월 1일부터 받는 거거든요."
   ],
   [
    "starter",
-   "준비 코드는 pandas랑 FinanceDataReader 임포트뿐이에요."
+   "pandas와 FinanceDataReader는 fdr이라는 이름으로 이미 불러와 있어요. 그대로 두고 아래에 이어서 쓰면 돼요."
   ],
   [
    "code",
    "live = fdr.DataReader('005930', '2026-01-01').sort_index()\n",
-   "DataReader에 종목 코드와 시작일. 받자마자 날짜순으로 정렬해요. 받은 순서를 믿지 않는 게 시간 자료의 첫 습관이에요."
+   "fdr.DataReader에 종목 코드와 시작 날짜를 주면 날짜가 인덱스인 표가 와요. sort_index로 날짜순을 확실히 해 두고 live에 담아요."
   ],
   [
    "code",
    "latest_close = int(live['Close'].iloc[-1])\nma5 = float(live['Close'].rolling(5).mean().iloc[-1])\n",
-   "마지막 종가는 Close의 맨 끝 값, 5일 평균은 rolling(5).mean()의 맨 끝 값이에요. 뒤 단원의 ma5와 같은 계산이죠."
+   "Close 열의 맨 마지막 값이 오늘 종가죠? int로 정수로 만들어요. rolling(5).mean()은 최근 5거래일 평균이고, 그 마지막 값이 ma5예요."
   ],
   [
    "code",
    "print(live.tail())\nprint(live.index.max().date(), latest_close, round(ma5))\n",
-   "표 끝이랑 마지막 날짜, 두 값을 출력해요."
+   "표 끝부분을 보고, 마지막 날짜와 두 값을 한 줄로 찍어요. 날짜는 인덱스의 최댓값에서 꺼내면 돼요."
+  ],
+  [
+   "run",
+   "실행해 볼게요. 인터넷에서 받아 오니까 잠깐 기다려야 해요."
   ],
   [
    "output",
-   "오늘 기준 최근 거래일의 종가가 보이죠? 받는 날마다 숫자가 달라요. 그래서 검사는 값이 아니라 모양을 봐요. 날짜 인덱스, 20행 이상, 마지막 날짜가 2주 안."
+   "표 끝에 최근 다섯 거래일이 보이죠? 마지막 줄에 날짜, 종가 276000, 5일 평균 273000이 나왔어요. 여러분이 받는 날엔 숫자가 다를 거예요."
   ],
   [
    "submit",
-   "제출할게요. 두 값이 표와 맞는지도 확인해요."
+   "검사는 값이 아니라 모양을 봐요. 제출할게요."
   ]
  ]
 }

@@ -1,29 +1,43 @@
 {
  "hash": "67f1c9846c39cb7e",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 나이와 요금이 같이 움직이는지 봐요. 둘 다 기록된 승객만 known에 담고, 한 명을 점 하나로 찍어요."
+   "자, 이번엔 승객 한 명을 점 하나로 찍어 봐요. 나이와 요금이 둘 다 기록된 승객만 골라서 산점도를 그릴 거예요."
+  ],
+  [
+   "hint",
+   "힌트를 보세요. dropna의 subset에 열 두 개를 넣으면 둘 다 값이 있는 행만 남거든요."
   ],
   [
    "starter",
-   "준비 코드는 그대로 둘게요."
+   "준비 코드엔 pandas로 titanic을 읽어 두고, matplotlib과 seaborn을 불러 놓았어요. 그대로 둘게요."
   ],
   [
    "code",
    "known = titanic.dropna(subset=['나이', '요금'])\n",
-   "subset에 열 둘을 넣으면 둘 다 값이 있는 행만 남아요. 요금이 빈 한 명이 더 빠져서 1045명이에요."
+   "먼저 나이와 요금이 모두 있는 행만 known에 담아요. subset에 두 열을 같이 넣으면 돼요."
   ],
   [
    "code",
-   "fig, ax = plt.subplots()\nax.scatter(known['나이'], known['요금'], alpha=0.4)\n",
-   "ax.scatter에 가로 나이, 세로 요금을 넘겨요. alpha 0.4는 점을 반투명하게 해서 겹친 데가 진하게 보이게 하는 거예요."
+   "fig, ax = plt.subplots()\n",
+   "그림 한 장을 준비해요. 축은 ax에 받아 둘게요."
   ],
   [
    "code",
-   "ax.set(xlabel='나이', ylabel='요금', title='Age vs fare')\nplt.show()\n",
-   "축 이름을 붙이고 띄워요."
+   "ax.scatter(known['나이'], known['요금'], alpha=0.4)\n",
+   "x에 나이, y에 요금을 넣고 점을 찍어요. 점이 많이 겹치니까 alpha를 0.4로 반투명하게 했어요."
+  ],
+  [
+   "code",
+   "ax.set(xlabel='나이', ylabel='요금', title='Age vs fare')\n",
+   "x축 이름은 나이, y축 이름은 요금으로 붙여요. 제목도 한 줄에 같이 넣으면 돼요."
+  ],
+  [
+   "code",
+   "plt.show()\n",
+   "마지막으로 띄워요."
   ],
   [
    "run",
@@ -31,7 +45,7 @@
   ],
   [
    "output",
-   "점 1045개가 아래쪽에 깔려 있죠? 요금 절반이 16 아래라 바닥에 몰리고, 500 넘는 점 몇 개만 위에 떠 있어요. 나이 따라 올라가는 모양은 안 보여요."
+   "산점도가 떴죠? 1045명이 점으로 찍혔어요. 겹친 데가 진하게 보이거든요. 점들이 어떤 모양을 이루는지, 아니면 아무 모양도 없는지 보세요."
   ],
   [
    "submit",

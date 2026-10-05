@@ -1,33 +1,46 @@
 {
  "hash": "abe21c77182a7c00",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 선택자로 요소를 찾아요. #prices li가 몇 개인지 n_items에, 첫 종목의 이름을 first_name에 담아 출력해요."
+   "자, 준비 코드가 HTML을 읽어서 soup를 만들어 뒀어요. #prices li에 맞는 요소가 몇 개인지 세고, 첫 종목의 이름을 꺼내면 돼요."
+  ],
+  [
+   "hint",
+   "soup.select는 맞는 요소를 리스트로 돌려주거든요. 그러니 len()으로 세고, 첫 요소에서 .name을 찾으면 돼요."
   ],
   [
    "starter",
-   "준비 코드가 prices.html을 읽어 soup까지 만들어 뒀어요. 그대로 둘게요."
+   "import와 soup를 만드는 준비 코드는 그대로 둘게요. 우리는 soup에서 찾기만 하면 돼요."
   ],
   [
    "code",
-   "items = soup.select('#prices li')\nn_items = len(items)\n",
-   "select는 맞는 요소를 리스트로 돌려줘요. 그러니 len으로 세면 되죠."
+   "items = soup.select('#prices li')\n",
+   "자, soup.select에 선택자 '#prices li'를 넣어요. 맞는 요소가 리스트로 items에 들어가요."
+  ],
+  [
+   "code",
+   "n_items = len(items)\n",
+   "리스트니까 len()으로 세면 되죠? 그 수를 n_items에 담아요."
   ],
   [
    "code",
    "first_name = items[0].select_one('.name').get_text(strip=True)\n",
-   "첫 요소 [0]에서 select_one('.name')으로 이름 요소를 찾고, get_text(strip=True)로 글자만 꺼내요. strip은 앞뒤 공백을 지워요."
+   "첫 요소 items[0]에서 select_one으로 .name 요소를 찾아요. get_text(strip=True)로 글자만 꺼내서 first_name에 담고요."
   ],
   [
    "code",
    "print(n_items, first_name)\n",
-   "둘을 한 줄에 출력해요."
+   "마지막으로 n_items와 first_name을 함께 출력해요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "2 가상A가 나왔죠? li가 두 개고 첫 종목 이름이 가상A예요."
+   "2 가상A가 나왔죠? 요소가 2개고, 첫 종목 이름이 가상A예요."
   ],
   [
    "submit",

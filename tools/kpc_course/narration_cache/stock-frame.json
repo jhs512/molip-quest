@@ -1,47 +1,60 @@
 {
  "hash": "c36d6f4e290771f8",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 재료를 한 표에 모아요. 빈 표 frame에 close, return_1, ma5, lag_close_1, target_next_close, target_date 여섯 열을 만들고, 빈칸 있는 행을 빼요."
+   "자, 지금까지 만든 재료를 빈 표 frame에 모아요. 여섯 열을 채우고 빈칸이 있는 행을 빼는 거예요."
+  ],
+  [
+   "hint",
+   "네 재료는 앞 미션들 그대로예요. 왼쪽만 frame[...]으로 바꾸면 돼요."
   ],
   [
    "starter",
-   "준비 코드가 prices를 읽고, 날짜 인덱스만 있는 빈 표 frame을 만들어 뒀어요. 그대로 둘게요."
+   "준비 코드가 prices를 읽고, 같은 날짜 인덱스로 빈 표 frame을 만들어 뒀어요."
   ],
   [
    "code",
    "frame['close']=prices['종가']\nframe['return_1']=prices['종가'].pct_change()\n",
-   "close는 오늘 종가 그대로, return_1은 앞 미션의 pct_change예요."
+   "오늘 종가와 수익률이에요. 왼쪽이 frame 열이 된 것만 달라요."
   ],
   [
    "code",
    "frame['ma5']=prices['종가'].rolling(5).mean()\nframe['lag_close_1']=prices['종가'].shift(1)\n",
-   "ma5는 최근 5거래일 평균, lag_close_1은 shift(1), 어제 종가예요. 여기까지 입력 네 열이에요."
+   "이동평균과 어제 종가예요. 앞 미션에서 만든 그대로거든요."
   ],
   [
    "code",
-   "frame['target_next_close']=prices['종가'].shift(-1)\nframe['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\n",
-   "정답은 shift(-1), 내일 종가예요. 날짜 인덱스도 pd.Series로 열로 만들어 똑같이 shift(-1)하면 정답의 날짜 target_date가 돼요."
+   "frame['target_next_close']=prices['종가'].shift(-1)\n",
+   "정답 y예요. shift(-1)로 내일 종가를 오늘 행에 당겨 와요."
+  ],
+  [
+   "code",
+   "frame['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\n",
+   "날짜 인덱스를 pd.Series로 열로 만들고 똑같이 shift(-1)해요. 정답이 어느 날짜 건지 남겨 두는 거죠."
   ],
   [
    "code",
    "frame=frame.dropna().copy()\n",
-   "dropna로 빈칸 있는 행을 한 번에 빼요. copy()를 붙여 독립된 표로 만들어 둬요."
+   "dropna로 빈칸이 있는 행을 빼고, copy로 독립된 표로 만들어요."
   ],
   [
    "code",
    "print(frame.shape)\nframe.head()\n",
-   "크기를 찍고 표를 봐요."
+   "행과 열 개수를 찍고 앞부분을 봐요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "(396, 6)이죠? 401행에서 앞 네 행과 마지막 한 행이 빠졌어요. 첫 행이 1월 17일이고 target_date는 1월 20일, 다음 거래일이에요. 주말을 건너뛰었죠?"
+   "(396, 6)이 나왔죠? 401행에서 앞 네 행과 마지막 한 행이 빠진 거예요. target_date가 인덱스 날짜보다 뒤인지 보세요."
   ],
   [
    "submit",
-   "제출할게요. 검사는 396행 6열에 빈칸이 없는지, target_date가 모두 인덱스 날짜보다 뒤인지 봐요."
+   "제출할게요."
   ]
  ]
 }

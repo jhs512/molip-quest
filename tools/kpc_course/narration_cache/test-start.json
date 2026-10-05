@@ -1,28 +1,45 @@
 {
  "hash": "86e389fcfcf78ba7",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 첫 코딩이에요. 준비된 frame에서 마지막 80행의 첫 날짜를 test_start에 넣고, 그 날짜 이상인 행 수를 n_test에 담아 출력해요. 80이 나와야 맞아요."
+   "자, 준비된 frame에서 마지막 80행을 테스트 자료로 떼어 낼 거예요. 그 첫 날짜를 test_start에 담고, 그 날짜 이상인 행 수를 세면 돼요."
+  ],
+  [
+   "hint",
+   "frame.index[-80]이 뒤에서 80번째 날짜거든요. 날짜 비교는 행마다 참·거짓이 나오고, .sum()이 참의 개수예요."
   ],
   [
    "starter",
-   "준비 코드가 앞 단원에 만든 frame을 그대로 만들어 둬요. 여섯 열에 dropna까지요. 그대로 둘게요."
+   "준비 코드가 frame을 다 만들어 놨어요. 종가와 수익률, 이동평균, 다음 날 정답까지 들어 있고 빈 행은 이미 지웠죠?"
   ],
   [
    "code",
    "test_start = frame.index[-80]\n",
-   "frame.index[-80], 뒤에서 80번째 날짜예요. 거기가 테스트 첫날이에요."
+   "뒤에서 80번째 날짜를 test_start에 넣어요. 여기부터가 테스트 자료 시작이죠."
   ],
   [
    "code",
-   "n_test = int((frame.index >= test_start).sum())\nprint(test_start, n_test)\n",
-   "frame.index >= test_start는 행마다 참·거짓이고, sum()이 참의 개수예요. int로 감싸 정수로 저장하고 출력해요."
+   "n_test = int((frame.index >= test_start).sum())\n",
+   "날짜가 test_start 이상인 행을 참으로 표시하고, .sum()으로 세요. int()로 감싸서 정수로 담아요."
+  ],
+  [
+   "code",
+   "print(test_start, n_test)\n",
+   "시작 날짜와 행 수를 같이 찍어 볼게요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "2026년 5월 11일, 그리고 80이 나왔죠? 그 날짜부터 끝까지가 테스트 자료예요."
+   "2026-05-11이 시작일이고, 80이 나왔죠? 마지막 80행을 정확히 떼어 낸 거예요."
+  ],
+  [
+   "submit",
+   "제출할게요."
   ]
  ]
 }

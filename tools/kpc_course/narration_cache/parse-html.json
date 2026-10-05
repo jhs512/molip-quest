@@ -1,37 +1,41 @@
 {
  "hash": "14aeda8d6359e9e1",
- "by": "hand",
+ "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 네 단계를 한 번에 해요. soup를 만들고, #prices li를 하나씩 돌면서 코드, 이름, 가격을 담은 딕셔너리를 rows에 모은 뒤 rows로 df를 만들어요."
+   "자, 이번엔 네 단계를 한 번에 해요. 종목마다 코드, 이름, 가격을 딕셔너리로 묶고, 그걸 모아서 표로 만들 거예요."
   ],
   [
    "starter",
-   "준비 코드가 html 글자까지 읽어 뒀어요. 이번엔 soup부터 여러분이 만들어요."
+   "준비 코드가 pandas, Path, BeautifulSoup를 불러오고, data/prices.html을 html로 읽어 뒀어요. 그대로 둘게요."
   ],
   [
    "code",
-   "soup=BeautifulSoup(html,'html.parser')\n",
-   "1단계 읽기요. BeautifulSoup에 html 글자와 파서 이름을 넘겨 soup를 만들어요."
+   "soup=BeautifulSoup(html,'html.parser')\nrows=[]\n",
+   "html로 soup를 만들고, 딕셔너리를 모을 빈 리스트 rows를 준비해요."
   ],
   [
    "code",
-   "rows=[]\nfor item in soup.select('#prices li'):\n    rows.append({'code':item['data-code'],'name':item.select_one('.name').get_text(strip=True),'price':int(item.select_one('b').get_text(strip=True).replace(',',''))})\n",
-   "2, 3, 4단계가 한 번에요. li마다 딕셔너리 하나. 코드는 item['data-code']로 속성에서, 이름은 .name의 글자, 가격은 b의 글자에서 쉼표를 지우고 int. 그걸 rows에 append해요."
+   "for item in soup.select('#prices li'):\n    rows.append({'code':item['data-code'],'name':item.select_one('.name').get_text(strip=True),'price':int(item.select_one('b').get_text(strip=True).replace(',',''))})\n",
+   "#prices li를 하나씩 돌아요. 코드는 data-code 속성에서, 이름은 .name에서 꺼내고요. 가격은 b의 글자에서 쉼표를 지우고 int로 바꿔요. 셋을 딕셔너리로 묶어 rows에 append하면 돼요."
   ],
   [
    "code",
    "df=pd.DataFrame(rows)\ndf\n",
-   "딕셔너리 리스트를 DataFrame에 넣으면 표가 돼요. 앞 단원에서 본 그대로죠."
+   "딕셔너리 리스트를 pd.DataFrame에 넣으면 표가 돼요. 앞 단원에서 본 그대로죠?"
+  ],
+  [
+   "run",
+   "실행해 볼게요."
   ],
   [
    "output",
-   "2행 3열 표가 나왔죠? code A, B, name 가상A, 가상B, price 10000, 20000. 웹 페이지 글자가 숫자 든 표가 됐어요."
+   "표가 나왔죠? 2행이고 price 열이 10000, 20000이면 맞게 한 거예요. 쉼표가 없는 숫자인지 보세요."
   ],
   [
    "submit",
-   "제출할게요. 세 열의 값을 다 봐요."
+   "제출할게요."
   ]
  ]
 }
