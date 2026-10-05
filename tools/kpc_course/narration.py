@@ -187,13 +187,49 @@ def _pick_line(question, answer):
     return f"{spoken(question['expected'])}. 이렇게 고를게요."
 
 
+WRONG_HEADING = re.compile(r"\*\*다른 보기는 왜 아닌가\*\*|다른 보기는 왜 아닌가")
+WRONG_BULLET = re.compile(r"^\s*[-*]\s*「(.+?)」\s*[:：]\s*(.+?)\s*$")
+
+
+def _option_index(question, label):
+    """1-based index of the option a 「label」 bullet names, by its text without marks."""
+    wanted = spoken(label)
+    options = [spoken(o) for o in question.get("options", [])]
+    for i, option in enumerate(options, start=1):
+        if option == wanted or option.startswith(wanted):
+            return i
+    for i, option in enumerate(options, start=1):
+        if wanted in option or option in wanted:
+            return i
+    return None
+
+
+def explanation_lines(n, question):
+    """The spoken lines of a question's explanation: the reasoning at the question, then one
+    line per wrong option at that option (the 「…」 bullets under 다른 보기는 왜 아닌가)."""
+    explanation = question["explanation"]
+    parts = WRONG_HEADING.split(explanation, maxsplit=1)
+    main = parts[0].strip()
+    lines = [_say(f"quiz:{n}", f"{n}번. " + main)] if main else []
+    if len(parts) > 1:
+        for raw in parts[1].splitlines():
+            match = WRONG_BULLET.match(raw)
+            if not match:
+                continue
+            label, reason = match.groups()
+            index = _option_index(question, label) if question["type"] == "choice" else None
+            text = f"{spoken(label)}은 아니에요. {spoken(reason)}"
+            lines.append(_say(f"option:{n}:{index}" if index else f"quiz:{n}", text))
+    return lines
+
+
 def compile_quiz(activity):
-    """Each question: the explanation, then the tick (choice, typed answer or table picks) on
-    screen; grading once at the end."""
+    """Each question: the reasoning, each wrong option named at its place, then the tick (choice,
+    typed answer or table picks) on screen; grading once at the end."""
     actions = []
     for n, question in enumerate(activity["questions"], start=1):
         answer = _answer(question)
-        actions.append(_say(f"quiz:{n}", f"{n}번. " + question["explanation"]))
+        actions.extend(explanation_lines(n, question))
         actions.append({"action": "answer_quiz", "answers": {str(n): answer}, "submit": False, "say": _pick_line(question, answer)})
     actions.append({"action": "answer_quiz", "answers": {}, "say": "자, 다 넣었으니 채점할게요."})
     return actions

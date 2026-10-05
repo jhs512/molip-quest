@@ -674,3 +674,6 @@ html.fx-still .assistant-tts-dot { animation: none; }
 /* 환경 설치 log inside the doctor panel. */
 .doctor-install-title { margin: 14px 0 6px; font-size: 14px; color: #2f4a63; }
 .doctor-install-log { max-height: 220px; overflow: auto; font-size: 12px; line-height: 1.5; background: #16283a; color: #dce8f4; border-radius: 8px; padding: 10px 12px; white-space: pre-wrap; }
+
+/* An option the narration talked about keeps a soft mark until the run ends. */
+.quiz-option.agent-said { box-shadow: inset 0 0 0 2px #a78bfa88; background: #2d3350; }

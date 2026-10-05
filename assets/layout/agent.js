@@ -86,7 +86,7 @@
     // "quiz:2" is the second question; "option:2:3" its third choice.
     if (key.startsWith('text:')) return textBlock(key.slice(5));
     let m = key.match(/^quiz[:\s]+(\d+)$/);
-    if (m) return question(m[1]) || document.querySelector('.quiz-question');
+    if (m) return question(m[1]);
     m = key.match(/^option[:\s]+(\d+)[:\s]+(\d+)$/);
     if (m) {
       const section = question(m[1]);
@@ -102,7 +102,13 @@
     }
     try { return document.querySelector(key); } catch { return null; }
   }
-  let spot, caption, spotTarget = null, raf = 0;
+  let spot, caption, spotTarget = null, spotKey = null, raf = 0;
+  // Options the narration has talked about keep a mark until the run ends.
+  function mark(element) {
+    const option = element && element.closest && element.closest('.quiz-option');
+    if (option) option.classList.add('agent-said');
+  }
+  function clearMarks() { for (const e of document.querySelectorAll('.agent-said')) e.classList.remove('agent-said'); }
   function ensureSpot() {
     if (spot) return;
     spot = document.createElement('div'); spot.className = 'agent-spotlight'; spot.hidden = true; spot.setAttribute('aria-hidden', 'true');
@@ -111,6 +117,8 @@
   }
   function place() {
     const margin = 8;
+    // The UI re-renders after a tick or a grade: find the same target again by its key.
+    if (spotTarget && !spotTarget.isConnected && spotKey) { spotTarget = resolveTarget(spotKey); mark(spotTarget); }
     if (spotTarget && spotTarget.isConnected) {
       const r = spotTarget.getBoundingClientRect();
       const pad = 6;
@@ -174,7 +182,9 @@
     ensureSpot();
     const element = resolveTarget(target);
     spotTarget = element || null;
+    spotKey = element ? String(target) : null;
     if (element) {
+      mark(element);
       try { glideTo(element); } catch {}
     }
     caption.textContent = sentence || '';
@@ -184,7 +194,8 @@
   }
   function clearSpot() {
     cancelAnimationFrame(raf); raf = 0;
-    spotTarget = null;
+    spotTarget = null; spotKey = null;
+    clearMarks();
     if (spot) { spot.hidden = true; caption.hidden = true; }
   }
 
