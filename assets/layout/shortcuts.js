@@ -19,6 +19,18 @@
   const RESUBMIT_WINDOW_MS = 2000;
   let armedUntil = 0;
   document.addEventListener('keydown', event => {
+    // A modal card on screen (정답 카드, 확인 대화상자): Enter takes its primary button. Only
+    // primary buttons, so a destructive confirmation never fires from a stray Enter.
+    const card = document.querySelector('.doctor-panel');
+    if (card && event.key === 'Enter' && !event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey) {
+      const primary = card.querySelector('button.primary');
+      if (primary && !primary.disabled) {
+        event.preventDefault(); event.stopPropagation();
+        armedUntil = 0;
+        primary.click();
+        return;
+      }
+    }
     if (event.key === 'Escape') {
       // /auto-all: the learning view renders a hidden stop button while it runs.
       const stop = document.getElementById('autopilot-stop');
