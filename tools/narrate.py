@@ -37,10 +37,9 @@ from kpc_course import chapters as outline, dsl, narration, sources  # noqa: E40
 
 RULES = (ROOT / "docs" / "agents" / "narration.md").read_text(encoding="utf-8")
 
-VOICE = """말투: 강사의 해요체 구어. "자,"로 장면을 열고 "~거든요", "~죠?", "~면 돼요"로 끝낸다. 한 줄은 1~2문장, 한 문장 25~45자.
-수강생은 "여러분", 강사는 "저". 코드 이름은 백틱 없이 그대로 쓴다(price). 수업의 말(입력 X, 정답 y, 훈련 자료/테스트 자료,
-기준 모델, 누수, 하이퍼파라미터)을 그대로 쓰고, 비유는 수업의 것(빵 공장, 콜센터, 문제집과 모의고사)만 쓴다.
-진도 말("1일차", "3교시")은 쓰지 않는다. 본문에 없는 숫자나 주장을 지어내지 않는다."""
+# The one voice guide every LLM call in this project shares (the app's tutor embeds the same
+# file): change docs/voice.md, not this script, to change how narrations sound.
+VOICE = (ROOT / "docs" / "voice.md").read_text(encoding="utf-8")
 
 
 def python_executable():

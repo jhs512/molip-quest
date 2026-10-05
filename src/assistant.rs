@@ -9,6 +9,10 @@ use crate::curriculum::{Activity, ActivityKind, QuestionKind};
 use crate::Unit;
 use serde::{Deserialize, Serialize};
 
+/// The voice guide shared by every LLM call in the project (tools/narrate.py reads the same
+/// file), so the tutor's answers and the compiled 해설 sound like one instructor.
+const VOICE: &str = include_str!("../docs/voice.md");
+
 const SYSTEM: &str = "당신은 KPC 「머신러닝을 활용한 금융데이터 분석」 수업의 조교입니다. 아래 '현재 미션 내용'을 기준으로, \
 코딩이 처음인 직장인 수강생의 질문에 한국어로 짧고 친절하게 답하세요.\n\
 규칙:\n\
@@ -308,7 +312,7 @@ pub fn split_actions(reply: &str) -> (String, Option<serde_json::Value>) {
 
 /// The whole exchange as one prompt for a CLI assistant.
 fn transcript(context: &str, history: &[Turn]) -> String {
-    let mut text = format!("{SYSTEM}\n\n## 현재 미션 내용\n\n{context}\n\n## 지금까지의 대화\n\n");
+    let mut text = format!("{SYSTEM}\n\n## 말투와 용어 (docs/voice.md)\n\n{VOICE}\n\n## 현재 미션 내용\n\n{context}\n\n## 지금까지의 대화\n\n");
     for turn in history.iter().filter(|t| t.role != "note") {
         let who = match turn.role.as_str() {
             "user" => "학생",
@@ -420,6 +424,15 @@ async fn ask_cli(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn every_prompt_carries_the_shared_voice_guide() {
+        let text = transcript("문제", &[]);
+        assert!(text.contains("## 말투와 용어 (docs/voice.md)"));
+        // A line that only docs/voice.md states: the guide is embedded, not paraphrased.
+        assert!(text.contains("한 문장 45자 이내"));
+        assert!(VOICE.contains("# 수업의 목소리"));
+    }
 
     #[test]
     fn auto_commands_become_the_narration_request() {

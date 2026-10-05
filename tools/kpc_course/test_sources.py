@@ -139,3 +139,13 @@ def test_course_index_lists_every_block_with_hash_and_excerpt():
     sample = next(iter(index.values()))
     assert {"key", "hash", "text"} <= set(sample["blocks"][0])
     assert all(len(block["hash"]) == 12 for mission in index.values() for block in mission["blocks"])
+
+
+def test_narration_prompts_embed_the_shared_voice_guide():
+    narrate = _narrate()
+    guide = (ROOT / "docs" / "voice.md").read_text(encoding="utf-8")
+    concept = _missions()["numbers-text"]
+    assert guide in narrate.concept_prompt(concept)
+    coding = _missions()["variable-print"]
+    solution = dsl.SOLUTIONS[coding["problem"]["id"]]
+    assert guide in narrate.coding_prompt(coding, solution, "30000", "")
