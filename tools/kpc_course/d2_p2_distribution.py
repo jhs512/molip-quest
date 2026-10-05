@@ -45,8 +45,8 @@ UNIT = unit('distribution', '2일차 · 2교시 — 분포와 관계 시각화',
         known_age = titanic.dropna(subset=['나이'])
         fig, ax = plt.subplots()
         sns.histplot(data=known_age, x='나이', bins=20, ax=ax)   # 히스토그램
-        ax.scatter(known['나이'], known['요금'])                 # 산점도. known: 나이·요금이 모두 있는 행. known: 나이·요금이 모두 있는 행. known: 나이·요금이 모두 있는 행. known: 나이·요금이 모두 있는 행
-        sns.heatmap(corr, annot=True, vmin=-1, vmax=1, ax=ax)   # 히트맵. corr: 상관계수 표. corr: 상관계수 표. corr: 상관계수 표. corr: 상관계수 표
+        ax.scatter(known['나이'], known['요금'])                 # 산점도. known: 나이·요금이 모두 있는 행
+        sns.heatmap(corr, annot=True, vmin=-1, vmax=1, ax=ax)   # 히트맵. corr: 상관계수 표
         ```
 
         `seaborn`은 `matplotlib` 위에서 표 열 이름만으로 그래프를 그려 주는 도구입니다. `ax=ax`로 어느 그래프 영역에 그릴지 알려 주면 1교시의 뼈대와 그대로 어울립니다. 마지막으로 해석의 선 하나. 요금과 생존의 상관계수가 양수라는 것은 "요금이 비싼 사람 중에 생존자가 많았다"는 관찰이지 "요금을 더 내면 산다"는 뜻이 아닙니다. 상관은 함께 변하는 경향이고, 원인은 다른 문제입니다.

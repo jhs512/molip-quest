@@ -7,9 +7,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
-from kpc_course import chapters as outline, checks, dsl  # noqa: E402
+from kpc_course import chapters as outline, checks, dsl, narration  # noqa: E402
 
-chapters = outline.build()
+chapters = narration.attach(outline.build(), dsl.SOLUTIONS)
 
 problems = checks.run(chapters)
 if problems and not os.environ.get("KPC_LENIENT"):
