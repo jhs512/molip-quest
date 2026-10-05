@@ -176,13 +176,26 @@ def _selection(question):
     return picked
 
 
+def _pick_line(question, answer):
+    """What the tutor says while ticking: the option (short ones in full), the typed answer,
+    or the model selection of a table."""
+    if question["type"] == "choice":
+        option = spoken(question["options"][int(answer) - 1])
+        return f"{answer}번, {option}. 이걸 고를게요." if len(option) <= 40 else f"{answer}번 보기를 고를게요."
+    if question["type"] == "short_answer":
+        return f"답은 {spoken(answer)}. 이렇게 적을게요."
+    return f"{spoken(question['expected'])}. 이렇게 고를게요."
+
+
 def compile_quiz(activity):
+    """Each question: the explanation, then the tick (choice, typed answer or table picks) on
+    screen; grading once at the end."""
     actions = []
-    answers = {}
     for n, question in enumerate(activity["questions"], start=1):
+        answer = _answer(question)
         actions.append(_say(f"quiz:{n}", f"{n}번. " + question["explanation"]))
-        answers[str(n)] = _answer(question)
-    actions.append({"action": "answer_quiz", "answers": answers, "say": "자, 답을 넣고 채점할게요."})
+        actions.append({"action": "answer_quiz", "answers": {str(n): answer}, "submit": False, "say": _pick_line(question, answer)})
+    actions.append({"action": "answer_quiz", "answers": {}, "say": "자, 다 넣었으니 채점할게요."})
     return actions
 
 

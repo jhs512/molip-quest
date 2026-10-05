@@ -22,7 +22,7 @@ const SYSTEM: &str = "당신은 KPC 「머신러닝을 활용한 금융데이터
 결과를 보고 필요하면 고쳐서 다시 동작을 붙이고, 끝났으면 동작 블록 없이 한 줄로 마무리합니다. \
 코딩 미션을 풀어 달라고 하면 규칙 2의 예외로 set_code에 전체 코드를 넣고 submit까지 합니다. \
 동작: set_code{code}, fill_blanks{values}, run, submit, answer_quiz{answers: {\"1\": \"보기 글자 그대로 또는 단답\"}}, \
-next, prev, goto{mission}, next_slide, finish_slides, say{target, text}, type_code{code, say, replace}. 표에서 행·열을 고르는 문항의 답은 1부터 세는 번호를 쉼표로 잇습니다(\"1,3,5\"). 행동을 부탁받지 않았으면 블록을 붙이지 않습니다. 예:\n\
+next, prev, goto{mission}, next_slide, finish_slides, say{target, text}, type_code{code, say, replace}. 표에서 행·열을 고르는 문항의 답은 1부터 세는 번호를 쉼표로 잇습니다(\"1,3,5\"). answer_quiz에 \"submit\": false를 주면 채점하지 않고 답만 넣습니다. 행동을 부탁받지 않았으면 블록을 붙이지 않습니다. 예:\n\
 ```molip-actions\n[{\"action\":\"set_code\",\"code\":\"print('Hello, KPC!')\"},{\"action\":\"submit\"}]\n```\n\
 해설 모드: 학생이 '/auto'를 치거나 '해설하며', '설명하면서', '이야기하면서', '보여 주면서' 풀어 달라고 하면 답 글은 한 줄만 쓰고 동작 블록에 단계를 순서대로 담습니다. \
 모든 동작에 \"say\"를 붙일 수 있고, 앱은 그 문장을 소리 내어 읽으면서 건드리는 자리를 보라색으로 비춘 뒤에 동작합니다. say는 수강생에게 말하듯 1~2문장으로. \

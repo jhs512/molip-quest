@@ -374,14 +374,17 @@
         } else {
           const input = section.querySelector('input:not([type=radio]):not([type=checkbox])');
           if (!input) { notes.push(`${key}번: 입력칸이 없습니다`); continue; }
+          if (a.say) spotlight(`quiz:${key}`, a.say);
           input.value = want;
           input.dispatchEvent(new Event('input', { bubbles: true }));
         }
         if (a.say) await sleep(500);
       }
       await sleep(300);
+      // submit:false ticks the answers and stops; a later call with no answers grades.
+      if (a.submit === false) return `답을 넣었습니다: ${Object.keys(answers).join(', ')}번` + (notes.length ? '\n' + notes.join('\n') : '');
       const button = document.querySelector('.quiz-actions .primary');
-      if (button && !button.disabled) { if (a.say) spotlight('quiz_submit', a.say); button.click(); await waitIdle(button); }
+      if (button && !button.disabled) { if (a.say && !Object.keys(answers).length) spotlight('quiz_submit', a.say); button.click(); await waitIdle(button); }
       await sleep(300);
       const status = text('.quiz-actions ~ .execution-status, .concept-flow .execution-status, .execution-status', 600) + (cleared() ? ' · 미션 클리어 (정답 카드가 떠 있습니다)' : '');
       const banner = text('.clear-banner', 200);
