@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header><a class="brand" href="#home">KPC <span>FINANCE × DATA</span></a><nav aria-label="주요 메뉴"><a href="#home">수업 안내</a><a href="#journey">커리큘럼 · 일정</a><a class="nav-button" href="#install">몰입 퀘스트 받는 법 →</a></nav></header>
+<header><a class="brand" href="#home">KPC <span>FINANCE × DATA</span></a><nav aria-label="주요 메뉴"><a href="#home">수업 안내</a><a href="#journey">커리큘럼 · 일정</a><a href="#instructor">강사 소개</a><a class="nav-button" href="#install">몰입 퀘스트 받는 법 →</a></nav></header>
 <main id="home">
   <section class="hero">
     <div class="hero-copy"><p class="eyebrow">머신러닝을 활용한 금융데이터 분석</p><h1>데이터를 읽고,<br>판단의 근거를<br><em>만드는 3일.</em></h1><p class="intro">표에서 질문의 답을 찾고, 예측 모델을 직접 실행하고,<br class="desktop"> 그 결과를 어디까지 믿을 수 있는지 확인합니다.</p><div class="actions"><a class="primary" href="#journey">3일의 여정 보기 <span>↗</span></a><a class="text-link" href="#install">몰입 퀘스트 받는 법 →</a></div><div class="stats"><div><strong>3<span>일</span></strong><small>8시간 · 8시간 · 4시간</small></div><div><strong>20<span>시간</span></strong><small>직접 실행하는 학습</small></div><div><strong>7<span>챕터</span></strong><small>기초에서 분석 프로젝트까지</small></div></div></div>
@@ -30,6 +30,14 @@
   </section>
   
   
+  <section id="instructor" class="instructor" aria-labelledby="instructor-title">
+    <div class="section-heading"><div><p class="eyebrow">YOUR INSTRUCTOR</p><h2 id="instructor-title">강사 소개</h2></div><p>개발 경험과 교육 현장을 연결하는<br>IT 강사 · 개발자</p></div>
+    <div class="instructor-profile">
+      <div class="instructor-intro"><h3>장희성</h3><p>웹 서비스 개발과 운영, 백엔드 교육을 해 왔습니다. 전자상거래의 주문·재고 관리부터 미디어 서비스, 교육 플랫폼까지 다양한 업무를 소프트웨어로 구현한 경험을 바탕으로 IT를 설명합니다.</p><div class="instructor-links"><a href="https://github.com/jhs512">GitHub ↗</a><a href="https://www.youtube.com/@micoding">YouTube · 몰입코딩 ↗</a></div><p class="instructor-credentials">한경대학교 컴퓨터공학 전공<br>정보처리기사 · 직업훈련교사 3급(정보기술개발)</p></div>
+      <div class="instructor-experience"><article><h4>교육 경험</h4><ul><li>프로그래머스 백엔드 데브코스 주강사</li><li>멋쟁이사자처럼 KDT 및 기업 연계 백엔드 교육 주강사</li><li>SBS아카데미컴퓨터아트학원 프로그래밍 교육</li><li>한밭대·경남대·성균관대·부산대 특강</li></ul></article><article><h4>개발 경험</h4><p>전자상거래 주문·재고 관리, 모터그래프 웹 서비스, 오디션트리 지원자 관리, 교육 자료 플랫폼 SLOG 개발·운영. 몰입코딩 CTO로 AI·AX 교육과 서비스 개발에 참여했습니다.</p></article></div>
+    </div>
+  </section>
+
   <section id="install" class="install"><div class="section-heading"><div><p class="eyebrow">INSTALLATION</p><h2>몰입 퀘스트 받는 법</h2></div><p>아래에서 운영체제에 맞게 설치하세요.<br>설치와 다운로드에는 인터넷이 필요합니다.</p></div>
     <details open><summary><span>Windows 노트북</span><small>PowerShell</small></summary><div class="install-body"><ol><li><a class="download-link" href="https://github.com/jhs512/molip-quest/releases/latest/download/molip-quest-windows-x64-setup.exe">Windows 설치 파일 다운로드 ↗</a> 후 실행하세요.</li><li>시작 메뉴에서 <strong>PowerShell</strong>을 찾아 열고, 아래 명령으로 uv를 설치하세요.<div class="command"><button type="button" class="copy" aria-label="uv 설치 명령 복사">복사</button><pre><code>powershell -ExecutionPolicy Bypass -c "irm https://astral.sh/uv/install.ps1 | iex"</code></pre></div></li><li>PowerShell을 닫고 다시 연 뒤, 아래 명령을 한 번에 붙여 넣으세요. 수업에 필요한 Python과 패키지를 모두 준비합니다.<div class="command"><button type="button" class="copy" aria-label="Python 학습 환경 준비 명령 복사">복사</button><pre><code>$learningEnv = Join-Path $env:LOCALAPPDATA 'MolipQuest/MolipQuest/data/ml-env'
 uv python install 3.13
