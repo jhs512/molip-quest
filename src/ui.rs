@@ -763,6 +763,32 @@ fn AssistantPanel(
     const SCROLL: &str =
         "const m=document.querySelector('.assistant-messages');if(m)m.scrollTop=m.scrollHeight;";
     let mut running = use_signal(|| false);
+    // Which answer is being read aloud (its index in `messages`), so that message shows
+    // 읽는 중 · ⏹ 멈춤 while the others offer 🔊 읽기. The token tells a finished reading from
+    // one that was replaced.
+    let mut speaking = use_signal(|| None::<usize>);
+    let mut speak_token = use_signal(|| 0u32);
+    let read_aloud = Callback::new(move |(index, text, force): (usize, String, bool)| {
+        speak_token += 1;
+        let token = speak_token();
+        speaking.set(Some(index));
+        spawn(async move {
+            let script = format!(
+                "(async () => {{ try {{ dioxus.send(await window.molipAgent.speakReply({}, {force})); }} catch (e) {{ dioxus.send(false); }} }})()",
+                serde_json::to_string(&text).unwrap_or_default()
+            );
+            let mut eval = document::eval(&script);
+            let _ = eval.recv::<bool>().await;
+            if speak_token() == token {
+                speaking.set(None);
+            }
+        });
+    });
+    let stop_reading = Callback::new(move |_: ()| {
+        speak_token += 1;
+        speaking.set(None);
+        document::eval("window.molipAgent && molipAgent.stopReply();");
+    });
     // A round (an answer with its actions, or a precompiled narration) is over: in /auto-all, hand
     // control back to the learning flow, which moves on and bumps auto_round; an error ends the
     // run where it is.
@@ -853,16 +879,15 @@ fn AssistantPanel(
                         if !text.is_empty() {
                             // 소리 on: a plain answer is read aloud; an answer with actions
                             // lets the actions' own lines speak instead.
-                            if actions.is_none() && settings_now.narration_voice {
-                                document::eval(&format!(
-                                    "window.molipAgent && molipAgent.speakReply({});",
-                                    serde_json::to_string(&text).unwrap_or_default()
-                                ));
-                            }
+                            let spoken = actions.is_none() && settings_now.narration_voice;
+                            let index = messages.read().len();
                             messages.write().push(Turn {
                                 role: "model".into(),
-                                text,
+                                text: text.clone(),
                             });
+                            if spoken {
+                                read_aloud.call((index, text, false));
+                            }
                         }
                         let Some(actions) = actions else { break };
                         rounds += 1;
@@ -1076,6 +1101,17 @@ fn AssistantPanel(
                     } else {
                         div { key:"{i}", class: if turn.role == "user" {"assistant-msg user"} else {"assistant-msg model"},
                             if turn.role == "user" { p { "{turn.text}" } } else { Markdown { text: turn.text.clone() } }
+                            // Reading controls under an answer (not under a narration's script dump).
+                            if turn.role == "model" && !turn.text.starts_with("▶ 자동 해설") {
+                                div { class:"assistant-tts",
+                                    if speaking() == Some(i) {
+                                        span { class:"assistant-tts-live", span { class:"assistant-tts-dot" } "읽는 중" }
+                                        button { onclick: move |_| stop_reading.call(()), "⏹ 멈춤" }
+                                    } else {
+                                        button { onclick: { let text = turn.text.clone(); move |_| read_aloud.call((i, text.clone(), true)) }, "🔊 읽기" }
+                                    }
+                                }
+                            }
                         }
                     }
                 }

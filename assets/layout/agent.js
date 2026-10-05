@@ -447,11 +447,15 @@
   // Read a chat answer aloud (the 소리 switch is on): prose only, code blocks skipped, one
   // sentence at a time so 멈춤 and a new question cut it off cleanly. No spotlight, no caption.
   let replyRun = 0;
-  async function speakReply(text) {
-    if (!voice || running) return false;
+  async function speakReply(text, force) {
+    if ((!voice && !force) || running) return false;
     const run = ++replyRun;
     stopSpeech();
     cancelled = false;
+    // 🔊 읽기 on a message reads it even while the switch is off.
+    const restore = voice;
+    if (force) voice = true;
+    try {
     const prose = String(text || '')
       .replace(/```[\s\S]*?```/g, ' ')
       .replace(/^#{1,6}\s*/gm, '').replace(/^\s*[-*]\s+/gm, '').replace(/^\s*\d+\.\s+/gm, '')
@@ -465,10 +469,13 @@
       if (cancelled || run !== replyRun || running) break;
       await speak(sentence);
     }
-    return true;
+    return run === replyRun;
+    } finally { voice = restore; }
   }
+  // Stop reading a reply without touching a narration that may be running.
+  function stopReply() { replyRun++; if (!running) stopSpeech(); }
   function stop() { cancelled = true; paused = false; replyRun++; cancelAnimationFrame(glideFrame); stopSpeech(); clearSpot(); }
   function setVoice(on) { voice = !!on; if (!voice) stopSpeech(); return voice; }
   function setVoiceName(name) { return globalThis.molipVoice ? globalThis.molipVoice.setName(name) : String(name || 'system'); }
-  globalThis.molipAgent = { run, stop, pause, resume, speakReply, get paused() { return paused; }, get running() { return running; }, setVoice, setVoiceName, resolveTarget, glideTo, get voice() { return voice; }, get voiceName() { return globalThis.molipVoice ? globalThis.molipVoice.name : 'system'; }, get lastSpeech() { return lastSpeech; }, get playbackRate() { return currentAudio ? currentAudio.playbackRate : null; }, actions: Object.keys(handlers) };
+  globalThis.molipAgent = { run, stop, pause, resume, speakReply, stopReply, get paused() { return paused; }, get running() { return running; }, setVoice, setVoiceName, resolveTarget, glideTo, get voice() { return voice; }, get voiceName() { return globalThis.molipVoice ? globalThis.molipVoice.name : 'system'; }, get lastSpeech() { return lastSpeech; }, get playbackRate() { return currentAudio ? currentAudio.playbackRate : null; }, actions: Object.keys(handlers) };
 })();

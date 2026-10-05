@@ -648,3 +648,11 @@ html.fx-still .victory-fill { transition: none; }
 .slides-progress { display: none; }
 .slides-host.slides-presenting .slides-progress { display: block; position: fixed; top: 0; left: 0; right: 0; height: 5px; background: #ffffff22; z-index: 901; }
 .slides-progress-fill { height: 100%; background: #62d6b1; transition: width .3s ease; }
+
+/* Reading controls under a tutor answer: 읽는 중 · ⏹ 멈춤 while it is read, 🔊 읽기 otherwise. */
+.assistant-tts { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 12px; color: #9fb8cc; }
+.assistant-tts button { font-size: 12px; padding: 4px 10px; }
+.assistant-tts-live { display: inline-flex; align-items: center; gap: 6px; color: #62d6b1; font-weight: 600; }
+.assistant-tts-dot { width: 8px; height: 8px; border-radius: 50%; background: #62d6b1; animation: assistant-tts-pulse 1.1s ease-in-out infinite; }
+@keyframes assistant-tts-pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.7); } }
+html.fx-still .assistant-tts-dot { animation: none; }
