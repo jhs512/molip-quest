@@ -111,7 +111,7 @@ fn answer(activity: &Activity) -> String {
 /// What "정답 보기" runs through the tutor agent: the answers go in and grading is pressed, with
 /// no answer card. Coding puts the solution in the editor and submits; concept and quiz replay the
 /// answer_quiz steps of the compiled narration (the same answers the 해설 ticks) without speech.
-fn solve_actions(activity: &Activity) -> serde_json::Value {
+pub(crate) fn solve_actions(activity: &Activity) -> serde_json::Value {
     use serde_json::json;
     match &activity.kind {
         ActivityKind::Coding { .. } => json!([
@@ -151,6 +151,22 @@ fn solve_actions(activity: &Activity) -> serde_json::Value {
         }
         ActivityKind::Slides { .. } => json!([]),
     }
+}
+
+/// What `/tour-all` plays on a mission: its `tour` sentences, then the answers go in and the
+/// mission is graded (a deck is marked watched without entering presentation mode).
+pub(crate) fn tour_actions(activity: &Activity) -> serde_json::Value {
+    use serde_json::json;
+    let mut steps: Vec<serde_json::Value> = activity
+        .tour
+        .iter()
+        .map(|line| json!({"action": "say", "target": "title", "text": line}))
+        .collect();
+    match &activity.kind {
+        ActivityKind::Slides { .. } => steps.push(json!({"action": "finish_slides", "quiet": true})),
+        _ => steps.extend(solve_actions(activity).as_array().cloned().unwrap_or_default()),
+    }
+    serde_json::Value::Array(steps)
 }
 
 #[component]
@@ -254,6 +270,38 @@ mod tests {
         assert_eq!(pick_option(&options, "4"), None);
         assert_eq!(pick_option(&["`2`".into(), "3".into()], "3"), Some(1));
         assert_eq!(pick_option(&["오류가 난다".into(), "`30000`이 나온다".into()], "오류"), Some(0));
+    }
+
+    /// /tour-all says one to three sentences on every mission, then performs the same steps
+    /// 정답 보기 does (a deck is finished quietly, without presentation mode).
+    #[test]
+    fn tour_actions_say_a_little_and_end_every_kpc_mission() {
+        let course =
+            molip_quest::Course::parse(include_str!("../courses/kpc-finance.json")).unwrap();
+        for activity in course
+            .chapters
+            .iter()
+            .flat_map(|c| &c.units)
+            .flat_map(|u| &u.activities)
+        {
+            assert!(
+                (1..=3).contains(&activity.tour.len()),
+                "{}: tour {:?}",
+                activity.id,
+                activity.tour
+            );
+            let steps = tour_actions(activity);
+            let steps = steps.as_array().unwrap();
+            let said: Vec<_> = steps.iter().take_while(|s| s["action"] == "say").collect();
+            assert_eq!(said.len(), activity.tour.len(), "{}", activity.id);
+            let rest: Vec<_> = steps.iter().skip(said.len()).cloned().collect();
+            match &activity.kind {
+                ActivityKind::Slides { .. } => {
+                    assert_eq!(rest, vec![serde_json::json!({"action": "finish_slides", "quiet": true})], "{}", activity.id);
+                }
+                _ => assert_eq!(serde_json::Value::Array(rest), solve_actions(activity), "{}", activity.id),
+            }
+        }
     }
 
     /// 정답 보기 on every concept and quiz mission fills answers that the real grader passes;

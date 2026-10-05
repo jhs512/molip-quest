@@ -168,8 +168,10 @@ pub fn Learning(
     let mut assistant_messages = use_signal(Vec::<molip_quest::assistant::Turn>::new);
     let mut assistant_kind = String::new();
     let mut assistant_ask: Vec<String> = Vec::new();
-    // The mission's precompiled 해설 script as JSON ("[]" when it has none).
+    // The mission's precompiled 해설 script as JSON ("[]" when it has none), and the /tour-all
+    // script (its tour sentences, then the answers).
     let mut assistant_narration = String::from("[]");
+    let mut assistant_tour = String::from("[]");
     let (assistant_title, assistant_context) = {
         let chapter_title = course
             .chapters
@@ -183,6 +185,8 @@ pub fn Learning(
                 assistant_ask = activity.ask.clone();
                 assistant_narration =
                     serde_json::to_string(&activity.narration).unwrap_or_else(|_| "[]".into());
+                assistant_tour = serde_json::to_string(&crate::instructor_mode::tour_actions(activity))
+                    .unwrap_or_else(|_| "[]".into());
                 let draft_code = match &activity.kind {
                     ActivityKind::Coding { problem } => drafts::load(&format!(
                         "local:{}:{}:{}",
@@ -228,6 +232,18 @@ pub fn Learning(
             }
         }));
     }
+    // And the /tour-all script.
+    let mut assistant_tour_signal = use_signal(|| assistant_tour.clone());
+    {
+        let tour = assistant_tour.clone();
+        use_effect(use_reactive!(|tour| {
+            if *assistant_tour_signal.peek() != tour {
+                assistant_tour_signal.set(tour.clone());
+            }
+        }));
+    }
+    // /tour-all: autopilot that says each mission's gist and fills it in instead of narrating.
+    let mut touring = use_signal(|| false);
     // Mark a mission switch in the conversation.
     let mut assistant_last_title = use_signal(|| assistant_title.clone());
     let mission_marker = assistant_last_title;
@@ -351,8 +367,8 @@ pub fn Learning(
         }
         // 접기 hides the dock; the panel stays mounted so a running request or /auto-all continues.
         aside {class:"assistant-dock",hidden:!assistant_open(),
-                AssistantPanel {title:assistant_title.clone(),kind:assistant_kind.clone(),ask:assistant_ask.clone(),context:assistant_context_signal,narration:assistant_narration_signal,messages:assistant_messages,
-                    autopilot,auto_round,auto_cancel,mission_marker,paused:narration_paused,
+                AssistantPanel {title:assistant_title.clone(),kind:assistant_kind.clone(),ask:assistant_ask.clone(),context:assistant_context_signal,narration:assistant_narration_signal,tour:assistant_tour_signal,messages:assistant_messages,
+                    autopilot,touring,auto_round,auto_cancel,mission_marker,paused:narration_paused,
                     onauto_advance:move |_|{
                         // The tutor is done with this mission: take the clear popup's 다음 미션, or the
                         // header's 다음 →, or stop at the end of the course.
@@ -366,6 +382,7 @@ pub fn Learning(
                             auto_round+=1;
                         } else {
                             autopilot.set(false);
+                            touring.set(false);
                             toast("과정의 끝입니다. 자동 진행을 마칩니다.","success");
                         }
                     },
@@ -383,7 +400,7 @@ pub fn Learning(
         }
         if autopilot() {
             div {class:"autopilot-banner",role:"status",
-                span {class:"autopilot-dot"} span {{if narration_paused() {"자동 진행 · 일시정지 중 · "} else {"자동 진행 중 · 미션이 끝나면 다음으로 넘어갑니다 · "}}} kbd {"Space"} span {" 일시정지/재개 · "} kbd {"Esc"} span {" 해제"}
+                span {class:"autopilot-dot"} span {{if narration_paused() {"자동 진행 · 일시정지 중 · "} else if touring() {"핵심 훑기 진행 중 · 미션마다 핵심만 말하고 답을 넣어 넘어갑니다 · "} else {"자동 진행 중 · 미션이 끝나면 다음으로 넘어갑니다 · "}}} kbd {"Space"} span {" 일시정지/재개 · "} kbd {"Esc"} span {" 해제"}
                 button {onclick:move |_|{let p=!narration_paused();narration_paused.set(p);document::eval(if p {"window.molipAgent && molipAgent.pause();"} else {"window.molipAgent && molipAgent.resume();"});},{if narration_paused() {"▶ 재개"} else {"⏸ 일시정지"}}}
                 button {onclick:move |_|{autopilot.set(false);narration_paused.set(false);auto_cancel+=1;document::eval("window.molipAgent && molipAgent.stop();");},"해제"}
             }
@@ -780,8 +797,10 @@ fn AssistantPanel(
     ask: Vec<String>,
     context: Signal<String>,
     narration: Signal<String>,
+    tour: Signal<String>,
     messages: Signal<Vec<molip_quest::assistant::Turn>>,
     autopilot: Signal<bool>,
+    touring: Signal<bool>,
     auto_round: Signal<u32>,
     auto_cancel: Signal<u32>,
     mission_marker: Signal<String>,
@@ -792,6 +811,7 @@ fn AssistantPanel(
     use molip_quest::assistant::{self, Provider, Settings, Turn};
     const AUTO: &str = "/auto";
     const AUTO_ALL: &str = "/auto-all";
+    const TOUR_ALL: &str = "/tour-all";
     let mut current_task = use_signal(|| None::<dioxus::core::Task>);
     // The mission a /auto round started on: if the tutor itself moved on (a `next` action), the
     // flow must not move a second time.
@@ -839,6 +859,7 @@ fn AssistantPanel(
         if *autopilot.peek() {
             if !error.peek().is_empty() {
                 autopilot.set(false);
+                touring.set(false);
                 messages.write().push(Turn {
                     role: "note".into(),
                     text: "오류가 나서 자동 진행을 멈췄습니다.".into(),
@@ -971,8 +992,11 @@ fn AssistantPanel(
         current_task.set(Some(task));
     });
     // /auto on the mission on screen: its precompiled script when it has one, else the CLI.
+    // While /tour-all runs, the mission's tour script (gist, then the answers) plays instead.
     let auto = Callback::new(move |_: ()| {
-        if narration.peek().trim() != "[]" {
+        if *touring.peek() && tour.peek().trim() != "[]" {
+            perform.call(("핵심 훑기".into(), tour.peek().clone()));
+        } else if narration.peek().trim() != "[]" {
             narrate.call(());
         } else {
             request.call(());
@@ -1022,7 +1046,7 @@ fn AssistantPanel(
             auto_started_on.set(mission_marker.peek().clone());
             messages.write().push(Turn {
                 role: "user".into(),
-                text: AUTO.into(),
+                text: if *touring.peek() { TOUR_ALL } else { AUTO }.into(),
             });
             document::eval(SCROLL);
             auto.call(());
@@ -1039,6 +1063,7 @@ fn AssistantPanel(
         if let Some(task) = current_task.write().take() {
             task.cancel();
         }
+        touring.set(false);
         pending.set(false);
         running.set(false);
         narrating.set(false);
@@ -1065,11 +1090,12 @@ fn AssistantPanel(
             error.set(String::new());
             return;
         }
-        if question == AUTO_ALL {
+        if question == AUTO_ALL || question == TOUR_ALL {
             autopilot.set(true);
+            touring.set(question == TOUR_ALL);
             auto_started_on.set(mission_marker.peek().clone());
         }
-        let is_auto = question == AUTO || question == AUTO_ALL;
+        let is_auto = question == AUTO || question == AUTO_ALL || question == TOUR_ALL;
         messages.write().push(Turn {
             role: "user".into(),
             text: question,

@@ -341,6 +341,79 @@ def compile_coding(activity, entry, solution, where):
     return actions
 
 
+SENTENCE_END = re.compile(r"(?<=[.?!])\s+")
+# A sentence that only leads into the next one ("자, 실행해 볼게요.", "정리하면 이거예요.") says
+# nothing on its own and is skipped when the gist is picked.
+LEAD_IN = re.compile(r"(할게요|볼게요|갈게요|볼까요|할까요|이거예요|다음 장이에요|거든요|잖아요|되죠|보세요|볼 거예요)[.?!]?$")
+
+
+def _sentences(text, limit, substantive=True):
+    """The first `limit` sentences of a spoken line, lead-ins dropped and a leading 자, trimmed."""
+    out = []
+    for sentence in SENTENCE_END.split(spoken(text).strip()):
+        sentence = re.sub(r"^자,\s*", "", sentence.strip())
+        if not sentence or (substantive and LEAD_IN.search(sentence)):
+            continue
+        out.append(sentence)
+        if len(out) == limit:
+            break
+    return out
+
+
+def compile_tour(activity):
+    """The 1~3 sentences `/tour-all` says before it fills the mission in and moves on: the gist
+    of the compiled 해설, not a new text. A concept gives its first and last explained passage
+    and the check's answer; a coding problem its task, how the code does it and what comes out;
+    a quiz its size and the first answers; a deck its opening point and its closing summary."""
+    actions = activity["narration"]
+    says = [a for a in actions if a["action"] == "say"]
+    kind = activity["kind"]
+    picks = []
+    if kind == "concept":
+        text_lines = [a["text"] for a in says if str(a.get("target", "")).startswith("text:")]
+        if text_lines:
+            picks += _sentences(text_lines[0], 1)
+            if len(text_lines) > 1:
+                picks += _sentences(text_lines[-1], 1)
+        picks += _sentences(activity["check"]["explanation"], 1)
+    elif kind == "coding":
+        problem = [a for a in says if a.get("target") == "problem"]
+        if problem:
+            picks += _sentences(problem[0]["text"], 1)
+        for a in actions:
+            if a["action"] == "type_code" and a.get("say"):
+                picks += _sentences(a["say"], 1)
+        output = [a for a in says if a.get("target") == "output"]
+        if output:
+            picks += _sentences(output[0]["text"], 1)
+    elif kind == "quiz":
+        questions = activity["questions"]
+        picks.append(f"단원 점검 {len(questions)}문항이에요.")
+        # The first answers that read as a statement on their own ("0이에요." does not).
+        for question in questions:
+            main = WRONG_HEADING.split(question["explanation"], maxsplit=1)[0]
+            picks += [line for line in _sentences(main, 1) if len(line) >= 12]
+            if len(picks) >= 3:
+                break
+    else:
+        if says:
+            picks += _sentences(says[0]["text"], 1)
+            if len(says) > 1:
+                picks += _sentences(says[-1]["text"], 2)
+    lines = []
+    for line in picks:
+        if line and line not in lines:
+            lines.append(line)
+    lines = lines[:3]
+    if not lines:
+        # Every line was a lead-in: keep the first sentences as they are rather than say nothing.
+        source = says[0]["text"] if says else activity.get("title", "")
+        lines = _sentences(source, 2, substantive=False)
+    if not lines:
+        raise SystemExit(f"{activity['id']}: 핵심 요약(tour)을 만들 문장이 없습니다.")
+    return lines
+
+
 def attach(chapters, solutions):
     """Give every activity its `narration`; refuse to build when a concept or coding problem
     has none, or when a hand-written one no longer matches its content."""
@@ -375,6 +448,10 @@ def attach(chapters, solutions):
                         activity["narration"] = compile_concept(activity, entry, where)
                     else:
                         activity["narration"] = compile_coding(activity, entry, solutions[activity["problem"]["id"]], where)
+    for chapter in chapters:
+        for unit in chapter["units"]:
+            for activity in unit["activities"]:
+                activity["tour"] = compile_tour(activity) if activity["narration"] else []
     orphan = sorted(set(table) - used)
     if orphan:
         raise SystemExit(f"narration: 미션에 없는 해설 항목 {orphan}")

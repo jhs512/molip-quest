@@ -430,8 +430,10 @@
       }
       const b = byText('.slides-bar button', '다음 장 →'); if (!b || b.disabled) throw new Error('넘길 장이 없습니다'); b.click(); await sleep(300); return '다음 장으로 넘겼습니다: ' + text('.slides-counter', 20);
     },
-    async finish_slides() {
+    async finish_slides(a) {
+      // {quiet: true} (/tour-all) marks the deck watched where it stands, no presentation.
       const b = byText('button', '다 봤어요 · 미션 완료'); if (!b) throw new Error('슬라이드 미션이 아닙니다');
+      if (a && a.quiet) { if (!b.disabled) b.click(); await sleep(400); return '슬라이드 미션을 완료로 표시했습니다.'; }
       // Presenting: the next mission, if it is a deck, opens in presentation mode too (slides.js mount).
       const host = document.querySelector('.slides-host');
       if (host && host.classList.contains('slides-presenting') && globalThis.molipSlides) globalThis.molipSlides.carryPresenting = Date.now();
@@ -451,7 +453,7 @@
     // A deck script (it ends with finish_slides) is presented full screen, like a class, and
     // starts from the first slide: its lines and next_slide steps count from the top, so a deck
     // left on slide 5 would otherwise have the voice a few slides behind the picture.
-    if (actions.some(a => a && a.action === 'finish_slides')) {
+    if (actions.some(a => a && a.action === 'finish_slides' && !a.quiet)) {
       const host = document.querySelector('.slides-host');
       if (host && host.molipSlides && host.molipSlides.first) host.molipSlides.first();
       if (host && host.molipPresent && !host.classList.contains('slides-presenting')) { host.molipPresent(true); await sleep(300); }

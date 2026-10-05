@@ -37,10 +37,15 @@ type_code의 code는 지금까지의 전체가 아니라 덧붙일 부분만 적
 /// What the `/auto` and `/auto-all` commands ask for, in the words the system prompt expects.
 pub const AUTO_REQUEST: &str = "이 미션을 해설하며 끝까지 진행해 줘: 코딩이면 코드를 조각내어 설명하며 넣고 실행·제출까지, 퀴즈나 확인 문항이면 풀이를 말하고 채점까지, 개념이면 핵심을 짚어 주고, 슬라이드면 장마다 요지를 말하며 넘기고 끝까지. 답 글은 한 줄만.";
 
-/// `/auto` and `/auto-all` are typed as commands; the model sees the request they stand for.
+/// What `/tour-all` asks for when a mission has no precompiled script.
+pub const TOUR_REQUEST: &str = "이 미션의 핵심만 한두 문장으로 말하고, 답을 넣어 제출·채점까지 끝내 줘. 긴 설명은 하지 마.";
+
+/// `/auto`, `/auto-all` and `/tour-all` are typed as commands; the model sees the request they
+/// stand for.
 fn spoken_request(text: &str) -> &str {
     match text.trim() {
         "/auto" | "/auto-all" => AUTO_REQUEST,
+        "/tour-all" => TOUR_REQUEST,
         other => other,
     }
 }

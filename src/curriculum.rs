@@ -20,6 +20,10 @@ pub struct Activity {
     /// CLI improvises one.
     #[serde(default)]
     pub narration: Vec<serde_json::Value>,
+    /// The 1~3 sentences `/tour-all` says about this mission before filling it in and moving
+    /// on (tools/kpc_course/narration.py compile_tour). Empty when there is no narration.
+    #[serde(default)]
+    pub tour: Vec<String>,
     #[serde(flatten)]
     pub kind: ActivityKind,
 }
