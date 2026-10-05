@@ -28,7 +28,12 @@
     const key = name + '\n' + text;
     let pending = clips.get(key);
     if (pending) { stats.cached += 1; return pending; }
-    pending = fetch(url(), { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ text: spoken(text), voice: name }) })
+    // A clip that takes longer than this is given up (the caller falls back to the system
+    // voice); without a limit a stalled synthesis would hold the narration forever.
+    const abort = typeof AbortController === 'function' ? new AbortController() : null;
+    const timer = abort ? setTimeout(() => abort.abort(), 20000) : 0;
+    pending = fetch(url(), { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ text: spoken(text), voice: name }), signal: abort ? abort.signal : undefined })
+      .finally(() => clearTimeout(timer))
       .then(async response => {
         if (!response.ok) { stats.failed += 1; console.warn('tts', response.status, await response.text().catch(() => '')); clips.delete(key); return null; }
         stats.fetched += 1; stats.lastEngine = response.headers.get('X-Molip-Engine') || '';

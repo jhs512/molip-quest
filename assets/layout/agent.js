@@ -220,28 +220,45 @@
     return paused;
   }
   // ---- Neural voice: clips come from assets/layout/voice.js (the app's /tts endpoint). ----
-  let currentAudio = null;
+  let currentAudio = null, finishClip = null;
   const neural = () => (globalThis.molipVoice && globalThis.molipVoice.enabled()) ? globalThis.molipVoice : null;
-  function synthesize(sentence) { const v = neural(); return v ? v.synthesize(sentence) : Promise.resolve(null); }
+  // 멈춤 while a clip is being fetched: the fetch keeps going (it fills the cache), but the
+  // narration stops waiting for it. Each waiter is released by stop().
+  let cancelWaiters = [];
+  const untilCancelled = () => new Promise(resolve => cancelWaiters.push(resolve));
+  function releaseCancelWaiters() { const waiters = cancelWaiters; cancelWaiters = []; for (const resolve of waiters) resolve(null); }
+  function synthesize(sentence) {
+    const v = neural();
+    if (!v) return Promise.resolve(null);
+    if (cancelled) return Promise.resolve(null);
+    return Promise.race([v.synthesize(sentence), untilCancelled()]);
+  }
   function playClip(url) {
     return new Promise(resolve => {
       const audio = new Audio(url);
       audio.playbackRate = globalThis.molipVoice ? globalThis.molipVoice.rate : 1;
       let done = false;
-      const finish = ok => { if (done) return; done = true; if (currentAudio === audio) currentAudio = null; resolve(ok); };
+      const finish = ok => { if (done) return; done = true; if (currentAudio === audio) { currentAudio = null; finishClip = null; } resolve(ok); };
       audio.onended = () => finish(true);
       audio.onerror = () => finish(false);
-      currentAudio = audio;
+      currentAudio = audio; finishClip = finish;
       audio.play().then(() => { if (cancelled) { audio.pause(); finish(true); } }).catch(() => finish(false));
     });
   }
-  function stopClip() { if (currentAudio) { try { currentAudio.pause(); } catch {} currentAudio = null; } }
+  // A paused clip never fires `ended`: stopping must settle its promise, or the narration that
+  // awaits it (and the panel's 진행 중 state behind it) would hang after 멈춤.
+  function stopClip() {
+    const finish = finishClip;
+    if (currentAudio) { try { currentAudio.pause(); } catch {} currentAudio = null; }
+    finishClip = null;
+    if (finish) finish(false);
+  }
   window.addEventListener('molip:tts-rate', event => { if (currentAudio) currentAudio.playbackRate = event.detail; });
   function prefetch(actions) {
     if (!voice || !neural()) return;
     for (const action of actions) {
       const sentence = action && (action.action === 'say' ? action.text : action.say);
-      if (sentence) synthesize(String(sentence));
+      if (sentence) neural().synthesize(String(sentence));
     }
   }
   // Chromium drops onend for an utterance that gets garbage-collected, and ignores speak() in the
@@ -504,7 +521,7 @@
   }
   // Stop reading a reply without touching a narration that may be running.
   function stopReply() { replyRun++; if (!running) stopSpeech(); }
-  function stop() { cancelled = true; paused = false; replyRun++; cancelAnimationFrame(glideFrame); stopSpeech(); clearSpot(); }
+  function stop() { cancelled = true; paused = false; replyRun++; cancelAnimationFrame(glideFrame); stopSpeech(); releaseCancelWaiters(); clearSpot(); }
   function setVoice(on) { voice = !!on; if (!voice) stopSpeech(); return voice; }
   function setVoiceName(name) { return globalThis.molipVoice ? globalThis.molipVoice.setName(name) : String(name || 'system'); }
   globalThis.molipAgent = { run, stop, pause, resume, speakReply, stopReply, get paused() { return paused; }, get running() { return running; }, setVoice, setVoiceName, resolveTarget, glideTo, get voice() { return voice; }, get voiceName() { return globalThis.molipVoice ? globalThis.molipVoice.name : 'system'; }, get lastSpeech() { return lastSpeech; }, get playbackRate() { return currentAudio ? currentAudio.playbackRate : null; }, actions: Object.keys(handlers) };
