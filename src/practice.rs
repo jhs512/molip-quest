@@ -9,7 +9,11 @@ pub(crate) const COURSE_ID: &str = "kpc-morning-practice-v1";
 
 #[derive(Clone, Deserialize)]
 pub(crate) struct Material {
+    /// The reference solution; the narration's code chunks join into it (checked by the
+    /// instructor-materials test below), and 정답 보기 types those chunks.
+    #[allow(dead_code)]
     code: String,
+    /// The 풀이 요약 lines: what /tour-all says about the problem.
     explanation: Vec<String>,
     narration: Vec<serde_json::Value>,
 }
@@ -84,6 +88,7 @@ fn numbered_units(course: &Course) -> Vec<molip_quest::Unit> {
 
 #[component]
 pub(crate) fn PracticeView() -> Element {
+    use molip_quest::curriculum::{Activity, ActivityKind};
     let course = use_hook(|| Course::parse(include_str!("../courses/morning-practice.json")));
     let Ok(course) = course else {
         return rsx! {p {class:"error","실습을 불러올 수 없습니다."}};
@@ -91,51 +96,8 @@ pub(crate) fn PracticeView() -> Element {
     let mut selected = use_signal(|| 0usize);
     let mut refresh = use_signal(|| 0u64);
     let materials = use_context::<crate::instructor_mode::InstructorSession>().0;
-    let mut shown = use_signal(|| None::<bool>);
-    let mut demo_round = use_signal(|| 0u64);
-    let mut demo_running = use_signal(|| false);
-    let mut demo_paused = use_signal(|| false);
-    let mut demo_report = use_signal(String::new);
-    let demo_units = numbered_units(&course);
     use_drop(|| {
         document::eval("window.molipAgent?.stop()");
-    });
-    use_effect(move || {
-        let round = demo_round();
-        if round == 0 {
-            return;
-        }
-        let id = &demo_units[*selected.peek()].id;
-        let Some(material) = materials.peek().as_ref().and_then(|m| m.get(id)).cloned() else {
-            return;
-        };
-        let mut actions = material.narration;
-        for action in &mut actions {
-            if let Some(code) = action.get_mut("code") {
-                if let Some(text) = code.as_str() {
-                    *code = text
-                        .replace("\"cafe-sales.xlsx\"", "\"data/cafe-sales.xlsx\"")
-                        .into();
-                }
-            }
-        }
-        demo_running.set(true);
-        demo_paused.set(false);
-        demo_report.set(String::new());
-        let actions = serde_json::to_string(&actions).unwrap_or_else(|_| "[]".into());
-        spawn(async move {
-            let script = format!("(async()=>{{const a=window.molipAgent;if(!a){{dioxus.send('해설 엔진을 불러오지 못했습니다.');return;}}const voice=a.voice,name=a.voiceName;a.setVoiceName('system');a.setVoice(true);try{{dioxus.send(await a.run({actions}));}}catch(e){{dioxus.send(String(e));}}finally{{a.setVoice(voice);a.setVoiceName(name);}}}})()");
-            let mut eval = document::eval(&script);
-            let report = eval
-                .recv::<String>()
-                .await
-                .unwrap_or_else(|_| "해설 재생이 종료되었습니다.".into());
-            if *demo_round.peek() == round {
-                demo_running.set(false);
-                demo_paused.set(false);
-                demo_report.set(report);
-            }
-        });
     });
     let units = numbered_units(&course);
     let unit = units[selected()].clone();
@@ -143,17 +105,120 @@ pub(crate) fn PracticeView() -> Element {
     let completed = LearningStore::user_store()
         .and_then(|store| store.completed(&course))
         .unwrap_or_default();
+    // The problem as a mission, so the instructor buttons and the AI panel treat it exactly like
+    // a coding mission of the course: its 해설 comes from the instructor materials (the bundled
+    // Excel lives under data/ in the app's sandbox), 정답 보기 types that script's code and submits.
+    let material = materials().and_then(|m| m.get(&unit.id).cloned());
+    let tour: Vec<String> = material.as_ref().map(|m| m.explanation.clone()).unwrap_or_default();
+    let narration: Vec<serde_json::Value> = material
+        .map(|material| {
+            let mut actions = material.narration;
+            for action in &mut actions {
+                if let Some(code) = action.get_mut("code") {
+                    if let Some(text) = code.as_str() {
+                        *code = text.replace("\"cafe-sales.xlsx\"", "\"data/cafe-sales.xlsx\"").into();
+                    }
+                }
+            }
+            actions
+        })
+        .unwrap_or_default();
+    let activity = Activity {
+        id: unit.id.clone(),
+        title: unit.title.clone(),
+        challenge: true,
+        ask: Vec::new(),
+        narration,
+        tour,
+        kind: ActivityKind::Coding { problem: unit.clone() },
+    };
+    // "AI에게 물어보기", as in the learning view: the same panel, /auto, /auto-all and the
+    // instructor's 정답 보기 · 해설 보기 all go through it.
+    let mut assistant_open = use_signal(|| false);
+    let mut assistant_messages = use_signal(Vec::<molip_quest::assistant::Turn>::new);
+    let mut autopilot = use_signal(|| false);
+    let mut touring = use_signal(|| false);
+    let mut auto_round = use_signal(|| 0u32);
+    let mut auto_cancel = use_signal(|| 0u32);
+    let mut narration_paused = use_signal(|| false);
+    let assistant_context = molip_quest::assistant::page_context(
+        &course.title,
+        &course.chapters[0].title,
+        &unit,
+        &activity,
+        None,
+    );
+    let assistant_narration = serde_json::to_string(&activity.narration).unwrap_or_else(|_| "[]".into());
+    let assistant_tour = serde_json::to_string(&crate::instructor_mode::tour_actions(&activity)).unwrap_or_else(|_| "[]".into());
+    let mut assistant_context_signal = use_signal(|| assistant_context.clone());
+    {
+        let context = assistant_context.clone();
+        use_effect(use_reactive!(|context| {
+            if *assistant_context_signal.peek() != context {
+                assistant_context_signal.set(context.clone());
+            }
+        }));
+    }
+    let mut assistant_narration_signal = use_signal(|| assistant_narration.clone());
+    {
+        let narration = assistant_narration.clone();
+        use_effect(use_reactive!(|narration| {
+            if *assistant_narration_signal.peek() != narration {
+                assistant_narration_signal.set(narration.clone());
+            }
+        }));
+    }
+    let mut assistant_tour_signal = use_signal(|| assistant_tour.clone());
+    {
+        let tour = assistant_tour.clone();
+        use_effect(use_reactive!(|tour| {
+            if *assistant_tour_signal.peek() != tour {
+                assistant_tour_signal.set(tour.clone());
+            }
+        }));
+    }
+    // Mark a problem switch in the conversation.
+    let mut assistant_last_title = use_signal(|| unit.title.clone());
+    let mission_marker = assistant_last_title;
+    {
+        let title = unit.title.clone();
+        use_effect(use_reactive!(|title| {
+            if *assistant_last_title.peek() != title {
+                if !assistant_messages.peek().is_empty() {
+                    assistant_messages.write().push(molip_quest::assistant::Turn {
+                        role: "note".into(),
+                        text: format!("이제 「{title}」 기준으로 답합니다."),
+                    });
+                }
+                assistant_last_title.set(title.clone());
+            }
+        }));
+    }
+    // An instructor button posts a request: show the panel that plays it.
+    {
+        let requests = use_context::<crate::instructor_mode::InstructorRequests>();
+        let mut seen = use_signal(move || requests.seq());
+        use_effect(move || {
+            if let Some(request) = requests.0.read().as_ref() {
+                if request.seq != *seen.peek() {
+                    seen.set(request.seq);
+                    assistant_open.set(true);
+                }
+            }
+        });
+    }
+    let last = units.len().saturating_sub(1);
     rsx! {
         header {class:"practice-header",h1 {"도전 과제"}
         nav {class:"header-course-actions",aria_label:"실습 문제",
             button {class:"curriculum-toggle",onclick:move |_|{document::eval(r#"const dialog = document.querySelector('.practice-list');
                 if (!dialog.dataset.dismissBound) {dialog.addEventListener('click', event => {if(event.target === dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}});dialog.dataset.dismissBound='true';}
                 dialog.showModal();"#);},"도전 과제 목록"}
-                    if materials().is_some() {
-                button {class:"instructor-answer",onclick:move |_|{document::eval("window.molipAgent?.stop()");shown.set(Some(true));},"정답 보기"}
-                button {class:"instructor-explain",disabled:demo_running(),onclick:move |_|{shown.set(Some(false));demo_round+=1;},"해설 보기"}
+            if materials().is_some() {
+                crate::instructor_mode::InstructorControls {key:"instructor-practice-{unit.id}",activity:activity.clone()}
             }
         }
+        button {class:"assistant-open",onclick:move |_|{let v=assistant_open();assistant_open.set(!v);},{if assistant_open() {"AI 접기"} else {"AI에게 물어보기"}}}
         span {class:"practice-current-title","{unit.title}"}
         }
         dialog {class:"curriculum-menu practice-list",aria_label:"도전 과제 목록",
@@ -161,20 +226,20 @@ pub(crate) fn PracticeView() -> Element {
                 button {class:"curriculum-close",aria_label:"도전 과제 목록 닫기",autofocus:true,onclick:move |_|{document::eval("document.querySelector('.practice-list').close()");},"닫기 ×"}
             }
             div {class:"curriculum-gauge",role:"progressbar",aria_valuemin:"0",aria_valuemax:"100",aria_valuenow:format!("{}",completed.len()*100/units.len()),
-                div {class:"curriculum-gauge-head",span {class:"curriculum-gauge-label","클리어"}span {class:"curriculum-gauge-percent",{format!("{}%",completed.len()*100/units.len())}}span {class:"curriculum-gauge-count",{format!("{} / {} 과제",completed.len(),units.len())}}}
+                div {class:"curriculum-gauge-head",span {class:"curriculum-gauge-label","클리어"}span {class:"curriculum-gauge-percent",{format!("{}%",completed.len()*100/units.len())}}span {class:"curriculum-gauge-count",{format!("{} / {}",completed.len(),units.len())}}}
                 div {class:"curriculum-gauge-track",div {class:"curriculum-gauge-fill",style:format!("width:{}%",completed.len()*100/units.len())}}
             }
             nav {class:"curriculum",
                 for chapter in &course.chapters {
                     details {class:"curriculum-chapter",open:chapter.units.iter().any(|problem|problem.id==unit.id),
-                        summary {h3 {span {class:"curriculum-kind","📚 챕터"}{format!(" {} · {} / {} · {}%",chapter.title,chapter.units.iter().filter(|problem|completed.contains(&problem.id)).count(),chapter.units.len(),if chapter.units.is_empty(){0}else{chapter.units.iter().filter(|problem|completed.contains(&problem.id)).count()*100/chapter.units.len()})}}
+                        summary {h3 {span {class:"curriculum-kind","📚 챕터"}{format!(" {} · {} / {} · {}%",chapter.title,chapter.units.iter().filter(|problem|completed.contains(&problem.id)).count(),chapter.units.len(),if chapter.units.is_empty() {0} else {chapter.units.iter().filter(|problem|completed.contains(&problem.id)).count()*100/chapter.units.len()})}}
                         }
                         for problem in &chapter.units {
                             {
                                 let index=units.iter().position(|candidate|candidate.id==problem.id).unwrap();
                                 let title=units[index].title.clone();
                                 rsx! {
-                                    div {class:"curriculum-unit",button {class:format!("unit{}{}",if selected()==index{" selected"}else{""},if completed.contains(&problem.id){" done"}else{""}),aria_current:if selected()==index {"step"}else{"false"},onclick:move |_|{document::eval("window.molipAgent?.stop();document.querySelector('.practice-list').close()");selected.set(index);shown.set(None);},
+                                    div {class:"curriculum-unit",button {class:format!("unit{}{}",if selected()==index{" selected"}else{""},if completed.contains(&problem.id){" done"}else{""}),aria_current:if selected()==index {"step"}else{"false"},onclick:move |_|{selected.set(index);document::eval("document.querySelector('.practice-list').close()");},
                                         span {class:"unit-title",{format!("{} {}",if completed.contains(&problem.id){"✓"}else if selected()==index{"▶"}else{"○"},title)}}
                                         if selected()==index {span {class:"unit-current","학습 중"}}
                                     }}
@@ -185,30 +250,40 @@ pub(crate) fn PracticeView() -> Element {
                 }
             }
         }
-        if materials().is_some() { if let Some(code_view) = shown() {
-            if let Some(material)=materials().and_then(|m|m.get(&unit.id).cloned()) {
-                section {class:"practice-instructor-result",h2 {{if code_view{"정답"}else{"해설"}}}
-                    if code_view {pre {code {{material.code.replace("\"cafe-sales.xlsx\"", "\"data/cafe-sales.xlsx\"")}}}}
-                    else {
-                        p {"코드를 한 단계씩 작성하며 설명하고, 실행 결과와 제출까지 보여 드립니다."}
-                        div {class:"actions",
-                            button {disabled:!demo_running(),onclick:move |_|{if demo_paused(){document::eval("window.molipAgent?.resume()");}else{document::eval("window.molipAgent?.pause()");}demo_paused.set(!demo_paused());},{if demo_paused(){"계속"}else{"일시정지"}}}
-                            button {id:"autopilot-stop",disabled:!demo_running(),onclick:move |_|{document::eval("window.molipAgent?.stop()");},"해설 멈춤"}
-                            button {disabled:demo_running(),onclick:move |_|demo_round+=1,"다시 보기"}
-                        }
-                        if !demo_running() && !demo_report().is_empty() {p {role:"status","해설 재생이 종료되었습니다."}}
-                        details {summary {"풀이 요약"}ol {for text in material.explanation {li {"{text}"}}}}
-                    }
-                    button {onclick:move |_|{document::eval("window.molipAgent?.stop()");shown.set(None);},"닫기"}
+        if autopilot() {
+            div {class:"autopilot-banner",role:"status",
+                span {class:"autopilot-dot"} span {{if narration_paused() {"자동 진행 · 일시정지 중 · "} else if touring() {"핵심 훑기 진행 중 · 문제마다 핵심만 말하고 답을 넣어 넘어갑니다 · "} else {"자동 진행 중 · 문제가 끝나면 다음으로 넘어갑니다 · "}}} kbd {"Space"} span {" 일시정지/재개 · "} kbd {"Esc"}
+                button {onclick:move |_|{let p=!narration_paused();narration_paused.set(p);document::eval(if p {"window.molipAgent && molipAgent.pause();"} else {"window.molipAgent && molipAgent.resume();"});},{if narration_paused() {"▶ 재개"} else {"⏸ 일시정지"}}}
+                button {onclick:move |_|{autopilot.set(false);touring.set(false);narration_paused.set(false);auto_cancel+=1;document::eval("window.molipAgent && molipAgent.stop();");},"해제"}
+            }
+            button {id:"autopilot-stop",hidden:true,tabindex:"-1",onclick:move |_|{autopilot.set(false);touring.set(false);auto_cancel+=1;document::eval("window.molipAgent && molipAgent.stop();");}}
+        }
+        div {class:if assistant_open() {"learning-row assistant-docked"} else {"learning-row"},
+            div {class:"separate-practice-workspace", {rsx! {
+                crate::ui::UnitWorkspace {key:"{unit.id}",course_id:COURSE_ID.to_string(),unit:unit.clone(),
+                    oncompleted:move |passed|{if passed {refresh+=1;crate::ui::toast("정답입니다! 실습 완료를 저장했습니다.","success");}}
                 }
+            }}}
+            if assistant_open() {
+                div {class:"split-handle split-col assistant-handle",role:"separator",aria_orientation:"vertical",aria_label:"AI 창 너비 조절",tabindex:"0",title:"드래그로 너비 조절"}
+            }
+            aside {class:"assistant-dock",hidden:!assistant_open(),
+                crate::ui::AssistantPanel {title:unit.title.clone(),kind:"도전 과제".to_string(),ask:Vec::<String>::new(),context:assistant_context_signal,narration:assistant_narration_signal,tour:assistant_tour_signal,messages:assistant_messages,
+                    autopilot,touring,auto_round,auto_cancel,mission_marker,paused:narration_paused,
+                    onauto_advance:move |_|{
+                        // The tutor finished this problem: the next one, or the end of the set.
+                        if selected() < last {
+                            selected+=1;
+                            auto_round+=1;
+                        } else {
+                            autopilot.set(false);
+                            touring.set(false);
+                            crate::ui::toast("도전 과제의 끝입니다. 자동 진행을 마칩니다.","success");
+                        }
+                    },
+                    onclose:move |_|assistant_open.set(false)}
             }
         }
-        }
-        div {class:"separate-practice-workspace", {rsx! {
-            crate::ui::UnitWorkspace {key:"{unit.id}",course_id:COURSE_ID.to_string(),unit,
-                oncompleted:move |passed|{if passed {refresh+=1;crate::ui::toast("정답입니다! 실습 완료를 저장했습니다.","success");}}
-            }
-        }}}
     }
 }
 

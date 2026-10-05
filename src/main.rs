@@ -9,11 +9,16 @@ use ui::Learning;
 
 #[cfg(feature = "desktop")]
 fn main() {
-    // No menu bar: the app is driven from its own screens, slides have their own fullscreen button.
+    // No menu bar on Windows and Linux: the app is driven from its own screens, slides have their
+    // own fullscreen button. macOS keeps Dioxus's default menu, which is what makes ⌘C, ⌘V, ⌘X
+    // and ⌘A reach the page (without an Edit menu the WebView never sees them); it lives in the
+    // system menu bar, so the window itself looks the same.
+    let config = dioxus::desktop::Config::new();
+    #[cfg(not(target_os = "macos"))]
+    let config = config.with_menu(None);
     dioxus::LaunchBuilder::new()
         .with_cfg(
-            dioxus::desktop::Config::new()
-                .with_menu(None)
+            config
                 // 해설 모드 asks for neural speech here: POST /tts with {"text","voice"} → MP3.
                 .with_asynchronous_custom_protocol("molip", |_, request, responder| {
                     std::thread::spawn(move || responder.respond(tts_response(request)));

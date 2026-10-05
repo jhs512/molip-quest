@@ -438,7 +438,7 @@ body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { poi
 .practice-header .assistant-open { background: #1f6f5f; color: #fff; margin-left: auto; margin-right: 10px; }
 /* The chat docks to the right of the learning column and can be collapsed from the header. */
 .practice-shell .learning-row { flex: 1; min-height: 0; display: flex; }
-.practice-shell .learning-row > .learning { flex: 1; min-width: 0; }
+.practice-shell .learning-row > .learning, .practice-shell .learning-row > .separate-practice-workspace { flex: 1; min-width: 0; }
 .assistant-dock { flex: none; width: var(--assistant-width, min(440px, 45vw)); min-height: 0; border-left: 1px solid #2d4457; display: flex; }
 .assistant-dock[hidden] { display: none; } /* 접기: hidden, not unmounted, so the tutor keeps working */
 .assistant-handle { flex: none; width: 8px; }

@@ -791,7 +791,7 @@ fn SlidesView(
 /// "AI에게 물어보기": a tutor chat over the mission on screen (src/assistant.rs). The chat
 /// history lives in the caller so closing and reopening the panel keeps it; 대화 지우기 clears it.
 #[component]
-fn AssistantPanel(
+pub(crate) fn AssistantPanel(
     title: String,
     kind: String,
     ask: Vec<String>,
