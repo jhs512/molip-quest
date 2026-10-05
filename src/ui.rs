@@ -61,7 +61,10 @@ fn mission_progress<'a>(
 }
 
 /// (done, total, percent) for a gauge.
-fn mission_counts<'a>(units: impl Iterator<Item = &'a Unit>, completed: &HashSet<String>) -> (usize, usize, usize) {
+fn mission_counts<'a>(
+    units: impl Iterator<Item = &'a Unit>,
+    completed: &HashSet<String>,
+) -> (usize, usize, usize) {
     let mut total = 0;
     let mut done = 0;
     for unit in units {
@@ -300,7 +303,7 @@ pub fn Learning(
                             button {class:format!("curriculum-mission{}{}{}", if is_active && n==active_mission {" selected"} else {""}, if activity.challenge {" challenge"} else {""}, if completed_items.contains(&activity.progress_unit(unit).id) {" done"} else if n<unit_unlocked {" todo"} else {""}),
                                 aria_current:if is_active && n==active_mission {"step"}else{"false"},disabled:n>=unit_unlocked,
                                 onclick:{let id=unit.id.clone();move |_|{if !is_active {selected.set(id.clone());}mission_index.set(n);document::eval("document.querySelector('.curriculum-menu').close();");}},
-                                span {class:"mission-kind",{format!("{} {} · {} {}",if is_active && n==active_mission {"▶"}else if completed_items.contains(&activity.progress_unit(unit).id){"✓"}else if n<unit_unlocked {"○"}else{"🔒"},n+1,activity.icon(),activity.label())}
+                                span {class:"mission-kind",{format!("{} {} {}",if is_active && n==active_mission {"▶"}else if completed_items.contains(&activity.progress_unit(unit).id){"✓"}else if n<unit_unlocked {"○"}else{"🔒"},activity.icon(),activity.label())}
                                     span {class:"mission-state",{if completed_items.contains(&activity.progress_unit(unit).id) {"클리어"} else if n<unit_unlocked {"미완료"} else {"잠김"}}}}
                                 span {class:"mission-title","{activity.title}"}
                             }
@@ -452,7 +455,7 @@ fn UnitFlow(
                 for (n, activity) in unit.activities.iter().enumerate() {
                     button {key:"{activity.id}",role:"listitem",
                         class:format!("mission-cell{}{}{}", if completed.contains(&activity.progress_unit(&unit).id) {" cleared"} else {""}, if n == active_index {" current"} else {""}, if activity.challenge {" challenge"} else {""}),
-                        title:format!("{} · {}{}", n + 1, activity.title, if completed.contains(&activity.progress_unit(&unit).id) {" (클리어)"} else {""}),
+                        title:format!("{}{}", activity.title, if completed.contains(&activity.progress_unit(&unit).id) {" (클리어)"} else {""}),
                         aria_current:if n == active_index {"step"} else {"false"},
                         onclick:move |_| index.set(n)}
                 }

@@ -35,9 +35,12 @@ def build():
             for offset, deck in enumerate(decks):
                 units[unit_index]["activities"].insert(position + offset, deck)
         # 표에서 고르기 quizzes go right after their unit's 단원 점검 (or at the end).
-        for _, unit_id, table_quiz in [p for p in TABLE_QUIZ_PLACEMENTS if p[0] == chapter_id]:
+        for _, unit_id, table_quiz, after_id in [p for p in TABLE_QUIZ_PLACEMENTS if p[0] == chapter_id]:
             unit = next(u for u in units if u["id"] == unit_id)
-            after = next((i for i, a in enumerate(unit["activities"]) if a["kind"] == "quiz" and a["title"] == "단원 점검"), len(unit["activities"]) - 1)
+            ids = [a["id"] for a in unit["activities"]]
+            if after_id is not None and after_id not in ids:
+                raise SystemExit(f"{unit_id}: 표 고르기 퀴즈를 붙일 미션 '{after_id}'이 없습니다.")
+            after = ids.index(after_id) if after_id is not None else next((i for i, a in enumerate(unit["activities"]) if a["kind"] == "quiz" and a["title"] == "단원 점검"), len(ids) - 1)
             unit["activities"].insert(after + 1, table_quiz)
         seen = set()
         for _, _, _, deck in placements:
@@ -58,4 +61,10 @@ def build():
                         raise SystemExit(f"{unit['id']}/{problem['id']}: tools/kpc_course/prompts.py에 인간 버전 프롬프트가 없습니다.")
                     problem["prompt"], problem["prompt_why"] = PROMPTS[problem["id"]]
         chapters.append(dict(id=chapter_id, title=title, units=units))
+    # Numbering the student sees everywhere: chapter "1.", unit "1-1", mission "1-1-1".
+    for c, chapter in enumerate(chapters, start=1):
+        for u, unit in enumerate(chapter["units"], start=1):
+            unit["title"] = f"{c}-{u} {unit['title']}"
+            for a, activity in enumerate(unit["activities"], start=1):
+                activity["title"] = f"{c}-{u}-{a} {activity['title']}"
     return chapters
