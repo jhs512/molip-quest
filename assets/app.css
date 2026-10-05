@@ -643,3 +643,8 @@ html.fx-still .victory-fill { transition: none; }
 .update-fill { height: 100%; background: linear-gradient(90deg, #62d6b1, #3fb28c); transition: width .25s ease; }
 .update-line { color: #2f4a63; font-size: 14px; margin: 0; }
 .build-number { color: #7f98ad; font-size: 12px; margin: 4px 0 10px; }
+
+/* Presentation mode: progress gauge along the top edge. */
+.slides-progress { display: none; }
+.slides-host.slides-presenting .slides-progress { display: block; position: fixed; top: 0; left: 0; right: 0; height: 5px; background: #ffffff22; z-index: 901; }
+.slides-progress-fill { height: 100%; background: #62d6b1; transition: width .3s ease; }

@@ -29,6 +29,7 @@ marp.markdown.inline.ruler.before('emphasis', 'course_strong', (state, silent) =
 });
 // A friendly default theme: Pretendard, dark text on a warm paper, accent for headings.
 marp.themeSet.add(`/* @theme molip */
+section::after { content: attr(data-marpit-pagination) ' / ' attr(data-marpit-pagination-total); font-size: 20px; color: #6b7c8c; }
 section { width: 1280px; height: 720px; padding: 64px 80px; font-family: 'Pretendard', 'Malgun Gothic', sans-serif; font-size: 30px; line-height: 1.6; color: #1d2b3a; background: #fbf8f1; }
 section h1 { font-size: 60px; line-height: 1.25; margin: 0 0 24px; color: #0f3d5e; letter-spacing: -1px; }
 section h2 { font-size: 44px; margin: 0 0 20px; color: #0f3d5e; letter-spacing: -0.5px; }
@@ -117,6 +118,9 @@ function mount(host) {
   try { rendered = renderDeck(source); } catch (error) { host.textContent = '슬라이드를 그리지 못했습니다: ' + error.message; return; }
   const style = document.createElement('style'); style.textContent = rendered.css;
   const stage = document.createElement('div'); stage.className = 'slides-stage'; stage.innerHTML = rendered.html;
+  // Presentation mode: a thin gauge along the top shows how far into the deck we are.
+  const progress = document.createElement('div'); progress.className = 'slides-progress'; progress.setAttribute('aria-hidden', 'true');
+  const progressFill = document.createElement('div'); progressFill.className = 'slides-progress-fill'; progress.append(progressFill);
   const slides = [...stage.querySelectorAll(':scope > .marpit > svg, :scope > .marpit > section')];
   const bar = document.createElement('div'); bar.className = 'slides-bar';
   const prev = document.createElement('button'); prev.type = 'button'; prev.textContent = '← 이전 장';
@@ -172,11 +176,12 @@ function mount(host) {
     if (moved && host.classList.contains('slides-presenting')) showUi();
   });
   bar.append(prev, counter, next, notesButton, full);
-  host.replaceChildren(style, stage, notes, bar);
+  host.replaceChildren(style, progress, stage, notes, bar);
   let index = 0;
   const update = () => {
     slides.forEach((s, i) => { s.style.display = i === index ? '' : 'none'; });
     counter.textContent = `${index + 1} / ${slides.length}`;
+    progressFill.style.width = `${(index + 1) * 100 / slides.length}%`;
     prev.disabled = index === 0; next.disabled = index === slides.length - 1;
     host.dataset.slideIndex = String(index);
     updateNotes();
@@ -187,14 +192,33 @@ function mount(host) {
   next.onclick = () => { if (index < slides.length - 1) { index++; update(); } };
   full.onclick = () => present(!host.classList.contains('slides-presenting'));
   host.tabIndex = 0;
+  // Past the last slide, → moves on to the next mission (and ← before the first slide goes
+  // back one), through the mission's own 이전/다음 buttons so the learning flow stays in charge.
+  const missionNav = text => [...(host.closest('.slides-mission') || document).querySelectorAll('.mission-nav button, .header-navigation button')]
+    .find(b => b.textContent.trim() === text && !b.disabled) || null;
+  const leaveTo = text => {
+    const b = missionNav(text); if (!b) return false;
+    // Presenting: the next mission, if it is a deck, opens straight in presentation mode
+    // (mount() reads this within a few seconds); otherwise the flag just lapses.
+    if (host.classList.contains('slides-presenting')) globalThis.molipSlides.carryPresenting = Date.now();
+    b.click(); return true;
+  };
   host.addEventListener('keydown', event => {
-    if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') { event.preventDefault(); next.click(); }
-    if (event.key === 'ArrowLeft' || event.key === 'PageUp') { event.preventDefault(); prev.click(); }
+    if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') {
+      event.preventDefault();
+      if (index === slides.length - 1) leaveTo('다음 →'); else next.click();
+    }
+    if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+      event.preventDefault();
+      if (index === 0) leaveTo('← 이전'); else prev.click();
+    }
     if (event.key === 'Escape' && notesOpen) { event.preventDefault(); toggleNotes(false); return; }
     if (event.key === 'Escape' && host.classList.contains('slides-presenting')) { event.preventDefault(); present(false); }
     if ((event.key === 'n' || event.key === 'N') && !event.ctrlKey && !event.metaKey && !event.altKey) { event.preventDefault(); toggleNotes(); }
   });
   host.molipPresent = present;
+  const carried = globalThis.molipSlides.carryPresenting;
+  if (carried && Date.now() - carried < 5000) { delete globalThis.molipSlides.carryPresenting; setTimeout(() => present(true), 50); }
   host.molipNotes = { toggle: toggleNotes, get open() { return notesOpen; }, get text() { return notesText.textContent; } };
   // For the tutor agent, which counts slides as the Markdown does: a comic's extra panels are
   // `continued` slides. nextSource() shows any remaining panels of the current source slide for
