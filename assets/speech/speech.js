@@ -55,8 +55,13 @@
     '×': '곱하기', '÷': '나누기', '−': '빼기', '±': '플러스 마이너스', '≤': '작거나 같다', '≥': '크거나 같다',
     '≠': '같지 않다', '≈': '거의 같다', '→': '화살표', '←': '왼쪽 화살표', '↔': '양방향 화살표', '∞': '무한대', '√': '루트',
   };
+  // "3번" is read with the Sino-Korean numeral (삼번), as a question or option number is said
+  // in class; the voice would otherwise count it 세번. Numbers 1–99.
+  const tens = ['', '십', '이십', '삼십', '사십', '오십', '육십', '칠십', '팔십', '구십'];
+  const sinoKorean = n => (n < 10 ? digits[n] : tens[Math.floor(n / 10)] + (n % 10 ? digits[n % 10] : ''));
   function mathSpeechText(input) {
     return input
+      .replace(/(?<![\d.,])(\d{1,2})번/g, (_, n) => sinoKorean(Number(n)) + '번')
       .replace(/(?<![A-Za-z0-9_])R²/g, '알 제곱')
       .replace(/([A-Za-z0-9])²/g, '$1 제곱').replace(/([A-Za-z0-9])³/g, '$1 세제곱')
       .replace(/(?<![\w.])(\d+)\.(\d+)(?![\w.])/g, (_, whole, fraction) => whole + ' 점 ' + [...fraction].map(d => digits[Number(d)]).join(' '))

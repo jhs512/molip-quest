@@ -66,6 +66,13 @@ test('tool names read as Korean words', () => {
   assert.equal(speech.pronunciationText('pipeline'), 'pipeline'); // not a whole-word match
 });
 
+test('question and option numbers are read with Sino-Korean numerals', () => {
+  assert.equal(speech.pronunciationText('3번. 풀이예요'), '삼번. 풀이예요');
+  assert.equal(speech.pronunciationText('2번 보기를 고를게요'), '이번 보기를 고를게요');
+  assert.equal(speech.pronunciationText('12번 문항'), '십이번 문항');
+  assert.equal(speech.pronunciationText('30000번'), '30000번'); // only small numbers
+});
+
 test('numbers and operators read naturally', () => {
   assert.equal(speech.mathSpeechText('test_size=0.2'), 'test_size 이퀄 0 점 이');
   assert.equal(speech.mathSpeechText('생존율 38%'), '생존율 38 퍼센트');
