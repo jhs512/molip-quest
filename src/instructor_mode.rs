@@ -4,6 +4,36 @@ use molip_quest::curriculum::{Activity, ActivityKind, Question, QuestionKind};
 #[derive(Clone, Copy)]
 pub(crate) struct InstructorSession(pub Signal<Option<crate::practice::Materials>>);
 
+/// What the instructor asked the AI panel to do on the mission on screen. The panel plays it
+/// exactly like a typed `/auto` (same progress line, 일시정지 and 멈춤), so the buttons only post
+/// here. `seq` grows per click so the same request can be repeated.
+#[derive(Clone, PartialEq)]
+pub(crate) enum InstructorAction {
+    /// The mission's precompiled 해설, as `/auto` plays it.
+    Narrate,
+    /// A JSON action list that fills in the answers and grades, no speech.
+    Solve(String),
+}
+#[derive(Clone, PartialEq)]
+pub(crate) struct InstructorRequest {
+    pub seq: u32,
+    pub action: InstructorAction,
+}
+#[derive(Clone, Copy)]
+pub(crate) struct InstructorRequests(pub Signal<Option<InstructorRequest>>);
+
+impl InstructorRequests {
+    pub(crate) fn post(mut self, action: InstructorAction) {
+        let seq = self.0.peek().as_ref().map_or(0, |r| r.seq) + 1;
+        self.0.set(Some(InstructorRequest { seq, action }));
+    }
+    /// The sequence number as of now: a view that mounts later starts from here, so a request
+    /// posted before it existed is not replayed.
+    pub(crate) fn seq(self) -> u32 {
+        self.0.peek().as_ref().map_or(0, |r| r.seq)
+    }
+}
+
 #[component]
 pub(crate) fn InstructorLogin() -> Element {
     let mut session = use_context::<InstructorSession>().0;
@@ -126,9 +156,7 @@ fn solve_actions(activity: &Activity) -> serde_json::Value {
 #[component]
 pub(crate) fn InstructorControls(activity: Activity) -> Element {
     let session = use_context::<InstructorSession>().0;
-    let mut running = use_signal(|| false);
-    let mut paused = use_signal(|| false);
-    let mut report = use_signal(String::new);
+    let requests = use_context::<InstructorRequests>();
     use_drop(|| {
         document::eval("window.molipAgent?.stop()");
     });
@@ -138,15 +166,14 @@ pub(crate) fn InstructorControls(activity: Activity) -> Element {
     // A deck has nothing to fill in: "정답 보기" marks it watched, the same as "다 봤어요 · 미션 완료".
     let slides = matches!(activity.kind, ActivityKind::Slides { .. });
     let solve = serde_json::to_string(&solve_actions(&activity)).unwrap_or_else(|_| "[]".into());
-    let actions = serde_json::to_string(&activity.narration).unwrap_or_else(|_| "[]".into());
+    let has_narration = !activity.narration.is_empty();
     rsx! {
         div {class:"instructor-controls",
-            button {class:"instructor-answer",disabled:running(),onclick:move |_|{document::eval("window.molipAgent?.stop()");if slides {document::eval("document.querySelector('.slides-finish')?.click()");return;}running.set(true);paused.set(false);report.set(String::new());let solve=solve.clone();spawn(async move {let script=format!("(async()=>{{const a=window.molipAgent,voice=a.voice;a.setVoice(false);try{{dioxus.send(await a.run({solve}));}}catch(e){{dioxus.send(String(e));}}finally{{a.setVoice(voice);}}}})()");let mut eval=document::eval(&script);let result=eval.recv::<String>().await.unwrap_or_else(|_|"정답을 넣지 못했습니다.".into());running.set(false);report.set(result);});},"정답 보기"}
-            button {class:"instructor-explain",disabled:running()||actions=="[]",onclick:move |_|{running.set(true);paused.set(false);report.set(String::new());let actions=actions.clone();spawn(async move {let script=format!("(async()=>{{const a=window.molipAgent,voice=a.voice,name=a.voiceName;a.setVoiceName('system');a.setVoice(true);try{{dioxus.send(await a.run({actions}));}}catch(e){{dioxus.send(String(e));}}finally{{a.setVoice(voice);a.setVoiceName(name);}}}})()");let mut eval=document::eval(&script);let result=eval.recv::<String>().await.unwrap_or_else(|_|"해설을 종료했습니다.".into());running.set(false);paused.set(false);report.set(result);});},"해설 보기"}
-            if running() {
-                button {onclick:move |_|{if paused(){document::eval("window.molipAgent?.resume()");}else{document::eval("window.molipAgent?.pause()");}paused.set(!paused());},{if paused(){"계속"}else{"일시정지"}}}
-                button {onclick:move |_|{document::eval("window.molipAgent?.stop()");},"해설 멈춤"}
-            }
+            button {class:"instructor-answer",onclick:move |_|{
+                if slides {document::eval("window.molipAgent?.stop();document.querySelector('.slides-finish')?.click()");return;}
+                requests.post(InstructorAction::Solve(solve.clone()));
+            },"정답 보기"}
+            button {class:"instructor-explain",disabled:!has_narration,onclick:move |_|{requests.post(InstructorAction::Narrate);},"해설 보기"}
         }
     }
 }

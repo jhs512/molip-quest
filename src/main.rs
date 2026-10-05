@@ -412,6 +412,7 @@ fn UpdateGate() -> Element {
 fn Workspace() -> Element {
     let mut view = use_signal(|| View::Home);
     use_context_provider(|| instructor_mode::InstructorSession(Signal::new(None::<practice::Materials>)));
+    use_context_provider(|| instructor_mode::InstructorRequests(Signal::new(None)));
     let mut study_target = use_signal(|| (String::new(), usize::MAX));
     // Bumped when progress is reset from home, so the avatar card reads the store again.
     let mut home_epoch = use_signal(|| 0u32);

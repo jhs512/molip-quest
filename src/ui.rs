@@ -143,6 +143,19 @@ pub fn Learning(
         && !(active_mission + 1 == active_total && next.is_some()));
     // "AI에게 물어보기": the tutor chat knows the mission on screen.
     let mut assistant_open = use_signal(|| false);
+    // An instructor button (정답 보기 · 해설 보기) posts a request: show the panel that plays it.
+    {
+        let requests = use_context::<crate::instructor_mode::InstructorRequests>();
+        let mut seen = use_signal(move || requests.seq());
+        use_effect(move || {
+            if let Some(request) = requests.0.read().as_ref() {
+                if request.seq != *seen.peek() {
+                    seen.set(request.seq);
+                    assistant_open.set(true);
+                }
+            }
+        });
+    }
     // /auto-all: the tutor narrates and clears mission after mission until the course ends or
     // Esc. `auto_round` is bumped after every move so the panel starts the next /auto;
     // `auto_cancel` is bumped to abandon whatever the tutor is doing right now.
@@ -837,20 +850,21 @@ fn AssistantPanel(
             }
         }
     });
-    // Play the mission's precompiled 해설 script (courses/*.json `narration`): the lines go into
-    // the conversation at once, then the agent performs them on screen and reports back.
+    // Play a precompiled action script on screen: the lines go into the conversation at once,
+    // then the agent performs them and reports back. `/auto` plays the mission's 해설
+    // (courses/*.json `narration`); the instructor's 정답 보기 plays its answer-filling steps.
     let mut narrating = use_signal(|| false);
-    let narrate = Callback::new(move |_: ()| {
+    let perform = Callback::new(move |(heading, actions): (String, String)| {
         pending.set(true);
         error.set(String::new());
-        let actions = narration();
         let lines = assistant::narration_lines(&actions);
         narrating.set(true);
         paused.set(false);
+        document::eval("window.molipAgent && molipAgent.stop();");
         messages.write().push(Turn {
             role: "model".into(),
             text: format!(
-                "▶ 자동 해설 · {}단계\n\n{}",
+                "▶ {heading} · {}단계\n\n{}",
                 lines.len(),
                 lines
                     .iter()
@@ -884,6 +898,7 @@ fn AssistantPanel(
         });
         current_task.set(Some(task));
     });
+    let narrate = Callback::new(move |_: ()| perform.call(("자동 해설".into(), narration())));
     // Ask with the conversation as it stands (the last turn is the student's question). When the
     // assistant appends actions, run them on the screen, hand the report back and ask again,
     // until it answers without actions (at most a few rounds).
@@ -958,6 +973,31 @@ fn AssistantPanel(
             request.call(());
         }
     });
+    // The instructor's buttons: 해설 보기 is a typed /auto; 정답 보기 performs the answer steps.
+    {
+        let requests = use_context::<crate::instructor_mode::InstructorRequests>();
+        let mut seen = use_signal(move || requests.seq());
+        use_effect(move || {
+            let Some(request) = requests.0.read().clone() else { return };
+            if request.seq == *seen.peek() {
+                return;
+            }
+            seen.set(request.seq);
+            if let Some(task) = current_task.take() {
+                task.cancel();
+            }
+            match request.action {
+                crate::instructor_mode::InstructorAction::Narrate => {
+                    messages.write().push(Turn { role: "user".into(), text: AUTO.into() });
+                    auto.call(());
+                }
+                crate::instructor_mode::InstructorAction::Solve(actions) => {
+                    messages.write().push(Turn { role: "user".into(), text: "정답 보기".into() });
+                    perform.call(("정답 입력".into(), actions));
+                }
+            }
+        });
+    }
     // The next mission's /auto, a moment after the screen has switched.
     let mut handled_round = use_signal(|| 0u32);
     use_effect(move || {
