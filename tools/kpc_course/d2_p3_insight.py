@@ -43,7 +43,7 @@ UNIT = unit('insight', '그래프에서 근거 읽기', [
 
         ```python
         grouped = titanic.groupby(['성별', '객실등급'])['생존'].agg(['count', 'mean'])
-        wide = grouped['mean'].unstack('객실등급')   # 행: 성별, 열: 등급
+        wide = grouped['mean'].unstack('객실등급')  # 행: 성별, 열: 등급
         ax = (wide * 100).plot.bar(ylim=(0, 100))  # 성별마다 등급 막대 세 개
         ```
 
@@ -63,8 +63,8 @@ UNIT = unit('insight', '그래프에서 근거 읽기', [
         `titanic.groupby('탑승항구')['생존'].agg(['count', 'mean'])`예요. `탑승항구`가 비어 있는 두 명은 어느 항구 그룹에도 안 들어가요.
         """,
         starter=TI + "# by_port를 만드세요\n",
-        solution=TI + "by_port = titanic.groupby('탑승항구')['생존'].agg(['count','mean'])\nby_port\n",
-        check="assert set(s['by_port'].index)=={'C','Q','S'}\nassert s['by_port']['count'].sum()==1307\nassert s['by_port'].loc['S','count']==914"),
+        solution=TI + "by_port = titanic.groupby('탑승항구')['생존'].agg(['count', 'mean'])\nby_port\n",
+        check="assert set(s['by_port'].index) == {'C', 'Q', 'S'}\nassert s['by_port']['count'].sum() == 1307\nassert s['by_port'].loc['S', 'count'] == 914"),
     coding('sex-pclass-table', '성별 × 등급 교차표 만들기',
         goal="""
         자, 두 조건으로 나눠요. `성별`과 `객실등급`으로 묶은 `생존`의 `count`와 `mean`을 `grouped`에 담으세요. `grouped['mean']`을 `unstack('객실등급')`로 펼치면 2행 3열 표예요. 그 표를 `wide`에 담고, 마지막 줄에 `wide`를 적으세요.
@@ -75,8 +75,8 @@ UNIT = unit('insight', '그래프에서 근거 읽기', [
         `titanic.groupby(['성별', '객실등급'])['생존'].agg(['count', 'mean'])`처럼 묶을 열을 리스트로 넣어요. 그 결과의 `['mean']` 열에 `.unstack('객실등급')`를 붙여요. 그러면 등급이 열로 펼쳐져요.
         """,
         starter=TI + "# grouped, wide를 만드세요\n",
-        solution=TI + "grouped = titanic.groupby(['성별','객실등급'])['생존'].agg(['count','mean'])\nwide = grouped['mean'].unstack('객실등급')\nwide\n",
-        check="assert s['grouped'].shape==(6,2) and s['grouped']['count'].sum()==1309\nassert s['wide'].shape==(2,3) and sorted(s['wide'].index)==['남성','여성']\nassert abs(s['wide'].loc['여성',1]-s['grouped'].loc[('여성',1),'mean'])<1e-12"),
+        solution=TI + "grouped = titanic.groupby(['성별', '객실등급'])['생존'].agg(['count', 'mean'])\nwide = grouped['mean'].unstack('객실등급')\nwide\n",
+        check="assert s['grouped'].shape == (6, 2) and s['grouped']['count'].sum() == 1309\nassert s['wide'].shape == (2, 3) and sorted(s['wide'].index) == ['남성', '여성']\nassert abs(s['wide'].loc['여성', 1] - s['grouped'].loc[('여성', 1), 'mean']) < 1e-12"),
     coding('combined-groups', '성별과 등급을 한 그래프에',
         goal="""
         방금 만든 넓은 표를 그래프로 바꿔요. `grouped`와 `wide`를 다시 만들되, 이번엔 `wide`에 100을 곱해 퍼센트로 두세요. `ax = wide.plot.bar(ylim=(0, 100), rot=0)`으로 그리세요. 성별마다 등급 막대 세 개가 묶여요. y축 이름과 제목을 붙여 띄우세요.
@@ -87,8 +87,8 @@ UNIT = unit('insight', '그래프에서 근거 읽기', [
         `wide = grouped['mean'].unstack('객실등급') * 100`까지는 앞 미션과 같아요. `ax = wide.plot.bar(ylim=(0, 100), rot=0)`이 그래프 영역을 돌려줘요. 그 `ax`에 `ax.set(ylabel='생존율 (%)', title='성별·객실등급별 생존율 (%)')`를 붙이세요. 그리고 `plt.show()`로 띄우세요.
         """,
         starter=TI + PLOT + "# grouped, wide, ax를 만드세요\n",
-        solution=TI + PLOT + "grouped=titanic.groupby(['성별','객실등급'])['생존'].agg(['count','mean'])\nwide=grouped['mean'].unstack('객실등급')*100\nax=wide.plot.bar(ylim=(0,100),rot=0)\nax.set(ylabel='생존율 (%)',title='성별·객실등급별 생존율 (%)')\nplt.show()\n",
-        check="assert s['grouped'].shape==(6,2) and s['grouped']['count'].sum()==1309\nassert s['wide'].shape==(2,3)\nassert len(s['ax'].patches)==6 and s['ax'].get_ylim()==(0.0,100.0)"),
+        solution=TI + PLOT + "grouped = titanic.groupby(['성별', '객실등급'])['생존'].agg(['count', 'mean'])\nwide = grouped['mean'].unstack('객실등급') * 100\nax = wide.plot.bar(ylim=(0, 100), rot=0)\nax.set(ylabel='생존율 (%)', title='성별·객실등급별 생존율 (%)')\nplt.show()\n",
+        check="assert s['grouped'].shape == (6, 2) and s['grouped']['count'].sum() == 1309\nassert s['wide'].shape == (2, 3)\nassert len(s['ax'].patches) == 6 and s['ax'].get_ylim() == (0.0, 100.0)"),
     quiz('insight-check', '단원 점검',
         choice('다음 중 "관찰"로만 이루어진 문장은 어느 것인가요?',
                ['3등실 남성 493명 중 15%가 생존했다', '3등실 남성은 구조 우선순위에서 밀렸다', '3등실이라서 죽었다'], 0,

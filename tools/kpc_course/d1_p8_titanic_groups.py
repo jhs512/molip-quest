@@ -80,7 +80,7 @@ UNIT = unit('titanic-groups', '그룹별 생존율', [
         """,
         starter=TI + "# gender_counts를 만들고 출력하세요\n",
         solution=TI + "gender_counts = titanic['성별'].value_counts()\nprint(gender_counts)\n",
-        check="assert s['gender_counts']['여성']==466 and s['gender_counts']['남성']==843"),
+        check="assert s['gender_counts']['여성'] == 466 and s['gender_counts']['남성'] == 843"),
     coding('sex-mean', '성별 생존율 구하기',
         goal="""
         첫 `groupby`예요. 성별 생존율을 `rates`에 저장하고 출력하세요. 코드는 `titanic.groupby('성별')['생존'].mean()`이에요.
@@ -92,7 +92,7 @@ UNIT = unit('titanic-groups', '그룹별 생존율', [
         """,
         starter=TI + "# rates를 만들고 출력하세요\n",
         solution=TI + "rates = titanic.groupby('성별')['생존'].mean()\nprint(rates)\n",
-        check="assert abs(s['rates']['여성']-339/466)<1e-9 and abs(s['rates']['남성']-161/843)<1e-9"),
+        check="assert abs(s['rates']['여성'] - 339 / 466) < 1e-9 and abs(s['rates']['남성'] - 161 / 843) < 1e-9"),
     coding('sex-summary', '인원·생존자·생존율을 한 표에',
         goal="""
         인원과 비율을 따로 구하지 말고 한 표로 봐요. 성별로 묶은 `생존`에 `agg(['count', 'sum', 'mean'])`을 붙이세요. 그 표를 `gender_summary`에 저장하세요. 마지막 줄에 이름만 적어 확인하세요.
@@ -103,8 +103,8 @@ UNIT = unit('titanic-groups', '그룹별 생존율', [
         `titanic.groupby('성별')['생존'].agg(['count', 'sum', 'mean'])` 한 줄이에요. 열 이름은 각각 인원, 생존자 수, 생존율이에요.
         """,
         starter=TI + "# gender_summary를 만드세요\n",
-        solution=TI + "gender_summary=titanic.groupby('성별')['생존'].agg(['count','sum','mean'])\ngender_summary\n",
-        check="assert list(s['gender_summary'].columns)==['count','sum','mean']\nassert s['gender_summary'].loc['여성','count']==466 and s['gender_summary'].loc['남성','count']==843\nassert s['gender_summary']['sum'].sum()==500"),
+        solution=TI + "gender_summary = titanic.groupby('성별')['생존'].agg(['count', 'sum', 'mean'])\ngender_summary\n",
+        check="assert list(s['gender_summary'].columns) == ['count', 'sum', 'mean']\nassert s['gender_summary'].loc['여성', 'count'] == 466 and s['gender_summary'].loc['남성', 'count'] == 843\nassert s['gender_summary']['sum'].sum() == 500"),
     coding('pclass-summary', '객실 등급별로 같은 표 만들기',
         goal="""
         같은 질문을 객실 등급에 던져요. `객실등급`으로 묶어 `count`, `sum`, `mean`을 구하세요. 그 표를 `pclass_summary`에 저장하세요.
@@ -115,8 +115,8 @@ UNIT = unit('titanic-groups', '그룹별 생존율', [
         앞 미션에서 `groupby('성별')`를 `groupby('객실등급')`로 바꾸기만 하면 돼요.
         """,
         starter=TI + "# pclass_summary를 만드세요\n",
-        solution=TI + "pclass_summary = titanic.groupby('객실등급')['생존'].agg(['count','sum','mean'])\npclass_summary\n",
-        check="assert list(s['pclass_summary'].index)==[1,2,3]\nassert s['pclass_summary']['count'].sum()==1309 and s['pclass_summary']['sum'].sum()==500\nassert s['pclass_summary'].loc[1,'count']==323"),
+        solution=TI + "pclass_summary = titanic.groupby('객실등급')['생존'].agg(['count', 'sum', 'mean'])\npclass_summary\n",
+        check="assert list(s['pclass_summary'].index) == [1, 2, 3]\nassert s['pclass_summary']['count'].sum() == 1309 and s['pclass_summary']['sum'].sum() == 500\nassert s['pclass_summary'].loc[1, 'count'] == 323"),
     coding('age-groups', '나이를 구간으로 나눠 묶기',
         goal="""
         나이는 값이 수십 가지라 그대로 묶으면 그룹이 너무 많아요. 그래서 먼저 구간으로 나눠요. `pd.cut()`으로 나이를 네 구간으로 나누세요. 구간은 `0~19`, `20~39`, `40~59`, `60+`예요. 그 결과를 `titanic`에 `age_group` 열로 추가하세요. 그다음 구간별 `count`, `sum`, `mean`을 `age_summary`에 저장하세요.
@@ -127,8 +127,8 @@ UNIT = unit('titanic-groups', '그룹별 생존율', [
         `titanic['age_group'] = pd.cut(titanic['나이'], bins=[0, 20, 40, 60, float('inf')], labels=['0~19', '20~39', '40~59', '60+'], right=False)`로 구간 열을 만들어요. 그다음 `titanic.groupby('age_group', observed=True)['생존'].agg(['count', 'sum', 'mean'])`이에요. `observed=True`는 "아무도 없는 구간은 표에서 빼 달라"는 옵션이에요.
         """,
         starter=TI + "# age_group과 age_summary를 만드세요\n",
-        solution=TI + "titanic['age_group']=pd.cut(titanic['나이'],bins=[0,20,40,60,float('inf')],labels=['0~19','20~39','40~59','60+'],right=False)\nage_summary=titanic.groupby('age_group',observed=True)['생존'].agg(['count','sum','mean'])\nage_summary\n",
-        check="assert s['age_summary']['count'].sum()==1046\nassert s['titanic']['age_group'].isna().sum()==263\nassert str(s['titanic'].loc[s['titanic']['나이']==20,'age_group'].iloc[0])=='20~39'"),
+        solution=TI + "titanic['age_group'] = pd.cut(titanic['나이'], bins=[0, 20, 40, 60, float('inf')], labels=['0~19', '20~39', '40~59', '60+'], right=False)\nage_summary = titanic.groupby('age_group', observed=True)['생존'].agg(['count', 'sum', 'mean'])\nage_summary\n",
+        check="assert s['age_summary']['count'].sum() == 1046\nassert s['titanic']['age_group'].isna().sum() == 263\nassert str(s['titanic'].loc[s['titanic']['나이'] == 20, 'age_group'].iloc[0]) == '20~39'"),
     quiz('groups-check', '단원 점검',
         choice('"여성의 생존율이 남성보다 높다"는 표에서 바로 말할 수 있는 건 뭘까요?',
                ['이 자료에서 그렇게 관찰되었다', '여성이라는 것이 생존의 원인이다', '남성은 구조를 받지 못했다'], 0,

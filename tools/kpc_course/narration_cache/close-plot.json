@@ -1,33 +1,38 @@
 {
- "hash": "665e67adcb3c8424",
+ "hash": "cd4a41ff452b3700",
  "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 날짜순 자료는 선그래프가 어울리거든요. 종가를 선으로 그려 볼게요."
+   "자, 날짜순 자료는 선그래프가 어울려요. 종가가 1년 8개월 동안 어떻게 움직였는지 선 하나로 볼 거예요."
   ],
   [
    "hint",
-   "막대그래프 뼈대에서 ax.bar를 ax.plot으로 바꾸면 돼요."
+   "막대그래프 뼈대에서 ax.bar를 ax.plot으로 바꾸면 돼요. x엔 날짜 인덱스, y엔 종가예요."
   ],
   [
    "starter",
-   "준비 코드는 그대로 둘게요. prices는 날짜 인덱스로 정렬돼 있고, plt도 불러와 있어요."
+   "준비 코드는 그대로 둘게요. stock.csv를 날짜 인덱스로 읽어 정렬한 prices와 plt가 준비돼 있어요."
   ],
   [
    "code",
-   "fig, ax = plt.subplots()\n",
-   "자, 먼저 fig와 ax를 만들어요. 그림 한 장과 그릴 칸이죠?"
+   "\nfig, ax = plt.subplots()\n",
+   "자, 먼저 도화지 fig와 축 ax를 만들어요. 막대그래프 때와 같은 뼈대죠?"
   ],
   [
    "code",
    "ax.plot(prices.index, prices['종가'])\n",
-   "ax.plot에 x로 prices.index, y로 prices['종가']를 넣어요. 날짜순으로 점을 이어 선이 되거든요."
+   "ax.plot에 x로 날짜 인덱스 prices.index, y로 prices['종가']를 넣어요. 점 401개를 선으로 이어 주거든요."
   ],
   [
    "code",
-   "ax.set(xlabel='날짜', ylabel='종가', title='Close price')\nplt.show()\n",
-   "ax.set으로 x축 이름 날짜, y축 이름 종가를 붙여요. plt.show로 띄우면 돼요."
+   "ax.set(xlabel='날짜', ylabel='종가', title='Close price')\n",
+   "ax.set으로 x축 이름 날짜, y축 이름 종가, 제목을 한 번에 붙여요."
+  ],
+  [
+   "code",
+   "plt.show()\n",
+   "plt.show()로 그림을 띄우면 돼요."
   ],
   [
    "run",
@@ -35,7 +40,7 @@
   ],
   [
    "output",
-   "401개 점을 이은 선 하나가 보이죠? 1년 8개월 동안 가격이 어떻게 움직였는지 보세요."
+   "선 하나가 그려졌죠? x축이 날짜, y축이 종가인지 보세요. 1년 8개월 동안 가격이 어떻게 오르고 내렸는지 흐름을 따라가 보세요."
   ],
   [
    "submit",

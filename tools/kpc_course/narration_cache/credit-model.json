@@ -1,43 +1,38 @@
 {
- "hash": "ce81a73bfb392c1b",
+ "hash": "75760f42d4620e23",
  "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 이제 진짜 자료예요. 부도 모델과 기준 모델을 네 지표로 나란히 비교해 볼 거거든요."
+   "자, 이제 진짜 자료예요. 상환_9월, 신용한도, 나이 세 열로 다음달 부도를 맞혀요. 기준 모델과 로지스틱 회귀를 네 지표로 나란히 비교할 거예요."
   ],
   [
    "hint",
-   "앞 단원의 표 만들기 패턴 그대로예요. 정밀도·재현율·F1에는 zero_division=0을 주면 돼요."
+   "앞 단원의 표 만들기 패턴 그대로예요. Pipeline에 StandardScaler와 모델을 묶고, 정밀도·재현율·F1에는 zero_division=0을 주면 돼요."
   ],
   [
    "starter",
-   "준비 코드가 상환_9월, 신용한도, 나이 세 열을 입력 X로 삼았어요. 훈련 자료와 테스트 자료도 나눠 뒀고요."
+   "준비 코드가 credit.csv를 읽고 세 열을 입력 X, 다음달 부도를 정답 y로 삼았어요. 훈련 자료와 테스트 자료도 stratify로 나눠 뒀고요."
   ],
   [
    "code",
-   "models={'Dummy':DummyClassifier(strategy='most_frequent'),'Logistic':LogisticRegression(max_iter=2000)}\nrows=[]\n",
-   "models에 기준 모델 Dummy와 Logistic을 넣어요. 결과를 모을 rows도 빈 목록으로 준비하고요."
+   "models = {'Dummy': DummyClassifier(strategy='most_frequent'), 'Logistic': LogisticRegression(max_iter=2000)}\nrows = []\n",
+   "자, models에 두 모델을 넣어요. Dummy는 가장 많은 쪽만 찍는 기준 모델이고, Logistic은 max_iter를 2000으로 넉넉히 줘요. rows는 결과를 모을 빈 목록이에요."
   ],
   [
    "code",
-   "for name,estimator in models.items():\n    model=Pipeline([('scale',StandardScaler()),('model',estimator)])\n",
-   "모델마다 돌면서 StandardScaler와 묶은 Pipeline을 만들어요. 크기 맞추기와 모델이 한 묶음이 되는 거죠."
+   "for name, estimator in models.items():\n    model = Pipeline([('scale', StandardScaler()), ('model', estimator)])\n    model.fit(X_train, y_train)\n    pred = model.predict(X_test)\n",
+   "모델마다 돌면서 StandardScaler와 묶은 Pipeline을 만들어요. 훈련 자료로 fit하고, 테스트 자료로 predict하면 pred가 나와요."
   ],
   [
    "code",
-   "    model.fit(X_train,y_train)\n    pred=model.predict(X_test)\n",
-   "훈련 자료로 fit하고, 테스트 자료로 predict해요. 늘 하던 순서죠?"
+   "    rows.append({'model': name, 'accuracy': accuracy_score(y_test, pred), 'precision': precision_score(y_test, pred, zero_division=0), 'recall': recall_score(y_test, pred, zero_division=0), 'f1': f1_score(y_test, pred, zero_division=0)})\n",
+   "네 지표를 딕셔너리 하나로 rows에 모아요. 정밀도·재현율·F1에 zero_division=0을 주면 TP가 0이어도 경고 없이 0이 나오거든요."
   ],
   [
    "code",
-   "    rows.append({'model':name,'accuracy':accuracy_score(y_test,pred),'precision':precision_score(y_test,pred,zero_division=0),'recall':recall_score(y_test,pred,zero_division=0),'f1':f1_score(y_test,pred,zero_division=0)})\n",
-   "네 지표를 딕셔너리 하나로 묶어 rows에 넣어요. zero_division=0을 주면 기준 모델처럼 TP가 0일 때도 경고 없이 0이 나오거든요."
-  ],
-  [
-   "code",
-   "results=pd.DataFrame(rows).set_index('model')\nresults\n",
-   "rows를 DataFrame으로 만들고 model 열을 행 이름으로 세워요. 그게 results 표예요."
+   "results = pd.DataFrame(rows).set_index('model')\nresults\n",
+   "rows를 DataFrame으로 만들고 model 열을 인덱스로 세우면 results 표가 돼요."
   ],
   [
    "run",
@@ -45,7 +40,7 @@
   ],
   [
    "output",
-   "표가 나왔죠? Dummy 행을 보세요. 정확도는 78% 근처인데 재현율은 0이에요. Logistic 행에서 재현율이 얼마나 올라갔는지, 그 대가로 정확도가 어떻게 됐는지 보면 돼요."
+   "두 줄짜리 표가 나왔죠? Dummy 줄은 accuracy가 78% 근처인데 recall이 0이에요. Logistic 줄에서 recall이 얼마나 올랐는지, 그 대가로 accuracy가 어떻게 됐는지 보세요."
   ],
   [
    "submit",

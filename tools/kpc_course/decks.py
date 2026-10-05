@@ -209,13 +209,13 @@ WHY_PANDAS = slides('why-pandas', '표는 왜 pandas로 · 리스트로도 되�
 ## 같은 일, 두 가지 코드
 
 ```python
-total = 0                       # 리스트 안의 딕셔너리
+total = 0  # 리스트 안의 딕셔너리
 for holding in holdings:
     total += holding['price'] * holding['quantity']
 ```
 
 ```python
-total = (df['price'] * df['quantity']).sum()   # 표
+total = (df['price'] * df['quantity']).sum()  # 표
 ```
 
 값이 세 개면 아무 차이 없어요. 백만 행이면 **코드 길이**보다 **시간**이 문제예요. "열 하나 더하기", "조건에 맞는 행만 고르기"가 늘수록 반복문은 겹겹이 쌓여요. 표는 그 일을 **열 단위 한 줄**로 해요.
@@ -377,10 +377,10 @@ X는 사고 전에 알 수 있는 열들, y는 `생존` 열. fit은 1,047명으�
 ## 할 일은 네 줄
 
 ```python
-X = titanic[features]            # 입력: 사고 전에 알 수 있는 7개 열
-y = titanic['생존']               # 정답
-model.fit(X_train, y_train)      # 훈련 자료로 규칙 찾기
-model.predict(X_test)            # 처음 보는 자료로 채점
+X = titanic[features]  # 입력: 사고 전에 알 수 있는 7개 열
+y = titanic['생존']  # 정답
+model.fit(X_train, y_train)  # 훈련 자료로 규칙 찾기
+model.predict(X_test)  # 처음 보는 자료로 채점
 ```
 ---
 <!-- _class: lead -->
@@ -492,7 +492,7 @@ DECK_OVERFIT = slides('deck-overfit', '답만 외운 학생 · 과적합', FRONT
 ## 질문 횟수를 제한한다
 
 ```python
-DecisionTreeClassifier(max_depth=3)   # 질문 세 번까지
+DecisionTreeClassifier(max_depth=3)  # 질문 세 번까지
 ```
 
 - 깊이가 깊을수록 한 사람 한 사람을 외울 수 있어요
@@ -584,9 +584,10 @@ DECK_SAVING = slides('deck-saving', '한 번 배운 모델은 저장해서 다�
 
 ```python
 import joblib
-joblib.dump(model, 'titanic_model.joblib')     # 훈련 끝. 파일로
-loaded = joblib.load('titanic_model.joblib')    # 내일 새벽, 불러오기만
-loaded.predict(X_new)                           # 훈련 없이 바로 예측
+
+joblib.dump(model, 'titanic_model.joblib')  # 훈련 끝. 파일로
+loaded = joblib.load('titanic_model.joblib')  # 내일 새벽, 불러오기만
+loaded.predict(X_new)  # 훈련 없이 바로 예측
 ```
 
 파이프라인째 저장하면 **전처리까지 같이** 들어가요. AI에게 시킬 때도 "joblib으로 저장해 줘" 한 줄을 보태세요.

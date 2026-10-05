@@ -1,38 +1,29 @@
 {
- "hash": "145008fb1da5c045",
+ "hash": "89a68531c2f31ef6",
  "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 이번엔 세 가지를 한 번에 해요. 부도 인원, 부도율, 그리고 입력 표 X예요."
-  ],
-  [
-   "hint",
-   "타깃이 0과 1이라 sum이 인원이고 mean이 비율이거든요. drop으로 두 열을 빼면 X가 돼요."
+   "자, 부도 인원과 부도율을 구하고, 입력 표 X까지 만들어요. 타깃이 0과 1이라 합이 인원이고 평균이 부도율이거든요."
   ],
   [
    "starter",
-   "준비 코드에 credit 표와 target 이름이 들어 있어요. 그대로 둘게요."
+   "준비 코드에 credit 표가 읽혀 있고, target에 '다음달 부도' 열 이름이 들어 있어요. 그대로 둘게요."
   ],
   [
    "code",
-   "default_count=int(credit[target].sum())\n",
-   "타깃 열을 다 더하면 1의 개수, 곧 부도 인원이에요. int로 정수로 바꿔요."
+   "default_count = int(credit[target].sum())\ndefault_rate = credit[target].mean()\n",
+   "타깃 열의 합이 부도 인원이에요. int로 감싸서 정수로 만들어요. 평균은 0과 1의 평균이라 그대로 부도율이 되죠?"
   ],
   [
    "code",
-   "default_rate=credit[target].mean()\n",
-   "0과 1의 평균이 부도율이죠? mean 하나면 돼요."
+   "X = credit.drop(columns=['고객번호', target])\n",
+   "drop으로 고객번호와 타깃 열을 빼면 입력 표 X가 돼요. 정답을 입력에 섞으면 누수거든요."
   ],
   [
    "code",
-   "X=credit.drop(columns=['고객번호',target])\n",
-   "고객번호와 타깃 열을 빼면 입력 표 X예요. 정답을 입력에 섞으면 누수거든요."
-  ],
-  [
-   "code",
-   "print(default_count,f'{default_rate:.2%}',X.shape)\n",
-   "세 값을 한 줄로 찍어요. 부도율은 퍼센트로 보기 좋게요."
+   "print(default_count, f'{default_rate:.2%}', X.shape)\n",
+   "세 값을 한 줄에 출력해요. .2%는 비율을 퍼센트로 보여 주는 서식이에요."
   ],
   [
    "run",
@@ -40,7 +31,7 @@
   ],
   [
    "output",
-   "6636명, 22.12%, 그리고 (30000, 23)이 나왔죠? X가 23열 맞아요."
+   "6636명이 부도고, 부도율은 22.12%예요. X는 30000행 23열이죠? 고객번호와 타깃 두 열이 빠진 거예요."
   ],
   [
    "submit",

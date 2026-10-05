@@ -1,29 +1,24 @@
 {
- "hash": "625e443ff872fdb4",
+ "hash": "104e848f2e3ff205",
  "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 리스트 안에 딕셔너리가 세 개 들어 있어요. 숫자 대신 딕셔너리가 들어 있어도 for는 똑같이 돌거든요. 종목마다 가격 × 수량을 계산해서 amount 키에 넣어 볼게요."
+   "자, 리스트 안에 딕셔너리가 들어 있어도 for는 똑같이 돌아요. 세 종목을 돌면서 가격 곱하기 수량을 amount 키에 넣어 볼게요."
   ],
   [
    "starter",
-   "holdings 리스트는 준비돼 있어요. A, B, C 세 종목에 name, price, quantity가 들어 있죠? 이건 그대로 둘게요."
+   "준비 코드엔 holdings 리스트가 있어요. 종목 A, B, C의 name과 price, quantity가 딕셔너리로 들어 있거든요."
   ],
   [
    "code",
-   "for holding in holdings:\n",
-   "자, for holding in holdings라고 쓰면 holding에 종목 딕셔너리가 하나씩 들어와요."
-  ],
-  [
-   "code",
-   "    holding['amount'] = holding['price'] * holding['quantity']\n",
-   "그 안에서 price와 quantity를 꺼내 곱하고, 새 키 amount에 저장하면 돼요. 없던 키에 넣으면 추가가 되거든요."
+   "for holding in holdings:\n    holding['amount'] = holding['price'] * holding['quantity']\n",
+   "holding에 종목 딕셔너리가 하나씩 들어와요. 그 안에서 price 곱하기 quantity를 새 키 amount에 저장하면 돼요."
   ],
   [
    "code",
    "print(holdings)\n",
-   "반복이 끝난 뒤 holdings를 통째로 찍어서 세 종목을 확인해요."
+   "반복이 끝난 뒤 holdings 전체를 찍어서 세 종목을 확인해요."
   ],
   [
    "run",
@@ -31,7 +26,7 @@
   ],
   [
    "output",
-   "세 종목 딕셔너리마다 amount가 새로 붙었죠? A는 30000, B는 40000, C는 60000이에요."
+   "세 딕셔너리마다 amount가 붙었죠? A는 30000, B는 40000, C는 60000이에요."
   ],
   [
    "submit",

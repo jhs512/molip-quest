@@ -1,7 +1,7 @@
 """저장 HTML에서 자료 수집"""
 from kpc_course.dsl import *
 
-SOUP = PD + "from pathlib import Path\nfrom bs4 import BeautifulSoup\nhtml=Path('data/prices.html').read_text(encoding='utf-8')\nsoup=BeautifulSoup(html,'html.parser')\n"
+SOUP = PD + "from pathlib import Path\nfrom bs4 import BeautifulSoup\n\nhtml = Path('data/prices.html').read_text(encoding='utf-8')\nsoup = BeautifulSoup(html, 'html.parser')\n"
 
 UNIT = unit('html', '저장 HTML에서 자료 수집', [
     concept('html-selectors', '웹 페이지는 글자 덩어리, 우리가 원하는 건 그중 두 칸',
@@ -43,8 +43,9 @@ UNIT = unit('html', '저장 HTML에서 자료 수집', [
 
         ```python
         from bs4 import BeautifulSoup
+
         soup = BeautifulSoup(html, 'html.parser')
-        items = soup.select('#prices li')                      # li 두 개
+        items = soup.select('#prices li')  # li 두 개
         name = items[0].select_one('.name').get_text(strip=True)  # '가상A'
         price = int(items[0].select_one('b').get_text(strip=True).replace(',', ''))
         ```
@@ -66,7 +67,7 @@ UNIT = unit('html', '저장 HTML에서 자료 수집', [
         """,
         starter="price_text = '10,000'\n# price를 만들고 price * 3을 출력하세요\n",
         solution="price_text = '10,000'\nprice = int(price_text.replace(',', ''))\nprint(price * 3)\n",
-        check="assert s['price']==10000 and isinstance(s['price'],int)"),
+        check="assert s['price'] == 10000 and isinstance(s['price'], int)"),
     coding('select-one', '선택자로 요소 찾기',
         goal="""
         준비 코드가 HTML을 읽어 `soup`를 만들어 뒀어요. `#prices li`에 맞는 요소가 몇 개인지 `n_items`에 담으세요. 첫 종목의 이름(`.name` 요소의 글자)은 `first_name`에 담고요. 둘 다 출력하세요.
@@ -78,7 +79,7 @@ UNIT = unit('html', '저장 HTML에서 자료 수집', [
         """,
         starter=SOUP + "# n_items, first_name을 만들고 출력하세요\n",
         solution=SOUP + "items = soup.select('#prices li')\nn_items = len(items)\nfirst_name = items[0].select_one('.name').get_text(strip=True)\nprint(n_items, first_name)\n",
-        check="assert s['n_items']==2 and s['first_name']=='가상A'"),
+        check="assert s['n_items'] == 2 and s['first_name'] == '가상A'"),
     coding('select-prices', '가격만 모두 뽑아 숫자 리스트로',
         goal="""
         이번에는 두 종목의 가격을 전부 뽑아 숫자 리스트로 만들어요. `#prices li b`로 가격 요소를 모두 찾으세요. 하나씩 글자를 꺼내 쉼표를 지우고 `int()`로 바꿔요. 그 값을 `prices` 리스트에 모으면 돼요.
@@ -90,7 +91,7 @@ UNIT = unit('html', '저장 HTML에서 자료 수집', [
         """,
         starter=SOUP + "# prices 리스트를 만들고 출력하세요\n",
         solution=SOUP + "prices = []\nfor tag in soup.select('#prices li b'):\n    prices.append(int(tag.get_text(strip=True).replace(',', '')))\nprint(prices)\n",
-        check="assert s['prices']==[10000,20000]"),
+        check="assert s['prices'] == [10000, 20000]"),
     coding('parse-html', '종목 코드·이름·가격을 표로 모으기',
         goal="""
         네 단계를 한 번에 해요. 준비 코드가 `data/prices.html`을 `html`로 읽어 뒀어요. 그걸로 `soup`를 만드세요. `#prices li`를 하나씩 돌면서 딕셔너리를 만들어요. 종목 코드(`data-code` 속성)와 이름(`.name`)을 담아요. 가격(`b`)은 쉼표 없는 정수로 담고요. 그 딕셔너리를 `rows` 리스트에 모으세요. 마지막으로 `rows`로 `df`를 만드세요.
@@ -100,9 +101,9 @@ UNIT = unit('html', '저장 HTML에서 자료 수집', [
         hint="""
         `soup = BeautifulSoup(html, 'html.parser')`로 시작해요. `for item in soup.select('#prices li'):` 안에서 세 값을 꺼내요. 코드는 `item['data-code']`예요. 이름은 `item.select_one('.name').get_text(strip=True)`고요. 가격은 `int(item.select_one('b').get_text(strip=True).replace(',', ''))`예요. 셋을 `{'code': ..., 'name': ..., 'price': ...}` 딕셔너리로 묶으세요. 그걸 `rows`에 `append`하고요. 마지막에 `df = pd.DataFrame(rows)`로 표를 만들어요.
         """,
-        starter=PD + "from pathlib import Path\nfrom bs4 import BeautifulSoup\nhtml=Path('data/prices.html').read_text(encoding='utf-8')\n# soup, rows, df를 만드세요\n",
-        solution=PD + "from pathlib import Path\nfrom bs4 import BeautifulSoup\nhtml=Path('data/prices.html').read_text(encoding='utf-8')\nsoup=BeautifulSoup(html,'html.parser')\nrows=[]\nfor item in soup.select('#prices li'):\n    rows.append({'code':item['data-code'],'name':item.select_one('.name').get_text(strip=True),'price':int(item.select_one('b').get_text(strip=True).replace(',',''))})\ndf=pd.DataFrame(rows)\ndf\n",
-        check="assert s['df']['code'].tolist()==['A','B']\nassert s['df']['price'].tolist()==[10000,20000]\nassert s['df']['name'].tolist()==['가상A','가상B']"),
+        starter=PD + "from pathlib import Path\nfrom bs4 import BeautifulSoup\n\nhtml = Path('data/prices.html').read_text(encoding='utf-8')\n# soup, rows, df를 만드세요\n",
+        solution=PD + "from pathlib import Path\nfrom bs4 import BeautifulSoup\n\nhtml = Path('data/prices.html').read_text(encoding='utf-8')\nsoup = BeautifulSoup(html, 'html.parser')\nrows = []\nfor item in soup.select('#prices li'):\n    rows.append({'code': item['data-code'], 'name': item.select_one('.name').get_text(strip=True), 'price': int(item.select_one('b').get_text(strip=True).replace(',', ''))})\ndf = pd.DataFrame(rows)\ndf\n",
+        check="assert s['df']['code'].tolist() == ['A', 'B']\nassert s['df']['price'].tolist() == [10000, 20000]\nassert s['df']['name'].tolist() == ['가상A', '가상B']"),
     concept('live-web', '진짜 웹에서 받으려면: requests, 그리고 Selenium',
         body="""
         지금까지는 앱이 저장해 둔 `data/prices.html`을 읽었죠? 인터넷이 되는 컴퓨터에서는 그 파일을 코드가 직접 받아 와요. 받는 도구가 `requests`예요. 받은 뒤는 저장 파일 때와 **한 글자도 다르지 않아요**.
@@ -110,6 +111,7 @@ UNIT = unit('html', '저장 HTML에서 자료 수집', [
         ```python
         import requests
         from bs4 import BeautifulSoup
+
         response = requests.get('https://example.com/prices', headers={'User-Agent': 'Mozilla/5.0'}, timeout=10)
         soup = BeautifulSoup(response.text, 'html.parser')
         for tag in soup.select('#prices li b'):
@@ -127,7 +129,8 @@ UNIT = unit('html', '저장 HTML에서 자료 수집', [
         from selenium.webdriver.common.by import By
         browser = webdriver.Chrome()
         browser.get('https://www.naver.com')
-        browser.find_element(By.ID, 'query').send_keys('삼성전자 주가\n')
+        browser.find_element(By.ID, 'query').send_keys('삼성전자 주가
+')
         soup = BeautifulSoup(browser.page_source, 'html.parser')   # 여기부터는 다시 같은 네 단계
         browser.quit()
         ```
@@ -152,9 +155,9 @@ UNIT = unit('html', '저장 HTML에서 자료 수집', [
         hint="""
         표 고르기는 `[t for t in soup.select('table.wikitable') if 'Closing level' in t.get_text()][0]`이에요. 행 반복은 `for tr in table.select('tr'):` 안에서 `cells = [td.get_text(strip=True) for td in tr.select('td')]`. 위키의 음수 기호는 `-`가 아니라 `−`(유니코드)라서 `.replace('−', '-')`가 필요해요. 가장 많이 오른 해는 `kospi.loc[kospi['변화율'].idxmax(), '연도']`.
         """,
-        starter="import requests\nimport pandas as pd\nfrom bs4 import BeautifulSoup\nurl = 'https://en.wikipedia.org/wiki/KOSPI'\nresponse = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=10)\nsoup = BeautifulSoup(response.text, 'html.parser')\n# table, kospi, best_year, up_years를 만드세요\n",
-        solution="import requests\nimport pandas as pd\nfrom bs4 import BeautifulSoup\nurl = 'https://en.wikipedia.org/wiki/KOSPI'\nresponse = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=10)\nsoup = BeautifulSoup(response.text, 'html.parser')\ntable = [t for t in soup.select('table.wikitable') if 'Closing level' in t.get_text()][0]\nrows = []\nfor tr in table.select('tr'):\n    cells = [td.get_text(strip=True) for td in tr.select('td')]\n    if len(cells) < 4 or not cells[3]:\n        continue\n    rows.append({'연도': int(cells[0]), '종가': float(cells[1].replace(',', '')), '변화율': float(cells[3].replace('−', '-'))})\nkospi = pd.DataFrame(rows)\nbest_year = int(kospi.loc[kospi['변화율'].idxmax(), '연도'])\nup_years = int((kospi['변화율'] > 0).sum())\nprint(kospi.tail())\nprint(best_year, up_years, round(kospi['변화율'].mean(), 1))\n",
-        check="assert len(s['kospi'])>=30\nassert list(s['kospi'].columns)==['연도','종가','변화율']\nassert (s['kospi']['종가']>0).all() and s['kospi']['연도'].is_monotonic_increasing\nassert 2020 in set(s['kospi']['연도'])\nassert s['best_year']==int(s['kospi'].loc[s['kospi']['변화율'].idxmax(),'연도'])\nassert s['up_years']==int((s['kospi']['변화율']>0).sum())"),
+        starter="import requests\nimport pandas as pd\nfrom bs4 import BeautifulSoup\n\nurl = 'https://en.wikipedia.org/wiki/KOSPI'\nresponse = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=10)\nsoup = BeautifulSoup(response.text, 'html.parser')\n# table, kospi, best_year, up_years를 만드세요\n",
+        solution="import requests\nimport pandas as pd\nfrom bs4 import BeautifulSoup\n\nurl = 'https://en.wikipedia.org/wiki/KOSPI'\nresponse = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=10)\nsoup = BeautifulSoup(response.text, 'html.parser')\ntable = [t for t in soup.select('table.wikitable') if 'Closing level' in t.get_text()][0]\nrows = []\nfor tr in table.select('tr'):\n    cells = [td.get_text(strip=True) for td in tr.select('td')]\n    if len(cells) < 4 or not cells[3]:\n        continue\n    rows.append({'연도': int(cells[0]), '종가': float(cells[1].replace(',', '')), '변화율': float(cells[3].replace('−', '-'))})\nkospi = pd.DataFrame(rows)\nbest_year = int(kospi.loc[kospi['변화율'].idxmax(), '연도'])\nup_years = int((kospi['변화율'] > 0).sum())\nprint(kospi.tail())\nprint(best_year, up_years, round(kospi['변화율'].mean(), 1))\n",
+        check="assert len(s['kospi']) >= 30\nassert list(s['kospi'].columns) == ['연도', '종가', '변화율']\nassert (s['kospi']['종가'] > 0).all() and s['kospi']['연도'].is_monotonic_increasing\nassert 2020 in set(s['kospi']['연도'])\nassert s['best_year'] == int(s['kospi'].loc[s['kospi']['변화율'].idxmax(), '연도'])\nassert s['up_years'] == int((s['kospi']['변화율'] > 0).sum())"),
     quiz('html-check', '단원 점검',
         choice('포털 검색 결과처럼 검색어를 입력해야 나오는 페이지를 모으려고 해요. 맞는 도구는 무엇인가요?',
                ['Selenium으로 브라우저를 조종해 검색어를 넣고 그려진 화면을 받는다',

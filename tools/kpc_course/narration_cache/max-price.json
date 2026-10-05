@@ -1,33 +1,28 @@
 {
- "hash": "51091ce8021bb250",
+ "hash": "44d93d340020b559",
  "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 가장 비쌌던 날의 가격을 찾아요. max 함수 대신 반복문과 if로 직접 찾아서 highest에 넣는 거예요. 첫 값을 일단 최고로 두고, 더 큰 값을 만나면 바꾸는 방식이거든요."
+   "자, 가장 비쌌던 날의 가격을 찾아요. max()면 한 줄이지만 이번엔 반복문과 if로 직접 찾을 거예요."
   ],
   [
    "hint",
-   "비교할 땐 if price > highest를 쓰고, 참일 때만 highest = price로 갈아 끼우면 돼요. 반복이 끝나면 가장 큰 값이 남죠?"
+   "첫 값을 일단 최고로 두고, 더 큰 값을 만날 때마다 갈아 끼우면 돼요."
   ],
   [
    "starter",
-   "준비 코드 두 줄은 그대로 둘게요. prices에 네 날의 가격이 있고, highest는 첫 값 10000으로 시작해 둔 거예요."
+   "준비 코드에 prices 네 개와 highest가 첫 값 10000으로 들어가 있어요. 이건 그대로 둘게요."
   ],
   [
    "code",
-   "for price in prices:\n    if price > highest:\n",
-   "자, prices를 한 값씩 price로 꺼내요. 그 안에서 price가 지금 highest보다 큰지 물어보는 거죠."
-  ],
-  [
-   "code",
-   "        highest = price\n",
-   "더 클 때만 highest를 price로 갈아 끼워요. 작거나 같으면 그냥 넘어가거든요."
+   "for price in prices:\n    if price > highest:\n        highest = price\n",
+   "가격을 하나씩 꺼내서 highest보다 큰지 봐요. 참일 때만 highest를 그 값으로 바꾸거든요."
   ],
   [
    "code",
    "print(highest)\n",
-   "반복이 끝나면 가장 큰 값이 highest에 남아요. 그걸 찍으면 돼요."
+   "반복이 끝나면 가장 큰 값만 남아요. 그걸 출력하면 돼요."
   ],
   [
    "run",
@@ -35,7 +30,7 @@
   ],
   [
    "output",
-   "10200이 나왔죠? 둘째 날 가격이 가장 컸던 거예요."
+   "10200이 나왔죠? 두 번째 날 가격이 제일 컸던 거예요."
   ],
   [
    "submit",

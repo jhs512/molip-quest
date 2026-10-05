@@ -1,55 +1,60 @@
 {
- "hash": "dd8278f319e4e323",
+ "hash": "539c8f7fafaa2f12",
  "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 이번엔 진짜 웹이에요. 위키백과 KOSPI 문서의 연도별 종가 표를 긁어 와요. 포털 시세는 자바스크립트로 그려져서 requests로는 비어 오거든요."
+   "자, 이번엔 진짜 웹이에요. 위키백과 KOSPI 문서의 연도별 종가 표를 긁어 와서 kospi 표로 만들 거예요."
   ],
   [
    "hint",
-   "위키의 음수 기호는 보통 빼기가 아니라 유니코드 −예요. 그래서 replace로 바꿔 줘야 float가 읽어요."
+   "표가 여러 개라 Closing level 글자가 든 것만 골라요. 위키의 음수 기호는 유니코드 −라서 -로 바꿔 줘야 float가 돼요."
   ],
   [
    "starter",
-   "준비 코드가 페이지를 requests로 받아서 soup까지 만들어 뒀어요. 저는 그 아래부터 이어 쓸게요."
+   "준비 코드가 requests로 페이지를 받아 soup까지 만들어 뒀어요. 우리는 표를 고르는 일부터 시작하면 돼요."
   ],
   [
    "code",
-   "table = [t for t in soup.select('table.wikitable') if 'Closing level' in t.get_text()][0]\nrows = []\n",
-   "wikitable이 여러 개라 글자에 Closing level이 든 표만 골라요. 행을 모을 빈 리스트도 하나 만들고요."
+   "table = [t for t in soup.select('table.wikitable') if 'Closing level' in t.get_text()][0]\n",
+   "wikitable이 여러 개거든요. 글자에 Closing level이 든 표만 걸러서 첫 번째를 table에 둬요."
   ],
   [
    "code",
-   "for tr in table.select('tr'):\n    cells = [td.get_text(strip=True) for td in tr.select('td')]\n    if len(cells) < 4 or not cells[3]:\n        continue\n",
-   "tr마다 td 글자를 리스트로 꺼내요. 칸이 네 개 미만이거나 넷째 칸이 비면 건너뛰면 돼요."
+   "rows = []\nfor tr in table.select('tr'):\n    cells = [td.get_text(strip=True) for td in tr.select('td')]\n",
+   "행마다 tr을 돌면서 td 글자를 cells 리스트로 꺼내요. strip=True로 앞뒤 공백을 지우죠."
+  ],
+  [
+   "code",
+   "    if len(cells) < 4 or not cells[3]:\n        continue\n",
+   "칸이 네 개 미만이거나 넷째 칸 등락률이 비면 머리글이나 빈 행이에요. continue로 건너뛰어요."
   ],
   [
    "code",
    "    rows.append({'연도': int(cells[0]), '종가': float(cells[1].replace(',', '')), '변화율': float(cells[3].replace('−', '-'))})\nkospi = pd.DataFrame(rows)\n",
-   "연도는 int, 종가는 쉼표를 지우고 float예요. 변화율은 유니코드 −를 -로 바꾸고 float로 만들어 kospi 표를 세워요."
+   "연도는 int, 종가는 쉼표를 지우고 float, 변화율은 −를 -로 바꾸고 float예요. 모은 rows로 kospi 표를 만들어요."
   ],
   [
    "code",
    "best_year = int(kospi.loc[kospi['변화율'].idxmax(), '연도'])\nup_years = int((kospi['변화율'] > 0).sum())\n",
-   "idxmax로 변화율이 제일 큰 행을 찾아 그 연도를 꺼내요. 0보다 큰 해를 세면 오른 해의 수거든요."
+   "idxmax로 변화율이 가장 큰 행을 찾아 그 연도를 best_year에 둬요. 변화율이 0보다 큰 행을 세면 오른 해의 수예요."
   ],
   [
    "code",
    "print(kospi.tail())\nprint(best_year, up_years, round(kospi['변화율'].mean(), 1))\n",
-   "표 끝부분과 두 값, 평균 변화율을 출력해요."
+   "표 끝부분과 두 값, 평균 변화율을 소수 첫째 자리로 출력해요."
   ],
   [
    "run",
-   "실행해 볼게요. 인터넷에서 받아 오니 잠깐 걸려요."
+   "인터넷이 필요하니 잠깐 기다려 볼게요. 실행합니다."
   ],
   [
    "output",
-   "끝부분에 2021년부터 2025년이 보이죠? 2022년은 -24.89, 2025년은 75.63이에요. 아래 줄은 1987년이 가장 많이 올랐고, 오른 해가 29번, 평균 변화율이 13.0이라는 뜻이에요."
+   "끝부분에 2021년부터 2025년이 보이죠? 2025년 종가 4214.17에 변화율 75.63이에요. 아래 줄은 1987 29 13.0, 가장 많이 오른 해가 1987년이고 오른 해가 29번, 평균 변화율은 13.0이에요."
   ],
   [
    "submit",
-   "제출할게요."
+   "표가 제대로 만들어졌으니 제출할게요."
   ]
  ]
 }

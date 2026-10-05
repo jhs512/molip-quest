@@ -47,8 +47,8 @@ prices = [10000, 10200, 10100]
 
 ```python
 holding = {'name': '연습A', 'price': 10000, 'quantity': 3}
-holding['price']                                       # 키로 읽기
-holding['quantity'] = 5                                # 값 바꾸기
+holding['price']  # 키로 읽기
+holding['quantity'] = 5  # 값 바꾸기
 holding['amount'] = holding['price'] * holding['quantity']  # 새 키 추가
 ```
 
@@ -267,8 +267,8 @@ Excel, 시트와 서식이 있는 문서 → pd.read_excel('orders.xlsx')
 ## 대괄호 한 겹은 열 하나, 두 겹은 표
 
 ```python
-orders['price']                 # Series, 세로줄 하나
-orders[['product', 'price']]    # DataFrame, 열 두 개로 된 표
+orders['price']  # Series, 세로줄 하나
+orders[['product', 'price']]  # DataFrame, 열 두 개로 된 표
 ```
 
 열 하나에 `.sum()`, `.mean()`을 할 땐 한 겹이에요. 열 여러 개를 골라 표로 쓸 땐 두 겹이고요.
@@ -278,8 +278,8 @@ orders[['product', 'price']]    # DataFrame, 열 두 개로 된 표
 ## 행은 자리 번호로, 또는 조건으로
 
 ```python
-orders.iloc[:2]                           # 자리 번호. 0번, 1번 행
-orders.loc[orders['quantity'] >= 3]       # 조건이 참인 행만
+orders.iloc[:2]  # 자리 번호. 0번, 1번 행
+orders.loc[orders['quantity'] >= 3]  # 조건이 참인 행만
 ```
 
 자리 범위는 리스트처럼 끝 번호가 안 들어가요. 조건은 `if`가 표 전체에 한꺼번에 걸리는 거예요.
@@ -370,7 +370,7 @@ DECK_MISSING = slides('deck-missing', '빈칸은 숫자가 아니다', FRONT + r
 ## 먼저 센다
 
 ```python
-orders.isna().sum()     # 열마다 빈 칸 개수
+orders.isna().sum()  # 열마다 빈 칸 개수
 ```
 
 `isna()`는 빈칸을 `True`로 표시한 표예요. `.sum()`은 열마다 `True`의 개수고요. 어디가 얼마나 비었는지 알아야 뭘 할지 정하거든요.
@@ -396,8 +396,8 @@ orders['price'].fillna(중앙값) → orders.dropna(subset=['price'])
 ## 돌려줄 뿐, 원본은 그대로
 
 ```python
-orders['price'].fillna(median_price)                  # 돌려주기만. orders는 그대로
-filled_price = orders['price'].fillna(median_price)   # 변수에 받아야 남는다
+orders['price'].fillna(median_price)  # 돌려주기만. orders는 그대로
+filled_price = orders['price'].fillna(median_price)  # 변수에 받아야 남는다
 ```
 
 `fillna`와 `dropna`는 새 결과를 돌려줄 뿐 원본은 안 건드려요. 쓰려면 변수에 받아 둬요.
@@ -409,8 +409,8 @@ filled_price = orders['price'].fillna(median_price)   # 변수에 받아야 남�
 ```python
 expensive = orders['price'] >= 12000
 many = orders['quantity'] >= 2
-both = orders.loc[expensive & many]      # 그리고
-either = orders.loc[expensive | many]    # 또는
+both = orders.loc[expensive & many]  # 그리고
+either = orders.loc[expensive | many]  # 또는
 ```
 
 한 줄에 바로 쓸 땐 조건마다 괄호를 쳐요. 위처럼 변수에 담으면 괄호가 필요 없어요. 괄호를 빼면 파이썬이 `&`를 먼저 계산하려다 오류를 내거든요.
@@ -471,7 +471,7 @@ DECK_HTML = slides('deck-html', '글자에서 숫자를 꺼낸다', FRONT + r"""
 
 ```python
 soup = BeautifulSoup(html, 'html.parser')
-items = soup.select('#prices li')                 # 리스트. for로 돈다
+items = soup.select('#prices li')  # 리스트. for로 돈다
 name = items[0].select_one('.name').get_text(strip=True)
 ```
 

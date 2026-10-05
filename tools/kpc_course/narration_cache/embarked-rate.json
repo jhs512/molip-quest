@@ -1,24 +1,24 @@
 {
- "hash": "56da9c164a008847",
+ "hash": "4cb05f724b7173db",
  "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 앞서 배운 groupby를 한 번 더 손에 익혀요. 탑승항구별로 생존의 count와 mean을 구하면 돼요."
+   "자, groupby를 한 번 더 손에 익혀요. 이번엔 탑승항구로 묶어서 생존의 count와 mean을 같이 구할 거예요."
   ],
   [
    "starter",
-   "준비 코드가 titanic.csv를 읽어서 titanic에 담아 뒀어요. 이 두 줄은 그대로 둘게요."
+   "pandas를 불러와서 titanic에 타이타닉 표를 읽어 두는 준비 코드는 그대로 둘게요."
   ],
   [
    "code",
-   "by_port = titanic.groupby('탑승항구')['생존'].agg(['count','mean'])\n",
-   "탑승항구로 묶고 생존 열만 골라요. agg에 count와 mean을 같이 넘기면 두 열이 한 표로 나오거든요."
+   "by_port = titanic.groupby('탑승항구')['생존'].agg(['count', 'mean'])\n",
+   "탑승항구로 묶고, 생존 열만 골라서 agg에 count와 mean을 목록으로 넘겨요. 이러면 항구마다 인원과 생존율이 한 표에 나오거든요."
   ],
   [
    "code",
    "by_port\n",
-   "마지막 줄에 by_port만 적으면 표가 바로 보여요."
+   "마지막 줄에 by_port만 적으면 그 표가 결과로 보여요."
   ],
   [
    "run",
@@ -26,7 +26,7 @@
   ],
   [
    "output",
-   "항구 세 줄짜리 표가 나왔죠? count 열 세 수를 더하면 1307이에요. 탑승항구가 비어 있는 두 명은 어느 그룹에도 안 들어가거든요. mean 열이 항구별 생존율이에요."
+   "항구가 행이고 count와 mean이 열인 표가 나왔죠? 세 항구의 count를 더해 보세요. 1309가 아니라 1307이에요. 탑승항구가 비어 있는 두 명은 어느 그룹에도 안 들어가거든요."
   ],
   [
    "submit",

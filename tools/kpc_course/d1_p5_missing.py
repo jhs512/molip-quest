@@ -36,9 +36,9 @@ UNIT = unit('missing', '조건 필터와 결측', [
         그러니 분석을 시작하기 전에 어디가 얼마나 비어 있는지부터 세어 보세요. `isna()`는 빈칸을 `True`로 표시한 표를 돌려줘요. 거기에 `.sum()`을 붙이면 열마다 `True`의 개수가 나와요. 그게 결측 개수예요.
 
         ```python
-        orders.isna().sum()                       # 열마다 빈 칸 개수
-        filled = orders['price'].fillna(12000)    # 빈 칸을 12000으로 채운 새 열
-        dropped = orders.dropna(subset=['price']) # 가격이 빈 행을 뺀 새 표
+        orders.isna().sum()  # 열마다 빈 칸 개수
+        filled = orders['price'].fillna(12000)  # 빈 칸을 12000으로 채운 새 열
+        dropped = orders.dropna(subset=['price'])  # 가격이 빈 행을 뺀 새 표
         ```
 
         비어 있는 칸을 다루는 길은 두 가지뿐이에요. 어떤 값으로 **채우거나**(`fillna`), 그 행을 **빼거나**(`dropna`). 무엇을 채울지는 사람이 정해요. 흔한 선택은 그 열의 중앙값이에요. 값들을 크기순으로 세웠을 때 한가운데 값이죠. 어느 쪽이 옳은지는 상황마다 달라요. 두 선택의 결과가 얼마나 달라지는지는 이 단원 마지막 미션에서 직접 봐요.
@@ -88,7 +88,7 @@ UNIT = unit('missing', '조건 필터와 결측', [
         """,
         starter=ORDERS + "# missing_counts, n_missing_price를 만들고 출력하세요\n",
         solution=ORDERS + "missing_counts = orders.isna().sum()\nn_missing_price = int(missing_counts['price'])\nprint(missing_counts)\nprint(n_missing_price)\n",
-        check="assert s['missing_counts']['price']==1 and s['missing_counts']['product']==0\nassert s['n_missing_price']==1"),
+        check="assert s['missing_counts']['price'] == 1 and s['missing_counts']['product'] == 0\nassert s['n_missing_price'] == 1"),
     coding('fill-median', '결측을 중앙값으로 채우기',
         goal="""
         첫 번째 길, 채우기예요. `orders['price']`의 중앙값을 `median_price`에 담으세요. 빈칸을 그 값으로 채운 열은 `filled_price`에 담고요. 둘 다 출력하세요. 원본 `orders`는 건드리지 마세요.
@@ -100,7 +100,7 @@ UNIT = unit('missing', '조건 필터와 결측', [
         """,
         starter=ORDERS + "# median_price, filled_price를 만들고 출력하세요\n",
         solution=ORDERS + "median_price = orders['price'].median()\nfilled_price = orders['price'].fillna(median_price)\nprint(median_price)\nprint(filled_price)\n",
-        check="assert s['median_price']==12000\nassert s['filled_price'].tolist()==[10000,20000,12000,12000]\nassert s['orders']['price'].isna().sum()==1"),
+        check="assert s['median_price'] == 12000\nassert s['filled_price'].tolist() == [10000, 20000, 12000, 12000]\nassert s['orders']['price'].isna().sum() == 1"),
     coding('drop-missing', '결측 행 제외하기',
         goal="""
         두 번째 길, 빼기예요. 가격이 빈 행을 뺀 표를 `dropped`에 담으세요. 남은 행 수는 `n_left`에 담아 출력하세요. 마지막 줄에 `dropped`를 적어 표도 확인하세요.
@@ -112,7 +112,7 @@ UNIT = unit('missing', '조건 필터와 결측', [
         """,
         starter=ORDERS + "# dropped, n_left를 만들고 출력하세요\n",
         solution=ORDERS + "dropped = orders.dropna(subset=['price'])\nn_left = len(dropped)\nprint(n_left)\ndropped\n",
-        check="assert len(s['dropped'])==3 and s['n_left']==3\nassert s['dropped']['product'].tolist()==['A','B','A']"),
+        check="assert len(s['dropped']) == 3 and s['n_left'] == 3\nassert s['dropped']['product'].tolist() == ['A', 'B', 'A']"),
     coding('filter-orders', '두 조건을 모두 만족하는 거래',
         goal="""
         가격이 12000 이상**이고** 수량도 2 이상인 거래만 고르세요. 결과는 `selected`에 담고요. 열은 `product`, `price`, `quantity` 세 개를 그대로 두세요. 뒤에서 고쳐도 원본이 안 바뀌게 `.copy()`를 붙이세요.
@@ -123,8 +123,8 @@ UNIT = unit('missing', '조건 필터와 결측', [
         각 조건을 괄호로 감싸고 `&`로 이으세요. `loc`의 쉼표 뒤에 열 이름 리스트를 넣으면 행과 열을 한 번에 골라요. `orders.loc[조건, ['product', 'price', 'quantity']].copy()`처럼요.
         """,
         starter=ORDERS + "# selected를 만드세요\n",
-        solution=ORDERS + "selected=orders.loc[(orders['price']>=12000)&(orders['quantity']>=2),['product','price','quantity']].copy()\nselected\n",
-        check="assert s['selected']['product'].tolist()==['B','A'] and s['selected']['quantity'].tolist()==[2,4]"),
+        solution=ORDERS + "selected = orders.loc[(orders['price'] >= 12000) & (orders['quantity'] >= 2), ['product', 'price', 'quantity']].copy()\nselected\n",
+        check="assert s['selected']['product'].tolist() == ['B', 'A'] and s['selected']['quantity'].tolist() == [2, 4]"),
     coding('or-filter', '둘 중 하나만 만족해도 고르기',
         goal="""
         이번에는 "또는"이에요. 제품이 A**이거나** 수량이 1인 거래를 `either`에 담으세요. 마지막 줄에 `either`를 적어 확인하세요.
@@ -136,7 +136,7 @@ UNIT = unit('missing', '조건 필터와 결측', [
         """,
         starter=ORDERS + "# either를 만들고 표를 표시하세요\n",
         solution=ORDERS + "either = orders.loc[(orders['product'] == 'A') | (orders['quantity'] == 1)]\neither\n",
-        check="assert s['either']['product'].tolist()==['A','A','C']"),
+        check="assert s['either']['product'].tolist() == ['A', 'A', 'C']"),
     coding('missing-totals', '채우기와 빼기, 합계는 얼마나 달라질까',
         goal="""
         두 길의 결과를 나란히 놓고 비교해요. `filled`는 가격 결측을 중앙값으로 채운 표예요. `dropped`는 가격이 빈 행을 뺀 표고요. 각 표에 가격 × 수량 열 `amount`를 만드세요. `filled`의 `amount` 합계는 `filled_total`에 담으세요. `dropped`의 `amount` 합계는 `dropped_total`에 담고요. 둘 다 출력하세요.
@@ -147,8 +147,8 @@ UNIT = unit('missing', '조건 필터와 결측', [
         `filled = orders.copy()`를 먼저 만드세요. `filled['price'] = filled['price'].fillna(filled['price'].median())`로 채워요. 뺀 표는 `dropped = orders.dropna(subset=['price']).copy()`예요. 두 표 각각 `amount` 열을 가격 × 수량으로 만들어요. `filled['amount'] = filled['price'] * filled['quantity']`처럼요. 합계는 `filled['amount'].sum()`처럼 구해요.
         """,
         starter=ORDERS + "# 두 처리 방법과 합계를 비교하세요\n",
-        solution=ORDERS + "filled=orders.copy()\nfilled['price']=filled['price'].fillna(filled['price'].median())\nfilled['amount']=filled['price']*filled['quantity']\ndropped=orders.dropna(subset=['price']).copy()\ndropped['amount']=dropped['price']*dropped['quantity']\nfilled_total=filled['amount'].sum()\ndropped_total=dropped['amount'].sum()\nprint(filled_total,dropped_total)\nfilled\n",
-        check="assert s['filled_total']==130000 and s['dropped_total']==118000\nassert len(s['filled'])==4 and len(s['dropped'])==3"),
+        solution=ORDERS + "filled = orders.copy()\nfilled['price'] = filled['price'].fillna(filled['price'].median())\nfilled['amount'] = filled['price'] * filled['quantity']\ndropped = orders.dropna(subset=['price']).copy()\ndropped['amount'] = dropped['price'] * dropped['quantity']\nfilled_total = filled['amount'].sum()\ndropped_total = dropped['amount'].sum()\nprint(filled_total, dropped_total)\nfilled\n",
+        check="assert s['filled_total'] == 130000 and s['dropped_total'] == 118000\nassert len(s['filled']) == 4 and len(s['dropped']) == 3"),
     quiz('missing-check', '단원 점검',
         choice('가격이 비어 있는 칸을 0으로 채우면 무슨 일이 생기나요?',
                ['"모른다"는 정보가 "공짜였다"로 바뀌어 평균이 내려간다', '빈 칸이 사라져 더 정확해진다', '아무 영향이 없다'], 0,

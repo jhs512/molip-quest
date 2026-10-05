@@ -64,7 +64,7 @@ UNIT = unit('credit-metrics', '네 지표와 확률 기준', [
         """,
         starter='tp, fp, fn, tn = 2, 1, 1, 2\n# precision, recall, accuracy를 계산하고 출력하세요\n',
         solution='tp, fp, fn, tn = 2, 1, 1, 2\nprecision = tp / (tp + fp)\nrecall = tp / (tp + fn)\naccuracy = (tp + tn) / (tp + fp + fn + tn)\nprint(precision, recall, accuracy)\n',
-        check="assert abs(s['precision']-2/3)<1e-12 and abs(s['recall']-2/3)<1e-12 and abs(s['accuracy']-2/3)<1e-12"),
+        check="assert abs(s['precision'] - 2 / 3) < 1e-12 and abs(s['recall'] - 2 / 3) < 1e-12 and abs(s['accuracy'] - 2 / 3) < 1e-12"),
     coding('metrics-matrix', '같은 계산을 함수로',
         goal="""
         손으로 한 계산을 이번엔 `scikit-learn` 함수로 해요. 정답 `y_true`와 예측 `y_pred` 여섯 개가 준비돼 있어요. `accuracy_score`, `precision_score`, `recall_score`, `f1_score`로 네 값을 구하세요. 같은 이름의 키로 `metrics` 딕셔너리에 담아요. `confusion_matrix(y_true, y_pred, labels=[0, 1])`는 `matrix`에 담고요. 둘 다 출력하세요.
@@ -72,11 +72,11 @@ UNIT = unit('credit-metrics', '네 지표와 확률 기준', [
         `matrix`가 `[[2, 1], [1, 2]]`면 TN 2, FP 1, FN 1, TP 2예요. 앞 미션과 같은 상황이죠. 네 지표도 같은 값이 나와야 해요.
         """,
         hint="""
-        지표 함수는 전부 `(정답, 예측)` 순서로 넣어요. `metrics = {'accuracy': accuracy_score(y_true, y_pred), 'precision': precision_score(y_true, y_pred), ...}`처럼 적어요. 혼동행렬의 `labels=[0, 1]`은 행·열 순서를 0, 1로 고정해요.
+        지표 함수는 전부 `(정답, 예측)` 순서로 넣어요. `metrics = {'accuracy': accuracy_score(y_true, y_pred), 'precision': precision_score(y_true, y_pred), ...}`처럼 적어요. 혼동행렬의 `labels = [0, 1]`은 행·열 순서를 0, 1로 고정해요.
         """,
-        starter='from sklearn.metrics import accuracy_score,precision_score,recall_score,f1_score,confusion_matrix\ny_true=[0,0,1,1,1,0]\ny_pred=[0,1,1,0,1,0]\n# metrics와 matrix를 만드세요\n',
-        solution="from sklearn.metrics import accuracy_score,precision_score,recall_score,f1_score,confusion_matrix\ny_true=[0,0,1,1,1,0]\ny_pred=[0,1,1,0,1,0]\nmetrics={'accuracy':accuracy_score(y_true,y_pred),'precision':precision_score(y_true,y_pred),'recall':recall_score(y_true,y_pred),'f1':f1_score(y_true,y_pred)}\nmatrix=confusion_matrix(y_true,y_pred,labels=[0,1])\nprint(metrics)\nprint(matrix)\n",
-        check="assert set(s['metrics'])=={'accuracy','precision','recall','f1'}\nassert all(abs(v-2/3)<1e-10 for v in s['metrics'].values())\nassert s['matrix'].tolist()==[[2,1],[1,2]]"),
+        starter='from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix\n\ny_true = [0, 0, 1, 1, 1, 0]\ny_pred = [0, 1, 1, 0, 1, 0]\n# metrics와 matrix를 만드세요\n',
+        solution="from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix\n\ny_true = [0, 0, 1, 1, 1, 0]\ny_pred = [0, 1, 1, 0, 1, 0]\nmetrics = {'accuracy': accuracy_score(y_true, y_pred), 'precision': precision_score(y_true, y_pred), 'recall': recall_score(y_true, y_pred), 'f1': f1_score(y_true, y_pred)}\nmatrix = confusion_matrix(y_true, y_pred, labels=[0, 1])\nprint(metrics)\nprint(matrix)\n",
+        check="assert set(s['metrics']) == {'accuracy', 'precision', 'recall', 'f1'}\nassert all(abs(v - 2 / 3) < 1e-10 for v in s['metrics'].values())\nassert s['matrix'].tolist() == [[2, 1], [1, 2]]"),
     coding('credit-model', '부도 모델과 기준 모델을 네 지표로 비교',
         goal="""
         이제 진짜 자료예요. 준비 코드가 `상환_9월`, `신용한도`, `나이` 세 열을 입력으로 삼았어요. 훈련 자료와 테스트 자료도 나눠 뒀고요. `models`에 `Dummy`와 `Logistic`을 넣으세요. 각각 `StandardScaler`와 묶은 `Pipeline`으로 훈련하고 예측해요. 그다음 네 지표 `accuracy`, `precision`, `recall`, `f1`을 구하세요. `results` 표로 만들고요.
@@ -86,9 +86,9 @@ UNIT = unit('credit-metrics', '네 지표와 확률 기준', [
         hint="""
         앞 단원의 표 만들기 패턴 그대로예요. `for name, estimator in models.items():` 안에서 `Pipeline([('scale', StandardScaler()), ('model', estimator)])`를 만들어요. `fit`, `predict`하고 네 지표를 딕셔너리로 `rows`에 모아요. 정밀도·재현율·F1에는 `zero_division=0`을 주세요. 기준 모델처럼 TP가 0일 때 경고 없이 0이 나와요.
         """,
-        starter=CREDIT_SPLIT + "from sklearn.dummy import DummyClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import accuracy_score,precision_score,recall_score,f1_score\nX=credit[['상환_9월','신용한도','나이']]\ny=credit[target]\nX_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.2,stratify=y,random_state=42)\n# models와 results를 만드세요\n",
-        solution=CREDIT_SPLIT + "from sklearn.dummy import DummyClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import accuracy_score,precision_score,recall_score,f1_score\nX=credit[['상환_9월','신용한도','나이']]\ny=credit[target]\nX_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.2,stratify=y,random_state=42)\nmodels={'Dummy':DummyClassifier(strategy='most_frequent'),'Logistic':LogisticRegression(max_iter=2000)}\nrows=[]\nfor name,estimator in models.items():\n    model=Pipeline([('scale',StandardScaler()),('model',estimator)])\n    model.fit(X_train,y_train)\n    pred=model.predict(X_test)\n    rows.append({'model':name,'accuracy':accuracy_score(y_test,pred),'precision':precision_score(y_test,pred,zero_division=0),'recall':recall_score(y_test,pred,zero_division=0),'f1':f1_score(y_test,pred,zero_division=0)})\nresults=pd.DataFrame(rows).set_index('model')\nresults\n",
-        check="assert set(s['results'].index)=={'Dummy','Logistic'}\nassert set(s['results'].columns)=={'accuracy','precision','recall','f1'}\nassert s['results'].loc['Dummy','recall']==0\nassert ((s['results']>=0)&(s['results']<=1)).all().all()\nassert len(s['X_test'])==6000"),
+        starter=CREDIT_SPLIT + "from sklearn.dummy import DummyClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score\n\nX = credit[['상환_9월', '신용한도', '나이']]\ny = credit[target]\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)\n# models와 results를 만드세요\n",
+        solution=CREDIT_SPLIT + "from sklearn.dummy import DummyClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score\n\nX = credit[['상환_9월', '신용한도', '나이']]\ny = credit[target]\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)\nmodels = {'Dummy': DummyClassifier(strategy='most_frequent'), 'Logistic': LogisticRegression(max_iter=2000)}\nrows = []\nfor name, estimator in models.items():\n    model = Pipeline([('scale', StandardScaler()), ('model', estimator)])\n    model.fit(X_train, y_train)\n    pred = model.predict(X_test)\n    rows.append({'model': name, 'accuracy': accuracy_score(y_test, pred), 'precision': precision_score(y_test, pred, zero_division=0), 'recall': recall_score(y_test, pred, zero_division=0), 'f1': f1_score(y_test, pred, zero_division=0)})\nresults = pd.DataFrame(rows).set_index('model')\nresults\n",
+        check="assert set(s['results'].index) == {'Dummy', 'Logistic'}\nassert set(s['results'].columns) == {'accuracy', 'precision', 'recall', 'f1'}\nassert s['results'].loc['Dummy', 'recall'] == 0\nassert ((s['results'] >= 0) & (s['results'] <= 1)).all().all()\nassert len(s['X_test']) == 6000"),
     coding('predict-proba', '모델은 사실 확률을 내놓는다',
         goal="""
         ```interactive
@@ -104,9 +104,9 @@ UNIT = unit('credit-metrics', '네 지표와 확률 기준', [
         hint="""
         `predict_proba`는 행마다 `[정상 확률, 부도 확률]` 두 열을 돌려줘요. 그래서 `[:, 1]`로 부도 확률만 골라요. `(probabilities >= 0.5)`는 참·거짓 배열이에요. `.sum()`이 참의 개수고요. `int()`로 감싸 정수로 담으세요.
         """,
-        starter=CREDIT_SPLIT + "from sklearn.linear_model import LogisticRegression\nX=credit[['상환_9월','신용한도','나이']]\ny=credit[target]\nX_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.2,stratify=y,random_state=42)\nmodel=Pipeline([('scale',StandardScaler()),('model',LogisticRegression(max_iter=2000))])\nmodel.fit(X_train,y_train)\n# probabilities, n_positive_05, n_positive_03을 만들고 출력하세요\n",
-        solution=CREDIT_SPLIT + "from sklearn.linear_model import LogisticRegression\nX=credit[['상환_9월','신용한도','나이']]\ny=credit[target]\nX_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.2,stratify=y,random_state=42)\nmodel=Pipeline([('scale',StandardScaler()),('model',LogisticRegression(max_iter=2000))])\nmodel.fit(X_train,y_train)\nprobabilities = model.predict_proba(X_test)[:, 1]\nn_positive_05 = int((probabilities >= 0.5).sum())\nn_positive_03 = int((probabilities >= 0.3).sum())\nprint(n_positive_05, n_positive_03)\n",
-        check="import numpy as np\nassert len(s['probabilities'])==6000 and ((s['probabilities']>=0)&(s['probabilities']<=1)).all()\nassert np.allclose(s['probabilities'],s['model'].predict_proba(s['X_test'])[:,1])\nassert s['n_positive_05']==int((s['probabilities']>=0.5).sum()) and s['n_positive_03']==int((s['probabilities']>=0.3).sum())\nassert s['n_positive_03']>s['n_positive_05']"),
+        starter=CREDIT_SPLIT + "from sklearn.linear_model import LogisticRegression\n\nX = credit[['상환_9월', '신용한도', '나이']]\ny = credit[target]\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)\nmodel = Pipeline([('scale', StandardScaler()), ('model', LogisticRegression(max_iter=2000))])\nmodel.fit(X_train, y_train)\n# probabilities, n_positive_05, n_positive_03을 만들고 출력하세요\n",
+        solution=CREDIT_SPLIT + "from sklearn.linear_model import LogisticRegression\n\nX = credit[['상환_9월', '신용한도', '나이']]\ny = credit[target]\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)\nmodel = Pipeline([('scale', StandardScaler()), ('model', LogisticRegression(max_iter=2000))])\nmodel.fit(X_train, y_train)\nprobabilities = model.predict_proba(X_test)[:, 1]\nn_positive_05 = int((probabilities >= 0.5).sum())\nn_positive_03 = int((probabilities >= 0.3).sum())\nprint(n_positive_05, n_positive_03)\n",
+        check="import numpy as np\n\nassert len(s['probabilities']) == 6000 and ((s['probabilities'] >= 0) & (s['probabilities'] <= 1)).all()\nassert np.allclose(s['probabilities'], s['model'].predict_proba(s['X_test'])[:, 1])\nassert s['n_positive_05'] == int((s['probabilities'] >= 0.5).sum()) and s['n_positive_03'] == int((s['probabilities'] >= 0.3).sum())\nassert s['n_positive_03'] > s['n_positive_05']"),
     coding('thresholds', '기준값을 바꿔 0과 1로',
         goal="""
         ```comic-gen
@@ -140,9 +140,9 @@ UNIT = unit('credit-metrics', '네 지표와 확률 기준', [
         hint="""
         `(probabilities >= 0.5)`는 참·거짓 배열이에요. 뒤에 `.astype(int)`를 붙이면 참이 1, 거짓이 0이 돼요. 개수는 `.sum()`이고요.
         """,
-        starter='import numpy as np\nprobabilities=np.array([0.1,0.35,0.49,0.51,0.8])\n# pred_05, pred_03을 만드세요\n',
-        solution='import numpy as np\nprobabilities=np.array([0.1,0.35,0.49,0.51,0.8])\npred_05=(probabilities>=0.5).astype(int)\npred_03=(probabilities>=0.3).astype(int)\nprint(pred_05.sum(),pred_03.sum())\n',
-        check="assert s['pred_05'].tolist()==[0,0,0,1,1]\nassert s['pred_03'].tolist()==[0,1,1,1,1]"),
+        starter='import numpy as np\n\nprobabilities = np.array([0.1, 0.35, 0.49, 0.51, 0.8])\n# pred_05, pred_03을 만드세요\n',
+        solution='import numpy as np\n\nprobabilities = np.array([0.1, 0.35, 0.49, 0.51, 0.8])\npred_05 = (probabilities >= 0.5).astype(int)\npred_03 = (probabilities >= 0.3).astype(int)\nprint(pred_05.sum(), pred_03.sum())\n',
+        check="assert s['pred_05'].tolist() == [0, 0, 0, 1, 1]\nassert s['pred_03'].tolist() == [0, 1, 1, 1, 1]"),
     quiz('metrics-check', '단원 점검',
         choice('부도율 22%인 자료에서 전원 "정상"으로 찍은 모델이 있어요. 정확도와 재현율은 각각 얼마인가요?',
                ['정확도 약 78%, 재현율 0', '정확도 0, 재현율 약 78%', '둘 다 약 78%'], 0,

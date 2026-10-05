@@ -1,34 +1,33 @@
 {
- "hash": "3e2688597950ee98",
+ "hash": "b7876374c6163d33",
  "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 이번엔 두 종목 가격을 전부 뽑아 숫자 리스트로 만들어요. 앞 단원의 for와 append가 그대로 쓰이거든요."
+   "자, 이번엔 두 종목의 가격을 전부 뽑아서 숫자 리스트로 만들어요. #prices li b로 가격 요소를 모두 찾고, 하나씩 글자를 꺼내 쉼표를 지운 다음 int()로 바꿔서 prices 리스트에 모으면 돼요."
+  ],
+  [
+   "hint",
+   "앞 단원의 for와 append가 그대로 쓰이거든요. 빈 리스트를 만들고, select로 돌면서 하나씩 append하면 돼요."
   ],
   [
    "starter",
-   "html을 읽어 soup까지 만든 준비 코드는 그대로 둘게요."
+   "준비 코드는 그대로 둘게요. prices.html을 읽어서 soup까지 만들어 놨거든요."
   ],
   [
    "code",
    "prices = []\n",
-   "먼저 빈 리스트 prices를 만들어요. 여기에 가격을 하나씩 모을 거거든요."
+   "먼저 prices라는 빈 리스트를 만들어요. 여기에 가격을 하나씩 모을 거예요."
   ],
   [
    "code",
-   "for tag in soup.select('#prices li b'):\n",
-   "select로 가격 요소를 모두 찾아서 tag 하나씩 돌아요."
-  ],
-  [
-   "code",
-   "    prices.append(int(tag.get_text(strip=True).replace(',', '')))\n",
-   "글자를 꺼내 쉼표를 지우고 int로 바꿔서 prices에 붙여요."
+   "for tag in soup.select('#prices li b'):\n    prices.append(int(tag.get_text(strip=True).replace(',', '')))\n",
+   "soup.select로 #prices li b 요소를 전부 찾아서 for로 돌아요. 안에서는 글자를 꺼내고, 쉼표를 지우고, int()로 바꿔서 append하면 돼요."
   ],
   [
    "code",
    "print(prices)\n",
-   "다 모였는지 prices를 찍어 볼게요."
+   "마지막으로 prices를 찍어서 확인해요."
   ],
   [
    "run",
@@ -36,7 +35,7 @@
   ],
   [
    "output",
-   "[10000, 20000]이 나왔죠? 두 종목 가격이 숫자 리스트로 모였어요."
+   "[10000, 20000]이 나왔죠? 쉼표가 사라지고 숫자 두 개가 리스트에 들어갔어요."
   ],
   [
    "submit",

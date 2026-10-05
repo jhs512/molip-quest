@@ -1,43 +1,39 @@
 {
- "hash": "d29377595607fef1",
+ "hash": "9eba0509e11c84e6",
  "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 1장에서 배운 걸 한 번에 다 써 보는 문제예요. 지난주 판매량으로 일주일 생산 계획표를 만들어요."
-  ],
-  [
-   "hint",
-   "sales.items()로 요일과 판매량을 같이 꺼내면 돼요. 최댓값은 앞에서 본 highest 패턴 그대로예요."
+   "자, 1장에서 배운 걸 전부 꺼내 쓰는 도전 과제예요. 요일별 판매량으로 생산 계획표를 만들 거예요."
   ],
   [
    "starter",
-   "준비 코드엔 pandas와 sales 딕셔너리가 있어요. 빈 plans 리스트와 total_plan 0도 이미 있거든요."
+   "pandas와 sales 딕셔너리, 빈 plans 리스트, 0인 total_plan은 준비돼 있어요."
   ],
   [
    "code",
    "best_day = None\nbest_sold = 0\n",
-   "가장 많이 팔린 요일을 기억할 자리를 먼저 만들어요. 아직 모르니까 None과 0으로 시작해요."
+   "가장 많이 팔린 요일을 찾을 자리를 먼저 만들어요. 아직 모르니 None과 0으로 시작해요."
   ],
   [
    "code",
    "for day, sold in sales.items():\n    plan = round(sold * 1.1)\n    plans.append({'요일': day, '판매량': sold, '계획': plan})\n",
-   "자, 요일마다 돌아요. 판매량에 1.1을 곱해 반올림한 게 계획이죠? 그걸 딕셔너리로 묶어 plans에 넣어요."
+   "items()로 요일과 판매량을 함께 꺼내요. 1.1배를 반올림해서 딕셔너리 하나로 plans에 넣어요."
   ],
   [
    "code",
    "    total_plan += plan\n",
-   "sum()은 금지였죠? 반복 안에서 계획 수량을 total_plan에 하나씩 더해 누적해요."
+   "sum() 대신 반복 안에서 계획 수량을 total_plan에 누적하거든요."
   ],
   [
    "code",
    "    if sold > best_sold:\n        best_sold = sold\n        best_day = day\n",
-   "지금 판매량이 최고 기록보다 크면 기록을 바꿔요. 이때 best_day도 같이 갱신하면 돼요."
+   "highest 패턴 그대로예요. 지금까지보다 많이 팔렸으면 판매량과 요일을 같이 갱신해요."
   ],
   [
    "code",
    "df = pd.DataFrame(plans)\nprint(total_plan, best_day)\ndf\n",
-   "딕셔너리 리스트를 DataFrame에 넣으면 표가 돼요. 마지막 줄에 df만 적으면 표가 뜨거든요."
+   "딕셔너리 리스트를 DataFrame으로 바꿔요. 마지막 줄에 df를 적으면 표가 떠요."
   ],
   [
    "run",
@@ -45,7 +41,7 @@
   ],
   [
    "output",
-   "3735 토가 나왔죠? 계획 합계가 3735개, 제일 많이 팔린 요일은 토요일이에요. 아래엔 7행 3열 표가 떠요."
+   "3735 토가 나왔죠? 7행 3열 표도 보이고, 토요일이 가장 많이 팔렸어요."
   ],
   [
    "submit",

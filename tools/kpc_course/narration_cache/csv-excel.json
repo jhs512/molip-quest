@@ -1,29 +1,29 @@
 {
- "hash": "75436e7f1e371909",
+ "hash": "3da9b954501fb9c8",
  "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 같은 표를 CSV와 Excel 두 형식으로 저장하고, 다시 읽어서 비교해 볼게요. 형식이 달라도 읽고 나면 같은 DataFrame이라는 걸 눈으로 확인하는 거예요."
+   "자, 같은 표를 CSV와 Excel 두 가지 형식으로 저장하고 다시 읽어 볼 거예요. 읽고 나면 정말 같은 DataFrame인지 눈으로 확인하는 미션이거든요."
   ],
   [
    "starter",
-   "준비 코드에 orders 표가 있어요. product, price, quantity 세 열에 네 줄이고, price엔 None이 하나 들어 있거든요."
+   "준비 코드엔 pandas와 orders 표가 있어요. product, price, quantity 세 열에 네 줄짜리 표죠? 그대로 둘게요."
   ],
   [
    "code",
-   "orders.to_csv('orders.csv',index=False)\norders.to_excel('orders.xlsx',index=False)\n",
-   "저장은 to_csv와 to_excel이에요. 둘 다 index=False를 줘서 줄 번호는 빼고 저장해요."
+   "orders.to_csv('orders.csv', index=False)\norders.to_excel('orders.xlsx', index=False)\n",
+   "먼저 저장이에요. to_csv는 CSV로, to_excel은 Excel로 쓰거든요. 둘 다 index=False라서 행 번호는 안 들어가요."
   ],
   [
    "code",
-   "csv_df=pd.read_csv('orders.csv')\nexcel_df=pd.read_excel('orders.xlsx')\n",
-   "읽기는 read_csv와 read_excel이죠. 확장자만 다르고 쓰는 법은 같아요."
+   "csv_df = pd.read_csv('orders.csv')\nexcel_df = pd.read_excel('orders.xlsx')\n",
+   "이제 다시 읽어요. read_csv로 읽은 건 csv_df에, read_excel로 읽은 건 excel_df에 담아요. 확장자만 다르고 쓰는 법은 같죠?"
   ],
   [
    "code",
    "print(csv_df.shape, excel_df.shape)\ncsv_df\n",
-   "두 표의 크기를 나란히 찍고, csv_df를 마지막 줄에 두어 표를 보여 줘요."
+   "shape로 두 표의 크기를 나란히 찍어요. 마지막 줄에 csv_df만 적으면 표가 그대로 보여요."
   ],
   [
    "run",
@@ -31,7 +31,7 @@
   ],
   [
    "output",
-   "(4, 3) (4, 3)이 나왔죠? 두 표 다 네 줄 세 열이에요. 아래 표의 product 열도 A, B, A, C 그대로고요."
+   "(4, 3) (4, 3)이 나왔죠? 둘 다 네 줄 세 열이에요. 아래 표에서 product 열도 A, B, A, C 그대로예요."
   ],
   [
    "submit",

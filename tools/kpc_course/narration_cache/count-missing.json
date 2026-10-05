@@ -1,33 +1,29 @@
 {
- "hash": "0c18b1b09f205fdc",
+ "hash": "03c02d200d5c486d",
  "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 이번엔 orders에서 열마다 빈칸이 몇 개인지 세어 볼게요. 결과를 missing_counts에 담고, price 열의 개수는 정수로 n_missing_price에 담아요."
-  ],
-  [
-   "hint",
-   "orders.isna()는 빈칸을 True로 표시하거든요. 거기에 .sum()을 붙이면 열마다 True를 세요."
+   "자, 빈칸이 어디에 몇 개 있는지 세어 볼게요. orders에서 열마다 결측 개수를 세고, price 열의 개수는 따로 정수로 꺼내요."
   ],
   [
    "starter",
-   "준비 코드는 그대로 둘게요. orders에 네 건이 있고, price 하나가 None이에요."
+   "준비 코드에 orders가 들어 있어요. price 열 마지막 값이 None이라 빈칸 하나가 숨어 있거든요."
   ],
   [
    "code",
    "missing_counts = orders.isna().sum()\n",
-   "isna()로 빈칸을 True로 바꾸고, sum()으로 열마다 세요. 결과는 열 이름으로 꺼내는 Series예요."
+   "orders.isna()가 빈칸을 True로 표시하고, .sum()이 열마다 그 True를 세요. 결과가 Series라 missing_counts에 담아요."
   ],
   [
    "code",
    "n_missing_price = int(missing_counts['price'])\n",
-   "missing_counts['price']로 가격 열 값을 꺼내요. int()로 감싸면 정수가 되죠?"
+   "missing_counts['price']로 가격 열 값만 꺼내요. int()로 감싸서 정수로 만들어 n_missing_price에 넣으면 돼요."
   ],
   [
    "code",
    "print(missing_counts)\nprint(n_missing_price)\n",
-   "둘 다 출력하면 돼요."
+   "둘 다 출력해요. 표 전체를 먼저, 가격 열 숫자를 그다음에요."
   ],
   [
    "run",
@@ -35,7 +31,7 @@
   ],
   [
    "output",
-   "price에 1, 나머지는 0이 나왔죠? 아래 1은 price 열만 따로 꺼낸 정수예요."
+   "product 0, price 1, quantity 0이 나왔죠? 가격 열에만 1개가 비어 있고, 아래에 1이 따로 찍혔어요."
   ],
   [
    "submit",

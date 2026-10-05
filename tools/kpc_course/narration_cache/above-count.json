@@ -1,33 +1,29 @@
 {
- "hash": "86048f4bffd55c20",
+ "hash": "2698508afc84d511",
  "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 이번엔 합계를 구하면서 기준 10000 이상인 날이 며칠인지도 같이 세어 볼게요. 합계는 total에, 개수는 above_count에 저장하면 돼요."
-  ],
-  [
-   "hint",
-   "힌트를 보세요. 반복문 안에서 매번 total += price를 하고, 그 아래 if로 기준을 확인해요. if에 속한 줄은 공백 여덟 칸이거든요."
+   "자, 이번엔 합계를 구하면서 기준 10000 이상인 날이 며칠인지도 같이 세어 볼게요. 합계는 total에, 개수는 above_count에 담아요."
   ],
   [
    "starter",
-   "준비 코드엔 prices 목록이 있고, total과 above_count가 0으로 준비되어 있어요. 그대로 둘게요."
+   "준비 코드엔 prices 목록이 있고, total과 above_count가 0으로 시작하고 있어요. 그대로 둘게요."
   ],
   [
    "code",
    "for price in prices:\n    total += price\n",
-   "자, prices를 하나씩 돌면서 매번 total에 price를 더해요. 이게 합계 부분이에요."
+   "자, 가격을 하나씩 꺼내면서 total에 더해요. 반복할 때마다 쌓이거든요."
   ],
   [
    "code",
    "    if price >= 10000:\n        above_count += 1\n",
-   "그 아래에서 price가 10000 이상이면 above_count를 1 늘려요. if에 속한 줄은 공백 여덟 칸이죠?"
+   "그 아래 if로 10000 이상인지 보고, 맞으면 above_count를 하나 올려요. if에 속한 줄은 공백 여덟 칸이죠?"
   ],
   [
    "code",
    "print(total, above_count)\n",
-   "반복이 끝난 뒤에 total과 above_count를 한 줄로 출력하면 돼요."
+   "반복이 끝나면 밖에서 두 값을 한 줄에 출력하면 돼요."
   ],
   [
    "run",
@@ -35,7 +31,7 @@
   ],
   [
    "output",
-   "40200 3이 나왔죠? 합계 40200, 기준 이상인 날이 3일이에요."
+   "40200 3이 나왔죠? 합계가 40200이고, 10000 이상인 날이 사흘이에요."
   ],
   [
    "submit",

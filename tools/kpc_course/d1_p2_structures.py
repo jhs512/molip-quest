@@ -1,7 +1,7 @@
 """변수와 자료구조"""
 from kpc_course.dsl import *
 
-HOLDINGS = "holdings = [{'name':'A','price':10000,'quantity':3},{'name':'B','price':20000,'quantity':2},{'name':'C','price':15000,'quantity':4}]\n"
+HOLDINGS = "holdings = [{'name': 'A', 'price': 10000, 'quantity': 3}, {'name': 'B', 'price': 20000, 'quantity': 2}, {'name': 'C', 'price': 15000, 'quantity': 4}]\n"
 
 UNIT = unit('structures', '변수와 자료구조', [
     concept('values', '값이 여러 개면 리스트, 이름표가 있으면 딕셔너리',
@@ -34,10 +34,10 @@ UNIT = unit('structures', '변수와 자료구조', [
 
         ```python
         prices = [10000, 10200, 10100]
-        print(prices[0])      # 첫 값 10000
-        print(prices[-1])     # 마지막 값 10100
-        print(len(prices))    # 개수 3
-        print(sum(prices))    # 합계 30300
+        print(prices[0])  # 첫 값 10000
+        print(prices[-1])  # 마지막 값 10100
+        print(len(prices))  # 개수 3
+        print(sum(prices))  # 합계 30300
         prices.append(10300)  # 맨 뒤에 값 추가
         ```
 
@@ -47,9 +47,9 @@ UNIT = unit('structures', '변수와 자료구조', [
 
         ```python
         holding = {'name': '연습A', 'price': 10000, 'quantity': 3}
-        print(holding['price'])     # 10000
-        holding['quantity'] = 5     # 값 바꾸기
-        holding['amount'] = 50000   # 새 이름표 추가
+        print(holding['price'])  # 10000
+        holding['quantity'] = 5  # 값 바꾸기
+        holding['amount'] = 50000  # 새 이름표 추가
         ```
 
         딕셔너리는 중괄호 안에 `'이름표': 값` 쌍을 쉼표로 늘어놓아요. 이름표는 **키**(key)라고 불러요. 꺼낼 때는 `holding['price']`처럼 대괄호 안에 키를 따옴표째 적어요. 키는 글자가 정확히 같아야 해요. `'Price'`와 `'price'`는 다른 키예요. 없는 키를 부르면 `KeyError`가 나요. 리스트는 **위치**로, 딕셔너리는 **키**로. 이것만 기억하면 뒤가 편해요.
@@ -67,7 +67,7 @@ UNIT = unit('structures', '변수와 자료구조', [
         """,
         starter='prices = [10000, 10200, 10100]\n# first, last를 만들고 출력하세요\n',
         solution='prices = [10000, 10200, 10100]\nfirst = prices[0]\nlast = prices[-1]\nprint(first, last)\n',
-        check="assert s['first']==10000 and s['last']==10100"),
+        check="assert s['first'] == 10000 and s['last'] == 10100"),
     coding('list-len-sum', '개수와 합계 구하기',
         goal="""
         같은 리스트로 "며칠치인가"와 "다 더하면 얼마인가"를 구해요. 개수를 `count`에 저장하세요. 합계는 `total`에 저장하세요. 그리고 둘을 출력하세요.
@@ -79,7 +79,7 @@ UNIT = unit('structures', '변수와 자료구조', [
         """,
         starter='prices = [10000, 10200, 10100]\n# count, total을 만들고 출력하세요\n',
         solution='prices = [10000, 10200, 10100]\ncount = len(prices)\ntotal = sum(prices)\nprint(count, total)\n',
-        check="assert s['count']==3 and s['total']==30300"),
+        check="assert s['count'] == 3 and s['total'] == 30300"),
     coding('dict-read', '딕셔너리에서 키로 값 읽기',
         goal="""
         종목 하나가 `holding` 딕셔너리에 들어 있어요. 가격과 수량을 키로 꺼내 곱하세요. 그 금액을 `amount`에 저장하고 출력하세요. 딕셔너리 자체는 바꾸지 않아요.
@@ -89,9 +89,9 @@ UNIT = unit('structures', '변수와 자료구조', [
         hint="""
         값은 `holding['price']`처럼 꺼내요. 대괄호 안에 키를 따옴표째 적는 거예요. 따옴표를 빼고 `holding[price]`라고 쓰면요? 파이썬은 `price`라는 변수를 찾다가 `NameError`를 내요.
         """,
-        starter="holding = {'name':'연습A', 'price':10000, 'quantity':3}\n# amount를 계산하고 출력하세요\n",
-        solution="holding = {'name':'연습A', 'price':10000, 'quantity':3}\namount = holding['price'] * holding['quantity']\nprint(amount)\n",
-        check="assert s['amount']==30000"),
+        starter="holding = {'name': '연습A', 'price': 10000, 'quantity': 3}\n# amount를 계산하고 출력하세요\n",
+        solution="holding = {'name': '연습A', 'price': 10000, 'quantity': 3}\namount = holding['price'] * holding['quantity']\nprint(amount)\n",
+        check="assert s['amount'] == 30000"),
     coding('holdings-access', '리스트 안의 딕셔너리',
         goal="""
         이제 두 가지를 합쳐요. `holdings`는 종목 딕셔너리 세 개를 순서대로 담은 리스트예요. 두 번째 종목의 이름을 `second_name`에 저장하세요. 세 번째 종목의 가격은 `third_price`에 저장하세요. 그리고 둘을 출력하세요.
@@ -103,7 +103,7 @@ UNIT = unit('structures', '변수와 자료구조', [
         """,
         starter=HOLDINGS + "# second_name, third_price를 만들고 출력하세요\n",
         solution=HOLDINGS + "second_name = holdings[1]['name']\nthird_price = holdings[2]['price']\nprint(second_name, third_price)\n",
-        check="assert s['second_name']=='B' and s['third_price']==15000"),
+        check="assert s['second_name'] == 'B' and s['third_price'] == 15000"),
     coding('holding', '값을 바꾸고 다시 계산하기',
         goal="""
         읽기만 했으니 이번에는 고쳐 볼게요. `holding`의 수량을 5로 바꾸세요. 그다음 바뀐 수량으로 가격 × 수량을 계산하세요. 그 값을 `amount`라는 **새 키**에 저장하세요.
@@ -113,9 +113,9 @@ UNIT = unit('structures', '변수와 자료구조', [
         hint="""
         `holding['quantity'] = 5`처럼 키에 새 값을 넣으면 바뀌어요. 없던 키에 넣으면 추가되고요. 수량을 바꾼 **다음에** 곱해야 50000이 나와요. 순서가 바뀌면 30000이 저장돼요.
         """,
-        starter="holding = {'name':'연습A', 'price':10000, 'quantity':3}\n# 수량을 수정하고 금액을 계산하세요\n",
-        solution="holding = {'name':'연습A', 'price':10000, 'quantity':3}\nholding['quantity'] = 5\nholding['amount'] = holding['price'] * holding['quantity']\nprint(holding)\n",
-        check="assert s['holding']['quantity']==5 and s['holding']['amount']==50000"),
+        starter="holding = {'name': '연습A', 'price': 10000, 'quantity': 3}\n# 수량을 수정하고 금액을 계산하세요\n",
+        solution="holding = {'name': '연습A', 'price': 10000, 'quantity': 3}\nholding['quantity'] = 5\nholding['amount'] = holding['price'] * holding['quantity']\nprint(holding)\n",
+        check="assert s['holding']['quantity'] == 5 and s['holding']['amount'] == 50000"),
     coding('price-average', '값을 추가하고 평균 내기',
         goal="""
         넷째 날 가격 10300이 들어왔어요. `prices` 맨 뒤에 추가하세요. 그다음 개수를 `count`에 담으세요. 평균은 `average`에 담고요. 그리고 둘 다 출력하세요.
@@ -128,8 +128,8 @@ UNIT = unit('structures', '변수와 자료구조', [
         3. 나눗셈 `/`의 결과는 소수가 될 수 있어요. 10150.0으로 보여도 괜찮아요.
         """,
         starter='prices = [10000, 10200, 10100]\n# 값을 추가하고 count, average를 계산하세요\n',
-        solution='prices = [10000, 10200, 10100]\nprices.append(10300)\ncount = len(prices)\naverage = sum(prices)/count\nprint(count, average)\n',
-        check="assert s['prices']==[10000,10200,10100,10300] and s['count']==4 and s['average']==10150"),
+        solution='prices = [10000, 10200, 10100]\nprices.append(10300)\ncount = len(prices)\naverage = sum(prices) / count\nprint(count, average)\n',
+        check="assert s['prices'] == [10000, 10200, 10100, 10300] and s['count'] == 4 and s['average'] == 10150"),
     quiz('structure-check', '단원 점검',
         short('리스트에서 첫 번째 값의 자리 번호(인덱스)는 몇인가요?', ['0'],
               '0이에요. 파이썬의 자리 번호는 0부터 시작하거든요. 세 값이 든 리스트의 마지막 자리는 2예요.'),

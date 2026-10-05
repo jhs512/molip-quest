@@ -172,7 +172,7 @@ UNIT = unit('environment', '내 코드의 첫 실행', [
         """,
         starter='price = 10000\nquantity = 3\n# amount를 만들고 출력하세요\n',
         solution='price = 10000\nquantity = 3\namount = price * quantity\nprint(amount)\n',
-        check="assert s['amount']==30000 and s['amount']==s['price']*s['quantity']"),
+        check="assert s['amount'] == 30000 and s['amount'] == s['price'] * s['quantity']"),
     coding('single-input', '입력 한 개 읽기',
         goal="""
         이번엔 수량을 코드에 박아 두지 않고 바깥에서 받아 볼게요. 준비 코드가 실행 입력 칸의 한 줄을 `input()`으로 읽어요. 그걸 `int()`로 정수로 바꿔 `quantity`에 넣어 둬요. 가격 10000과 곱한 금액을 출력하세요.

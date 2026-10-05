@@ -63,10 +63,10 @@ UNIT = unit('stock-features', '수익률·이동평균·lag', [
         ```
 
         ```python
-        prices['return_1'] = prices['종가'].pct_change()         # (오늘 - 어제) / 어제
-        prices['ma5'] = prices['종가'].rolling(5).mean()          # 오늘 포함 최근 5거래일 평균
-        prices['lag_close_1'] = prices['종가'].shift(1)           # 어제 종가 (입력)
-        prices['target_next_close'] = prices['종가'].shift(-1)    # 내일 종가 (정답)
+        prices['return_1'] = prices['종가'].pct_change()  # (오늘 - 어제) / 어제
+        prices['ma5'] = prices['종가'].rolling(5).mean()  # 오늘 포함 최근 5거래일 평균
+        prices['lag_close_1'] = prices['종가'].shift(1)  # 어제 종가 (입력)
+        prices['target_next_close'] = prices['종가'].shift(-1)  # 내일 종가 (정답)
         ```
 
         `pct_change()`는 어제 대비 수익률이라 첫 행이 비어요. `rolling(5).mean()`은 5개가 모여야 평균이 나오죠. 그래서 처음 네 행이 비어요. 빈칸이 있는 행은 모델에 못 넣어요. 그러니 네 열을 다 만든 뒤 `dropna()`로 한 번에 정리하면 돼요. 그러면 앞쪽 몇 행과 마지막 한 행이 빠져요.
@@ -86,7 +86,7 @@ UNIT = unit('stock-features', '수익률·이동평균·lag', [
         """,
         starter=ST + "# return_1 열을 만들고 head()를 확인하세요\n",
         solution=ST + "prices['return_1'] = prices['종가'].pct_change()\nprices.head()\n",
-        check="import pandas as pd\nassert pd.isna(s['prices']['return_1'].iloc[0])\nassert abs(s['prices']['return_1'].iloc[1]-(53900/54100-1))<1e-12"),
+        check="import pandas as pd\n\nassert pd.isna(s['prices']['return_1'].iloc[0])\nassert abs(s['prices']['return_1'].iloc[1] - (53900 / 54100 - 1)) < 1e-12"),
     coding('moving-average', '최근 5거래일 평균',
         goal="""
         둘째 재료예요. `prices['종가'].rolling(5).mean()`을 `ma5` 열로 추가하세요. `prices.head(6)`으로 확인하고요.
@@ -98,7 +98,7 @@ UNIT = unit('stock-features', '수익률·이동평균·lag', [
         """,
         starter=ST + "# ma5 열을 만들고 head(6)을 확인하세요\n",
         solution=ST + "prices['ma5'] = prices['종가'].rolling(5).mean()\nprices.head(6)\n",
-        check="assert s['prices']['ma5'].iloc[:4].isna().all()\nassert s['prices']['ma5'].iloc[4]==53940\nassert s['prices']['ma5'].isna().sum()==4"),
+        check="assert s['prices']['ma5'].iloc[:4].isna().all()\nassert s['prices']['ma5'].iloc[4] == 53940\nassert s['prices']['ma5'].isna().sum() == 4"),
     coding('lag-next', '어제 종가와 내일 종가',
         goal="""
         밀기 두 번이에요. `prices['종가'].shift(1)`을 `lag_close_1` 열로 추가하세요. `prices['종가'].shift(-1)`은 `target_next_close` 열로 추가하고요.
@@ -109,8 +109,8 @@ UNIT = unit('stock-features', '수익률·이동평균·lag', [
         `shift(1)`은 아래로 한 칸, 어제 값이에요. `shift(-1)`은 위로 한 칸, 내일 값이고요. 개념의 표를 옆에 두세요. `prices.head()`와 `prices.tail()`로 양 끝을 확인해 보세요.
         """,
         starter=ST + "# 두 열을 만드세요\n",
-        solution=ST + "prices['lag_close_1']=prices['종가'].shift(1)\nprices['target_next_close']=prices['종가'].shift(-1)\nprices.head()\n",
-        check="assert __import__('pandas').isna(s['prices']['lag_close_1'].iloc[0])\nassert s['prices']['lag_close_1'].iloc[1]==54100\nassert s['prices']['target_next_close'].iloc[0]==53900\nassert __import__('pandas').isna(s['prices']['target_next_close'].iloc[-1])"),
+        solution=ST + "prices['lag_close_1'] = prices['종가'].shift(1)\nprices['target_next_close'] = prices['종가'].shift(-1)\nprices.head()\n",
+        check="assert __import__('pandas').isna(s['prices']['lag_close_1'].iloc[0])\nassert s['prices']['lag_close_1'].iloc[1] == 54100\nassert s['prices']['target_next_close'].iloc[0] == 53900\nassert __import__('pandas').isna(s['prices']['target_next_close'].iloc[-1])"),
     coding('stock-frame', '입력 네 열과 정답, 그리고 정답 날짜',
         goal="""
         재료를 한 표에 모아요. 빈 표 `frame`에 여섯 열을 만드세요. `close`(오늘 종가), `return_1`, `ma5`, `lag_close_1`, `target_next_close`, `target_date`예요. `target_date`는 날짜 인덱스를 `pd.Series(prices.index, index=prices.index)`로 열로 만들어요. 그걸 `shift(-1)`한 거예요. 마지막에 `frame.dropna().copy()`로 빈칸이 있는 행을 빼세요.
@@ -129,9 +129,9 @@ UNIT = unit('stock-features', '수익률·이동평균·lag', [
 
         마지막에 `frame = frame.dropna().copy()`로 정리하세요.
         """,
-        starter=ST + "frame=pd.DataFrame(index=prices.index)\n# 여섯 열을 만들고 불완전한 행을 제외하세요\n",
+        starter=ST + "frame = pd.DataFrame(index=prices.index)\n# 여섯 열을 만들고 불완전한 행을 제외하세요\n",
         solution=ST_FRAME + "print(frame.shape)\nframe.head()\n",
-        check="assert s['frame'].shape==(396,6)\nassert s['frame'].notna().all().all()\nassert (s['frame']['target_date']>s['frame'].index).all()\nassert s['frame']['ma5'].iloc[0]==s['prices']['종가'].iloc[:5].mean()"),
+        check="assert s['frame'].shape == (396, 6)\nassert s['frame'].notna().all().all()\nassert (s['frame']['target_date'] > s['frame'].index).all()\nassert s['frame']['ma5'].iloc[0] == s['prices']['종가'].iloc[:5].mean()"),
     quiz('feature-time-check', '단원 점검',
         choice('`target_next_close`를 입력 `X`에도 넣으면 어떻게 되나요?',
                ['내일 종가로 내일 종가를 맞히는 누수가 된다', '정확도가 조금 오른다', '아무 문제 없다'], 0,

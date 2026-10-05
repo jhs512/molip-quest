@@ -31,8 +31,9 @@ UNIT = unit('files', 'CSV·Excel과 행·열 선택', [
 
         ```python
         import pandas as pd
-        orders.to_csv('orders.csv', index=False)   # 저장
-        saved = pd.read_csv('orders.csv')          # 다시 읽기
+
+        orders.to_csv('orders.csv', index=False)  # 저장
+        saved = pd.read_csv('orders.csv')  # 다시 읽기
         titanic = pd.read_csv('data/titanic.csv')  # 남이 만든 파일 읽기
         ```
 
@@ -53,7 +54,7 @@ UNIT = unit('files', 'CSV·Excel과 행·열 선택', [
         """,
         starter=ORDERS + "# n_rows, n_columns, column_names를 만들고 출력하세요\n",
         solution=ORDERS + "n_rows, n_columns = orders.shape\ncolumn_names = list(orders.columns)\nprint(n_rows, n_columns, column_names)\n",
-        check="assert s['n_rows']==4 and s['n_columns']==3\nassert list(s['column_names'])==['product','price','quantity']"),
+        check="assert s['n_rows'] == 4 and s['n_columns'] == 3\nassert list(s['column_names']) == ['product', 'price', 'quantity']"),
     coding('to-csv', '표를 CSV로 저장하고 다시 읽기',
         goal="""
         `orders`를 `orders.csv`라는 파일로 저장하세요. 그 파일을 다시 읽어 `saved`에 담으세요. 저장할 때 `index=False`를 꼭 붙이세요. 마지막 줄에 `saved`를 적어 표를 확인하세요.
@@ -65,7 +66,7 @@ UNIT = unit('files', 'CSV·Excel과 행·열 선택', [
         """,
         starter=ORDERS + "# orders.csv로 저장하고 다시 읽어 saved에 담으세요\n",
         solution=ORDERS + "orders.to_csv('orders.csv', index=False)\nsaved = pd.read_csv('orders.csv')\nsaved\n",
-        check="import os\nassert os.path.exists('orders.csv')\nassert s['saved'].shape==(4,3) and list(s['saved'].columns)==['product','price','quantity']"),
+        check="import os\n\nassert os.path.exists('orders.csv')\nassert s['saved'].shape == (4, 3) and list(s['saved'].columns) == ['product', 'price', 'quantity']"),
     coding('csv-excel', 'CSV와 Excel, 읽고 나면 같은 표',
         goal="""
         같은 표를 CSV와 Excel 두 형식으로 저장하세요. CSV 파일은 다시 읽어 `csv_df`에 담으세요. Excel 파일은 다시 읽어 `excel_df`에 담고요. 저장할 때는 둘 다 `index=False`예요.
@@ -76,8 +77,8 @@ UNIT = unit('files', 'CSV·Excel과 행·열 선택', [
         CSV 저장은 `orders.to_csv('orders.csv', index=False)`예요. Excel 저장은 `orders.to_excel('orders.xlsx', index=False)`고요. 읽기는 `pd.read_csv('orders.csv')`죠. Excel은 `pd.read_excel('orders.xlsx')`면 돼요. 파일 이름의 확장자만 다르고 쓰는 법은 같아요.
         """,
         starter=ORDERS + "# 저장하고 다시 읽어 csv_df, excel_df를 만드세요\n",
-        solution=ORDERS + "orders.to_csv('orders.csv',index=False)\norders.to_excel('orders.xlsx',index=False)\ncsv_df=pd.read_csv('orders.csv')\nexcel_df=pd.read_excel('orders.xlsx')\nprint(csv_df.shape, excel_df.shape)\ncsv_df\n",
-        check="assert s['csv_df'].shape==(4,3) and s['excel_df'].shape==(4,3)\nassert s['csv_df']['product'].tolist()==['A','B','A','C']\nassert list(s['csv_df'].columns)==list(s['excel_df'].columns)"),
+        solution=ORDERS + "orders.to_csv('orders.csv', index=False)\norders.to_excel('orders.xlsx', index=False)\ncsv_df = pd.read_csv('orders.csv')\nexcel_df = pd.read_excel('orders.xlsx')\nprint(csv_df.shape, excel_df.shape)\ncsv_df\n",
+        check="assert s['csv_df'].shape == (4, 3) and s['excel_df'].shape == (4, 3)\nassert s['csv_df']['product'].tolist() == ['A', 'B', 'A', 'C']\nassert list(s['csv_df'].columns) == list(s['excel_df'].columns)"),
     coding('series-vs-frame', '대괄호 한 겹과 두 겹의 차이',
         goal="""
         `orders['price']`를 `price_series`에 담으세요. `orders[['price']]`는 `price_frame`에 담고요. 각각 `type()`을 출력해 보세요. 하나는 `Series`, 하나는 `DataFrame`이 나와요.
@@ -89,7 +90,7 @@ UNIT = unit('files', 'CSV·Excel과 행·열 선택', [
         """,
         starter=ORDERS + "# price_series, price_frame을 만들고 type을 출력하세요\n",
         solution=ORDERS + "price_series = orders['price']\nprice_frame = orders[['price']]\nprint(type(price_series))\nprint(type(price_frame))\n",
-        check="import pandas as pd\nassert isinstance(s['price_series'],pd.Series) and isinstance(s['price_frame'],pd.DataFrame)"),
+        check="import pandas as pd\n\nassert isinstance(s['price_series'], pd.Series) and isinstance(s['price_frame'], pd.DataFrame)"),
     coding('selection', '원하는 열과 첫 두 행',
         goal="""
         표에서 필요한 부분만 잘라 내요. `product`와 `price` 두 열만 고른 표를 `selected`에 담으세요. 자리 번호로 첫 두 행만 고른 표는 `first_two`에 담고요.
@@ -100,8 +101,8 @@ UNIT = unit('files', 'CSV·Excel과 행·열 선택', [
         열 여러 개는 이름 리스트로 골라요. `orders[['product', 'price']]`처럼요. 행을 자리 번호로 고를 때는 `orders.iloc[:2]`예요. 리스트와 같은 규칙이에요. 끝 번호 2는 안 들어가니 0번과 1번 행만 남아요.
         """,
         starter=ORDERS + "# selected, first_two를 만드세요\n",
-        solution=ORDERS + "selected=orders[['product','price']]\nfirst_two=orders.iloc[:2]\nprint(selected.shape,first_two.shape)\nselected\n",
-        check="assert list(s['selected'].columns)==['product','price'] and s['selected'].shape==(4,2)\nassert s['first_two']['product'].tolist()==['A','B']"),
+        solution=ORDERS + "selected = orders[['product', 'price']]\nfirst_two = orders.iloc[:2]\nprint(selected.shape, first_two.shape)\nselected\n",
+        check="assert list(s['selected'].columns) == ['product', 'price'] and s['selected'].shape == (4, 2)\nassert s['first_two']['product'].tolist() == ['A', 'B']"),
     coding('loc-condition', '조건으로 행 고르기',
         goal="""
         자리 번호가 아니라 **조건**으로 행을 골라요. 수량이 3 이상인 거래만 골라 `many`에 담으세요. 마지막 줄에 `many`를 적어 표를 확인하세요.
@@ -113,7 +114,7 @@ UNIT = unit('files', 'CSV·Excel과 행·열 선택', [
         """,
         starter=ORDERS + "# many를 만들고 표를 표시하세요\n",
         solution=ORDERS + "many = orders.loc[orders['quantity'] >= 3]\nmany\n",
-        check="assert s['many']['product'].tolist()==['A','A'] and s['many']['quantity'].tolist()==[3,4]"),
+        check="assert s['many']['product'].tolist() == ['A', 'A'] and s['many']['quantity'].tolist() == [3, 4]"),
     coding('read-csv-titanic', '남이 만든 파일 열어 보기',
         goal="""
         이제 진짜 파일이에요. 앱이 준비해 둔 `data/titanic.csv`를 읽어 `titanic`에 담으세요. `titanic.shape`를 출력하세요. 마지막 줄에 `titanic.head()`를 적어 앞 5행을 보세요.
@@ -124,8 +125,8 @@ UNIT = unit('files', 'CSV·Excel과 행·열 선택', [
         파일 경로를 따옴표로 감싸 넘기세요. `pd.read_csv('data/titanic.csv')`처럼요. 결과는 `titanic`에 담아요. 자료는 `data/` 폴더 안에 있어요. 경로에서 `data/`를 빼면 파일을 못 찾아요.
         """,
         starter='import pandas as pd\n# titanic을 읽고 shape와 head()를 확인하세요\n',
-        solution="import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nprint(titanic.shape)\ntitanic.head()\n",
-        check="assert s['titanic'].shape==(1309,14)"),
+        solution="import pandas as pd\n\ntitanic = pd.read_csv('data/titanic.csv')\nprint(titanic.shape)\ntitanic.head()\n",
+        check="assert s['titanic'].shape == (1309, 14)"),
     quiz('files-check', '단원 점검',
         choice("`index=False`를 빼고 `orders.to_csv('orders.csv')`로 저장했어요. 이 파일을 다시 읽으면 어떻게 되나요?",
                ['`Unnamed: 0`이라는 열이 하나 더 생긴다', '아무 차이가 없다', '파일이 저장되지 않는다'], 0,

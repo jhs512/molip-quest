@@ -1,7 +1,7 @@
 """시간 분리와 기준 모델"""
 from kpc_course.dsl import *
 
-CALLS = PD + "calls = pd.DataFrame({'week': [1]*7 + [2]*7, 'weekday': ['월','화','수','목','금','토','일']*2, 'calls': [1320,980,940,910,1010,420,380, 1410,1020,960,890,1050,450,360]})\n"
+CALLS = PD + "calls = pd.DataFrame({'week': [1] * 7 + [2] * 7, 'weekday': ['월', '화', '수', '목', '금', '토', '일'] * 2, 'calls': [1320, 980, 940, 910, 1010, 420, 380, 1410, 1020, 960, 890, 1050, 450, 360]})\n"
 
 UNIT = unit('stock-split', '시간 분리와 기준 모델', [
     concept('temporal-boundary', '시간은 섞으면 안 되고, 경계의 하루도 조심해야 한다',
@@ -97,7 +97,7 @@ UNIT = unit('stock-split', '시간 분리와 기준 모델', [
         """,
         starter=ST_FRAME + "# test_start, n_test를 만들고 출력하세요\n",
         solution=ST_FRAME + "test_start = frame.index[-80]\nn_test = int((frame.index >= test_start).sum())\nprint(test_start, n_test)\n",
-        check="assert s['test_start']==s['frame'].index[-80] and s['n_test']==80"),
+        check="assert s['test_start'] == s['frame'].index[-80] and s['n_test'] == 80"),
     coding('time-boundary', '정답 날짜까지 보고 나누기',
         goal="""
         훈련·테스트를 나눠요. `test_start`를 정하세요. `train_mask`는 두 조건을 **모두** 만족하는 행이에요. 입력 날짜도, `target_date`도 `test_start` 전. 입력 날짜가 `test_start` 이상인 행이 `test_mask`고요. 그걸로 `X_train`, `X_test`, `y_train`, `y_test`를 만드세요. 두 쪽의 행 수도 출력해 보고요.
@@ -107,9 +107,9 @@ UNIT = unit('stock-split', '시간 분리와 기준 모델', [
         hint="""
         개념에 있는 네 줄 그대로예요. 두 조건을 괄호로 감싸 `&`로 이으세요. 앞에서 배운 방법이죠. 입력과 정답은 같은 마스크로 함께 고르세요. `X.loc[train_mask]`, `y.loc[train_mask]`처럼요. 그래야 행이 안 어긋나거든요.
         """,
-        starter=ST_FRAME + "feature_columns=['close','return_1','ma5','lag_close_1']\nX=frame[feature_columns]\ny=frame['target_next_close']\n# test_start, 마스크와 네 자료를 만드세요\n",
-        solution=ST_FRAME + TIME_SPLIT + "print(len(X_train),len(X_test))\nprint(frame.loc[train_mask,'target_date'].max(),X_test.index.min())\n",
-        check="assert len(s['X_train'])==315 and len(s['X_test'])==80\nassert s['frame'].loc[s['train_mask'],'target_date'].max()<s['X_test'].index.min()\nassert set(s['X_train'].index).isdisjoint(s['X_test'].index)\nassert 'target_next_close' not in s['X_train']"),
+        starter=ST_FRAME + "feature_columns = ['close', 'return_1', 'ma5', 'lag_close_1']\nX = frame[feature_columns]\ny = frame['target_next_close']\n# test_start, 마스크와 네 자료를 만드세요\n",
+        solution=ST_FRAME + TIME_SPLIT + "print(len(X_train), len(X_test))\nprint(frame.loc[train_mask, 'target_date'].max(), X_test.index.min())\n",
+        check="assert len(s['X_train']) == 315 and len(s['X_test']) == 80\nassert s['frame'].loc[s['train_mask'], 'target_date'].max() < s['X_test'].index.min()\nassert set(s['X_train'].index).isdisjoint(s['X_test'].index)\nassert 'target_next_close' not in s['X_train']"),
     coding('manual-mae', 'MAE를 손으로 계산하기',
         goal="""
         ```interactive
@@ -148,7 +148,7 @@ UNIT = unit('stock-split', '시간 분리와 기준 모델', [
         """,
         starter=ST_FRAME + TIME_SPLIT + "# errors, manual_mae를 만들고 출력하세요\n",
         solution=ST_FRAME + TIME_SPLIT + "errors = (y_test - X_test['close']).abs()\nmanual_mae = errors.mean()\nprint(manual_mae)\n",
-        check="import numpy as np\nassert len(s['errors'])==80 and (s['errors']>=0).all()\nassert abs(s['manual_mae']-float(np.abs(s['y_test'].to_numpy()-s['X_test']['close'].to_numpy()).mean()))<1e-8"),
+        check="import numpy as np\n\nassert len(s['errors']) == 80 and (s['errors'] >= 0).all()\nassert abs(s['manual_mae'] - float(np.abs(s['y_test'].to_numpy() - s['X_test']['close'].to_numpy()).mean())) < 1e-8"),
     coding('close-baseline', '같은 계산을 함수로',
         goal="""
         `scikit-learn`의 `mean_absolute_error`로 같은 값을 구해요. 기준 예측 `X_test['close']`를 배열로 바꿔 `baseline_pred`에 저장하세요. 점수는 `mean_absolute_error(y_test, baseline_pred)`예요. `baseline_mae`에 담아 출력하세요.
@@ -159,8 +159,8 @@ UNIT = unit('stock-split', '시간 분리와 기준 모델', [
         `baseline_pred = X_test['close'].to_numpy()`로 배열을 만드세요. 점수는 `baseline_mae = mean_absolute_error(y_test, baseline_pred)`. 지표 함수는 앞서처럼 `(정답, 예측)` 순서예요.
         """,
         starter=ST_FRAME + TIME_SPLIT + "from sklearn.metrics import mean_absolute_error\n# baseline_pred와 baseline_mae를 만드세요\n",
-        solution=ST_FRAME + TIME_SPLIT + "from sklearn.metrics import mean_absolute_error\nbaseline_pred=X_test['close'].to_numpy()\nbaseline_mae=mean_absolute_error(y_test,baseline_pred)\nprint(baseline_mae)\n",
-        check="import numpy as np\nassert np.array_equal(s['baseline_pred'],s['X_test']['close'].to_numpy())\nassert abs(s['baseline_mae']-float(np.abs(s['y_test'].to_numpy()-s['X_test']['close'].to_numpy()).mean()))<1e-8"),
+        solution=ST_FRAME + TIME_SPLIT + "from sklearn.metrics import mean_absolute_error\n\nbaseline_pred = X_test['close'].to_numpy()\nbaseline_mae = mean_absolute_error(y_test, baseline_pred)\nprint(baseline_mae)\n",
+        check="import numpy as np\n\nassert np.array_equal(s['baseline_pred'], s['X_test']['close'].to_numpy())\nassert abs(s['baseline_mae'] - float(np.abs(s['y_test'].to_numpy() - s['X_test']['close'].to_numpy()).mean())) < 1e-8"),
     coding('callcenter-baseline', '콜센터 월요일, 지난주와 같다고 보면',
         intro="""
         주가에서 잠깐 벗어나 같은 기준 모델을 콜센터에 적용해요. 어느 카드사 콜센터의 2주치 일별 통화량이 준비돼 있어요. 주말에 쌓인 전화가 몰려 월요일이 가장 많거든요. 팀장은 매주 "지난주 같은 요일과 같다"고 보고 상담원을 배치해 왔죠. 이 방법이 얼마나 빗나가는지가 통화량 예측 모델이 넘어야 할 선이에요.
@@ -174,8 +174,8 @@ UNIT = unit('stock-split', '시간 분리와 기준 모델', [
         `last_week = calls[calls['week'] == 1]['calls'].to_numpy()`로 1주차를 꺼내세요. 2주차도 같은 모양이에요. 지표 함수는 `(정답, 예측)` 순서예요. 그러니 정답은 `this_week`, 예측은 `last_week`. 월요일은 두 배열의 첫 값이에요. 그래서 `monday_error = abs(this_week[0] - last_week[0])`.
         """,
         starter=CALLS + "from sklearn.metrics import mean_absolute_error\n# last_week, this_week, baseline_mae, monday_error를 만드세요\n",
-        solution=CALLS + "from sklearn.metrics import mean_absolute_error\nlast_week = calls[calls['week'] == 1]['calls'].to_numpy()\nthis_week = calls[calls['week'] == 2]['calls'].to_numpy()\nbaseline_mae = mean_absolute_error(this_week, last_week)\nmonday_error = abs(this_week[0] - last_week[0])\nprint(baseline_mae, monday_error)\n",
-        check="import numpy as np\nassert np.array_equal(s['last_week'],[1320,980,940,910,1010,420,380]) and np.array_equal(s['this_week'],[1410,1020,960,890,1050,450,360])\nassert abs(s['baseline_mae']-260/7)<1e-8 and int(s['monday_error'])==90"),
+        solution=CALLS + "from sklearn.metrics import mean_absolute_error\n\nlast_week = calls[calls['week'] == 1]['calls'].to_numpy()\nthis_week = calls[calls['week'] == 2]['calls'].to_numpy()\nbaseline_mae = mean_absolute_error(this_week, last_week)\nmonday_error = abs(this_week[0] - last_week[0])\nprint(baseline_mae, monday_error)\n",
+        check="import numpy as np\n\nassert np.array_equal(s['last_week'], [1320, 980, 940, 910, 1010, 420, 380]) and np.array_equal(s['this_week'], [1410, 1020, 960, 890, 1050, 450, 360])\nassert abs(s['baseline_mae'] - 260 / 7) < 1e-8 and int(s['monday_error']) == 90"),
     quiz('temporal-check', '단원 점검',
         choice('주가 자료를 `train_test_split`처럼 무작위로 섞어 나누면 어떤 문제가 생기나요?',
                ['미래 가격으로 훈련해 과거를 맞히게 되어 점수를 믿을 수 없다', '행 수가 줄어든다', '아무 문제 없다'], 0,

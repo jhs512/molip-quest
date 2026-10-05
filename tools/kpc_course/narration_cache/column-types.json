@@ -1,33 +1,33 @@
 {
- "hash": "fbe099e4255bccc9",
+ "hash": "a4bcfb9d29bf8006",
  "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 다음 단원에서 숫자 열과 글자 열을 다르게 손질할 거라서, 미리 갈라 둘 거예요. 준비된 X에서 숫자 열 이름은 numeric_columns에, 글자 열 이름은 category_columns에 담고 둘 다 출력하면 돼요."
+   "자, 다음 단원에서 숫자 열과 글자 열을 다르게 손질하거든요. 그래서 지금 미리 갈라 둘게요. 숫자 열 이름은 numeric_columns에, 글자 열 이름은 category_columns에 담아요."
   ],
   [
    "hint",
-   "X.select_dtypes('number')는 숫자 열만 남긴 표고, exclude='number'는 나머지 열만 남긴 표거든요. 각각 .columns를 list()로 감싸면 돼요."
+   "X.select_dtypes('number')는 숫자 열만 남긴 표예요. exclude='number'를 주면 나머지 열만 남고요. 각각 .columns를 list()로 감싸면 돼요."
   ],
   [
    "starter",
-   "준비 코드는 그대로 둘게요. 타이타닉 자료를 읽고, 입력 X 일곱 열과 정답 y가 이미 만들어져 있어요."
+   "준비 코드는 그대로 둘게요. titanic을 읽어서 특징 일곱 개를 입력 X에, 생존을 정답 y에 담아 뒀어요."
   ],
   [
    "code",
    "numeric_columns = list(X.select_dtypes('number').columns)\n",
-   "자, X.select_dtypes('number')로 숫자 열만 남겨요. 그 표의 .columns를 list()로 감싸서 numeric_columns에 담아요."
+   "자, 먼저 숫자 열이에요. select_dtypes에 'number'를 주면 숫자 열만 남거든요. 그 열 이름을 list()로 감싸서 numeric_columns에 넣어요."
   ],
   [
    "code",
    "category_columns = list(X.select_dtypes(exclude='number').columns)\n",
-   "이번엔 exclude='number'로 숫자가 아닌 열만 남겨요. 같은 방식으로 category_columns에 담으면 돼요."
+   "이번엔 글자 열이죠? exclude='number'로 숫자를 빼면 나머지만 남아요. 똑같이 열 이름을 리스트로 만들어 category_columns에 담아요."
   ],
   [
    "code",
    "print(numeric_columns)\nprint(category_columns)\n",
-   "두 리스트를 차례로 출력해요."
+   "둘 다 출력해서 눈으로 확인하면 돼요."
   ],
   [
    "run",
@@ -35,7 +35,7 @@
   ],
   [
    "output",
-   "숫자 열이 객실등급, 나이, 형제배우자, 부모자녀, 요금 다섯 개죠? 글자 열은 성별, 탑승항구 둘이에요. 숫자 다섯, 글자 둘이면 맞게 나눈 거예요."
+   "숫자 열은 객실등급, 나이, 형제배우자, 부모자녀, 요금으로 다섯이죠? 글자 열은 성별과 탑승항구로 둘이에요. 숫자 다섯, 글자 둘이면 맞게 나눈 거예요."
   ],
   [
    "submit",

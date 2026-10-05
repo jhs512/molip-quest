@@ -1,48 +1,48 @@
 {
- "hash": "c36d6f4e290771f8",
+ "hash": "13762fccd2ff0da9",
  "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 지금까지 만든 재료를 빈 표 frame에 모아요. 여섯 열을 채우고 빈칸이 있는 행을 빼는 거예요."
+   "자, 지금까지 만든 재료를 한 표에 모을 차례예요. 빈 표 frame에 여섯 열을 채우고, 빈칸이 있는 행은 빼면 돼요."
   ],
   [
    "hint",
-   "네 재료는 앞 미션들 그대로예요. 왼쪽만 frame[...]으로 바꾸면 돼요."
+   "네 재료는 앞 미션들 그대로예요. 왼쪽만 frame[...]로 바꾸면 되거든요."
   ],
   [
    "starter",
-   "준비 코드가 prices를 읽고, 같은 날짜 인덱스로 빈 표 frame을 만들어 뒀어요."
+   "stock.csv를 날짜 인덱스로 읽어 prices에 두고, 같은 인덱스로 빈 표 frame을 준비해 뒀어요."
   ],
   [
    "code",
-   "frame['close']=prices['종가']\nframe['return_1']=prices['종가'].pct_change()\n",
-   "오늘 종가와 수익률이에요. 왼쪽이 frame 열이 된 것만 달라요."
+   "frame['close'] = prices['종가']\nframe['return_1'] = prices['종가'].pct_change()\n",
+   "오늘 종가는 close에, pct_change로 구한 수익률은 return_1에 넣어요."
   ],
   [
    "code",
-   "frame['ma5']=prices['종가'].rolling(5).mean()\nframe['lag_close_1']=prices['종가'].shift(1)\n",
-   "이동평균과 어제 종가예요. 앞 미션에서 만든 그대로거든요."
+   "frame['ma5'] = prices['종가'].rolling(5).mean()\nframe['lag_close_1'] = prices['종가'].shift(1)\n",
+   "rolling(5).mean()이 이동평균 ma5, shift(1)이 어제 종가 lag_close_1이에요."
   ],
   [
    "code",
-   "frame['target_next_close']=prices['종가'].shift(-1)\n",
-   "정답 y예요. shift(-1)로 내일 종가를 오늘 행에 당겨 와요."
+   "frame['target_next_close'] = prices['종가'].shift(-1)\n",
+   "정답 y는 내일 종가죠? shift(-1)로 한 칸 앞당겨서 target_next_close에 넣어요."
   ],
   [
    "code",
-   "frame['target_date']=pd.Series(prices.index,index=prices.index).shift(-1)\n",
-   "날짜 인덱스를 pd.Series로 열로 만들고 똑같이 shift(-1)해요. 정답이 어느 날짜 건지 남겨 두는 거죠."
+   "frame['target_date'] = pd.Series(prices.index, index=prices.index).shift(-1)\n",
+   "날짜 인덱스를 pd.Series로 열로 만들고, 똑같이 shift(-1)하면 정답의 날짜가 돼요."
   ],
   [
    "code",
-   "frame=frame.dropna().copy()\n",
-   "dropna로 빈칸이 있는 행을 빼고, copy로 독립된 표로 만들어요."
+   "frame = frame.dropna().copy()\n",
+   "앞 네 행과 마지막 한 행엔 빈칸이 있어요. dropna로 빼고 copy로 새 표를 만들어요."
   ],
   [
    "code",
    "print(frame.shape)\nframe.head()\n",
-   "행과 열 개수를 찍고 앞부분을 봐요."
+   "모양을 찍고 앞 다섯 행을 봐요."
   ],
   [
    "run",
@@ -50,7 +50,7 @@
   ],
   [
    "output",
-   "(396, 6)이 나왔죠? 401행에서 앞 네 행과 마지막 한 행이 빠진 거예요. target_date가 인덱스 날짜보다 뒤인지 보세요."
+   "(396, 6)이 나왔죠? 401행에서 다섯 행이 빠져 396행 6열이에요. target_date가 인덱스 날짜보다 뒤인지도 보세요."
   ],
   [
    "submit",

@@ -83,8 +83,8 @@ DECK_LEAKAGE = slides('deck-leakage', '시험지에 답이 적혀 있으면', FR
 
 ```python
 features = ['객실등급', '성별', '나이', '형제배우자', '부모자녀', '요금', '탑승항구']
-X = titanic[features].copy()        # 사고 전에 알 수 있는 7개 열
-y = titanic['생존'].astype(int)     # 정답
+X = titanic[features].copy()  # 사고 전에 알 수 있는 7개 열
+y = titanic['생존'].astype(int)  # 정답
 ```
 
 어느 열을 쓸지는 자료를 아는 사람의 판단이에요. AI에게 시킬 때도 열 이름을 직접 적어요.
@@ -168,8 +168,8 @@ DECK_SPLIT = slides('deck-split', '문제집과 모의고사', FRONT + r"""
 
 ```python
 from sklearn.model_selection import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, stratify=y, random_state=42)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
 ```
 
 순서는 **훈련 입력, 테스트 입력, 훈련 정답, 테스트 정답**이에요.
@@ -330,10 +330,12 @@ fit_transform → transform
 ## Pipeline: 순서대로 묶으면 틀릴 자리가 없다
 
 ```python
-numeric_pipeline = Pipeline([
-    ('fill', SimpleImputer(strategy='median')),   # 1단계: 빈칸 채우기
-    ('scale', StandardScaler()),                  # 2단계: 크기 맞추기
-])
+numeric_pipeline = Pipeline(
+    [
+        ('fill', SimpleImputer(strategy='median')),  # 1단계: 빈칸 채우기
+        ('scale', StandardScaler()),  # 2단계: 크기 맞추기
+    ]
+)
 ```
 
 `fit` 한 번이면 안쪽 단계들이 차례로 훈련 자료에서 기준을 정해요. `transform`과 `predict`는 적용만 해요.
@@ -449,7 +451,7 @@ DECK_CREDIT = slides('deck-credit', '부도를 정의하다', FRONT + r"""
 ## 같은 탐색, 자료만 바뀐다
 
 ```python
-credit[target].value_counts()                              # 부도·정상 인원
+credit[target].value_counts()  # 부도·정상 인원
 credit.groupby('상환_9월')[target].agg(['count', 'mean'])  # 상태별 인원과 부도율
 ```
 
@@ -618,8 +620,8 @@ DECK_THRESHOLD = slides('deck-threshold', '확률과 기준값', FRONT + r"""
 ## predict_proba의 [:, 1]이 부도 확률
 
 ```python
-probabilities = model.predict_proba(X_test)[:, 1]   # 행마다 [정상 확률, 부도 확률] 중 뒤쪽
-prediction = (probabilities >= 0.5).astype(int)     # predict()가 속으로 하는 일
+probabilities = model.predict_proba(X_test)[:, 1]  # 행마다 [정상 확률, 부도 확률] 중 뒤쪽
+prediction = (probabilities >= 0.5).astype(int)  # predict()가 속으로 하는 일
 ```
 
 `predict`는 확률이 0.5를 넘으면 1이라고 답할 뿐이에요. 0.5는 기본값이지 정답이 아니에요.

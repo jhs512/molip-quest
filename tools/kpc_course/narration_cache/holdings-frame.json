@@ -1,28 +1,24 @@
 {
- "hash": "7cd9b1ddab61a666",
+ "hash": "94b8b55798b473c4",
  "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 이번엔 holdings를 표로 띄워 볼 거예요. 세 종목이 세 줄짜리 표가 되는 거죠."
-  ],
-  [
-   "hint",
-   "힌트대로 pd.DataFrame(holdings) 한 줄이면 돼요. print()나 합계는 필요 없어요."
+   "자, 이번엔 holdings를 표로 띄워 볼 거예요. 종목마다 금액까지 들어 있는 사전 세 개를 한 표로 만드는 거죠."
   ],
   [
    "starter",
-   "준비 코드엔 pandas가 pd로 들어와 있고, holdings엔 금액까지 든 종목 세 개가 있어요."
+   "준비 코드엔 pandas가 pd로 들어와 있고, 세 종목이 든 holdings가 있어요. 이건 그대로 둘게요."
   ],
   [
    "code",
    "df = pd.DataFrame(holdings)\n",
-   "홀딩스 목록을 DataFrame으로 바꿔서 df에 넣어요. 딕셔너리 하나가 표의 한 행이 되거든요."
+   "pd.DataFrame에 holdings를 넣으면 사전 하나가 한 행이 돼요. 그걸 df에 저장하고요."
   ],
   [
    "code",
    "df\n",
-   "마지막 줄에 df만 적으면 표가 떠요. print()는 안 써도 돼요."
+   "마지막 줄에 df만 적으면 표가 그대로 떠요. print는 필요 없거든요."
   ],
   [
    "run",

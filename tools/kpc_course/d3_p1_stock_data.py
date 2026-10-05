@@ -91,10 +91,12 @@ UNIT = unit('stock-data', '주가 파일과 시점', [
 
         ```python
         import yfinance as yf
-        prices = yf.download('005930.KS', start='2025-01-01', end='2026-09-05')     # Open, High, Low, Close, Volume
+
+        prices = yf.download('005930.KS', start='2025-01-01', end='2026-09-05')  # Open, High, Low, Close, Volume
 
         import FinanceDataReader as fdr
-        prices = fdr.DataReader('005930', '2025-01-01', '2026-09-04')               # Open, High, Low, Close, Volume, Change
+
+        prices = fdr.DataReader('005930', '2025-01-01', '2026-09-04')  # Open, High, Low, Close, Volume, Change
         ```
 
         **yfinance**는 야후 파이낸스에서 받아요. 종목 코드 뒤의 `.KS`는 코스피, `.KQ`는 코스닥이라는 뜻이에요. **FinanceDataReader**는 국내 종목 코드를 그대로 써요. 거래소 자료를 받고요. 둘 다 날짜가 인덱스인 표가 와요. 열은 시가·고가·저가·종가·거래량이에요. 우리 파일은 이렇게 받은 표의 열 이름을 한글로 바꿔 저장한 거예요. `변화율`은 FinanceDataReader의 `Change`, 그러니까 어제 대비 수익률이에요.
@@ -102,8 +104,8 @@ UNIT = unit('stock-data', '주가 파일과 시점', [
         받은 표를 바로 쓰지 않고 **저장해서 쓰는** 이유가 있어요. 수업 중엔 모두가 같은 숫자를 봐야 해요. 네트워크가 끊겨도 미션이 돌아야 하고요. 한 달 뒤 다시 돌려도 같은 결과가 나와야 해요(재현). 회사에서도 순서는 같아요. 받는 코드는 하루 한 번 돌려 파일로 저장해요. 분석 코드는 그 파일을 읽고요. 받기와 분석을 섞어 두면요? 어느 날 사이트가 바뀌면 분석까지 같이 멈춰요.
 
         ```python
-        prices.to_csv('stock.csv')                      # 받은 날 한 번
-        prices = pd.read_csv('stock.csv', parse_dates=['Date']).set_index('Date')   # 분석할 때마다
+        prices.to_csv('stock.csv')  # 받은 날 한 번
+        prices = pd.read_csv('stock.csv', parse_dates=['Date']).set_index('Date')  # 분석할 때마다
         ```
 
         그래서 이 단원의 모든 미션은 `data/stock.csv`에서 시작해요. 받는 두 줄은 회사 컴퓨터에서 붙이면 돼요.
@@ -123,8 +125,8 @@ UNIT = unit('stock-data', '주가 파일과 시점', [
         `live = fdr.DataReader('005930', '2026-01-01').sort_index()`. 마지막 종가는 `live['Close'].iloc[-1]`, 5일 평균은 `live['Close'].rolling(5).mean().iloc[-1]`이에요. yfinance를 쓰고 싶으면 `yf.download('005930.KS', start='2026-01-01', auto_adjust=True, multi_level_index=False)`로 받으면 열 이름이 같은 모양이 돼요.
         """,
         starter="import pandas as pd\nimport FinanceDataReader as fdr\n# live, latest_close, ma5를 만드세요\n",
-        solution="import pandas as pd\nimport FinanceDataReader as fdr\nlive = fdr.DataReader('005930', '2026-01-01').sort_index()\nlatest_close = int(live['Close'].iloc[-1])\nma5 = float(live['Close'].rolling(5).mean().iloc[-1])\nprint(live.tail())\nprint(live.index.max().date(), latest_close, round(ma5))\n",
-        check="import pandas as pd\nassert isinstance(s['live'].index, pd.DatetimeIndex) and len(s['live'])>=20\nassert 'Close' in s['live'].columns and (s['live']['Close']>0).all()\nassert s['live'].index.is_monotonic_increasing\nassert (pd.Timestamp.today()-s['live'].index.max()).days<=14\nassert s['latest_close']==int(s['live']['Close'].iloc[-1])\nassert abs(s['ma5']-float(s['live']['Close'].rolling(5).mean().iloc[-1]))<1e-6"),
+        solution="import pandas as pd\nimport FinanceDataReader as fdr\n\nlive = fdr.DataReader('005930', '2026-01-01').sort_index()\nlatest_close = int(live['Close'].iloc[-1])\nma5 = float(live['Close'].rolling(5).mean().iloc[-1])\nprint(live.tail())\nprint(live.index.max().date(), latest_close, round(ma5))\n",
+        check="import pandas as pd\n\nassert isinstance(s['live'].index, pd.DatetimeIndex) and len(s['live']) >= 20\nassert 'Close' in s['live'].columns and (s['live']['Close'] > 0).all()\nassert s['live'].index.is_monotonic_increasing\nassert (pd.Timestamp.today() - s['live'].index.max()).days <= 14\nassert s['latest_close'] == int(s['live']['Close'].iloc[-1])\nassert abs(s['ma5'] - float(s['live']['Close'].rolling(5).mean().iloc[-1])) < 1e-6"),
     coding('stock-load', '날짜 순서와 크기 확인',
         goal="""
         주가 파일을 읽어 `prices`에 저장하세요. `날짜` 열은 글자가 아니라 날짜로 읽어 인덱스로 올리세요. 그리고 `sort_index()`로 정렬하세요. 행 수는 `n_rows`에 담으세요. 열 수는 `n_columns`에 담고요. 첫 날짜와 마지막 날짜도 출력하세요.
@@ -135,8 +137,8 @@ UNIT = unit('stock-data', '주가 파일과 시점', [
         개념의 한 줄을 그대로 쓰면 돼요. `pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()`예요. 날짜 범위는 `prices.index.min()`과 `prices.index.max()`로 구해요.
         """,
         starter='import pandas as pd\n# prices, n_rows, n_columns를 만드세요\n',
-        solution=ST + "n_rows,n_columns=prices.shape\nprint(n_rows,n_columns)\nprint(prices.index.min(),prices.index.max())\nprices.head()\n",
-        check="assert s['prices'].shape==(401,6) and s['n_rows']==401 and s['n_columns']==6\nassert s['prices'].index.is_monotonic_increasing and not s['prices'].index.has_duplicates\nassert s['prices']['종가'].iloc[0]==54100"),
+        solution=ST + "n_rows, n_columns = prices.shape\nprint(n_rows, n_columns)\nprint(prices.index.min(), prices.index.max())\nprices.head()\n",
+        check="assert s['prices'].shape == (401, 6) and s['n_rows'] == 401 and s['n_columns'] == 6\nassert s['prices'].index.is_monotonic_increasing and not s['prices'].index.has_duplicates\nassert s['prices']['종가'].iloc[0] == 54100"),
     coding('close-plot', '종가를 선으로 그리기',
         goal="""
         날짜순 자료는 선그래프가 어울려요. `fig, ax`를 만드세요. `ax.plot(prices.index, prices['종가'])`로 종가를 선으로 그리세요. x축 이름 `날짜`, y축 이름 `종가`를 붙여 띄우세요.
@@ -147,8 +149,8 @@ UNIT = unit('stock-data', '주가 파일과 시점', [
         막대그래프의 뼈대에서 `ax.bar`를 `ax.plot`으로 바꾸면 돼요. x에는 날짜 인덱스 `prices.index`를 넣어요. y에는 `prices['종가']`를 넣고요.
         """,
         starter=ST + "import matplotlib.pyplot as plt\n# fig, ax를 만들고 종가를 그리세요\n",
-        solution=ST + "import matplotlib.pyplot as plt\nfig, ax = plt.subplots()\nax.plot(prices.index, prices['종가'])\nax.set(xlabel='날짜', ylabel='종가', title='Close price')\nplt.show()\n",
-        check="assert len(s['ax'].lines)==1 and len(s['ax'].lines[0].get_ydata())==401\nassert s['ax'].get_ylabel()=='종가'"),
+        solution=ST + "import matplotlib.pyplot as plt\n\nfig, ax = plt.subplots()\nax.plot(prices.index, prices['종가'])\nax.set(xlabel='날짜', ylabel='종가', title='Close price')\nplt.show()\n",
+        check="assert len(s['ax'].lines) == 1 and len(s['ax'].lines[0].get_ydata()) == 401\nassert s['ax'].get_ylabel() == '종가'"),
     coding('price-range', '기간과 최고 종가',
         goal="""
         자료의 첫 날짜와 마지막 날짜를 `first_date`, `last_date`에 담으세요. 가장 높았던 종가는 `max_close`에, 그 날짜는 `max_date`에 담으세요. 넷 다 출력하세요.
@@ -160,7 +162,7 @@ UNIT = unit('stock-data', '주가 파일과 시점', [
         """,
         starter=ST + "# first_date, last_date, max_close, max_date를 만들고 출력하세요\n",
         solution=ST + "first_date = prices.index.min()\nlast_date = prices.index.max()\nmax_close = prices['종가'].max()\nmax_date = prices['종가'].idxmax()\nprint(first_date, last_date)\nprint(max_close, max_date)\n",
-        check="import pandas as pd\nassert s['first_date']==pd.Timestamp('2025-01-13') and s['last_date']==pd.Timestamp('2026-09-04')\nassert s['max_close']==362500 and s['max_date']==pd.Timestamp('2026-06-18')"),
+        check="import pandas as pd\n\nassert s['first_date'] == pd.Timestamp('2025-01-13') and s['last_date'] == pd.Timestamp('2026-09-04')\nassert s['max_close'] == 362500 and s['max_date'] == pd.Timestamp('2026-06-18')"),
     quiz('stock-data-check', '단원 점검',
         choice('주가는 yfinance로 받을 수 있어요. 그런데 이 수업은 저장 파일 `data/stock.csv`로 시작해요. 그 이유로 맞지 **않는** 건 뭘까요?',
                ['저장 파일이 인터넷에서 받은 표보다 항상 더 정확하다',

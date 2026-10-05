@@ -1,33 +1,29 @@
 {
- "hash": "a4b880a51be22690",
+ "hash": "f9a4f1d5bd476c6f",
  "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 앞에서 손으로 센 네 지표를 이번엔 scikit-learn 함수로 구해요. 정답 y_true와 예측 y_pred 여섯 개는 그대로예요."
-  ],
-  [
-   "hint",
-   "지표 함수는 전부 정답, 예측 순서로 넣어요. 앞뒤가 바뀌면 precision과 recall이 서로 뒤바뀌거든요."
+   "자, 앞 미션에서 손으로 센 네 지표를 이번엔 scikit-learn 함수로 구해요. 정답 y_true와 예측 y_pred 여섯 개가 준비돼 있거든요."
   ],
   [
    "starter",
-   "import 한 줄과 y_true, y_pred 두 줄은 준비돼 있어요. 그대로 둘게요."
+   "준비 코드에 네 지표 함수와 confusion_matrix를 불러오는 줄, 그리고 y_true와 y_pred가 들어 있어요. 그대로 둘게요."
   ],
   [
    "code",
-   "metrics={'accuracy':accuracy_score(y_true,y_pred),'precision':precision_score(y_true,y_pred),'recall':recall_score(y_true,y_pred),'f1':f1_score(y_true,y_pred)}\n",
-   "네 함수에 전부 y_true, y_pred 순서로 넣고, 같은 이름의 키로 metrics 딕셔너리에 담아요."
+   "metrics = {'accuracy': accuracy_score(y_true, y_pred), 'precision': precision_score(y_true, y_pred), 'recall': recall_score(y_true, y_pred), 'f1': f1_score(y_true, y_pred)}\n",
+   "지표 함수는 전부 정답, 예측 순서로 넣어요. 같은 이름의 키로 metrics 딕셔너리에 담으면 돼요."
   ],
   [
    "code",
-   "matrix=confusion_matrix(y_true,y_pred,labels=[0,1])\n",
-   "혼동행렬도 같은 순서로 넣어요. labels=[0, 1]이 행과 열 순서를 0, 1로 고정하거든요."
+   "matrix = confusion_matrix(y_true, y_pred, labels=[0, 1])\n",
+   "혼동행렬도 같은 순서예요. labels를 0, 1로 적으면 행과 열 순서가 고정되거든요."
   ],
   [
    "code",
    "print(metrics)\nprint(matrix)\n",
-   "둘 다 출력하면 돼요."
+   "둘 다 출력해서 손으로 센 값과 맞춰 볼게요."
   ],
   [
    "run",
@@ -35,7 +31,7 @@
   ],
   [
    "output",
-   "네 지표가 전부 0.6666이죠? 행렬은 [[2 1], [1 2]]라서 TN 2, FP 1, FN 1, TP 2예요. 앞 미션에서 손으로 센 값과 같아요."
+   "네 지표가 전부 0.6666이죠? 혼동행렬은 2, 1, 1, 2예요. TN 2, FP 1, FN 1, TP 2니까 앞 미션과 같은 상황이거든요."
   ],
   [
    "submit",

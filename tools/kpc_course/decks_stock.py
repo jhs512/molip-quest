@@ -166,8 +166,8 @@ lag_close_1 → target_next_close
 ## rolling(5)은 창, pct_change는 수익률
 
 ```python
-prices['return_1'] = prices['종가'].pct_change()   # (오늘 − 어제) / 어제
-prices['ma5'] = prices['종가'].rolling(5).mean()    # 오늘 포함 최근 5거래일 평균
+prices['return_1'] = prices['종가'].pct_change()  # (오늘 − 어제) / 어제
+prices['ma5'] = prices['종가'].rolling(5).mean()  # 오늘 포함 최근 5거래일 평균
 ```
 
 수익률(return)은 어제보다 얼마나 올랐나예요. 이동평균(moving average)은 최근 5거래일을 한 창(window)으로 묶은 평균이에요. 둘 다 오늘까지의 값만 쓰니 입력이에요.
@@ -272,7 +272,7 @@ DummyClassifier → X_test['close']
 ## 기준 예측은 코드 한 줄
 
 ```python
-baseline_pred = X_test['close']   # 내일 종가 = 오늘 종가
+baseline_pred = X_test['close']  # 내일 종가 = 오늘 종가
 ```
 
 fit도 없고 학습도 없어요. 그래서 기준이에요. 이 오차가 이 챕터 모든 모델이 넘어야 할 선이에요.
@@ -375,7 +375,7 @@ DECK_REGRESSION = slides('deck-regression', '회귀 점수 세 개', FRONT + r""
 ## MAE: 하루 평균 몇 원, 읽기 쉽습니다
 
 ```python
-mean_absolute_error(y_test, prediction)   # (정답, 예측) 순서
+mean_absolute_error(y_test, prediction)  # (정답, 예측) 순서
 ```
 
 차이의 절댓값을 평균 내요. 그래서 단위가 정답과 같은 원이에요. 공장장에게 "하루 평균 30개 더 굽거나 덜 굽는다"고 말할 수 있는 숫자예요.

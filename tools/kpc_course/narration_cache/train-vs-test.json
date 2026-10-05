@@ -1,39 +1,29 @@
 {
- "hash": "e90bd99475caef6b",
+ "hash": "df1f31b528c501f6",
  "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 이번엔 모델이 문제집을 통째로 외웠는지 잡아내 볼 거예요. 같은 모델의 정확도를 훈련 자료와 테스트 자료로 두 번 재서 비교하면 돼요."
+   "자, 답만 외운 모델을 잡아내요. 질문 깊이를 제한하지 않은 결정 나무를 쓰면 훈련 자료는 거의 다 맞히는데 테스트 자료는 못 맞히거든요. 이걸 숫자로 확인해 볼게요."
   ],
   [
    "starter",
-   "준비 코드엔 타이타닉 자료, 입력 X와 정답 y, 훈련·테스트 나누기, 손질기 make_preprocessor가 다 들어 있어요. 저는 그 아래에 다섯 줄만 붙일게요."
+   "준비 코드는 그대로 둘게요. 타이타닉 자료를 읽어 입력 X와 정답 y를 나누고, 훈련 자료와 테스트 자료로 쪼개 두었어요. 손질기 make_preprocessor와 DecisionTreeClassifier, accuracy_score도 가져왔고요."
   ],
   [
    "code",
-   "model = Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(random_state=42))])\n",
-   "자, 손질기와 DecisionTreeClassifier를 Pipeline으로 묶어요. 질문 깊이를 제한하지 않았거든요. 원하는 만큼 질문해서 답을 다 외울 수 있어요."
+   "\nmodel = Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(random_state=42))])\nmodel.fit(X_train, y_train)\n",
+   "손질기와 결정 나무를 Pipeline으로 묶어 model에 넣어요. max_depth를 안 줬으니 질문 횟수 제한이 없어요. 그리고 훈련 자료로 fit해요."
   ],
   [
    "code",
-   "model.fit(X_train, y_train)\n",
-   "훈련 자료로 학습해요. 문제집을 푸는 거죠."
-  ],
-  [
-   "code",
-   "train_accuracy = accuracy_score(y_train, model.predict(X_train))\n",
-   "첫 번째 점수예요. 방금 푼 훈련 자료를 다시 맞혀 보게 해서 train_accuracy에 넣어요."
-  ],
-  [
-   "code",
-   "test_accuracy = accuracy_score(y_test, model.predict(X_test))\n",
-   "두 번째 점수예요. 처음 보는 테스트 자료로 모의고사를 치러서 test_accuracy에 넣어요."
+   "train_accuracy = accuracy_score(y_train, model.predict(X_train))\ntest_accuracy = accuracy_score(y_test, model.predict(X_test))\n",
+   "정확도를 두 번 재요. 훈련 자료로 잰 게 train_accuracy, 테스트 자료로 잰 게 test_accuracy예요. 문제집 점수와 모의고사 점수죠."
   ],
   [
    "code",
    "print(train_accuracy, test_accuracy)\n",
-   "둘을 나란히 출력해요. 차이를 봐야 하거든요."
+   "둘을 나란히 출력해서 비교해요."
   ],
   [
    "run",
@@ -41,7 +31,7 @@
   ],
   [
    "output",
-   "훈련 점수는 0.97쯤, 테스트 점수는 0.80쯤이에요. 문제집은 거의 다 맞히는데 모의고사는 한참 못 보죠? 답을 외운 거지 규칙을 배운 게 아니에요. 이게 과적합이에요."
+   "훈련 점수는 약 0.967, 테스트 점수는 약 0.798이 나왔죠? 문제집은 거의 다 맞히는데 모의고사는 한참 낮아요. 답을 외운 거지 규칙을 배운 게 아니거든요. 이게 과적합이에요."
   ],
   [
    "submit",

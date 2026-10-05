@@ -1,34 +1,34 @@
 {
- "hash": "58f4a9f05e4a4896",
+ "hash": "23f3b407e9189660",
  "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 평균 나이를 말하려면 몇 명으로 나눈 평균인지부터 알아야 해요. 전체 인원, 나이를 아는 사람, 모르는 사람, 그리고 생존율까지 넷을 구해요."
+   "자, 평균 나이를 말하기 전에 몇 명으로 나눈 평균인지부터 세어 볼게요. 전체, 나이를 아는 사람, 모르는 사람, 그리고 생존율이요."
   ],
   [
    "starter",
-   "준비 코드 두 줄은 그대로 둘게요. titanic 표가 이미 읽혀 있거든요."
+   "준비 코드는 titanic.csv를 읽어서 titanic에 담아 두는 두 줄이에요. 그대로 둘게요."
   ],
   [
    "code",
-   "n_total=len(titanic)\n",
-   "전체 인원은 len으로 세요. 표의 줄 수가 곧 사람 수죠?"
+   "n_total = len(titanic)\n",
+   "전체 인원은 len(titanic)이에요. 행 수가 곧 사람 수거든요."
   ],
   [
    "code",
-   "n_known=int(titanic['나이'].notna().sum())\nn_unknown=int(titanic['나이'].isna().sum())\n",
-   "나이가 있는 사람은 notna, 비어 있는 사람은 isna로 표시하고 sum으로 세요. 참이 1로 더해지거든요."
+   "n_known = int(titanic['나이'].notna().sum())\nn_unknown = int(titanic['나이'].isna().sum())\n",
+   "나이가 있는 사람은 notna()로, 비어 있는 사람은 isna()로 표시하고 sum()으로 세요. int로 감싸서 숫자로 만들어요."
   ],
   [
    "code",
-   "survival_rate=titanic['생존'].mean()\n",
-   "생존은 0과 1이니까 mean이 곧 생존율이에요."
+   "survival_rate = titanic['생존'].mean()\n",
+   "생존은 0과 1이니까 mean()이 곧 생존율이 돼요."
   ],
   [
    "code",
-   "print(n_total,n_known,n_unknown)\nprint(f'{survival_rate:.2%}')\n",
-   "셋을 한 줄에 찍고, 생존율은 .2%로 퍼센트로 보여요."
+   "print(n_total, n_known, n_unknown)\nprint(f'{survival_rate:.2%}')\n",
+   "세 숫자를 한 줄로 찍고, 생존율은 .2%로 퍼센트로 보여 줘요."
   ],
   [
    "run",
@@ -36,7 +36,7 @@
   ],
   [
    "output",
-   "1309명 중 나이를 아는 사람이 1046명, 모르는 사람이 263명이에요. 더하면 1309가 맞죠? 생존율은 38.20%예요."
+   "1309 1046 263이 나왔죠? 1046 더하기 263이 1309로 딱 맞아요. 생존율은 38.20%고요."
   ],
   [
    "submit",

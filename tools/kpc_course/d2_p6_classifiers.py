@@ -79,8 +79,8 @@ UNIT = unit('classifiers', '세 분류 모델과 기준 비교', [
         `dummy.fit(X_train, y_train)`을 먼저 해요. 그다음 `accuracy_score(y_test, dummy.predict(X_test))`예요. 예측값을 출력해 보면 전부 0이에요.
         """,
         starter=TI + FEATURES + SPLIT + "from sklearn.dummy import DummyClassifier\nfrom sklearn.metrics import accuracy_score\n# dummy를 학습하고 dummy_accuracy를 구하세요\n",
-        solution=TI + FEATURES + SPLIT + "from sklearn.dummy import DummyClassifier\nfrom sklearn.metrics import accuracy_score\ndummy = DummyClassifier(strategy='most_frequent')\ndummy.fit(X_train, y_train)\ndummy_accuracy = accuracy_score(y_test, dummy.predict(X_test))\nprint(dummy_accuracy)\n",
-        check="assert abs(s['dummy_accuracy']-162/262)<1e-10\nassert set(s['dummy'].predict(s['X_test']))=={0}"),
+        solution=TI + FEATURES + SPLIT + "from sklearn.dummy import DummyClassifier\nfrom sklearn.metrics import accuracy_score\n\ndummy = DummyClassifier(strategy='most_frequent')\ndummy.fit(X_train, y_train)\ndummy_accuracy = accuracy_score(y_test, dummy.predict(X_test))\nprint(dummy_accuracy)\n",
+        check="assert abs(s['dummy_accuracy'] - 162 / 262) < 1e-10\nassert set(s['dummy'].predict(s['X_test'])) == {0}"),
     coding('model-comparison', '네 모델을 한 표에서 비교하기',
         goal="""
         자, 기준 모델과 세 모델을 같은 조건에서 비교해요. `models` 딕셔너리에 `Dummy`, `Logistic`, `Tree`, `Forest` 이름으로 모델을 넣으세요. 각각을 `Pipeline([('prepare', make_preprocessor()), ('model', ...)])`로 묶어 학습하고 예측하세요. `accuracy`와 `f1`을 구해 `results` 표를 만드세요. `Forest`는 `n_estimators=50, max_depth=5, random_state=42`예요.
@@ -90,9 +90,9 @@ UNIT = unit('classifiers', '세 분류 모델과 기준 비교', [
         hint="""
         표 만들기 패턴이에요. 빈 리스트 `rows = []`를 두세요. `for name, estimator in models.items():` 안에서 네 가지를 해요. (1) `Pipeline`을 새로 만들고 (2) `fit` (3) `predict` (4) `rows.append({'model': name, 'accuracy': ..., 'f1': f1_score(y_test, pred, zero_division=0)})`예요. 반복이 끝나면 `results = pd.DataFrame(rows).set_index('model')`이에요. 학습한 모델 자체도 `fitted[name] = model`로 보관해 두세요.
         """,
-        starter=MODEL_PREP + "from sklearn.dummy import DummyClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.tree import DecisionTreeClassifier\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import accuracy_score,f1_score\n# models 딕셔너리와 results를 만드세요\n",
-        solution=MODEL_PREP + "from sklearn.dummy import DummyClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.tree import DecisionTreeClassifier\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import accuracy_score,f1_score\nmodels={'Dummy':DummyClassifier(strategy='most_frequent'),'Logistic':LogisticRegression(max_iter=2000),'Tree':DecisionTreeClassifier(max_depth=4,random_state=42),'Forest':RandomForestClassifier(n_estimators=50,max_depth=5,random_state=42)}\nrows=[]\nfitted={}\nfor name,estimator in models.items():\n    model=Pipeline([('prepare',make_preprocessor()),('model',estimator)])\n    model.fit(X_train,y_train)\n    pred=model.predict(X_test)\n    fitted[name]=model\n    rows.append({'model':name,'accuracy':accuracy_score(y_test,pred),'f1':f1_score(y_test,pred,zero_division=0)})\nresults=pd.DataFrame(rows).set_index('model')\nresults\n",
-        check="assert set(s['results'].index)=={'Dummy','Logistic','Tree','Forest'}\nassert set(s['results'].columns)=={'accuracy','f1'}\nassert ((s['results']>=0)&(s['results']<=1)).all().all()\nassert abs(s['results'].loc['Dummy','accuracy']-162/262)<1e-10\nassert s['results'].loc['Dummy','f1']==0"),
+        starter=MODEL_PREP + "from sklearn.dummy import DummyClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.tree import DecisionTreeClassifier\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import accuracy_score, f1_score\n# models 딕셔너리와 results를 만드세요\n",
+        solution=MODEL_PREP + "from sklearn.dummy import DummyClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.tree import DecisionTreeClassifier\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import accuracy_score, f1_score\n\nmodels = {'Dummy': DummyClassifier(strategy='most_frequent'), 'Logistic': LogisticRegression(max_iter=2000), 'Tree': DecisionTreeClassifier(max_depth=4, random_state=42), 'Forest': RandomForestClassifier(n_estimators=50, max_depth=5, random_state=42)}\nrows = []\nfitted = {}\nfor name, estimator in models.items():\n    model = Pipeline([('prepare', make_preprocessor()), ('model', estimator)])\n    model.fit(X_train, y_train)\n    pred = model.predict(X_test)\n    fitted[name] = model\n    rows.append({'model': name, 'accuracy': accuracy_score(y_test, pred), 'f1': f1_score(y_test, pred, zero_division=0)})\nresults = pd.DataFrame(rows).set_index('model')\nresults\n",
+        check="assert set(s['results'].index) == {'Dummy', 'Logistic', 'Tree', 'Forest'}\nassert set(s['results'].columns) == {'accuracy', 'f1'}\nassert ((s['results'] >= 0) & (s['results'] <= 1)).all().all()\nassert abs(s['results'].loc['Dummy', 'accuracy'] - 162 / 262) < 1e-10\nassert s['results'].loc['Dummy', 'f1'] == 0"),
     coding('train-vs-test', '외운 모델 잡아내기',
         goal="""
         ```comic-gen
@@ -132,8 +132,8 @@ UNIT = unit('classifiers', '세 분류 모델과 기준 비교', [
         `model = Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(random_state=42))])`를 만들어 `fit(X_train, y_train)`하세요. 그다음 점수를 둘 재요. `accuracy_score(y_train, model.predict(X_train))`이 훈련 점수예요. `accuracy_score(y_test, model.predict(X_test))`가 테스트 점수고요. 각각 저장하세요.
         """,
         starter=MODEL_PREP + "from sklearn.tree import DecisionTreeClassifier\nfrom sklearn.metrics import accuracy_score\n# model, train_accuracy, test_accuracy를 만드세요\n",
-        solution=MODEL_PREP + "from sklearn.tree import DecisionTreeClassifier\nfrom sklearn.metrics import accuracy_score\nmodel = Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(random_state=42))])\nmodel.fit(X_train, y_train)\ntrain_accuracy = accuracy_score(y_train, model.predict(X_train))\ntest_accuracy = accuracy_score(y_test, model.predict(X_test))\nprint(train_accuracy, test_accuracy)\n",
-        check="assert 0<=s['test_accuracy']<=1 and 0<=s['train_accuracy']<=1\nassert s['train_accuracy']>s['test_accuracy']\nassert s['train_accuracy']>0.9\nassert abs(s['train_accuracy']-(s['model'].predict(s['X_train'])==s['y_train']).mean())<1e-12"),
+        solution=MODEL_PREP + "from sklearn.tree import DecisionTreeClassifier\nfrom sklearn.metrics import accuracy_score\n\nmodel = Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(random_state=42))])\nmodel.fit(X_train, y_train)\ntrain_accuracy = accuracy_score(y_train, model.predict(X_train))\ntest_accuracy = accuracy_score(y_test, model.predict(X_test))\nprint(train_accuracy, test_accuracy)\n",
+        check="assert 0 <= s['test_accuracy'] <= 1 and 0 <= s['train_accuracy'] <= 1\nassert s['train_accuracy'] > s['test_accuracy']\nassert s['train_accuracy'] > 0.9\nassert abs(s['train_accuracy'] - (s['model'].predict(s['X_train']) == s['y_train']).mean()) < 1e-12"),
     concept('hyperparameters', '공부 내용과 공부법: 파라미터와 하이퍼파라미터',
         body="""
         앞 미션에서 질문 횟수를 `max_depth`로 제한하면 덜 외운다고 했죠? 그런데 이 숫자는 누가 정할까요? 모델 안에는 두 종류의 값이 있어요. **학습하면서 기계가 스스로 찾는 값**이 파라미터예요. **학습을 시작하기 전에 사람이 정해 주는 값**이 하이퍼파라미터고요.
@@ -174,9 +174,10 @@ UNIT = unit('classifiers', '세 분류 모델과 기준 비교', [
 
         ```python
         from sklearn.model_selection import cross_val_score
+
         for depth in [2, 3, 5, 8, 12]:
             model = Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(max_depth=depth, random_state=42))])
-            score = cross_val_score(model, X_train, y_train, cv=5).mean()   # 훈련 자료 안에서 5번 나눠 채점한 평균
+            score = cross_val_score(model, X_train, y_train, cv=5).mean()  # 훈련 자료 안에서 5번 나눠 채점한 평균
             print(depth, round(score, 3))
         ```
 
@@ -195,9 +196,9 @@ UNIT = unit('classifiers', '세 분류 모델과 기준 비교', [
         hint="""
         `for depth in depths:` 안에서 `Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(max_depth=depth, random_state=42))])`를 만들어요. 그리고 `cv_scores[depth] = cross_val_score(model, X_train, y_train, cv=5).mean()`이에요. 가장 큰 값의 키는 `max(cv_scores, key=cv_scores.get)`으로 찾아요. 그다음 `best_depth`로 모델을 새로 만들어 `fit(X_train, y_train)`하세요. 끝으로 `accuracy_score(y_test, model.predict(X_test))`예요.
         """,
-        starter=MODEL_PREP + "from sklearn.tree import DecisionTreeClassifier\nfrom sklearn.model_selection import cross_val_score\nfrom sklearn.metrics import accuracy_score\ndepths = [2, 3, 5, 8, 12]\ncv_scores = {}\n# cv_scores, best_depth, model, test_accuracy를 만드세요\n",
-        solution=MODEL_PREP + "from sklearn.tree import DecisionTreeClassifier\nfrom sklearn.model_selection import cross_val_score\nfrom sklearn.metrics import accuracy_score\ndepths = [2, 3, 5, 8, 12]\ncv_scores = {}\nfor depth in depths:\n    model = Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(max_depth=depth, random_state=42))])\n    cv_scores[depth] = cross_val_score(model, X_train, y_train, cv=5).mean()\nbest_depth = max(cv_scores, key=cv_scores.get)\nmodel = Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(max_depth=best_depth, random_state=42))])\nmodel.fit(X_train, y_train)\ntest_accuracy = accuracy_score(y_test, model.predict(X_test))\nprint({depth: round(float(score), 3) for depth, score in cv_scores.items()})\nprint(f'고른 깊이 {best_depth}, 테스트 정확도 {test_accuracy:.3f}')\n",
-        check="assert set(s['cv_scores'])=={2,3,5,8,12}\nassert all(0<=v<=1 for v in s['cv_scores'].values())\nassert s['best_depth']==max(s['cv_scores'],key=s['cv_scores'].get)\nassert s['model'].get_params()['model__max_depth']==s['best_depth']\nassert abs(s['test_accuracy']-(s['model'].predict(s['X_test'])==s['y_test']).mean())<1e-9"),
+        starter=MODEL_PREP + "from sklearn.tree import DecisionTreeClassifier\nfrom sklearn.model_selection import cross_val_score\nfrom sklearn.metrics import accuracy_score\n\ndepths = [2, 3, 5, 8, 12]\ncv_scores = {}\n# cv_scores, best_depth, model, test_accuracy를 만드세요\n",
+        solution=MODEL_PREP + "from sklearn.tree import DecisionTreeClassifier\nfrom sklearn.model_selection import cross_val_score\nfrom sklearn.metrics import accuracy_score\n\ndepths = [2, 3, 5, 8, 12]\ncv_scores = {}\nfor depth in depths:\n    model = Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(max_depth=depth, random_state=42))])\n    cv_scores[depth] = cross_val_score(model, X_train, y_train, cv=5).mean()\nbest_depth = max(cv_scores, key=cv_scores.get)\nmodel = Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(max_depth=best_depth, random_state=42))])\nmodel.fit(X_train, y_train)\ntest_accuracy = accuracy_score(y_test, model.predict(X_test))\nprint({depth: round(float(score), 3) for depth, score in cv_scores.items()})\nprint(f'고른 깊이 {best_depth}, 테스트 정확도 {test_accuracy:.3f}')\n",
+        check="assert set(s['cv_scores']) == {2, 3, 5, 8, 12}\nassert all(0 <= v <= 1 for v in s['cv_scores'].values())\nassert s['best_depth'] == max(s['cv_scores'], key=s['cv_scores'].get)\nassert s['model'].get_params()['model__max_depth'] == s['best_depth']\nassert abs(s['test_accuracy'] - (s['model'].predict(s['X_test']) == s['y_test']).mean()) < 1e-9"),
     concept('save-model', '한 번 만든 모델은 저장해서 다시 쓴다',
         body="""
         지금까지 모든 미션은 실행할 때마다 `fit`부터 다시 했어요. 승객 1,047명이면 1초라 괜찮아요. 그런데 회사 자료는 수백만 행이에요. 학습에 몇 시간이 걸리기도 해요. 예측할 때마다 다시 배우게 할 이유가 없죠. 배운 모델은 **파일로 저장**해 둬요. 쓸 때는 **불러와서 `predict`만** 해요.
@@ -224,9 +225,10 @@ UNIT = unit('classifiers', '세 분류 모델과 기준 비교', [
 
         ```python
         import joblib
-        joblib.dump(model, 'titanic_model.joblib')      # 훈련 끝난 모델을 파일로
-        loaded = joblib.load('titanic_model.joblib')     # 다른 날, 다른 프로그램에서 불러오기
-        loaded.predict(X_new)                            # 훈련 없이 바로 예측
+
+        joblib.dump(model, 'titanic_model.joblib')  # 훈련 끝난 모델을 파일로
+        loaded = joblib.load('titanic_model.joblib')  # 다른 날, 다른 프로그램에서 불러오기
+        loaded.predict(X_new)  # 훈련 없이 바로 예측
         ```
 
         `joblib`은 `scikit-learn`과 함께 설치되는 저장 도구예요. 저장하는 건 모델 하나가 아니라 **파이프라인 전체**예요. 그래서 앞 단원에서 훈련 자료로 정한 기준도 파일 안에 같이 들어가요. 나이의 중앙값, One-hot 열 목록, 표준화 기준이요. 새 자료에도 같은 손질이 그대로 적용되죠. 손질과 모델을 한 줄로 묶어 둔 또 하나의 이유예요.
@@ -247,8 +249,8 @@ UNIT = unit('classifiers', '세 분류 모델과 기준 비교', [
         먼저 `model = Pipeline([('prepare', make_preprocessor()), ('model', LogisticRegression(max_iter=1000))])`를 만들어 `fit(X_train, y_train)`하세요. 저장은 `joblib.dump(model, 'titanic_model.joblib')`예요. 불러오기는 `loaded = joblib.load('titanic_model.joblib')`고요. 끝으로 `test_accuracy = accuracy_score(y_test, loaded.predict(X_test))`예요.
         """,
         starter=MODEL_PREP + "import joblib\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import accuracy_score\n# model을 학습해 저장하고, loaded로 불러와 test_accuracy를 구하세요\n",
-        solution=MODEL_PREP + "import joblib\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import accuracy_score\nmodel = Pipeline([('prepare', make_preprocessor()), ('model', LogisticRegression(max_iter=1000))])\nmodel.fit(X_train, y_train)\njoblib.dump(model, 'titanic_model.joblib')\nloaded = joblib.load('titanic_model.joblib')\ntest_accuracy = accuracy_score(y_test, loaded.predict(X_test))\nprint(f'불러온 모델의 테스트 정확도: {test_accuracy:.3f}')\n",
-        check="from pathlib import Path\nassert Path('titanic_model.joblib').exists()\nassert (s['loaded'].predict(s['X_test'])==s['model'].predict(s['X_test'])).all()\nassert abs(s['test_accuracy']-(s['loaded'].predict(s['X_test'])==s['y_test']).mean())<1e-9"),
+        solution=MODEL_PREP + "import joblib\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import accuracy_score\n\nmodel = Pipeline([('prepare', make_preprocessor()), ('model', LogisticRegression(max_iter=1000))])\nmodel.fit(X_train, y_train)\njoblib.dump(model, 'titanic_model.joblib')\nloaded = joblib.load('titanic_model.joblib')\ntest_accuracy = accuracy_score(y_test, loaded.predict(X_test))\nprint(f'불러온 모델의 테스트 정확도: {test_accuracy:.3f}')\n",
+        check="from pathlib import Path\n\nassert Path('titanic_model.joblib').exists()\nassert (s['loaded'].predict(s['X_test']) == s['model'].predict(s['X_test'])).all()\nassert abs(s['test_accuracy'] - (s['loaded'].predict(s['X_test']) == s['y_test']).mean()) < 1e-9"),
     quiz('model-check', '단원 점검',
         choice('`max_depth` 후보 중 하나를 고를 때 어떤 자료의 점수로 비교해야 하나요?',
                ['훈련 자료 안에서 다시 나눠 채점한 교차 검증 점수', '테스트 자료의 정확도', '훈련 자료 전체를 그대로 다시 채점한 점수'], 0,

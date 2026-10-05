@@ -37,6 +37,7 @@ UNIT = unit('preprocessing', '분리와 전처리 Pipeline', [
 
         ```python
         from sklearn.model_selection import train_test_split
+
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
         ```
 
@@ -69,9 +70,10 @@ UNIT = unit('preprocessing', '분리와 전처리 Pipeline', [
 
         ```python
         from sklearn.impute import SimpleImputer
+
         imputer = SimpleImputer(strategy='median')
         train_values = imputer.fit_transform(X_train[['나이', '요금']])  # 훈련에서 중앙값을 정하고 채움
-        test_values = imputer.transform(X_test[['나이', '요금']])        # 같은 중앙값으로 채우기만
+        test_values = imputer.transform(X_test[['나이', '요금']])  # 같은 중앙값으로 채우기만
         ```
 
         이 규칙은 빈칸 채우기만이 아니에요. One-hot 인코딩, 숫자 크기 맞추기(표준화)도 똑같아요. 한 번 더 요약하면, **훈련에서 정하고 테스트에는 적용만.**
@@ -111,8 +113,8 @@ UNIT = unit('preprocessing', '분리와 전처리 Pipeline', [
         `train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)`가 네 변수를 순서대로 돌려줘요. 훈련 입력, 테스트 입력, 훈련 정답, 테스트 정답이에요. 행 수는 `len()`으로 재요. 생존 비율은 `y_train.mean()`과 `y_test.mean()`이에요.
         """,
         starter=TI + FEATURES + "from sklearn.model_selection import train_test_split\n# 네 변수를 만드세요\n",
-        solution=TI + FEATURES + SPLIT + "print(len(X_train),len(X_test))\nprint(y_train.mean(),y_test.mean())\n",
-        check="assert len(s['X_train'])==1047 and len(s['X_test'])==262\nassert set(s['X_train'].index).isdisjoint(s['X_test'].index)\nassert len(s['y_train'])==1047 and len(s['y_test'])==262\nassert abs(s['y_train'].mean()-s['y_test'].mean())<0.01"),
+        solution=TI + FEATURES + SPLIT + "print(len(X_train), len(X_test))\nprint(y_train.mean(), y_test.mean())\n",
+        check="assert len(s['X_train']) == 1047 and len(s['X_test']) == 262\nassert set(s['X_train'].index).isdisjoint(s['X_test'].index)\nassert len(s['y_train']) == 1047 and len(s['y_test']) == 262\nassert abs(s['y_train'].mean() - s['y_test'].mean()) < 0.01"),
     coding('first-model', '손질 없이 첫 모델 돌려 보기',
         goal="""
         손질을 배우기 전에 모델이 실제로 어떻게 돌아가는지 한 번 봐요. 빈칸이 없고 이미 숫자인 열 `객실등급`, `형제배우자`, `부모자녀` 세 개만 써요. `LogisticRegression(max_iter=1000)`을 `model`에 만드세요. `X_train[simple]`, `y_train`으로 학습하세요. 그다음 `X_test[simple]`을 예측해 정확도를 `accuracy`에 담고 출력하세요.
@@ -122,9 +124,9 @@ UNIT = unit('preprocessing', '분리와 전처리 Pipeline', [
         hint="""
         모델은 늘 세 단계예요. 만들기는 `model = LogisticRegression(max_iter=1000)`이에요. 학습은 `model.fit(X_train[simple], y_train)`이고요. 예측은 `pred = model.predict(X_test[simple])`예요. 그다음 `accuracy = accuracy_score(y_test, pred)`가 테스트 정답과 예측이 일치한 비율이에요.
         """,
-        starter=TI + FEATURES + SPLIT + "from sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import accuracy_score\nsimple = ['객실등급','형제배우자','부모자녀']\n# model을 학습하고 accuracy를 구하세요\n",
-        solution=TI + FEATURES + SPLIT + "from sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import accuracy_score\nsimple = ['객실등급','형제배우자','부모자녀']\nmodel = LogisticRegression(max_iter=1000)\nmodel.fit(X_train[simple], y_train)\npred = model.predict(X_test[simple])\naccuracy = accuracy_score(y_test, pred)\nprint(accuracy)\n",
-        check="assert 0<=s['accuracy']<=1\nassert s['model'].n_features_in_==3\nassert abs(s['accuracy']-(s['model'].predict(s['X_test'][['객실등급','형제배우자','부모자녀']])==s['y_test']).mean())<1e-12"),
+        starter=TI + FEATURES + SPLIT + "from sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import accuracy_score\n\nsimple = ['객실등급', '형제배우자', '부모자녀']\n# model을 학습하고 accuracy를 구하세요\n",
+        solution=TI + FEATURES + SPLIT + "from sklearn.linear_model import LogisticRegression\nfrom sklearn.metrics import accuracy_score\n\nsimple = ['객실등급', '형제배우자', '부모자녀']\nmodel = LogisticRegression(max_iter=1000)\nmodel.fit(X_train[simple], y_train)\npred = model.predict(X_test[simple])\naccuracy = accuracy_score(y_test, pred)\nprint(accuracy)\n",
+        check="assert 0 <= s['accuracy'] <= 1\nassert s['model'].n_features_in_ == 3\nassert abs(s['accuracy'] - (s['model'].predict(s['X_test'][['객실등급', '형제배우자', '부모자녀']]) == s['y_test']).mean()) < 1e-12"),
     coding('train-imputer', '빈 나이와 요금을 훈련 기준으로 채우기',
         goal="""
         나이와 요금의 빈칸을 채워요. `SimpleImputer(strategy='median')`를 `imputer`에 만드세요. 훈련 표의 `['나이', '요금']`에 `fit_transform`한 결과는 `train_values`에 담으세요. 테스트 표의 같은 열에 `transform`한 결과는 `test_values`에 담으세요. 두 결과의 `shape`를 출력하세요.
@@ -135,8 +137,8 @@ UNIT = unit('preprocessing', '분리와 전처리 Pipeline', [
         `imputer.fit_transform(X_train[['나이', '요금']])`는 훈련 자료에서 중앙값을 정하고 바로 채워요. 테스트에는 같은 `imputer`로 `imputer.transform(X_test[['나이', '요금']])`만 부르세요. 테스트에 `fit`을 다시 하면 기준이 바뀌어요.
         """,
         starter=TI + FEATURES + SPLIT + "from sklearn.impute import SimpleImputer\n# imputer와 두 변환 결과를 만드세요\n",
-        solution=TI + FEATURES + SPLIT + "from sklearn.impute import SimpleImputer\nimputer=SimpleImputer(strategy='median')\ntrain_values=imputer.fit_transform(X_train[['나이','요금']])\ntest_values=imputer.transform(X_test[['나이','요금']])\nprint(train_values.shape,test_values.shape)\n",
-        check="import numpy as np\nassert s['train_values'].shape==(1047,2) and s['test_values'].shape==(262,2)\nassert np.isfinite(s['train_values']).all() and np.isfinite(s['test_values']).all()\nassert np.allclose(s['imputer'].statistics_,s['X_train'][['나이','요금']].median().to_numpy())"),
+        solution=TI + FEATURES + SPLIT + "from sklearn.impute import SimpleImputer\n\nimputer = SimpleImputer(strategy='median')\ntrain_values = imputer.fit_transform(X_train[['나이', '요금']])\ntest_values = imputer.transform(X_test[['나이', '요금']])\nprint(train_values.shape, test_values.shape)\n",
+        check="import numpy as np\n\nassert s['train_values'].shape == (1047, 2) and s['test_values'].shape == (262, 2)\nassert np.isfinite(s['train_values']).all() and np.isfinite(s['test_values']).all()\nassert np.allclose(s['imputer'].statistics_, s['X_train'][['나이', '요금']].median().to_numpy())"),
     coding('onehot-fit', '글자 열을 훈련 기준으로 One-hot',
         goal="""
         앞 단원의 `get_dummies`를 모델 흐름에 맞는 도구로 바꿔요. `OneHotEncoder(handle_unknown='ignore', sparse_output=False)`를 `encoder`에 만드세요. `X_train[['성별']]`에 `fit_transform`한 결과는 `train_encoded`에 담으세요. `X_test[['성별']]`에 `transform`한 결과는 `test_encoded`에 담으세요. 둘의 `shape`를 출력하세요.
@@ -147,8 +149,8 @@ UNIT = unit('preprocessing', '분리와 전처리 Pipeline', [
         빈칸 채우기와 똑같은 모양이에요. 훈련에는 `fit_transform`, 테스트에는 `transform`. `handle_unknown='ignore'`는 테스트에 처음 보는 값이 나와도 오류 대신 0으로 두라는 뜻이에요. `sparse_output=False`는 결과를 보통 배열로 달라는 뜻이고요.
         """,
         starter=TI + FEATURES + SPLIT + "from sklearn.preprocessing import OneHotEncoder\n# encoder, train_encoded, test_encoded를 만드세요\n",
-        solution=TI + FEATURES + SPLIT + "from sklearn.preprocessing import OneHotEncoder\nencoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)\ntrain_encoded = encoder.fit_transform(X_train[['성별']])\ntest_encoded = encoder.transform(X_test[['성별']])\nprint(train_encoded.shape, test_encoded.shape)\n",
-        check="assert s['train_encoded'].shape==(1047,2) and s['test_encoded'].shape==(262,2)\nassert sorted(s['encoder'].categories_[0])==['남성','여성']\nassert (s['train_encoded'].sum(axis=1)==1).all()"),
+        solution=TI + FEATURES + SPLIT + "from sklearn.preprocessing import OneHotEncoder\n\nencoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)\ntrain_encoded = encoder.fit_transform(X_train[['성별']])\ntest_encoded = encoder.transform(X_test[['성별']])\nprint(train_encoded.shape, test_encoded.shape)\n",
+        check="assert s['train_encoded'].shape == (1047, 2) and s['test_encoded'].shape == (262, 2)\nassert sorted(s['encoder'].categories_[0]) == ['남성', '여성']\nassert (s['train_encoded'].sum(axis=1) == 1).all()"),
     concept('why-pipeline', '손질이 늘어나면 순서가 꼬인다, 그래서 한 줄로 묶는다',
         body="""
         지금까지 손질 도구를 둘 썼어요. 빈칸 채우기, One-hot. 실제로는 하나 더 필요해요. 나이는 0~80, 요금은 0~500, `형제배우자`는 0~8이에요. 열마다 숫자 크기가 제각각이죠. 그러면 어떤 모델은 큰 숫자 열에 끌려가요. 그래서 **표준화**(`StandardScaler`)를 해요. 각 열을 "평균 0, 퍼짐 1"로 맞추는 거예요. 이것도 기준(평균과 퍼짐)을 훈련에서 정하고 테스트에 적용하는 도구예요.
@@ -208,12 +210,15 @@ UNIT = unit('preprocessing', '분리와 전처리 Pipeline', [
 
         ```python
         from sklearn.pipeline import Pipeline
-        numeric_pipeline = Pipeline([
-            ('fill', SimpleImputer(strategy='median')),   # 1단계: 빈칸 채우기
-            ('scale', StandardScaler()),                  # 2단계: 크기 맞추기
-        ])
+
+        numeric_pipeline = Pipeline(
+            [
+                ('fill', SimpleImputer(strategy='median')),  # 1단계: 빈칸 채우기
+                ('scale', StandardScaler()),  # 2단계: 크기 맞추기
+            ]
+        )
         train_values = numeric_pipeline.fit_transform(X_train[numeric])  # 두 단계 모두 훈련에서 fit
-        test_values = numeric_pipeline.transform(X_test[numeric])        # 두 단계 모두 적용만
+        test_values = numeric_pipeline.transform(X_test[numeric])  # 두 단계 모두 적용만
         ```
 
         `(이름, 도구)` 쌍을 리스트에 순서대로 넣으면 끝이에요. 다음 단원에서는 숫자 열용 묶음과 글자 열용 묶음을 합쳐요. 그 끝에 모델까지 붙인 완성형을 써요. `fit` 한 번으로 손질과 학습이 끝나죠.
@@ -229,9 +234,9 @@ UNIT = unit('preprocessing', '분리와 전처리 Pipeline', [
         hint="""
         `Pipeline`의 괄호 안에 리스트, 리스트 안에 `(이름, 도구)` 쌍 두 개예요. 만든 뒤에는 도구 하나처럼 써요. 훈련에는 `numeric_pipeline.fit_transform(X_train[numeric])`, 테스트에는 `numeric_pipeline.transform(X_test[numeric])`예요.
         """,
-        starter=TI + FEATURES + SPLIT + "from sklearn.impute import SimpleImputer\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nnumeric = ['객실등급','나이','형제배우자','부모자녀','요금']\n# numeric_pipeline, train_values, test_values를 만드세요\n",
-        solution=TI + FEATURES + SPLIT + "from sklearn.impute import SimpleImputer\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nnumeric = ['객실등급','나이','형제배우자','부모자녀','요금']\nnumeric_pipeline = Pipeline([('fill', SimpleImputer(strategy='median')), ('scale', StandardScaler())])\ntrain_values = numeric_pipeline.fit_transform(X_train[numeric])\ntest_values = numeric_pipeline.transform(X_test[numeric])\nprint(train_values.shape, test_values.shape)\n",
-        check="import numpy as np\nassert s['train_values'].shape==(1047,5) and s['test_values'].shape==(262,5)\nassert np.isfinite(s['train_values']).all() and np.isfinite(s['test_values']).all()\nassert np.allclose(s['train_values'].mean(axis=0),0,atol=1e-8)\nassert list(s['numeric_pipeline'].named_steps)==['fill','scale']"),
+        starter=TI + FEATURES + SPLIT + "from sklearn.impute import SimpleImputer\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\n\nnumeric = ['객실등급', '나이', '형제배우자', '부모자녀', '요금']\n# numeric_pipeline, train_values, test_values를 만드세요\n",
+        solution=TI + FEATURES + SPLIT + "from sklearn.impute import SimpleImputer\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\n\nnumeric = ['객실등급', '나이', '형제배우자', '부모자녀', '요금']\nnumeric_pipeline = Pipeline([('fill', SimpleImputer(strategy='median')), ('scale', StandardScaler())])\ntrain_values = numeric_pipeline.fit_transform(X_train[numeric])\ntest_values = numeric_pipeline.transform(X_test[numeric])\nprint(train_values.shape, test_values.shape)\n",
+        check="import numpy as np\n\nassert s['train_values'].shape == (1047, 5) and s['test_values'].shape == (262, 5)\nassert np.isfinite(s['train_values']).all() and np.isfinite(s['test_values']).all()\nassert np.allclose(s['train_values'].mean(axis=0), 0, atol=1e-8)\nassert list(s['numeric_pipeline'].named_steps) == ['fill', 'scale']"),
     quiz('pipeline-check', '단원 점검',
         choice('올바른 손질 순서는 어느 것인가요?',
                ['훈련·테스트를 먼저 나누고, 훈련에서 `fit`, 테스트에는 `transform`', '전체 자료에서 `fit`한 뒤 나눈다', '테스트에서 `fit`하고 훈련에 `transform`'], 0,

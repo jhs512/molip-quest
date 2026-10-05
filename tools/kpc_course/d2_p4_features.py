@@ -78,8 +78,8 @@ UNIT = unit('features', '입력과 정답 분리', [
         ```python
         X = titanic[['객실등급', '성별', '나이', '형제배우자', '부모자녀', '요금', '탑승항구']]
         y = titanic['생존']
-        model.fit(X_train, y_train)        # 훈련 자료로 규칙 찾기
-        prediction = model.predict(X_test) # 테스트 자료의 빈칸 채우기
+        model.fit(X_train, y_train)  # 훈련 자료로 규칙 찾기
+        prediction = model.predict(X_test)  # 테스트 자료의 빈칸 채우기
         ```
 
         이 흐름은 마지막 챕터까지 안 변해요. 표를 열로 갈라 입력과 정답으로 나눠요. 행으로 갈라 훈련과 테스트로 나누고요. 훈련으로 배우고 테스트로 채점하죠. 이 챕터의 남은 미션은 이 네 줄을 제대로 하기 위한 준비예요.
@@ -134,7 +134,7 @@ UNIT = unit('features', '입력과 정답 분리', [
 
         ```python
         features = ['객실등급', '성별', '나이', '형제배우자', '부모자녀', '요금', '탑승항구']
-        X = titanic[features].copy()         # 사고 전에 알 수 있는 7개 열
+        X = titanic[features].copy()  # 사고 전에 알 수 있는 7개 열
         y = titanic['생존'].astype(int)  # 정답
         ```
 
@@ -152,8 +152,8 @@ UNIT = unit('features', '입력과 정답 분리', [
         `drop(columns=[...])`에 뺄 열 이름을 리스트로 넣어요. 열 이름은 전부 한글이에요. 결과를 변수에 받아야 해요.
         """,
         starter=TI + "# candidates를 만들고 열 이름을 출력하세요\n",
-        solution=TI + "candidates = titanic.drop(columns=['생존','이름','티켓','선실','구명보트','시신번호','출신목적지'])\nprint(list(candidates.columns))\n",
-        check="assert list(s['candidates'].columns)==['객실등급','성별','나이','형제배우자','부모자녀','요금','탑승항구']\nassert len(s['candidates'])==1309"),
+        solution=TI + "candidates = titanic.drop(columns=['생존', '이름', '티켓', '선실', '구명보트', '시신번호', '출신목적지'])\nprint(list(candidates.columns))\n",
+        check="assert list(s['candidates'].columns) == ['객실등급', '성별', '나이', '형제배우자', '부모자녀', '요금', '탑승항구']\nassert len(s['candidates']) == 1309"),
     coding('xy-separation', '입력 X와 정답 y 만들기',
         goal="""
         이번에는 쓸 열을 직접 골라 입력과 정답을 만들어요. 일곱 열 이름을 담은 리스트 `features`를 만드세요. 입력 `X`는 `X = titanic[features].copy()`로 만드세요. 정답 `y`에는 `생존`을 정수로 담으세요.
@@ -164,8 +164,8 @@ UNIT = unit('features', '입력과 정답 분리', [
         세 줄이면 돼요. 먼저 `features = ['객실등급', '성별', '나이', '형제배우자', '부모자녀', '요금', '탑승항구']`예요. 그다음 `X = titanic[features].copy()`를 적어요. 마지막으로 `y = titanic['생존'].astype(int)`예요. `.copy()`는 뒤에서 `X`를 고쳐도 원본 표가 안 바뀌게 해요.
         """,
         starter=TI + "# features, X, y를 만드세요\n",
-        solution=TI + FEATURES + "print(X.shape,y.shape)\nX.head()\n",
-        check="assert list(s['X'].columns)==['객실등급','성별','나이','형제배우자','부모자녀','요금','탑승항구']\nassert s['X'].shape==(1309,7) and len(s['y'])==1309\nassert int(s['y'].sum())==500"),
+        solution=TI + FEATURES + "print(X.shape, y.shape)\nX.head()\n",
+        check="assert list(s['X'].columns) == ['객실등급', '성별', '나이', '형제배우자', '부모자녀', '요금', '탑승항구']\nassert s['X'].shape == (1309, 7) and len(s['y']) == 1309\nassert int(s['y'].sum()) == 500"),
     coding('column-types', '숫자 열과 글자 열 나누기',
         goal="""
         다음 단원에서 숫자 열과 글자 열을 다르게 손질해요. 그래서 미리 갈라 둬요. 준비된 `X`에서 숫자 열 이름 리스트는 `numeric_columns`에 담으세요. 글자(범주) 열 이름 리스트는 `category_columns`에 담으세요. 둘 다 출력하세요.
@@ -177,7 +177,7 @@ UNIT = unit('features', '입력과 정답 분리', [
         """,
         starter=TI + FEATURES + "# numeric_columns, category_columns를 만들고 출력하세요\n",
         solution=TI + FEATURES + "numeric_columns = list(X.select_dtypes('number').columns)\ncategory_columns = list(X.select_dtypes(exclude='number').columns)\nprint(numeric_columns)\nprint(category_columns)\n",
-        check="assert list(s['numeric_columns'])==['객실등급','나이','형제배우자','부모자녀','요금']\nassert list(s['category_columns'])==['성별','탑승항구']"),
+        check="assert list(s['numeric_columns']) == ['객실등급', '나이', '형제배우자', '부모자녀', '요금']\nassert list(s['category_columns']) == ['성별', '탑승항구']"),
     coding('get-dummies', '글자 열을 숫자 열로: One-hot',
         goal="""
         ```comic-gen
@@ -213,7 +213,7 @@ UNIT = unit('features', '입력과 정답 분리', [
         """,
         starter=TI + "# encoded를 만들고 head()를 확인하세요\n",
         solution=TI + "encoded = pd.get_dummies(titanic[['성별']])\nprint(encoded.shape)\nencoded.head()\n",
-        check="assert sorted(s['encoded'].columns)==['성별_남성','성별_여성'] and s['encoded'].shape==(1309,2)\nassert (s['encoded'].astype(int).sum(axis=1)==1).all()"),
+        check="assert sorted(s['encoded'].columns) == ['성별_남성', '성별_여성'] and s['encoded'].shape == (1309, 2)\nassert (s['encoded'].astype(int).sum(axis=1) == 1).all()"),
     quiz('features-check', '단원 점검',
         choice('생존/사망처럼 몇 가지 중 하나를 고르는 예측은 무엇이라고 하나요?',
                ['분류', '회귀', '군집'], 0,
@@ -241,7 +241,7 @@ UNIT = unit('features', '입력과 정답 분리', [
 - 「입력 만들어 줘」: 열 선택을 AI에 맡기면 누수 열이 들어가요.
 - 「생존 빼고 전부」: 구명보트·시신번호가 들어가서 누수예요.
 - 「열은 알아서」: 같은 이유로 위험해요."""),
-        choice("""**프롬프트 고르기** · `성별` 글자 열을 숫자로 바꿔야 해요. AI가 `map({'남성':0,'여성':1})`을 제안했어요. 그런데 표준 방법을 받고 싶어요. 어떤 프롬프트가 맞을까요?""",
+        choice("""**프롬프트 고르기** · `성별` 글자 열을 숫자로 바꿔야 해요. AI가 `map({'남성': 0, '여성': 1})`을 제안했어요. 그런데 표준 방법을 받고 싶어요. 어떤 프롬프트가 맞을까요?""",
                ["""pandas. titanic[['성별']]을 pd.get_dummies로 One-hot 인코딩해 encoded에 담고 마지막 줄에 encoded.head(). 성별_여성, 성별_남성 두 열이 나와야 해. 코드만""", """성별을 숫자로 바꿔 줘""", """여성은 1, 남성은 0으로 바꿔 줘""", """글자 열 처리하는 코드 줘"""], 0,
                """정답은 "One-hot 인코딩"이라는 표준 용어를 썼어요. 함수 이름과 나와야 할 열 이름까지 적었고요. 용어를 쓰면 AI가 임의 코드 대신 표준 변환을 줘요.
 

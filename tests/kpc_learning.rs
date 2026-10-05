@@ -453,9 +453,11 @@ async fn sex_bar_accepts_either_group_order_but_rejects_incorrect_heights() {
         .await
         .unwrap();
     assert!(report.passed, "{}", serde_json::to_string(&report).unwrap());
+    // The solution is PEP 8 formatted (tools/format-kpc-code.py): `fig, ax = plt.subplots()`.
+    assert!(reversed.contains("fig, ax = plt.subplots()"), "{reversed}");
     let incorrect = reversed.replace(
-        "fig,ax=plt.subplots()",
-        "rates.loc['male'] = 0\nfig,ax=plt.subplots()",
+        "fig, ax = plt.subplots()",
+        "rates.loc['male'] = 0\nfig, ax = plt.subplots()",
     );
     let report = molip_quest::runner::check_unit(problem, &incorrect)
         .await

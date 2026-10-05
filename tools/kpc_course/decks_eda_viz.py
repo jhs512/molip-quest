@@ -81,10 +81,10 @@ DECK_TARGET = slides('deck-target', '무엇을 맞힐 것인가', FRONT + r"""
 ## 표를 숫자로 더듬는 네 줄
 
 ```python
-titanic.shape                   # (행 수, 열 수)
+titanic.shape  # (행 수, 열 수)
 titanic['생존'].value_counts()  # 0과 1이 각각 몇 명
-titanic['생존'].mean()          # 생존율
-titanic.isna().sum()            # 열마다 빈 칸 개수
+titanic['생존'].mean()  # 생존율
+titanic.isna().sum()  # 열마다 빈 칸 개수
 ```
 
 몇 명인지, 몇 명이 살았는지, 어느 칸이 비었는지. 빈 나이는 0살이 아니라 **모름**이에요.
@@ -187,8 +187,7 @@ DECK_GROUPS = slides('deck-groups', '분모를 먼저', FRONT + r"""
 ## 나이는 구간으로 잘라서 묶는다
 
 ```python
-titanic['age_group'] = pd.cut(titanic['나이'], bins=[0, 20, 40, 60, float('inf')],
-                              labels=['0~19', '20~39', '40~59', '60+'], right=False)
+titanic['age_group'] = pd.cut(titanic['나이'], bins=[0, 20, 40, 60, float('inf')], labels=['0~19', '20~39', '40~59', '60+'], right=False)
 titanic.groupby('age_group', observed=True)['생존'].agg(['count', 'sum', 'mean'])
 ```
 
@@ -254,10 +253,10 @@ DECK_CHARTS = slides('deck-charts', '그래프는 질문에 답한다', FRONT + 
 ## 뼈대는 네 줄
 
 ```python
-fig, ax = plt.subplots()                    # 종이 한 장, 그래프 영역 하나
-ax.bar(['A', 'B', 'C'], [30000, 40000, 60000])   # 막대
+fig, ax = plt.subplots()  # 종이 한 장, 그래프 영역 하나
+ax.bar(['A', 'B', 'C'], [30000, 40000, 60000])  # 막대
 ax.set(title='종목별 금액', ylabel='금액')  # 제목과 축 이름
-plt.show()                                  # 보여 줘
+plt.show()  # 보여 줘
 ```
 
 이 챕터의 모든 그래프가 이 네 줄 위에 서요. 그리는 명령은 전부 `ax`에 붙여요.
@@ -280,7 +279,7 @@ plt.show()                                  # 보여 줘
 | y축 | 생존율 0.4를 그리면 |
 | --- | --- |
 | 비율 그대로 | 축이 0~100이면 막대가 안 보인다 |
-| 100을 곱한 퍼센트 | 높이 40, `ylim=(0, 100)` |
+| 100을 곱한 퍼센트 | 높이 40, `ylim = (0, 100)` |
 
 같은 높이도 y축이 인원이냐 비율이냐로 말이 달라요. 비율은 퍼센트로 그리고 축을 0~100으로 고정해요.
 
@@ -354,8 +353,8 @@ DECK_DISTRIBUTION = slides('deck-distribution', '퍼짐과 관계', FRONT + r"""
 ## 히스토그램: 한 열이 어떻게 퍼져 있나
 
 ```python
-known_age = titanic.dropna(subset=['나이'])              # 빈 나이는 먼저 뺀다
-sns.histplot(data=known_age, x='나이', bins=20, ax=ax)   # 구간 20개
+known_age = titanic.dropna(subset=['나이'])  # 빈 나이는 먼저 뺀다
+sns.histplot(data=known_age, x='나이', bins=20, ax=ax)  # 구간 20개
 ```
 
 나이처럼 이어지는 값은 같은 폭의 구간(bins)으로 잘라요. 구간마다 몇 명인지 세는 거예요. 빈 나이는 어느 구간에도 못 넣으니 먼저 빼요.
@@ -525,7 +524,7 @@ DECK_INSIGHT = slides('deck-insight', '관찰과 원인은 다르다', FRONT + r
 
 ```python
 grouped = titanic.groupby(['성별', '객실등급'])['생존'].agg(['count', 'mean'])
-wide = grouped['mean'].unstack('객실등급')   # 행: 성별, 열: 등급
+wide = grouped['mean'].unstack('객실등급')  # 행: 성별, 열: 등급
 ```
 
 `groupby`에 열 두 개를 리스트로 넣어요. 성별 × 등급, 여섯 그룹이에요. `unstack`은 긴 표를 넓게 펼쳐요. 성별이 행, 등급이 열이고요.
@@ -547,7 +546,7 @@ wide = grouped['mean'].unstack('객실등급')   # 행: 성별, 열: 등급
 ## 제목에는 무엇을 계산했는지
 
 ```python
-ax = (wide * 100).plot.bar(ylim=(0, 100), rot=0)   # 성별마다 등급 막대 세 개
+ax = (wide * 100).plot.bar(ylim=(0, 100), rot=0)  # 성별마다 등급 막대 세 개
 ax.set(ylabel='생존율 (%)', title='성별·객실등급별 생존율 (%)')
 ```
 

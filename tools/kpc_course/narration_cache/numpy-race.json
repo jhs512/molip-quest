@@ -1,39 +1,38 @@
 {
- "hash": "5179184a940b154b",
+ "hash": "20e1c6d145289073",
  "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 같은 합계를 두 방법으로 구하고 시간을 재요. 0부터 999,999까지가 리스트 values와 넘파이 배열 array에 들어 있거든요."
+   "자, 똑같은 합계를 두 방법으로 구하고 시간을 재 볼게요. 반복문으로 더한 값은 total에, 넘파이 합은 numpy_total에 담아요."
+  ],
+  [
+   "hint",
+   "시간은 time.perf_counter()로 재요. 시작할 때 한 번, 끝날 때 한 번 찍어서 빼면 걸린 초가 나오거든요."
   ],
   [
    "starter",
-   "준비 코드 네 줄은 그대로 둘게요. time과 넘파이를 불러오고, values와 array를 만들어 두었어요."
+   "준비 코드는 그대로 둘게요. values엔 0부터 999,999까지 리스트가, array엔 같은 숫자의 넘파이 배열이 들어 있어요."
   ],
   [
    "code",
-   "start = time.perf_counter()\ntotal = 0\nfor value in values:\n    total += value\n",
-   "자, 시계를 먼저 켜요. time.perf_counter()가 지금 시각을 start에 담거든요. 그다음 for 반복문으로 values를 하나씩 total에 더해요."
-  ],
-  [
-   "code",
-   "loop_seconds = time.perf_counter() - start\n",
-   "다 더했으면 지금 시각에서 start를 빼요. 그게 반복문에 걸린 초고, loop_seconds에 담아요."
+   "start = time.perf_counter()\ntotal = 0\nfor value in values:\n    total += value\nloop_seconds = time.perf_counter() - start\n",
+   "자, 먼저 반복문이에요. start에 시작 시각을 찍고, for로 백만 개를 하나씩 total에 더해요. 끝난 뒤 지금 시각에서 start를 빼면 loop_seconds가 나와요."
   ],
   [
    "code",
    "start = time.perf_counter()\nnumpy_total = array.sum()\nnumpy_seconds = time.perf_counter() - start\n",
-   "이번엔 넘파이 차례예요. 시계를 다시 켜고 array.sum() 한 줄로 합계를 구해요. 걸린 초는 numpy_seconds에 담으면 돼요."
+   "이번엔 넘파이예요. 똑같이 start를 다시 찍고, array.sum() 한 줄로 합을 구해요. 걸린 초는 numpy_seconds에 담으면 돼요."
   ],
   [
    "code",
    "print(f'반복문 {loop_seconds:.4f}초, 넘파이 {numpy_seconds:.4f}초')\n",
-   "두 시간을 출력해요. 콜론 뒤에 .4f를 쓰면 소수 네 자리까지 보여 주거든요."
+   "두 시간을 f-문자열로 찍어요. :.4f를 붙이면 소수 네 자리까지만 보여 주거든요."
   ],
   [
    "code",
    "print(f'넘파이가 {loop_seconds / numpy_seconds:.0f}배 빠르다')\n",
-   "마지막으로 몇 배 빠른지예요. loop_seconds를 numpy_seconds로 나누고 .0f로 소수점을 없애요."
+   "마지막으로 몇 배 빠른지예요. loop_seconds를 numpy_seconds로 나누고 :.0f로 소수점을 떼면 돼요."
   ],
   [
    "run",
@@ -41,7 +40,7 @@
   ],
   [
    "output",
-   "반복문은 0.0408초, 넘파이는 0.0005초가 나왔죠? 넘파이가 82배 빠르다고 찍혔어요. 이 배수는 컴퓨터마다 달라요."
+   "반복문은 0.0384초, 넘파이는 0.0005초가 나왔죠? 넘파이가 77배 빠르다고 찍혀요. 이 배수는 컴퓨터마다 달라요."
   ],
   [
    "submit",

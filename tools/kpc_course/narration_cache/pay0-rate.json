@@ -1,33 +1,33 @@
 {
- "hash": "9443c3d197c2a59d",
+ "hash": "811313da818c4bdc",
  "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 이번엔 상환 상태별로 부도율을 비교해요. 가장 최근 달의 상환 상태로 묶어서 타깃의 count와 mean을 같이 보는 거거든요."
+   "자, 이번엔 가장 최근 달의 상환 상태로 묶어요. 상환_9월이 같은 사람끼리 모아서 타깃의 인원과 평균을 보는 거거든요."
   ],
   [
    "hint",
-   "groupby 뒤에 agg로 count와 mean을 한 번에 구해요. 표의 한 칸은 loc에 행 이름과 열 이름을 넣어 꺼내면 돼요."
+   "groupby 뒤에 agg로 count와 mean을 한 번에 구하면 돼요. 표에서 한 칸은 loc에 행 이름과 열 이름을 같이 적어 꺼내요."
   ],
   [
    "starter",
-   "credit 자료와 target 이름은 준비돼 있어요. 그대로 두고 아래에 이어 쓸게요."
+   "준비 코드는 그대로 둘게요. credit을 읽어 두고, 타깃 열 이름은 target에 넣어 뒀어요."
   ],
   [
    "code",
-   "pay0_summary = credit.groupby('상환_9월')[target].agg(['count','mean'])\n",
-   "상환_9월로 묶고 타깃의 count와 mean을 한 번에 구해요. 인원과 부도율이 나란히 담기거든요."
+   "pay0_summary = credit.groupby('상환_9월')[target].agg(['count', 'mean'])\n",
+   "상환_9월로 묶고 타깃 열만 골라요. agg에 count와 mean을 같이 주면 인원과 부도율이 한 표에 나오거든요."
   ],
   [
    "code",
-   "rate_0 = pay0_summary.loc[0,'mean']\nrate_2 = pay0_summary.loc[2,'mean']\n",
-   "loc에 행 이름 0과 열 이름 mean을 넣으면 한 칸이 나와요. 상태 2도 같은 방식으로 꺼내요."
+   "rate_0 = pay0_summary.loc[0, 'mean']\nrate_2 = pay0_summary.loc[2, 'mean']\n",
+   "표에서 두 칸을 꺼내요. loc에 행 이름 0과 열 이름 mean을 적으면 상태 0의 부도율이죠? 상태 2도 같은 식이에요."
   ],
   [
    "code",
    "print(pay0_summary)\nprint(rate_0, rate_2)\n",
-   "표 전체를 먼저 찍고, 그다음 두 비율을 나란히 출력해요."
+   "표 전체를 먼저 찍고, 꺼낸 두 값을 나란히 출력하면 돼요."
   ],
   [
    "run",
@@ -35,7 +35,7 @@
   ],
   [
    "output",
-   "상태 0은 14737명에 부도율 0.128이고, 상태 2는 2667명에 0.691이에요. 다섯 배가 넘죠? 다만 상태 5부터는 count가 수십 명뿐이라 그 비율은 믿기 어려워요."
+   "상태 0은 만 사천 명 넘는데 부도율이 약 13%예요. 상태 2는 약 69%니까 다섯 배가 넘죠? 그런데 상태 7은 9명뿐이라 78%라는 비율은 믿기 어려워요. count와 같이 읽어야 하는 이유거든요."
   ],
   [
    "submit",

@@ -1,8 +1,8 @@
 """조건·반복과 표"""
 from kpc_course.dsl import *
 
-HOLDINGS = "holdings = [{'name':'A','price':10000,'quantity':3},{'name':'B','price':20000,'quantity':2},{'name':'C','price':15000,'quantity':4}]\n"
-HOLDINGS_WITH_AMOUNT = "holdings = [{'name':'A','price':10000,'quantity':3,'amount':30000},{'name':'B','price':20000,'quantity':2,'amount':40000},{'name':'C','price':15000,'quantity':4,'amount':60000}]\n"
+HOLDINGS = "holdings = [{'name': 'A', 'price': 10000, 'quantity': 3}, {'name': 'B', 'price': 20000, 'quantity': 2}, {'name': 'C', 'price': 15000, 'quantity': 4}]\n"
+HOLDINGS_WITH_AMOUNT = "holdings = [{'name': 'A', 'price': 10000, 'quantity': 3, 'amount': 30000}, {'name': 'B', 'price': 20000, 'quantity': 2, 'amount': 40000}, {'name': 'C', 'price': 15000, 'quantity': 4, 'amount': 60000}]\n"
 
 UNIT = unit('control', '조건·반복과 표', [
     concept('flow', '조건에 따라 고르고, 여러 값에 같은 일을 반복하기',
@@ -82,9 +82,9 @@ UNIT = unit('control', '조건·반복과 표', [
         hint="""
         `for price in prices:`라고 쓰면 `price`에 값이 하나씩 들어와요. 그때마다 아래 들여쓴 줄이 반복돼요. 그 안에서 `total += price`로 누적하세요. `print(total)`은 들여쓰기 없이 반복문 **밖**에 두세요. 그래야 마지막에 한 번만 출력돼요.
         """,
-        starter='prices = [10000,10200,9900,10100]\ntotal = 0\n# for 반복문으로 total에 누적하세요\n',
-        solution='prices = [10000,10200,9900,10100]\ntotal = 0\nfor price in prices:\n    total += price\nprint(total)\n',
-        check="assert s['total']==40200"),
+        starter='prices = [10000, 10200, 9900, 10100]\ntotal = 0\n# for 반복문으로 total에 누적하세요\n',
+        solution='prices = [10000, 10200, 9900, 10100]\ntotal = 0\nfor price in prices:\n    total += price\nprint(total)\n',
+        check="assert s['total'] == 40200"),
     coding('above-count', '반복하면서 조건으로 세기',
         goal="""
         합계를 구하면서 기준 10000 이상인 날이 며칠인지도 같이 세어 볼게요. 합계는 `total`에 저장하세요. 기준 이상인 값의 개수는 `above_count`에 저장하세요.
@@ -94,9 +94,9 @@ UNIT = unit('control', '조건·반복과 표', [
         hint="""
         `for price in prices:` 안에서 매번 `total += price`를 해요. 그 아래 `if price >= 10000:`이면 `above_count += 1`이에요. `if`에 속한 줄은 공백 여덟 칸이에요.
         """,
-        starter='prices = [10000,10200,9900,10100]\ntotal = 0\nabove_count = 0\n# 반복문을 작성하세요\n',
-        solution='prices = [10000,10200,9900,10100]\ntotal = 0\nabove_count = 0\nfor price in prices:\n    total += price\n    if price >= 10000:\n        above_count += 1\nprint(total, above_count)\n',
-        check="assert s['total']==40200 and s['above_count']==3"),
+        starter='prices = [10000, 10200, 9900, 10100]\ntotal = 0\nabove_count = 0\n# 반복문을 작성하세요\n',
+        solution='prices = [10000, 10200, 9900, 10100]\ntotal = 0\nabove_count = 0\nfor price in prices:\n    total += price\n    if price >= 10000:\n        above_count += 1\nprint(total, above_count)\n',
+        check="assert s['total'] == 40200 and s['above_count'] == 3"),
     coding('max-price', '반복문으로 최댓값 찾기',
         goal="""
         가장 비쌌던 날의 가격을 찾아요. `max()` 함수를 쓰면 한 줄이죠. 그런데 이번에는 반복문과 `if`로 직접 찾아 `highest`에 저장하세요. 첫 값을 일단 최고로 두고, 더 큰 값을 만날 때마다 바꾸는 방식이에요.
@@ -106,9 +106,9 @@ UNIT = unit('control', '조건·반복과 표', [
         hint="""
         준비 코드가 `highest`를 첫 값으로 시작해 둬요. 반복 안에서 `if price > highest:`를 확인해요. 참일 때만 `highest = price`로 갈아 끼우세요. 반복이 끝나면 가장 큰 값이 남아요.
         """,
-        starter='prices = [10000,10200,9900,10100]\nhighest = prices[0]\n# 반복문과 if로 highest를 갱신하세요\n',
-        solution='prices = [10000,10200,9900,10100]\nhighest = prices[0]\nfor price in prices:\n    if price > highest:\n        highest = price\nprint(highest)\n',
-        check="assert s['highest']==10200"),
+        starter='prices = [10000, 10200, 9900, 10100]\nhighest = prices[0]\n# 반복문과 if로 highest를 갱신하세요\n',
+        solution='prices = [10000, 10200, 9900, 10100]\nhighest = prices[0]\nfor price in prices:\n    if price > highest:\n        highest = price\nprint(highest)\n',
+        check="assert s['highest'] == 10200"),
     coding('croissant-plan', '오늘 크루아상 몇 개 구울까',
         intro="""
         파리바게뜨 공장의 생산 담당자는 새벽마다 오늘 크루아상을 몇 개 구울지 정해요. 너무 많이 구우면 저녁에 버리고, 너무 적게 구우면 오후에 품절이에요. 가장 단순한 방법은 최근 판매량 평균에서 출발하는 거예요. 이 공장은 "품절보다 폐기가 싸다"고 보고 평균보다 10% 많이 굽기로 정했어요.
@@ -123,7 +123,7 @@ UNIT = unit('control', '조건·반복과 표', [
         """,
         starter='sold = [412, 388, 455]\ntotal = 0\n# total, average, plan을 만들고 출력하세요\n',
         solution="sold = [412, 388, 455]\ntotal = 0\nfor count in sold:\n    total += count\naverage = total / len(sold)\nplan = round(average * 1.1)\nprint(f'오늘 생산 계획: {plan}개')\n",
-        check="assert s['total']==1255 and abs(s['average']-1255/3)<1e-9\nassert s['plan']==460 and isinstance(s['plan'],int)"),
+        check="assert s['total'] == 1255 and abs(s['average'] - 1255 / 3) < 1e-9\nassert s['plan'] == 460 and isinstance(s['plan'], int)"),
     coding('holdings-amounts', '세 종목의 금액 계산하기',
         goal="""
         리스트 안의 값이 숫자가 아니라 딕셔너리여도 `for`는 똑같이 돌아요. 세 종목이 든 `holdings`를 돌면서 각 종목의 가격 × 수량을 계산하세요. 그 값을 그 종목의 `amount` 키에 저장하세요.
@@ -135,7 +135,7 @@ UNIT = unit('control', '조건·반복과 표', [
         """,
         starter=HOLDINGS + "# 각 종목에 amount를 추가하세요\n",
         solution=HOLDINGS + "for holding in holdings:\n    holding['amount'] = holding['price'] * holding['quantity']\nprint(holdings)\n",
-        check="assert len(s['holdings'])==3\nassert [h['amount'] for h in s['holdings']]==[30000,40000,60000]"),
+        check="assert len(s['holdings']) == 3\nassert [h['amount'] for h in s['holdings']] == [30000, 40000, 60000]"),
     coding('holdings-total', '세 종목의 금액 합산하기',
         goal="""
         준비 코드에는 각 종목의 금액이 이미 계산돼 있어요. 세 종목의 `amount`를 모두 더해 `total_amount`에 저장하세요. 그리고 출력하세요.
@@ -147,7 +147,7 @@ UNIT = unit('control', '조건·반복과 표', [
         """,
         starter=HOLDINGS_WITH_AMOUNT + "# total_amount를 계산하고 출력하세요\n",
         solution=HOLDINGS_WITH_AMOUNT + "total_amount = 0\nfor holding in holdings:\n    total_amount += holding['amount']\nprint(total_amount)\n",
-        check="assert s['total_amount']==130000"),
+        check="assert s['total_amount'] == 130000"),
     concept('first-dataframe', '딕셔너리 묶음은 사실 표였다',
         body="""
         방금 다룬 `holdings`를 종이에 적어 보면 이렇게 돼요. 종목 하나가 한 줄, 이름·가격·수량·금액이 한 칸씩.
@@ -185,8 +185,9 @@ UNIT = unit('control', '조건·반복과 표', [
 
         ```python
         import pandas as pd
+
         df = pd.DataFrame(holdings)
-        print(df.shape)   # (3, 4) → 3행 4열
+        print(df.shape)  # (3, 4) → 3행 4열
         df
         ```
 
@@ -199,6 +200,7 @@ UNIT = unit('control', '조건·반복과 표', [
 
                     ```python
                     import pandas as pd
+
                     df = pd.____(holdings)
                     ```
                     """, ['DataFrame', '데이터프레임'],
@@ -214,7 +216,7 @@ UNIT = unit('control', '조건·반복과 표', [
         """,
         starter="import pandas as pd\n" + HOLDINGS_WITH_AMOUNT + "# df를 만들고 표를 표시하세요\n",
         solution="import pandas as pd\n" + HOLDINGS_WITH_AMOUNT + "df = pd.DataFrame(holdings)\ndf\n",
-        check="assert s['df'].shape==(3,4)\nassert list(s['df'].columns)==['name','price','quantity','amount']\nassert s['df']['name'].tolist()==['A','B','C']\nassert s['df']['amount'].tolist()==[30000,40000,60000]"),
+        check="assert s['df'].shape == (3, 4)\nassert list(s['df'].columns) == ['name', 'price', 'quantity', 'amount']\nassert s['df']['name'].tolist() == ['A', 'B', 'C']\nassert s['df']['amount'].tolist() == [30000, 40000, 60000]"),
     coding('frame-column-sum', '표의 한 열을 합산하기',
         goal="""
         조금 전 반복문으로 구했던 전체 금액을 이번에는 표로 구해요. `df`의 `amount` 열을 골라 `.sum()`으로 합계를 내세요. 그 값을 `total_amount`에 저장하고 출력하세요.
@@ -226,7 +228,7 @@ UNIT = unit('control', '조건·반복과 표', [
         """,
         starter="import pandas as pd\n" + HOLDINGS_WITH_AMOUNT + "df = pd.DataFrame(holdings)\n# total_amount를 계산하고 출력하세요\n",
         solution="import pandas as pd\n" + HOLDINGS_WITH_AMOUNT + "df = pd.DataFrame(holdings)\ntotal_amount = df['amount'].sum()\nprint(total_amount)\n",
-        check="assert s['total_amount']==130000"),
+        check="assert s['total_amount'] == 130000"),
     concept('why-fast', '리스트로도 되는데 왜 pandas인가',
         body="""
         방금 같은 합계를 반복문으로도, 표로도 구했죠? 그러니 이런 질문이 나올 만해요. "리스트 안의 딕셔너리로도 다 되는데, 왜 굳이 `pandas`를 배우나요?" 답은 두 가지예요. **짧고, 빨라요.** 짧은 건 방금 봤어요. 빠른 건 `pandas`가 **넘파이**(NumPy) 위에 지어져서예요. 넘파이는 숫자 배열 도구고요.
@@ -267,9 +269,10 @@ UNIT = unit('control', '조건·반복과 표', [
 
         ```python
         import numpy as np
+
         values = np.array([10000, 10200, 9900, 10100])
-        print(values.sum())        # 40200, 반복문 없이
-        print(values * 1.1)        # 네 값 전부에 한 번에 1.1배
+        print(values.sum())  # 40200, 반복문 없이
+        print(values * 1.1)  # 네 값 전부에 한 번에 1.1배
         ```
 
         넘파이의 자리는 생각보다 커요. `pandas`의 표 한 열이 넘파이 배열이에요. 뒤에서 쓸 `scikit-learn`도 넘파이 배열을 주고받아요. 그래프를 그리는 `matplotlib`도요. 딥러닝 도구(PyTorch, TensorFlow)가 다루는 텐서는 넘파이 배열의 사촌이에요. 사진 한 장도 컴퓨터 안에서는 숫자 배열이거든요. 이 수업에서 `import numpy`를 직접 칠 일은 거의 없어요. 그래도 쓰는 도구 전부가 그 위에 서 있죠.
@@ -289,9 +292,9 @@ UNIT = unit('control', '조건·반복과 표', [
         hint="""
         시간 재기는 `start = time.perf_counter()`로 시작해요. 끝난 뒤 `time.perf_counter() - start`를 하면 걸린 초가 나와요. 반복문 구간과 `array.sum()` 구간을 각각 감싸세요. 출력은 f-문자열 `{loop_seconds:.4f}`처럼 소수 네 자리로 해요. 배수는 `loop_seconds / numpy_seconds`를 `:.0f`로 찍어요.
         """,
-        starter='import time\nimport numpy as np\nvalues = list(range(1_000_000))\narray = np.array(values)\n# total, loop_seconds, numpy_total, numpy_seconds를 만들고 출력하세요\n',
-        solution="import time\nimport numpy as np\nvalues = list(range(1_000_000))\narray = np.array(values)\nstart = time.perf_counter()\ntotal = 0\nfor value in values:\n    total += value\nloop_seconds = time.perf_counter() - start\nstart = time.perf_counter()\nnumpy_total = array.sum()\nnumpy_seconds = time.perf_counter() - start\nprint(f'반복문 {loop_seconds:.4f}초, 넘파이 {numpy_seconds:.4f}초')\nprint(f'넘파이가 {loop_seconds / numpy_seconds:.0f}배 빠르다')\n",
-        check="assert s['total']==499999500000 and int(s['numpy_total'])==499999500000\nassert s['loop_seconds']>s['numpy_seconds']>0"),
+        starter='import time\nimport numpy as np\n\nvalues = list(range(1_000_000))\narray = np.array(values)\n# total, loop_seconds, numpy_total, numpy_seconds를 만들고 출력하세요\n',
+        solution="import time\nimport numpy as np\n\nvalues = list(range(1_000_000))\narray = np.array(values)\nstart = time.perf_counter()\ntotal = 0\nfor value in values:\n    total += value\nloop_seconds = time.perf_counter() - start\nstart = time.perf_counter()\nnumpy_total = array.sum()\nnumpy_seconds = time.perf_counter() - start\nprint(f'반복문 {loop_seconds:.4f}초, 넘파이 {numpy_seconds:.4f}초')\nprint(f'넘파이가 {loop_seconds / numpy_seconds:.0f}배 빠르다')\n",
+        check="assert s['total'] == 499999500000 and int(s['numpy_total']) == 499999500000\nassert s['loop_seconds'] > s['numpy_seconds'] > 0"),
     quiz('control-check', '단원 점검',
         choice('`if price >= 10000:`에서 `price`가 정확히 10000이면 어떻게 되나요?',
                ['조건이 참이라 아래 줄이 실행된다', '조건이 거짓이라 건너뛴다', '같은 값은 오류가 난다'], 0,

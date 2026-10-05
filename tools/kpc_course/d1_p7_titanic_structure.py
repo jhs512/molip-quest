@@ -35,10 +35,10 @@ UNIT = unit('titanic-structure', '실제 자료와 타깃', [
 
         ```python
         titanic = pd.read_csv('data/titanic.csv')
-        titanic.shape                      # (행 수, 열 수)
-        titanic['생존'].value_counts() # 0과 1이 각각 몇 명
-        titanic['생존'].mean()         # 0과 1의 평균 = 1의 비율 = 생존율
-        titanic.isna().sum()               # 열마다 빈 칸 개수
+        titanic.shape  # (행 수, 열 수)
+        titanic['생존'].value_counts()  # 0과 1이 각각 몇 명
+        titanic['생존'].mean()  # 0과 1의 평균 = 1의 비율 = 생존율
+        titanic.isna().sum()  # 열마다 빈 칸 개수
         ```
 
         타깃이 0과 1뿐이면 평균이 곧 비율이에요. 1이 세 명, 0이 일곱 명이면 평균은 0.3, 생존율 30%죠. 이 단원 미션은 이 표를 숫자로 더듬어 보는 거예요. 몇 명인지, 몇 명이 살아남았는지, 어느 칸이 얼마나 비어 있는지. 특히 나이는 꽤 많이 비어 있어요. 앞 단원에서 배운 대로, 빈 나이는 0살이 아니라 "모름"이에요.
@@ -56,7 +56,7 @@ UNIT = unit('titanic-structure', '실제 자료와 타깃', [
         """,
         starter=TI + "# n_rows, n_columns, columns를 만들고 출력하세요\n",
         solution=TI + "n_rows, n_columns = titanic.shape\ncolumns = list(titanic.columns)\nprint(n_rows, n_columns)\nprint(columns)\n",
-        check="assert s['n_rows']==1309 and s['n_columns']==14\nassert '생존' in list(s['columns']) and '나이' in list(s['columns'])"),
+        check="assert s['n_rows'] == 1309 and s['n_columns'] == 14\nassert '생존' in list(s['columns']) and '나이' in list(s['columns'])"),
     coding('survived-counts', '생존·사망 인원 세기',
         goal="""
         타깃 열을 세 봐요. `titanic['생존'].value_counts()`를 `counts`에 저장하세요. 사망(0) 인원은 `n_dead`에 정수로 담으세요. 생존(1) 인원은 `n_alive`에 정수로 담으세요. 셋 다 출력하세요.
@@ -68,7 +68,7 @@ UNIT = unit('titanic-structure', '실제 자료와 타깃', [
         """,
         starter=TI + "# counts, n_dead, n_alive를 만들고 출력하세요\n",
         solution=TI + "counts = titanic['생존'].value_counts()\nn_dead = int(counts[0])\nn_alive = int(counts[1])\nprint(counts)\nprint(n_dead, n_alive)\n",
-        check="assert s['n_dead']==809 and s['n_alive']==500\nassert s['counts'].sum()==1309"),
+        check="assert s['n_dead'] == 809 and s['n_alive'] == 500\nassert s['counts'].sum() == 1309"),
     coding('missing-per-column', '열마다 빈칸 세기',
         goal="""
         어느 열이 얼마나 비어 있는지 봐요. `titanic.isna().sum()`을 `missing`에 저장하세요. 거기서 나이의 결측 수를 `age_missing`에 정수로 담으세요. 요금의 결측 수는 `fare_missing`에 정수로 담으세요. 셋 다 출력하세요.
@@ -80,7 +80,7 @@ UNIT = unit('titanic-structure', '실제 자료와 타깃', [
         """,
         starter=TI + "# missing, age_missing, fare_missing을 만들고 출력하세요\n",
         solution=TI + "missing = titanic.isna().sum()\nage_missing = int(missing['나이'])\nfare_missing = int(missing['요금'])\nprint(missing)\nprint(age_missing, fare_missing)\n",
-        check="assert s['age_missing']==263 and s['fare_missing']==1\nassert s['missing']['생존']==0"),
+        check="assert s['age_missing'] == 263 and s['fare_missing'] == 1\nassert s['missing']['생존'] == 0"),
     coding('titanic-counts', '전체, 나이를 아는 사람, 모르는 사람',
         goal="""
         "평균 나이"를 말하려면 몇 명으로 나눈 평균인지부터 알아야 해요. 전체 인원을 `n_total`에 저장하세요. 나이가 기록된 인원은 `n_known`에 담으세요. 나이가 비어 있는 인원은 `n_unknown`에 넣으세요. 그리고 `생존`의 평균을 `survival_rate`에 저장하세요. 넷 다 출력하세요.
@@ -91,8 +91,8 @@ UNIT = unit('titanic-structure', '실제 자료와 타깃', [
         전체는 `len(titanic)`이에요. 나이가 있는 사람은 `titanic['나이'].notna().sum()`으로 세요. 없는 사람은 `titanic['나이'].isna().sum()`이고요. 생존율은 `titanic['생존'].mean()`이죠. `f'{survival_rate:.2%}'`로 출력하면 퍼센트로 보여요.
         """,
         starter=TI + "# 인원과 생존율을 계산하세요\n",
-        solution=TI + "n_total=len(titanic)\nn_known=int(titanic['나이'].notna().sum())\nn_unknown=int(titanic['나이'].isna().sum())\nsurvival_rate=titanic['생존'].mean()\nprint(n_total,n_known,n_unknown)\nprint(f'{survival_rate:.2%}')\n",
-        check="assert (s['n_total'],s['n_known'],s['n_unknown'])==(1309,1046,263)\nassert abs(s['survival_rate']-500/1309)<1e-10"),
+        solution=TI + "n_total = len(titanic)\nn_known = int(titanic['나이'].notna().sum())\nn_unknown = int(titanic['나이'].isna().sum())\nsurvival_rate = titanic['생존'].mean()\nprint(n_total, n_known, n_unknown)\nprint(f'{survival_rate:.2%}')\n",
+        check="assert (s['n_total'], s['n_known'], s['n_unknown']) == (1309, 1046, 263)\nassert abs(s['survival_rate'] - 500 / 1309) < 1e-10"),
     quiz('target-check', '단원 점검',
         short('이 자료는 몇 명(몇 행)의 기록인가요?', ['1309', '1,309', '1309명'],
               '`titanic.shape`의 첫 값이 1309예요. 모든 비율은 이 분모를 기준으로 읽어요.'),

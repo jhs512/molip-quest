@@ -42,11 +42,12 @@ UNIT = unit('distribution', '분포와 관계 시각화', [
 
         ```python
         import seaborn as sns
+
         known_age = titanic.dropna(subset=['나이'])
         fig, ax = plt.subplots()
-        sns.histplot(data=known_age, x='나이', bins=20, ax=ax)   # 히스토그램
-        ax.scatter(known['나이'], known['요금'])                 # 산점도. known: 나이·요금이 모두 있는 행
-        sns.heatmap(corr, annot=True, vmin=-1, vmax=1, ax=ax)   # 히트맵. corr: 상관계수 표
+        sns.histplot(data=known_age, x='나이', bins=20, ax=ax)  # 히스토그램
+        ax.scatter(known['나이'], known['요금'])  # 산점도. known: 나이·요금이 모두 있는 행
+        sns.heatmap(corr, annot=True, vmin=-1, vmax=1, ax=ax)  # 히트맵. corr: 상관계수 표
         ```
 
         `seaborn`은 `matplotlib` 위에서 도는 도구예요. 표 열 이름만으로 그래프를 그려 줘요. `ax=ax`로 어느 그래프 영역에 그릴지 알려 주세요. 그러면 앞 단원의 뼈대와 그대로 어울려요.
@@ -69,8 +70,8 @@ UNIT = unit('distribution', '분포와 관계 시각화', [
         `known_age = titanic.dropna(subset=['나이'])`로 빈 나이를 빼요. `fig, ax = plt.subplots()`를 만들어요. `sns.histplot(data=known_age, x='나이', bins=20, ax=ax)`로 그려요. `ax.set(xlabel='나이', ylabel='승객 수', title='나이를 아는 승객')`로 꾸미세요.
         """,
         starter=TI + PLOT + "# known_age, fig, ax를 준비하세요\n",
-        solution=TI + PLOT + "known_age=titanic.dropna(subset=['나이'])\nfig,ax=plt.subplots()\nsns.histplot(data=known_age,x='나이',bins=20,ax=ax)\nax.set(xlabel='나이',ylabel='Passenger count',title='Known ages only')\nplt.show()\n",
-        check="assert len(s['known_age'])==1046\nassert len(s['ax'].patches)==20\nassert round(sum(p.get_height() for p in s['ax'].patches))==1046"),
+        solution=TI + PLOT + "known_age = titanic.dropna(subset=['나이'])\nfig, ax = plt.subplots()\nsns.histplot(data=known_age, x='나이', bins=20, ax=ax)\nax.set(xlabel='나이', ylabel='Passenger count', title='Known ages only')\nplt.show()\n",
+        check="assert len(s['known_age']) == 1046\nassert len(s['ax'].patches) == 20\nassert round(sum(p.get_height() for p in s['ax'].patches)) == 1046"),
     coding('fare-scatter', '나이와 요금은 같이 움직일까',
         goal="""
         자, 승객 한 명을 점 하나로 찍어 봐요. 나이와 요금이 모두 기록된 승객만 `known`에 담으세요. `ax.scatter(known['나이'], known['요금'])`로 산점도를 그려요. x축 이름 `나이`, y축 이름 `요금`을 붙이고 띄우세요.
@@ -82,7 +83,7 @@ UNIT = unit('distribution', '분포와 관계 시각화', [
         """,
         starter=TI + PLOT + "# known, fig, ax를 준비하세요\n",
         solution=TI + PLOT + "known = titanic.dropna(subset=['나이', '요금'])\nfig, ax = plt.subplots()\nax.scatter(known['나이'], known['요금'], alpha=0.4)\nax.set(xlabel='나이', ylabel='요금', title='Age vs fare')\nplt.show()\n",
-        check="assert len(s['known'])==1045\nassert len(s['ax'].collections)>=1 and len(s['ax'].collections[0].get_offsets())==1045\nassert s['ax'].get_xlabel()=='나이' and s['ax'].get_ylabel()=='요금'"),
+        check="assert len(s['known']) == 1045\nassert len(s['ax'].collections) >= 1 and len(s['ax'].collections[0].get_offsets()) == 1045\nassert s['ax'].get_xlabel() == '나이' and s['ax'].get_ylabel() == '요금'"),
     coding('correlation', '여섯 열의 상관계수를 색으로',
         goal="""
         준비된 `columns`의 숫자 열 여섯 개로 상관계수 표를 만들어 `corr`에 담으세요. 그다음 `sns.heatmap`으로 히트맵을 그려 띄우세요. 옵션은 `annot=True`(칸에 숫자 표시), `vmin=-1`, `vmax=1`이에요.
@@ -92,9 +93,9 @@ UNIT = unit('distribution', '분포와 관계 시각화', [
         hint="""
         `corr = titanic[columns].corr()`가 상관계수 표예요. `sns.heatmap(corr, annot=True, vmin=-1, vmax=1, center=0, cmap='coolwarm', ax=ax)`처럼 그려 보세요. 양수는 붉게, 음수는 푸르게 칠해져서 방향이 바로 보여요.
         """,
-        starter=TI + PLOT + "columns=['객실등급','나이','형제배우자','부모자녀','요금','생존']\n# corr, fig, ax를 만드세요\n",
-        solution=TI + PLOT + "columns=['객실등급','나이','형제배우자','부모자녀','요금','생존']\ncorr=titanic[columns].corr()\nfig,ax=plt.subplots()\nsns.heatmap(corr,annot=True,vmin=-1,vmax=1,center=0,cmap='coolwarm',ax=ax)\nplt.show()\n",
-        check="assert s['corr'].shape==(6,6)\nassert all(abs(s['corr'].iloc[i,i]-1)<1e-9 for i in range(6))\nassert len(s['ax'].collections)>0 and s['ax'].collections[0].get_clim()==(-1,1)"),
+        starter=TI + PLOT + "columns = ['객실등급', '나이', '형제배우자', '부모자녀', '요금', '생존']\n# corr, fig, ax를 만드세요\n",
+        solution=TI + PLOT + "columns = ['객실등급', '나이', '형제배우자', '부모자녀', '요금', '생존']\ncorr = titanic[columns].corr()\nfig, ax = plt.subplots()\nsns.heatmap(corr, annot=True, vmin=-1, vmax=1, center=0, cmap='coolwarm', ax=ax)\nplt.show()\n",
+        check="assert s['corr'].shape == (6, 6)\nassert all(abs(s['corr'].iloc[i, i] - 1) < 1e-9 for i in range(6))\nassert len(s['ax'].collections) > 0 and s['ax'].collections[0].get_clim() == (-1, 1)"),
     quiz('distribution-check', '단원 점검',
         choice('"요금이 비싼 사람이 나이도 많을까?"에 답하려면 어떤 그래프가 맞나요?',
                ['산점도. 승객마다 (나이, 요금)을 점으로 찍는다', '막대그래프. 요금별 평균 나이를 막대로', '히스토그램. 요금을 구간으로 자른다'], 0,

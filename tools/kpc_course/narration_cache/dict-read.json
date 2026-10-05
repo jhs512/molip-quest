@@ -1,28 +1,28 @@
 {
- "hash": "f551c5088005d92e",
+ "hash": "842e4355e632ed02",
  "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 이번엔 종목 하나가 holding 딕셔너리에 들어 있어요. 가격과 수량을 키로 꺼내 곱한 금액을 amount에 넣고 출력하면 돼요."
+   "자, 이번엔 종목 하나가 holding 딕셔너리에 들어 있어요. 가격과 수량을 키로 꺼내 곱해서 amount에 저장하고 출력하면 돼요. 딕셔너리 자체는 건드리지 않아요."
   ],
   [
    "hint",
-   "값은 holding['price']처럼 꺼내요. 따옴표를 빼면 price라는 변수를 찾다가 NameError가 나거든요."
+   "값은 holding['price']처럼 꺼내요. 대괄호 안에 키를 따옴표째 적는 거거든요. 따옴표를 빼면 price라는 변수를 찾다가 NameError가 나요."
   ],
   [
    "starter",
-   "준비 코드 한 줄에 holding 딕셔너리가 들어 있어요. 이건 그대로 둘게요."
+   "준비 코드에 holding 딕셔너리가 있어요. name, price, quantity 세 키가 들어 있죠? 이 줄은 그대로 둘게요."
   ],
   [
    "code",
    "amount = holding['price'] * holding['quantity']\n",
-   "대괄호 안에 키를 따옴표째 적어서 가격과 수량을 꺼내요. 곱한 값을 amount에 넣는 거예요."
+   "holding['price']로 가격을, holding['quantity']로 수량을 꺼내요. 둘을 곱한 값을 amount에 넣는 거예요."
   ],
   [
    "code",
    "print(amount)\n",
-   "그다음 줄에서 amount를 출력해요."
+   "그다음 줄에서 amount를 출력하면 돼요."
   ],
   [
    "run",
@@ -30,7 +30,7 @@
   ],
   [
    "output",
-   "30000이 나왔죠? 10000 곱하기 3이에요."
+   "30000이 나왔죠? 10000 곱하기 3이거든요."
   ],
   [
    "submit",

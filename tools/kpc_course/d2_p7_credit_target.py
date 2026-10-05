@@ -68,7 +68,7 @@ UNIT = unit('credit-target', '부도 정의와 연체 이력', [
         ```
 
         ```python
-        credit[target].value_counts()                      # 부도·정상 인원
+        credit[target].value_counts()  # 부도·정상 인원
         credit.groupby('상환_9월')[target].agg(['count', 'mean'])  # 상환 상태별 인원과 부도율
         ```
 
@@ -87,7 +87,7 @@ UNIT = unit('credit-target', '부도 정의와 연체 이력', [
         """,
         starter=CR + "# n_rows, n_columns, target_counts를 만들고 출력하세요\n",
         solution=CR + "n_rows, n_columns = credit.shape\ntarget_counts = credit[target].value_counts()\nprint(n_rows, n_columns)\nprint(target_counts)\n",
-        check="assert s['n_rows']==30000 and s['n_columns']==25\nassert s['target_counts'][1]==6636 and s['target_counts'][0]==23364"),
+        check="assert s['n_rows'] == 30000 and s['n_columns'] == 25\nassert s['target_counts'][1] == 6636 and s['target_counts'][0] == 23364"),
     coding('default-summary', '부도 인원과 부도율, 그리고 입력 표',
         goal="""
         부도 인원은 `default_count`에 담으세요. 부도율은 `default_rate`에 담고요. 그리고 `고객번호`와 타깃 열을 뺀 입력 표를 `X`에 만드세요. 세 값을 출력하세요.
@@ -98,8 +98,8 @@ UNIT = unit('credit-target', '부도 정의와 연체 이력', [
         타깃이 0과 1이라 `credit[target].sum()`이 부도 인원이에요. `credit[target].mean()`은 부도율이고요. `X = credit.drop(columns=['고객번호', target])`로 두 열을 빼요.
         """,
         starter=CR + "# default_count, default_rate, X를 만드세요\n",
-        solution=CR + "default_count=int(credit[target].sum())\ndefault_rate=credit[target].mean()\nX=credit.drop(columns=['고객번호',target])\nprint(default_count,f'{default_rate:.2%}',X.shape)\n",
-        check="assert s['default_count']==6636 and abs(s['default_rate']-0.2212)<1e-10\nassert s['X'].shape==(30000,23) and '고객번호' not in s['X'] and s['target'] not in s['X']"),
+        solution=CR + "default_count = int(credit[target].sum())\ndefault_rate = credit[target].mean()\nX = credit.drop(columns=['고객번호', target])\nprint(default_count, f'{default_rate:.2%}', X.shape)\n",
+        check="assert s['default_count'] == 6636 and abs(s['default_rate'] - 0.2212) < 1e-10\nassert s['X'].shape == (30000, 23) and '고객번호' not in s['X'] and s['target'] not in s['X']"),
     coding('limit-by-default', '부도 여부별 평균 신용 한도',
         goal="""
         타이타닉에서 쓴 `groupby`를 금융 자료에 그대로 써요. 타깃으로 묶어 `신용한도`의 평균을 구하세요. `limit_by_default`에 담고 출력하세요.
@@ -111,19 +111,19 @@ UNIT = unit('credit-target', '부도 정의와 연체 이력', [
         """,
         starter=CR + "# limit_by_default를 만들고 출력하세요\n",
         solution=CR + "limit_by_default = credit.groupby(target)['신용한도'].mean()\nprint(limit_by_default)\n",
-        check="assert set(s['limit_by_default'].index)=={0,1}\nassert s['limit_by_default'][0]>s['limit_by_default'][1]\nassert abs(s['limit_by_default'][1]-130109.65642)<0.01"),
+        check="assert set(s['limit_by_default'].index) == {0, 1}\nassert s['limit_by_default'][0] > s['limit_by_default'][1]\nassert abs(s['limit_by_default'][1] - 130109.65642) < 0.01"),
     coding('rate-by-attribute', '성별·학력·나이대별 부도율',
         goal="""
         고객 속성마다 부도율이 얼마나 다른지 봐요. `성별`과 `학력`은 코드 그대로 묶으세요. 타깃의 평균을 `rate_by_sex`, `rate_by_education`에 담으면 돼요. `나이`는 `pd.cut`으로 새 열 `나이대`를 만드세요. 다섯 구간은 20대, 30대, 40대, 50대, 60대 이상이에요. 그걸로 묶어 `rate_by_age`에 담으세요. 셋을 출력하세요.
 
-        구간은 `bins=[20, 30, 40, 50, 60, 80]`, `right=False`, `labels=['20대', '30대', '40대', '50대', '60대 이상']`이에요. 속성 사이의 차이를 기억해 두세요. 다음 미션에서 연체 이력 차이와 견줘요.
+        구간은 `bins = [20, 30, 40, 50, 60, 80]`, `right=False`, `labels = ['20대', '30대', '40대', '50대', '60대 이상']`이에요. 속성 사이의 차이를 기억해 두세요. 다음 미션에서 연체 이력 차이와 견줘요.
         """,
         hint="""
         `credit.groupby('성별')[target].mean()`을 세 번, 묶는 열만 바꿔요. 나이는 먼저 `credit['나이대'] = pd.cut(credit['나이'], bins=..., right=False, labels=...)`로 구간 열을 만들어요. 그다음 `groupby('나이대', observed=True)`로 묶어요. `observed=True`는 빈 구간을 빼라는 뜻이에요.
         """,
         starter=CR + "# rate_by_sex, rate_by_education, rate_by_age를 만들고 출력하세요\n",
         solution=CR + "rate_by_sex = credit.groupby('성별')[target].mean()\nrate_by_education = credit.groupby('학력')[target].mean()\ncredit['나이대'] = pd.cut(credit['나이'], bins=[20, 30, 40, 50, 60, 80], right=False, labels=['20대', '30대', '40대', '50대', '60대 이상'])\nrate_by_age = credit.groupby('나이대', observed=True)[target].mean()\nprint(rate_by_sex)\nprint(rate_by_education)\nprint(rate_by_age)\n",
-        check="assert set(s['rate_by_sex'].index)=={1,2}\nassert abs(s['rate_by_sex'].loc[1]-0.2417)<0.001\nassert len(s['rate_by_education'])==7\nassert list(s['rate_by_age'].index)==['20대','30대','40대','50대','60대 이상']\nassert abs(s['rate_by_age'].loc['60대 이상']-0.2832)<0.001"),
+        check="assert set(s['rate_by_sex'].index) == {1, 2}\nassert abs(s['rate_by_sex'].loc[1] - 0.2417) < 0.001\nassert len(s['rate_by_education']) == 7\nassert list(s['rate_by_age'].index) == ['20대', '30대', '40대', '50대', '60대 이상']\nassert abs(s['rate_by_age'].loc['60대 이상'] - 0.2832) < 0.001"),
     coding('delay-groups', '한 번이라도 연체한 적이 있는가',
         goal="""
         여섯 달 중 한 번이라도 연체한 적이 있는지를 새 열 `has_delay`로 만들어요. 연체는 값 1 이상이에요. `pay_columns` 여섯 열에 `>= 1` 조건을 거세요. 그다음 `.any(axis=1)`로 행마다 "하나라도 참인가"를 구해요. 그 결과를 `credit['has_delay']`에 넣으면 돼요. 이어서 `has_delay`로 묶으세요. 타깃의 `count`, `sum`, `mean`을 `summary`에 담고요.
@@ -133,9 +133,9 @@ UNIT = unit('credit-target', '부도 정의와 연체 이력', [
         hint="""
         `(credit[pay_columns] >= 1)`은 여섯 열 전부에 참·거짓을 매긴 표예요. `.any(axis=1)`은 행마다 그중 하나라도 참이면 참이고요. `credit.groupby('has_delay')[target].agg(['count', 'sum', 'mean'])`으로 마무리하세요.
         """,
-        starter=CR + "pay_columns=['상환_9월','상환_8월','상환_7월','상환_6월','상환_5월','상환_4월']\n# has_delay와 summary를 만드세요\n",
-        solution=CR + "pay_columns=['상환_9월','상환_8월','상환_7월','상환_6월','상환_5월','상환_4월']\ncredit['has_delay']=(credit[pay_columns]>=1).any(axis=1)\nsummary=credit.groupby('has_delay')[target].agg(['count','sum','mean'])\nsummary\n",
-        check="assert s['summary']['count'].sum()==30000 and s['summary']['sum'].sum()==6636\nassert set(s['summary'].index)=={False,True}\nassert s['credit']['has_delay'].equals((s['credit'][['상환_9월','상환_8월','상환_7월','상환_6월','상환_5월','상환_4월']]>=1).any(axis=1))"),
+        starter=CR + "pay_columns = ['상환_9월', '상환_8월', '상환_7월', '상환_6월', '상환_5월', '상환_4월']\n# has_delay와 summary를 만드세요\n",
+        solution=CR + "pay_columns = ['상환_9월', '상환_8월', '상환_7월', '상환_6월', '상환_5월', '상환_4월']\ncredit['has_delay'] = (credit[pay_columns] >= 1).any(axis=1)\nsummary = credit.groupby('has_delay')[target].agg(['count', 'sum', 'mean'])\nsummary\n",
+        check="assert s['summary']['count'].sum() == 30000 and s['summary']['sum'].sum() == 6636\nassert set(s['summary'].index) == {False, True}\nassert s['credit']['has_delay'].equals((s['credit'][['상환_9월', '상환_8월', '상환_7월', '상환_6월', '상환_5월', '상환_4월']] >= 1).any(axis=1))"),
     coding('pay0-rate', '최근 상환 상태별 부도율',
         goal="""
         가장 최근 달의 상환 상태 `상환_9월`로 묶으세요. 타깃의 `count`와 `mean`을 `pay0_summary`에 담으면 돼요. 그중 두 칸을 꺼내요. 상태 0(최소 금액 상환)의 부도율은 `rate_0`, 상태 2(2개월 연체)의 부도율은 `rate_2`예요. 둘 다 출력하세요.
@@ -146,8 +146,8 @@ UNIT = unit('credit-target', '부도 정의와 연체 이력', [
         `pay0_summary = credit.groupby('상환_9월')[target].agg(['count', 'mean'])`이에요. 표에서 한 칸은 `pay0_summary.loc[0, 'mean']`처럼 꺼내요.
         """,
         starter=CR + "# pay0_summary, rate_0, rate_2를 만들고 출력하세요\n",
-        solution=CR + "pay0_summary = credit.groupby('상환_9월')[target].agg(['count','mean'])\nrate_0 = pay0_summary.loc[0,'mean']\nrate_2 = pay0_summary.loc[2,'mean']\nprint(pay0_summary)\nprint(rate_0, rate_2)\n",
-        check="assert s['pay0_summary']['count'].sum()==30000\nassert s['rate_2']>s['rate_0']\nassert abs(s['rate_0']-0.128113)<1e-5 and abs(s['rate_2']-0.691414)<1e-5"),
+        solution=CR + "pay0_summary = credit.groupby('상환_9월')[target].agg(['count', 'mean'])\nrate_0 = pay0_summary.loc[0, 'mean']\nrate_2 = pay0_summary.loc[2, 'mean']\nprint(pay0_summary)\nprint(rate_0, rate_2)\n",
+        check="assert s['pay0_summary']['count'].sum() == 30000\nassert s['rate_2'] > s['rate_0']\nassert abs(s['rate_0'] - 0.128113) < 1e-5 and abs(s['rate_2'] - 0.691414) < 1e-5"),
     quiz('credit-check', '단원 점검',
         choice('`상환_9월`을 입력에 넣어도 누수가 아닌 이유는 무엇인가요?',
                ['지난달까지의 기록이라 다음 달 부도를 맞히는 시점에 알 수 있다', '숫자라서', '값이 작아서'], 0,

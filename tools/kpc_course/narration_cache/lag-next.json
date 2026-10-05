@@ -1,33 +1,33 @@
 {
- "hash": "a2eaa79de3a8ae09",
+ "hash": "4da681dfb918b5a4",
  "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 밀기 두 번이에요. 종가를 아래로 한 칸 밀면 어제 종가, 위로 한 칸 밀면 내일 종가거든요. 둘을 새 열로 추가해요."
+   "자, 밀기 두 번이에요. 종가를 아래로 한 칸 밀어 어제 종가를, 위로 한 칸 밀어 내일 종가를 만들어요."
   ],
   [
    "hint",
-   "shift(1)은 아래로 한 칸, 어제 값이에요. shift(-1)은 위로 한 칸, 내일 값이고요. 개념의 표를 옆에 두세요."
+   "shift(1)은 아래로 한 칸, 어제 값이에요. shift(-1)은 위로 한 칸, 내일 값이고요."
   ],
   [
    "starter",
-   "준비 코드에서 stock.csv를 읽어 날짜를 인덱스로 두고 정렬해 놨어요. 이 두 줄은 그대로 둘게요."
+   "준비 코드는 stock.csv를 읽어 날짜를 인덱스로 두고 정렬까지 해 뒀어요. 그대로 둘게요."
   ],
   [
    "code",
-   "prices['lag_close_1']=prices['종가'].shift(1)\n",
-   "종가를 shift(1)로 아래로 한 칸 밀어 lag_close_1 열에 넣어요. 첫 행은 어제가 없으니 비거든요."
+   "prices['lag_close_1'] = prices['종가'].shift(1)\n",
+   "종가를 shift(1)로 아래로 한 칸 밀어 lag_close_1 열에 넣어요. 어제 종가거든요."
   ],
   [
    "code",
-   "prices['target_next_close']=prices['종가'].shift(-1)\n",
-   "이번엔 shift(-1)로 위로 한 칸 밀어 target_next_close 열에 넣어요. 마지막 행은 내일이 없으니 비죠?"
+   "prices['target_next_close'] = prices['종가'].shift(-1)\n",
+   "이번엔 shift(-1)이에요. 위로 한 칸 밀어 target_next_close에 넣으면 내일 종가가 되죠?"
   ],
   [
    "code",
    "prices.head()\n",
-   "head()로 앞쪽 다섯 행을 보면 돼요."
+   "head()로 앞쪽 몇 행을 확인해요."
   ],
   [
    "run",
@@ -35,7 +35,7 @@
   ],
   [
    "output",
-   "표가 나왔죠? 첫 행의 lag_close_1은 비어 있고, 둘째 행의 lag_close_1은 첫 행 종가 54100이에요. 맞게 민 거예요."
+   "첫 행의 lag_close_1이 비어 있죠? 둘째 행에는 첫 행 종가 54100이 들어가 있어요. target_next_close는 한 칸 위로 밀려 있는지 보세요."
   ],
   [
    "submit",

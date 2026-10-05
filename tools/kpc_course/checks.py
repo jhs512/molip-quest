@@ -57,7 +57,8 @@ def run(chapters):
                 if activity["kind"] == "slides" and activity["markdown"].count(NL + "---" + NL) < 2:
                     problems.append(f"{where}: 슬라이드는 3장 이상이어야 합니다")
                 if activity["kind"] == "concept":
-                    paragraphs = [p for p in activity["body"].split("\n\n") if p.strip()]
+                    # Prose paragraphs only: a blank line inside a code fence is not a paragraph.
+                    paragraphs = [p for p in FENCED.sub("", activity["body"]).split("\n\n") if p.strip()]
                     if not 2 <= len(paragraphs) <= 10:
                         problems.append(f"{where}: 개념 본문은 2~10문단이어야 합니다 (현재 {len(paragraphs)})")
                     if "```" not in activity["body"]:

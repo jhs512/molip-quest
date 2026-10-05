@@ -1,38 +1,28 @@
 {
- "hash": "b43663ae9083f977",
+ "hash": "5b533d783b32d101",
  "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 이번엔 기준 모델만 먼저 돌려요. 찍기 점수부터 재는 거거든요."
+   "자, 기준 모델만 먼저 돌려요. 입력을 안 보고 제일 많은 답만 찍는 DummyClassifier예요. 그 정확도를 dummy_accuracy에 담아요."
   ],
   [
    "hint",
-   "입력을 안 보니 손질이 필요 없어요. fit 하고 predict 하면 끝이에요."
+   "fit을 먼저 하고, 그다음 accuracy_score에 y_test와 예측값을 넣으면 돼요."
   ],
   [
    "starter",
-   "데이터 읽기, 입력 X와 정답 y, 훈련 자료와 테스트 자료 나누기까지 준비되어 있어요. DummyClassifier와 accuracy_score도 불러와 뒀어요."
+   "자료 읽기, 입력 X와 정답 y, 훈련 자료와 테스트 자료 나누기는 준비되어 있어요. DummyClassifier와 accuracy_score도 이미 불러왔어요."
   ],
   [
    "code",
-   "dummy = DummyClassifier(strategy='most_frequent')\n",
-   "most_frequent는 제일 많은 답으로만 찍는 모델이에요. dummy라는 이름표에 담아요."
+   "\ndummy = DummyClassifier(strategy='most_frequent')\ndummy.fit(X_train, y_train)\n",
+   "strategy를 most_frequent로 주면 제일 많은 답만 찍어요. 훈련 자료로 fit을 해요."
   ],
   [
    "code",
-   "dummy.fit(X_train, y_train)\n",
-   "훈련 자료로 학습해요. 사실 제일 많은 답이 뭔지만 세는 거죠."
-  ],
-  [
-   "code",
-   "dummy_accuracy = accuracy_score(y_test, dummy.predict(X_test))\n",
-   "테스트 자료를 예측하고, 정답 y_test와 맞춰 본 정확도를 dummy_accuracy에 담아요."
-  ],
-  [
-   "code",
-   "print(dummy_accuracy)\n",
-   "그다음 줄에서 꺼내 출력해요."
+   "dummy_accuracy = accuracy_score(y_test, dummy.predict(X_test))\nprint(dummy_accuracy)\n",
+   "X_test를 예측한 값을 y_test와 비교해서 정확도를 재요. 그 값을 출력하면 돼요."
   ],
   [
    "run",

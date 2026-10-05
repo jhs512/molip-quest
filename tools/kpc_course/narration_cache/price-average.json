@@ -1,34 +1,34 @@
 {
- "hash": "4db3b0a4ffb057e9",
+ "hash": "95607a4fa2560e2e",
  "by": "claude",
  "entry": [
   [
    "problem",
-   "자, 넷째 날 가격 10300이 들어왔어요. prices 맨 뒤에 붙이고, 개수랑 평균을 내서 둘 다 출력하면 돼요."
+   "자, 넷째 날 가격 10300이 들어왔어요. prices 맨 뒤에 붙이고, 개수와 평균을 구해서 둘 다 출력해 볼게요."
   ],
   [
    "starter",
-   "준비 코드엔 사흘치 가격 prices가 이미 있어요. 이 줄은 그대로 둘게요."
+   "준비 코드엔 prices 리스트에 사흘치 가격 세 개가 들어 있어요. 이 줄은 그대로 둘게요."
   ],
   [
    "code",
    "prices.append(10300)\n",
-   "append로 맨 뒤에 10300을 붙여요. 이제 prices엔 값이 네 개거든요."
+   "append는 리스트 맨 뒤에 값을 하나 붙여요. 이제 가격이 네 개죠?"
   ],
   [
    "code",
    "count = len(prices)\n",
-   "len으로 개수를 세서 count에 담아요."
+   "len은 리스트에 든 값의 개수예요. 그걸 count에 담아요."
   ],
   [
    "code",
-   "average = sum(prices)/count\n",
-   "평균은 합계 나누기 개수죠? sum으로 합계를 내고 count로 나눠요."
+   "average = sum(prices) / count\n",
+   "평균은 합계 나누기 개수거든요. average() 함수는 없으니 sum(prices)를 count로 직접 나눠요."
   ],
   [
    "code",
    "print(count, average)\n",
-   "마지막으로 count와 average를 한 줄에 출력해요."
+   "print에 쉼표로 둘을 넘기면 한 줄에 나란히 찍혀요."
   ],
   [
    "run",
@@ -36,7 +36,7 @@
   ],
   [
    "output",
-   "4 10150.0이 나왔죠? 나눗셈이라 10150.0으로 보여도 괜찮아요."
+   "4 10150.0이 나왔죠? 나눗셈 결과라 10150.0으로 보여도 괜찮아요."
   ],
   [
    "submit",
