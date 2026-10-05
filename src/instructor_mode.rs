@@ -78,10 +78,54 @@ fn answer(activity: &Activity) -> String {
     }
 }
 
+/// What "정답 보기" runs through the tutor agent: the answers go in and grading is pressed, with
+/// no answer card. Coding puts the solution in the editor and submits; concept and quiz replay the
+/// answer_quiz steps of the compiled narration (the same answers the 해설 ticks) without speech.
+fn solve_actions(activity: &Activity) -> serde_json::Value {
+    use serde_json::json;
+    match &activity.kind {
+        ActivityKind::Coding { .. } => json!([
+            {"action": "set_code", "code": answer(activity)},
+            {"action": "submit"}
+        ]),
+        ActivityKind::Concept { .. } | ActivityKind::Quiz { .. } => {
+            let mut steps: Vec<serde_json::Value> = activity
+                .narration
+                .iter()
+                .filter(|a| a["action"] == "answer_quiz")
+                .cloned()
+                .map(|mut a| {
+                    a.as_object_mut().map(|o| o.remove("say"));
+                    a
+                })
+                .collect();
+            if steps.is_empty() {
+                let questions: Vec<&Question> = match &activity.kind {
+                    ActivityKind::Concept { check, .. } => vec![check],
+                    ActivityKind::Quiz { questions } => questions.iter().collect(),
+                    _ => vec![],
+                };
+                let answers: serde_json::Map<String, serde_json::Value> = questions
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(i, q)| match &q.kind {
+                        QuestionKind::Choice { correct, .. } => Some((correct + 1).to_string()),
+                        QuestionKind::ShortAnswer { accepted } => accepted.first().cloned(),
+                        QuestionKind::TableSelect { .. } => None,
+                    }
+                    .map(|a| ((i + 1).to_string(), serde_json::Value::String(a))))
+                    .collect();
+                steps.push(json!({"action": "answer_quiz", "answers": answers}));
+            }
+            serde_json::Value::Array(steps)
+        }
+        ActivityKind::Slides { .. } => json!([]),
+    }
+}
+
 #[component]
 pub(crate) fn InstructorControls(activity: Activity) -> Element {
     let session = use_context::<InstructorSession>().0;
-    let mut show_answer = use_signal(|| false);
     let mut running = use_signal(|| false);
     let mut paused = use_signal(|| false);
     let mut report = use_signal(String::new);
@@ -91,27 +135,17 @@ pub(crate) fn InstructorControls(activity: Activity) -> Element {
     if session().is_none() {
         return rsx! {};
     }
-    let code_view = matches!(activity.kind, ActivityKind::Coding { .. });
-    // A deck has no answer to show: "정답 보기" just marks it watched, the same as "다 봤어요 · 미션 완료".
+    // A deck has nothing to fill in: "정답 보기" marks it watched, the same as "다 봤어요 · 미션 완료".
     let slides = matches!(activity.kind, ActivityKind::Slides { .. });
-    let answer_text = answer(&activity);
+    let solve = serde_json::to_string(&solve_actions(&activity)).unwrap_or_else(|_| "[]".into());
     let actions = serde_json::to_string(&activity.narration).unwrap_or_else(|_| "[]".into());
     rsx! {
         div {class:"instructor-controls",
-            button {class:"instructor-answer",onclick:move |_|{document::eval("window.molipAgent?.stop()");if slides {document::eval("document.querySelector('.slides-finish')?.click()");}else{show_answer.set(true);}},"정답 보기"}
-            button {class:"instructor-explain",disabled:running()||actions=="[]",onclick:move |_|{show_answer.set(false);running.set(true);paused.set(false);report.set(String::new());let actions=actions.clone();spawn(async move {let script=format!("(async()=>{{const a=window.molipAgent,voice=a.voice,name=a.voiceName;a.setVoiceName('system');a.setVoice(true);try{{dioxus.send(await a.run({actions}));}}catch(e){{dioxus.send(String(e));}}finally{{a.setVoice(voice);a.setVoiceName(name);}}}})()");let mut eval=document::eval(&script);let result=eval.recv::<String>().await.unwrap_or_else(|_|"해설을 종료했습니다.".into());running.set(false);paused.set(false);report.set(result);});},"해설 보기"}
+            button {class:"instructor-answer",disabled:running(),onclick:move |_|{document::eval("window.molipAgent?.stop()");if slides {document::eval("document.querySelector('.slides-finish')?.click()");return;}running.set(true);paused.set(false);report.set(String::new());let solve=solve.clone();spawn(async move {let script=format!("(async()=>{{const a=window.molipAgent,voice=a.voice;a.setVoice(false);try{{dioxus.send(await a.run({solve}));}}catch(e){{dioxus.send(String(e));}}finally{{a.setVoice(voice);}}}})()");let mut eval=document::eval(&script);let result=eval.recv::<String>().await.unwrap_or_else(|_|"정답을 넣지 못했습니다.".into());running.set(false);report.set(result);});},"정답 보기"}
+            button {class:"instructor-explain",disabled:running()||actions=="[]",onclick:move |_|{running.set(true);paused.set(false);report.set(String::new());let actions=actions.clone();spawn(async move {let script=format!("(async()=>{{const a=window.molipAgent,voice=a.voice,name=a.voiceName;a.setVoiceName('system');a.setVoice(true);try{{dioxus.send(await a.run({actions}));}}catch(e){{dioxus.send(String(e));}}finally{{a.setVoice(voice);a.setVoiceName(name);}}}})()");let mut eval=document::eval(&script);let result=eval.recv::<String>().await.unwrap_or_else(|_|"해설을 종료했습니다.".into());running.set(false);paused.set(false);report.set(result);});},"해설 보기"}
             if running() {
                 button {onclick:move |_|{if paused(){document::eval("window.molipAgent?.resume()");}else{document::eval("window.molipAgent?.pause()");}paused.set(!paused());},{if paused(){"계속"}else{"일시정지"}}}
                 button {onclick:move |_|{document::eval("window.molipAgent?.stop()");},"해설 멈춤"}
-            }
-            if show_answer() {
-                div {class:"doctor-backdrop",onclick:move |_|show_answer.set(false),
-                    section {class:"doctor-panel instructor-answer-panel",role:"dialog",aria_modal:"true",aria_label:"정답 보기",onclick:move |e|e.stop_propagation(),onkeydown:move |e|{if e.key()==Key::Escape{show_answer.set(false);}},
-                        h2 {"{activity.title} · 정답"}
-                        button {autofocus:true,onclick:move |_|show_answer.set(false),"닫기"}
-                        if code_view {pre {code {"{answer_text}"}}}else{pre {"{answer_text}"}}
-                    }
-                }
             }
         }
     }
