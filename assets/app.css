@@ -669,3 +669,16 @@ html.fx-still .assistant-tts-dot { animation: none; }
 .shortcut-keys { white-space: nowrap; width: 1%; }
 .shortcut-panel kbd { display: inline-block; padding: 2px 8px; border-radius: 6px; background: #0f1d29; border: 1px solid #4c657a; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 12.5px; }
 .shortcut-sheet-open { font-size: 12px; padding: 3px 9px; }
+
+/* A solved question stays in place for review: locked inputs, 정답 and 내 답 marks, explanation. */
+.quiz-question.solved { border-left: 4px solid #62d6b1; padding-left: 14px; }
+.quiz-question.solved .quiz-option { cursor: default; opacity: .72; }
+.quiz-question.solved .quiz-option.correct { opacity: 1; background: #244a40; box-shadow: inset 0 0 0 2px #62d6b1; }
+.quiz-question.solved .quiz-option.chosen:not(.correct) { opacity: 1; box-shadow: inset 0 0 0 2px #f0b35a; }
+.quiz-mark { margin-left: auto; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.quiz-mark.correct { background: #62d6b1; color: #0f2a22; }
+.quiz-mark.chosen { background: #f0b35a; color: #2d1f05; }
+.quiz-answer-line { margin: 8px 0 0; color: #9fb8cc; font-size: 14px; }
+.quiz-review { margin-top: 12px; padding: 12px 14px; border-radius: 8px; background: #1f3a33; border: 1px solid #3f7a69; }
+.quiz-solved-mark { margin: 0 0 6px; color: #62d6b1; font-weight: 700; font-size: 13px; }
+.quiz-review .markdown p { margin: .4em 0; }

@@ -543,18 +543,29 @@ fn QuizView(
         p {{format!("정답 완료 {} / {} 문항",passed.read().len(),questions.len())}}
         if all_passed {p {class:"clear-banner",role:"status","미션 클리어! 다음 미션으로 이동할 수 있어요."}}
         else {p {"맞힌 문항은 저장됩니다. 아직 맞히지 못한 문항만 다시 도전하세요."}}
-        for (n,q) in questions.iter().enumerate().filter(|(_,q)|!passed.read().contains(&q.id)) {
-            // data-question numbers the question for the tutor agent, which addresses
-            // "quiz:N" by this number even after earlier questions were passed and hidden.
-            section {key:"{q.id}",class:"quiz-question","data-question":(n+1).to_string(),div {class:"question-heading",Markdown {text:format!("{}. {}",n+1,q.prompt)}}
+        for (n,q) in questions.iter().enumerate() {
+            // A solved question stays on screen, locked, with the student's answer marked, the
+            // correct answer and the explanation (why the other options are wrong) under it,
+            // so the quiz can be reviewed in place. data-question numbers the question for the
+            // tutor agent ("quiz:N").
+            {let solved=passed.read().contains(&q.id); let chosen=answers.read().get(&q.id).cloned().unwrap_or_default(); rsx!{
+            section {key:"{q.id}",class:if solved {"quiz-question solved"} else {"quiz-question"},"data-question":(n+1).to_string(),div {class:"question-heading",Markdown {text:format!("{}. {}",n+1,q.prompt)}}
                 match &q.kind {
-                    QuestionKind::Choice {options,..}=>rsx! {
+                    QuestionKind::Choice {options,correct}=>rsx! {
                         for (option,text) in options.iter().enumerate() {
-                            label {class:"quiz-option",input {r#type:"radio",name:q.id.clone(),value:option.to_string(),checked:answers.read().get(&q.id)==Some(&option.to_string()),onchange:{let id=q.id.clone();let key=key.clone();move |_|{answers.write().insert(id.clone(),option.to_string());report.set(None);if let Err(e)=drafts::save(&key,"",&answers()){message.set(e);}}}}Markdown {text:text.clone()}}
+                            label {class:format!("quiz-option{}{}",if solved&&option==*correct {" correct"} else {""},if solved&&chosen==option.to_string() {" chosen"} else {""}),
+                                input {r#type:"radio",name:q.id.clone(),value:option.to_string(),disabled:solved,checked:answers.read().get(&q.id)==Some(&option.to_string()),onchange:{let id=q.id.clone();let key=key.clone();move |_|{answers.write().insert(id.clone(),option.to_string());report.set(None);if let Err(e)=drafts::save(&key,"",&answers()){message.set(e);}}}}
+                                Markdown {text:text.clone()}
+                                if solved&&option==*correct {span {class:"quiz-mark correct","정답"}}
+                                if solved&&chosen==option.to_string()&&option!=*correct {span {class:"quiz-mark chosen","내 답"}}
+                            }
                         }
                     },
-                    QuestionKind::ShortAnswer {..}=>rsx! {input {aria_label:q.prompt.clone(),placeholder:"답을 입력하세요",initial_value:input_defaults.get(&q.id).cloned().unwrap_or_default(),oninput:{let id=q.id.clone();let key=key.clone();move |e|{answers.write().insert(id.clone(),e.value());report.set(None);if let Err(e)=drafts::save(&key,"",&answers()){message.set(e);}}}}},
-                    QuestionKind::TableSelect {table,pick,..}=>{
+                    QuestionKind::ShortAnswer {accepted}=>rsx! {
+                        input {aria_label:q.prompt.clone(),placeholder:"답을 입력하세요",disabled:solved,initial_value:input_defaults.get(&q.id).cloned().unwrap_or_default(),oninput:{let id=q.id.clone();let key=key.clone();move |e|{answers.write().insert(id.clone(),e.value());report.set(None);if let Err(e)=drafts::save(&key,"",&answers()){message.set(e);}}}}
+                        if solved {p {class:"quiz-answer-line",{format!("내 답: {} · 인정 답안: {}",if chosen.trim().is_empty() {"(저장된 답 없음)".to_string()} else {chosen.clone()},accepted.join(", "))}}}
+                    },
+                    QuestionKind::TableSelect {table,pick,expected,..}=>{
                         // The picked indices live in the answer as "0,3,5"; a tick toggles one.
                         let picked=molip_quest::curriculum::parse_selection(answers.read().get(&q.id).map(String::as_str).unwrap_or(""));
                         let rows_mode=pick=="rows";
@@ -567,13 +578,13 @@ fn QuizView(
                         }};
                         rsx! {
                             div {class:"table-select","data-pick":pick.clone(),
-                                p {class:"table-select-help",{if rows_mode {format!("행 왼쪽의 네모를 눌러 고르세요 · {}개 고름",picked.len())} else {format!("열 머리글을 눌러 고르세요 · {}개 고름",picked.len())}}}
+                                p {class:"table-select-help",{if solved {format!("정답 · {} ({}개 고름)",expected,picked.len())} else if rows_mode {format!("행 왼쪽의 네모를 눌러 고르세요 · {}개 고름",picked.len())} else {format!("열 머리글을 눌러 고르세요 · {}개 고름",picked.len())}}}
                                 div {class:"data-grid",table {
                                     thead {tr {th {class:"table-select-corner",{if rows_mode {"선택"} else {"#"}}}
                                         for (c,name) in table.columns.iter().enumerate() {
                                             th {class:if !rows_mode&&picked.contains(&c) {"picked"} else {""},
                                                 if rows_mode {"{name}"}
-                                                else {label {class:"table-select-column",input {r#type:"checkbox","data-index":c.to_string(),checked:picked.contains(&c),onchange:{let mut toggle=toggle.clone();move |_|toggle(c)}}" {name}"}}
+                                                else {label {class:"table-select-column",input {r#type:"checkbox","data-index":c.to_string(),disabled:solved,checked:picked.contains(&c),onchange:{let mut toggle=toggle.clone();move |_|toggle(c)}}" {name}"}}
                                             }
                                         }
                                     }}
@@ -581,7 +592,7 @@ fn QuizView(
                                         for (r,row) in table.rows.iter().enumerate() {
                                             tr {class:if rows_mode&&picked.contains(&r) {"picked"} else {""},
                                                 td {class:"table-select-corner",
-                                                    if rows_mode {label {class:"table-select-row",input {r#type:"checkbox","data-index":r.to_string(),checked:picked.contains(&r),onchange:{let mut toggle=toggle.clone();move |_|toggle(r)}}" {r+1}"}}
+                                                    if rows_mode {label {class:"table-select-row",input {r#type:"checkbox","data-index":r.to_string(),disabled:solved,checked:picked.contains(&r),onchange:{let mut toggle=toggle.clone();move |_|toggle(r)}}" {r+1}"}}
                                                     else {"{r+1}"}
                                                 }
                                                 for (c,cell) in row.iter().enumerate() {
@@ -595,16 +606,19 @@ fn QuizView(
                         }
                     },
                 }
-                if let Some(result)=report.read().as_ref().and_then(|r|r.cases.get(n)) {
+                if solved {
+                    div {class:"quiz-review",
+                        p {class:"quiz-solved-mark","✓ 정답 · 해설"}
+                        Markdown {text:q.explanation.clone()}
+                    }
+                } else if let Some(result)=report.read().as_ref().and_then(|r|r.cases.get(n)) {
                     p {class:"error","다시 생각해보세요."}
                     Markdown {text:result.stderr.clone()}
                     p {"인정 답안: {result.expected}"}
                 }
             }
+            }}
         }
-        if !passed.read().is_empty() {details {summary {"맞힌 문항과 해설 복습"}
-            for q in questions.iter().filter(|q|passed.read().contains(&q.id)) {p {strong {"✓ {q.prompt}"}}Markdown {text:q.explanation.clone()}}
-        }}
         p {class:"execution-status",role:"status","{message}"}
         div {class:"quiz-actions",
         button {class:"primary",disabled:all_passed,onclick:move |_|{
