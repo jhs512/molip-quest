@@ -1503,6 +1503,13 @@ pub fn Gallery(course: Course, kind: GalleryKind) -> Element {
                         span { class:"gallery-count", {format!("{} / {total}", n + 1)} }
                         button { disabled: n + 1 >= total, onclick: move |_| selected.set(Some(n + 1)), "다음 →" }
                     }
+                    // Keyboard (assets/layout/shortcuts.js): Ctrl/⌘+←/→ step entries, Ctrl/⌘+↑ back to
+                    // the list. A deck's → past its last slide also lands here (slides.js leaveTo).
+                    div { class:"shortcut-targets", hidden:true, "aria-hidden":"true",
+                        button { id:"shortcut-prev-mission", tabindex:"-1", disabled: n == 0, onclick: move |_| selected.set(Some(n.saturating_sub(1))) }
+                        button { id:"shortcut-next-mission", tabindex:"-1", disabled: n + 1 >= total, onclick: move |_| selected.set(Some(n + 1)) }
+                        button { id:"shortcut-prev-unit", tabindex:"-1", onclick: move |_| selected.set(None) }
+                    }
                     section { class:"gallery-item",
                         p { class:"gallery-location", "{item.location}" }
                         h3 { "{item.title}" }

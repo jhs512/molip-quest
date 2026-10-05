@@ -194,7 +194,7 @@ function mount(host) {
   host.tabIndex = 0;
   // Past the last slide, → moves on to the next mission (and ← before the first slide goes
   // back one), through the mission's own 이전/다음 buttons so the learning flow stays in charge.
-  const missionNav = text => [...(host.closest('.slides-mission') || document).querySelectorAll('.mission-nav button, .header-navigation button')]
+  const missionNav = text => [...(host.closest('.slides-mission, .gallery') || document).querySelectorAll('.mission-nav button, .header-navigation button, .gallery-nav button')]
     .find(b => b.textContent.trim() === text && !b.disabled) || null;
   const leaveTo = text => {
     const b = missionNav(text); if (!b) return false;

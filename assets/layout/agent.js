@@ -51,7 +51,7 @@
     quiz_submit: ['.quiz-actions .primary', '.quiz-actions'],
     nav: ['.header-navigation'],
     missions: ['.mission-cell.current', '.mission-cell'],
-    slides: ['.slides-host'],
+    slides: ['.slides-stage', '.slides-host'],
     xp: ['.learning-xp'],
     title: ['.reading-mission h2', '.problem-pane h2', '.slides-mission h2'],
   };
@@ -399,7 +399,13 @@
       }
       const b = byText('.slides-bar button', '다음 장 →'); if (!b || b.disabled) throw new Error('넘길 장이 없습니다'); b.click(); await sleep(300); return '다음 장으로 넘겼습니다: ' + text('.slides-counter', 20);
     },
-    async finish_slides() { const b = byText('button', '다 봤어요 · 미션 완료'); if (!b) throw new Error('슬라이드 미션이 아닙니다'); if (!b.disabled) b.click(); await sleep(400); return '슬라이드 미션을 완료로 표시했습니다.'; },
+    async finish_slides() {
+      const b = byText('button', '다 봤어요 · 미션 완료'); if (!b) throw new Error('슬라이드 미션이 아닙니다');
+      // Presenting: the next mission, if it is a deck, opens in presentation mode too (slides.js mount).
+      const host = document.querySelector('.slides-host');
+      if (host && host.classList.contains('slides-presenting') && globalThis.molipSlides) globalThis.molipSlides.carryPresenting = Date.now();
+      if (!b.disabled) b.click(); await sleep(400); return '슬라이드 미션을 완료로 표시했습니다.';
+    },
   };
   // Where each action's spotlight goes when it carries "say" (type_code places its own).
   const DEFAULT_TARGET = {
@@ -411,6 +417,11 @@
     replyRun++; stopSpeech();
     cancelled = false; paused = false; running = true;
     prefetch(actions);
+    // A deck script (it ends with finish_slides) is presented full screen, like a class.
+    if (actions.some(a => a && a.action === 'finish_slides')) {
+      const host = document.querySelector('.slides-host');
+      if (host && host.molipPresent && !host.classList.contains('slides-presenting')) { host.molipPresent(true); await sleep(300); }
+    }
     const lines = [];
     try {
       for (const [i, action] of actions.entries()) {
