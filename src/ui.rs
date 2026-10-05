@@ -851,6 +851,14 @@ fn AssistantPanel(
                     Ok(reply) => {
                         let (text, actions) = assistant::split_actions(&reply);
                         if !text.is_empty() {
+                            // 소리 on: a plain answer is read aloud; an answer with actions
+                            // lets the actions' own lines speak instead.
+                            if actions.is_none() && settings_now.narration_voice {
+                                document::eval(&format!(
+                                    "window.molipAgent && molipAgent.speakReply({});",
+                                    serde_json::to_string(&text).unwrap_or_default()
+                                ));
+                            }
                             messages.write().push(Turn {
                                 role: "model".into(),
                                 text,
@@ -1011,7 +1019,7 @@ fn AssistantPanel(
                             option { value: rate, {format!("{rate}배")} }
                         }
                     }
-                    button { title:"해설 모드에서 설명을 소리 내어 읽을지", onclick: move |_| {
+                    button { title:"해설 모드의 설명과 AI의 답을 소리 내어 읽을지", onclick: move |_| {
                         let on = !settings.read().narration_voice;
                         settings.write().narration_voice = on;
                         let _ = settings.read().save();

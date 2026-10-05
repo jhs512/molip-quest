@@ -408,6 +408,7 @@
   };
   async function run(actions) {
     if (!Array.isArray(actions)) return '동작 목록이 배열이 아닙니다.';
+    replyRun++; stopSpeech();
     cancelled = false; paused = false; running = true;
     prefetch(actions);
     const lines = [];
@@ -443,8 +444,31 @@
     }
     return lines.join('\n');
   }
-  function stop() { cancelled = true; paused = false; cancelAnimationFrame(glideFrame); stopSpeech(); clearSpot(); }
+  // Read a chat answer aloud (the 소리 switch is on): prose only, code blocks skipped, one
+  // sentence at a time so 멈춤 and a new question cut it off cleanly. No spotlight, no caption.
+  let replyRun = 0;
+  async function speakReply(text) {
+    if (!voice || running) return false;
+    const run = ++replyRun;
+    stopSpeech();
+    cancelled = false;
+    const prose = String(text || '')
+      .replace(/```[\s\S]*?```/g, ' ')
+      .replace(/^#{1,6}\s*/gm, '').replace(/^\s*[-*]\s+/gm, '').replace(/^\s*\d+\.\s+/gm, '')
+      .replace(/\*\*(.+?)\*\*/g, '$1').replace(/`([^`\n]+)`/g, '$1').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      .replace(/\s+/g, ' ').trim();
+    if (!prose) return false;
+    const helpers = globalThis.molipSpeech;
+    const sentences = helpers && helpers.speechSentences ? helpers.speechSentences(prose).map(s => s.text) : [prose];
+    if (neural()) for (const sentence of sentences) synthesize(sentence);
+    for (const sentence of sentences) {
+      if (cancelled || run !== replyRun || running) break;
+      await speak(sentence);
+    }
+    return true;
+  }
+  function stop() { cancelled = true; paused = false; replyRun++; cancelAnimationFrame(glideFrame); stopSpeech(); clearSpot(); }
   function setVoice(on) { voice = !!on; if (!voice) stopSpeech(); return voice; }
   function setVoiceName(name) { return globalThis.molipVoice ? globalThis.molipVoice.setName(name) : String(name || 'system'); }
-  globalThis.molipAgent = { run, stop, pause, resume, get paused() { return paused; }, get running() { return running; }, setVoice, setVoiceName, resolveTarget, glideTo, get voice() { return voice; }, get voiceName() { return globalThis.molipVoice ? globalThis.molipVoice.name : 'system'; }, get lastSpeech() { return lastSpeech; }, get playbackRate() { return currentAudio ? currentAudio.playbackRate : null; }, actions: Object.keys(handlers) };
+  globalThis.molipAgent = { run, stop, pause, resume, speakReply, get paused() { return paused; }, get running() { return running; }, setVoice, setVoiceName, resolveTarget, glideTo, get voice() { return voice; }, get voiceName() { return globalThis.molipVoice ? globalThis.molipVoice.name : 'system'; }, get lastSpeech() { return lastSpeech; }, get playbackRate() { return currentAudio ? currentAudio.playbackRate : null; }, actions: Object.keys(handlers) };
 })();
