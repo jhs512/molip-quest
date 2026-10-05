@@ -124,6 +124,7 @@ window.molipVoice && molipVoice.setName({});",
         document::eval(&molip_quest::prefs::Prefs::load().script());
         document::eval(include_str!("../assets/layout/diagrams.js"));
         document::eval(include_str!("../assets/layout/interactive.js"));
+        document::eval(include_str!("../assets/layout/quiz-pick.js"));
         document::eval(include_str!("../assets/layout/agent.js"));
         document::eval(include_str!("../assets/slides/slides.bundle.js"));
     });

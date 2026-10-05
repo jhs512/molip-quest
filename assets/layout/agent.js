@@ -380,14 +380,10 @@
         const want = String(value).trim();
         const radios = [...section.querySelectorAll('input[type=radio]')];
         if (radios.length) {
-          // Options are matched by their exact text, then by 1-based number (what the compiled
-          // 해설 sends), and only then by text containment: a bare "3" must mean the third option,
-          // not the first option whose wording happens to contain a 3.
+          // Exact text, then 1-based number (what the compiled 해설 sends), then containment:
+          // assets/layout/quiz-pick.js, shared with tests/js/quiz-pick.test.mjs.
           const label = r => normalize((r.closest('.quiz-option') || r.parentElement || r).textContent);
-          const wantText = normalize(want);
-          let pick = radios.find(r => label(r) === wantText);
-          if (!pick && /^\d+$/.test(want) && Number(want) >= 1 && Number(want) <= radios.length) pick = radios[Number(want) - 1];
-          if (!pick) pick = radios.find(r => wantText && (label(r).includes(wantText) || (wantText.length > 6 && wantText.includes(label(r)))));
+          const pick = radios[globalThis.molipQuizPick.pickOption(radios.map(label), want)];
           if (!pick) { notes.push(`${key}번: 보기 "${want}"를 찾지 못했습니다. 보기: ${radios.map(r => label(r)).join(' | ')}`); continue; }
           if (a.say) { spotlight(pick.closest('.quiz-option') ? `option:${key}:${radios.indexOf(pick) + 1}` : `quiz:${key}`, a.say); }
           pick.click();

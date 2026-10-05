@@ -181,6 +181,133 @@ pub(crate) fn InstructorControls(activity: Activity) -> Element {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use molip_quest::curriculum::grade_quiz;
+    use std::collections::HashMap;
+
+    /// The option the agent clicks for an answer: exact text, then 1-based number, then text
+    /// containment. Mirrors assets/layout/quiz-pick.js (tests/js/quiz-pick.test.mjs runs the
+    /// real one); keep the two in step.
+    fn pick_option(options: &[String], want: &str) -> Option<usize> {
+        fn normalize(text: &str) -> String {
+            text.replace(['`', '*'], "")
+                .split_whitespace()
+                .collect::<Vec<_>>()
+                .join(" ")
+        }
+        let texts: Vec<String> = options.iter().map(|o| normalize(o)).collect();
+        let want = normalize(want);
+        if let Some(i) = texts.iter().position(|t| *t == want) {
+            return Some(i);
+        }
+        if let Ok(n) = want.parse::<usize>() {
+            if (1..=texts.len()).contains(&n) {
+                return Some(n - 1);
+            }
+        }
+        if want.is_empty() {
+            return None;
+        }
+        texts
+            .iter()
+            .position(|t| t.contains(&want) || (want.chars().count() > 6 && want.contains(t)))
+    }
+
+    /// What the quiz view would hold after the agent performed the answer_quiz steps: the
+    /// option index, the typed text, or the 0-based picks, keyed by question id.
+    fn answers_after(steps: &serde_json::Value, questions: &[Question]) -> HashMap<String, String> {
+        let mut by_number: HashMap<String, String> = HashMap::new();
+        for step in steps.as_array().expect("array") {
+            assert_eq!(step["action"], "answer_quiz", "정답 보기 step {step}");
+            if let Some(answers) = step["answers"].as_object() {
+                for (n, v) in answers {
+                    by_number.insert(n.clone(), v.as_str().unwrap_or_default().to_string());
+                }
+            }
+        }
+        questions
+            .iter()
+            .enumerate()
+            .filter_map(|(i, q)| {
+                let want = by_number.get(&(i + 1).to_string())?;
+                let stored = match &q.kind {
+                    QuestionKind::Choice { options, .. } => pick_option(options, want)?.to_string(),
+                    QuestionKind::ShortAnswer { .. } => want.clone(),
+                    QuestionKind::TableSelect { .. } => want
+                        .split(',')
+                        .filter_map(|s| s.trim().parse::<usize>().ok())
+                        .map(|n| (n - 1).to_string())
+                        .collect::<Vec<_>>()
+                        .join(","),
+                };
+                Some((q.id.clone(), stored))
+            })
+            .collect()
+    }
+
+    #[test]
+    fn a_number_names_the_nth_option_even_when_another_option_contains_that_digit() {
+        let options: Vec<String> = ["10000 곱하기 3이 얼마야?", "`30000`", "파이썬. 10000 * 3 계산해서 출력"]
+            .map(String::from)
+            .to_vec();
+        assert_eq!(pick_option(&options, "3"), Some(2));
+        assert_eq!(pick_option(&options, "1"), Some(0));
+        assert_eq!(pick_option(&options, "4"), None);
+        assert_eq!(pick_option(&["`2`".into(), "3".into()], "3"), Some(1));
+        assert_eq!(pick_option(&["오류가 난다".into(), "`30000`이 나온다".into()], "오류"), Some(0));
+    }
+
+    /// 정답 보기 on every concept and quiz mission fills answers that the real grader passes;
+    /// on a coding mission it submits the solution; a deck has no steps (it is marked watched).
+    #[test]
+    fn solve_actions_pass_every_kpc_mission() {
+        let course =
+            molip_quest::Course::parse(include_str!("../courses/kpc-finance.json")).unwrap();
+        let mut graded = 0;
+        for activity in course
+            .chapters
+            .iter()
+            .flat_map(|c| &c.units)
+            .flat_map(|u| &u.activities)
+        {
+            let steps = solve_actions(activity);
+            match &activity.kind {
+                ActivityKind::Concept { check, .. } => {
+                    let answers = answers_after(&steps, std::slice::from_ref(check));
+                    let report = grade_quiz(std::slice::from_ref(check), &answers);
+                    let failed: Vec<_> = report
+                        .cases
+                        .iter()
+                        .filter(|c| !c.passed)
+                        .map(|c| format!("{} -> {}", c.input, c.stdout))
+                        .collect();
+                    assert!(report.passed, "{}: {failed:?}", activity.id);
+                    graded += 1;
+                }
+                ActivityKind::Quiz { questions } => {
+                    let answers = answers_after(&steps, questions);
+                    let report = grade_quiz(questions, &answers);
+                    let failed: Vec<_> = report
+                        .cases
+                        .iter()
+                        .filter(|c| !c.passed)
+                        .map(|c| format!("{} → {}", c.input, c.stdout))
+                        .collect();
+                    assert!(report.passed, "{}: {failed:?}", activity.id);
+                    graded += questions.len();
+                }
+                ActivityKind::Coding { .. } => {
+                    assert_eq!(steps[0]["action"], "set_code", "{}", activity.id);
+                    assert_eq!(steps[0]["code"], answer(activity), "{}", activity.id);
+                    assert_eq!(steps[1]["action"], "submit", "{}", activity.id);
+                }
+                ActivityKind::Slides { .. } => {
+                    assert_eq!(steps, serde_json::json!([]), "{}", activity.id);
+                }
+            }
+        }
+        assert!(graded > 200, "only {graded} questions graded");
+    }
+
     #[test]
     fn every_coding_answer_matches_compiled_narration_and_challenge_reference() {
         let course =
