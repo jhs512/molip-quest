@@ -34,6 +34,14 @@
     train_test_split: '트레인 테스트 스플릿', mean_absolute_error: '민 앱솔루트 에러', accuracy_score: '애큐러시 스코어',
     IndentationError: '인덴테이션 에러', KeyError: '키 에러', TypeError: '타입 에러', ValueError: '밸류 에러',
     NaN: '낸', nan: '낸', EOFError: '이오에프 에러', BeautifulSoup: '뷰티풀 수프', WebView: '웹뷰', Android: '안드로이드',
+    // Tools and names the course mentions (the Edge voice spells or mangles these otherwise).
+    pip: '핍', conda: '콘다', Anaconda: '아나콘다', Jupyter: '주피터', Notebook: '노트북', notebook: '노트북', wheel: '휠',
+    requests: '리퀘스트', Selenium: '셀레니움', selenium: '셀레니움', webdriver: '웹드라이버', Chrome: '크롬', soup: '수프',
+    timeout: '타임아웃', headers: '헤더스', select: '셀렉트', select_one: '셀렉트 원', get_text: '겟 텍스트', wikitable: '위키테이블',
+    Wikipedia: '위키피디아', KOSPI: '코스피', KOSDAQ: '코스닥', yfinance: '와이 파이낸스', yf: '와이에프', FinanceDataReader: '파이낸스 데이터 리더',
+    fdr: '에프디알', DataReader: '데이터 리더', download: '다운로드', Open: '오픈', High: '하이', Low: '로우', Close: '클로즈', Volume: '볼륨',
+    Change: '체인지', idxmax: '아이디엑스 맥스', idxmin: '아이디엑스 민', cut: '컷', observed: '옵저브드', joblib: '잡립', VS: '브이에스',
+    Code: '코드', wiki: '위키', robots: '로봇츠', URL: '유알엘', http: '에이치티티피', https: '에이치티티피에스', www: '더블유 더블유 더블유',
   });
   const escapeRegExp = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const termPattern = new RegExp(

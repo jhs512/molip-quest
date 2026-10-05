@@ -60,6 +60,12 @@ test('quotes around a token are not spoken (the Edge voice reads a prime as 분)
   assert.equal(speech.pronunciationText("don't"), "don't");
 });
 
+test('tool names read as Korean words', () => {
+  assert.equal(speech.pronunciationText('pip install pandas 한 줄이면 돼요'), '핍 install 판다스 한 줄이면 돼요');
+  assert.equal(speech.pronunciationText('yfinance와 FinanceDataReader, KOSPI'), '와이 파이낸스와 파이낸스 데이터 리더, 코스피');
+  assert.equal(speech.pronunciationText('pipeline'), 'pipeline'); // not a whole-word match
+});
+
 test('numbers and operators read naturally', () => {
   assert.equal(speech.mathSpeechText('test_size=0.2'), 'test_size 이퀄 0 점 이');
   assert.equal(speech.mathSpeechText('생존율 38%'), '생존율 38 퍼센트');
