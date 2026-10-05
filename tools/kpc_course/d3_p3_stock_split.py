@@ -166,7 +166,7 @@ UNIT = unit('stock-split', '3일차 · 3교시 — 시간 분리와 기준 모�
         goal="""
         `calls`에서 1주차 통화량을 배열 `last_week`, 2주차 통화량을 배열 `this_week`에 저장하세요. 1주차 값을 2주차 예측으로 쓰는 것이 기준 모델이니, `mean_absolute_error(this_week, last_week)`를 `baseline_mae`에 담아 출력하세요. 월요일 하루의 오차는 `monday_error`에 따로 저장하세요.
 
-        상담원 한 명이 하루 60통을 받는다면, 이 MAE는 상담원 몇 명분의 오차인지 생각해 보세요. 월요일만 보면 어떤가요?
+        통화 한 건에 평균 5분이 걸린다면, 이 MAE는 하루에 몇 분의 통화가 밀리거나 비는지 생각해 보세요. 월요일만 보면 어떤가요?
         """,
         hint="""
         `last_week = calls[calls['week'] == 1]['calls'].to_numpy()`, 2주차도 같은 모양입니다. 지표 함수는 `(정답, 예측)` 순서이므로 정답은 `this_week`, 예측은 `last_week`입니다. 월요일은 두 배열의 첫 값이라 `monday_error = abs(this_week[0] - last_week[0])`.
