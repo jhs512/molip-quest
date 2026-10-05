@@ -283,7 +283,9 @@ pub fn Learning(
                 }
             }
             nav {class:"curriculum",
-            for chapter in &course.chapters {h3 {span {class:"curriculum-kind","📚 챕터"}{format!(" {} · {}",chapter.title,mission_progress(chapter.units.iter(),&completed_items))}}
+            // Chapters fold; the one being studied opens by default, the rest stay closed.
+            for chapter in &course.chapters {details {class:"curriculum-chapter",open:chapter.units.iter().any(|u|u.id==active_id),
+                summary {h3 {span {class:"curriculum-kind","📚 챕터"}{format!(" {} · {}",chapter.title,mission_progress(chapter.units.iter(),&completed_items))}}}
                 for unit in &chapter.units {div {class:"curriculum-unit",button {class:format!("unit{}{}",if unit.id==active_id {" selected"}else{""},if completed.contains(&unit.id) {" done"}else{""}),aria_current:if unit.id==active_id {"step"}else{"false"},disabled:!unlocked.contains(&unit.id),onclick:{let id=unit.id.clone();let active_id=active_id.clone();move |_|{if id!=active_id {mission_index.set(usize::MAX);}selected.set(id.clone());document::eval("document.querySelector('.curriculum-menu').close();");}},
                     span {class:"unit-summary",span {class:"unit-title",span {class:"curriculum-kind","📖 단원"}{format!(" {} {}",if unit.id==active_id {"▶"}else if completed.contains(&unit.id) {"✓"} else if unlocked.contains(&unit.id) {"○"} else {"🔒"},unit.title)}}span {class:"unit-progress",{mission_progress(std::iter::once(unit),&completed_items)}}}
                     if unit.id==active_id {span {class:"unit-current","학습 중"}}
@@ -307,7 +309,7 @@ pub fn Learning(
                     }
                 }
                 }}
-            }
+            }}
         }}
         for active in [active] {UnitFlow {key:"{active.id}-{active.revision}-{epoch}", course_id:course.id.clone(), unit:active,index:mission_index,nav_prev:can_prev,nav_next:can_next,onnavigate:navigate,
             oncompleted:{let active_id=active_id.clone();let following_id=following_id.clone();let course=course.clone();let already_completed=completed_items.clone();move |passed: bool|{

@@ -167,6 +167,13 @@ textarea[data-code-editor][hidden] { display: none; }
 .curriculum-menu .unit.done .unit-progress { color: #63dbb6; }
 .curriculum-kind { font-size: 11px; font-weight: 700; color: #9ab0c2; background: #0f1f2b; border: 1px solid #40576b; border-radius: 6px; padding: 1px 6px; margin-right: 4px; vertical-align: middle; }
 .curriculum-menu h3 .curriculum-kind { color: #79dcff; }
+/* Chapters fold: the heading is the summary, with the browser's marker. */
+.curriculum-chapter > summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 8px; margin-top: 18px; padding: 8px 10px; border-radius: 8px; border: 1px solid #40576b; background: #152736; }
+.curriculum-chapter > summary::-webkit-details-marker { display: none; }
+.curriculum-chapter > summary::before { content: "▸"; color: #79dcff; font-size: 14px; width: 12px; }
+.curriculum-chapter[open] > summary::before { content: "▾"; }
+.curriculum-chapter > summary h3 { margin: 0; flex: 1; }
+.curriculum-chapter > summary:hover { border-color: #4d9bca; }
 /* Overall clear-rate gauge at the top of the menu. */
 .curriculum-gauge { margin: 4px 28px 8px; }
 .curriculum-gauge-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; }
