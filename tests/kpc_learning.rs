@@ -276,7 +276,7 @@ fn every_kpc_coding_problem_has_a_human_prompt_and_a_machine_prompt() {
             }
         }
     }
-    assert_eq!(checked, 105);
+    assert_eq!(checked, 106);
     // The vocabulary a working analyst uses reaches the student through the human version.
     let stock = course.chapters.last().unwrap().units.last().unwrap();
     let problem = stock
@@ -314,7 +314,7 @@ async fn every_kpc_coding_problem_passes_alone_with_its_reference_answer() {
             }
         }
     }
-    assert_eq!(checked, 105);
+    assert_eq!(checked, 106);
     let changed=run_python("from pathlib import Path\nPath('data/titanic.csv').write_text('corrupted')\nPath('previous.txt').write_text('state')\nprint('changed')"," ").await.unwrap();
     assert!(changed.success);
     let clean=run_python("from pathlib import Path\nimport pandas as pd\nassert not Path('previous.txt').exists()\nassert pd.read_csv('data/titanic.csv').shape==(1309,14)\nprint('fresh')","").await.unwrap();
@@ -337,16 +337,22 @@ fn kpc_units_use_varied_sequences_including_repeated_concepts_and_problem_only_u
         intro.activities[1].kind,
         ActivityKind::Slides { .. }
     ));
+    // Two concepts open the unit (what the course leaves you with; Anaconda and Jupyter and
+    // why they are not needed), then the first problem, then a concept again.
     assert!(matches!(
         intro.activities[2].kind,
         ActivityKind::Concept { .. }
     ));
     assert!(matches!(
         intro.activities[3].kind,
-        ActivityKind::Coding { .. }
+        ActivityKind::Concept { .. }
     ));
     assert!(matches!(
         intro.activities[4].kind,
+        ActivityKind::Coding { .. }
+    ));
+    assert!(matches!(
+        intro.activities[5].kind,
         ActivityKind::Concept { .. }
     ));
     // Every unit opens with a deck of its own.
