@@ -134,6 +134,9 @@ pub fn Learning(
     let mut autopilot = use_signal(|| false);
     let mut auto_round = use_signal(|| 0u32);
     let mut auto_cancel = use_signal(|| 0u32);
+    // A running 해설 is paused (the panel's ⏸, the banner's, or Space); the agent holds its
+    // sentence and its typing until 재개.
+    let mut narration_paused = use_signal(|| false);
     let mut assistant_messages = use_signal(Vec::<molip_quest::assistant::Turn>::new);
     let mut assistant_kind = String::new();
     let mut assistant_ask: Vec<String> = Vec::new();
@@ -298,7 +301,7 @@ pub fn Learning(
         // 접기 hides the dock; the panel stays mounted so a running request or /auto-all continues.
         aside {class:"assistant-dock",hidden:!assistant_open(),
                 AssistantPanel {title:assistant_title.clone(),kind:assistant_kind.clone(),ask:assistant_ask.clone(),context:assistant_context_signal,narration:assistant_narration_signal,messages:assistant_messages,
-                    autopilot,auto_round,auto_cancel,mission_marker,
+                    autopilot,auto_round,auto_cancel,mission_marker,paused:narration_paused,
                     onauto_advance:move |_|{
                         // The tutor is done with this mission: take the clear popup's 다음 미션, or the
                         // header's 다음 →, or stop at the end of the course.
@@ -320,8 +323,9 @@ pub fn Learning(
         }
         if autopilot() {
             div {class:"autopilot-banner",role:"status",
-                span {class:"autopilot-dot"} span {"자동 진행 중 · 미션이 끝나면 다음으로 넘어갑니다 · "} kbd {"Esc"} span {" 해제"}
-                button {onclick:move |_|{autopilot.set(false);auto_cancel+=1;document::eval("window.molipAgent && molipAgent.stop();");},"해제"}
+                span {class:"autopilot-dot"} span {{if narration_paused() {"자동 진행 · 일시정지 중 · "} else {"자동 진행 중 · 미션이 끝나면 다음으로 넘어갑니다 · "}}} kbd {"Space"} span {" 일시정지/재개 · "} kbd {"Esc"} span {" 해제"}
+                button {onclick:move |_|{let p=!narration_paused();narration_paused.set(p);document::eval(if p {"window.molipAgent && molipAgent.pause();"} else {"window.molipAgent && molipAgent.resume();"});},{if narration_paused() {"▶ 재개"} else {"⏸ 일시정지"}}}
+                button {onclick:move |_|{autopilot.set(false);narration_paused.set(false);auto_cancel+=1;document::eval("window.molipAgent && molipAgent.stop();");},"해제"}
             }
             // Esc anywhere (assets/layout/shortcuts.js) clicks this.
             button {id:"autopilot-stop",hidden:true,tabindex:"-1",onclick:move |_|{autopilot.set(false);auto_cancel+=1;document::eval("window.molipAgent && molipAgent.stop();");}}
@@ -668,6 +672,7 @@ fn AssistantPanel(
     auto_round: Signal<u32>,
     auto_cancel: Signal<u32>,
     mission_marker: Signal<String>,
+    paused: Signal<bool>,
     onauto_advance: EventHandler<()>,
     onclose: EventHandler<()>,
 ) -> Element {
@@ -708,15 +713,18 @@ fn AssistantPanel(
     });
     // Play the mission's precompiled 해설 script (courses/*.json `narration`): the lines go into
     // the conversation at once, then the agent performs them on screen and reports back.
+    let mut narrating = use_signal(|| false);
     let narrate = Callback::new(move |_: ()| {
         pending.set(true);
         error.set(String::new());
         let actions = narration();
         let lines = assistant::narration_lines(&actions);
+        narrating.set(true);
+        paused.set(false);
         messages.write().push(Turn {
             role: "model".into(),
             text: format!(
-                "해설 대본 · {}단계\n\n{}",
+                "▶ 자동 해설 · {}단계\n\n{}",
                 lines.len(),
                 lines
                     .iter()
@@ -737,6 +745,8 @@ fn AssistantPanel(
                 .await
                 .unwrap_or_else(|e| format!("동작 실행 실패: {e:?}"));
             running.set(false);
+            narrating.set(false);
+            paused.set(false);
             if report.contains("오류 - ") || report.starts_with("동작 실행 실패") {
                 error.set("해설 동작이 중간에 멈췄습니다. 화면을 확인하세요.".into());
             }
@@ -853,6 +863,8 @@ fn AssistantPanel(
         }
         pending.set(false);
         running.set(false);
+        narrating.set(false);
+        paused.set(false);
         messages.write().push(Turn {
             role: "note".into(),
             text: "자동 진행을 해제했습니다.".into(),
@@ -942,8 +954,16 @@ fn AssistantPanel(
             header { class:"assistant-head",
                 div { h2 { "AI에게 물어보기" } p { class:"assistant-scope", "'해 줘'라고 하면 코드 넣기·실행·제출·퀴즈 답·이동까지 대신합니다 · /clear 로 대화 지우기 · {settings.read().provider.label()}" } }
                 div { class:"assistant-actions",
+                    if running() {
+                        // id narration-pause: the Space key (assets/layout/shortcuts.js) clicks it.
+                        button { id:"narration-pause", class:"assistant-pause", title:"Space", onclick: move |_| {
+                            let p = !paused();
+                            paused.set(p);
+                            document::eval(if p {"window.molipAgent && molipAgent.pause();"} else {"window.molipAgent && molipAgent.resume();"});
+                        }, {if paused() {"▶ 재개"} else {"⏸ 일시정지"}} }
+                    }
                     if running() || autopilot() {
-                        button { class:"assistant-stop", onclick: move |_| { if autopilot() { autopilot.set(false); auto_cancel += 1; } document::eval("window.molipAgent && molipAgent.stop();"); }, "⏹ 멈춤" }
+                        button { class:"assistant-stop", onclick: move |_| { if autopilot() { autopilot.set(false); auto_cancel += 1; } paused.set(false); document::eval("window.molipAgent && molipAgent.stop();"); }, "⏹ 멈춤" }
                     }
                     select { class:"assistant-rate", title:"해설·읽어주기 속도", onchange: move |e| { document::eval(&format!("window.molipVoice && molipVoice.setRate({});", e.value())); },
                         for rate in ["0.75", "1", "1.25", "1.5", "1.75", "2"] {
@@ -1010,7 +1030,7 @@ fn AssistantPanel(
                         }
                     }
                 }
-                if pending() { div { class:"assistant-msg model pending", {if running() {"앱에서 동작을 실행하는 중…"} else {"생각하는 중…"}} } }
+                if pending() { div { class:"assistant-msg model pending", {if paused() {"⏸ 일시정지 중 · ▶ 재개 또는 Space"} else if narrating() {"▶ 자동 해설 진행 중 · ⏸ 또는 Space로 일시정지"} else if running() {"앱에서 동작을 실행하는 중…"} else {"생각하는 중…"}} } }
                 if !error().is_empty() {
                     div { class:"assistant-error",
                         p { class:"error", "{error}" }

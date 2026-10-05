@@ -558,6 +558,7 @@ button.collection-card:hover {transform:translateY(-5px);border-color:#d5bb82;bo
 @keyframes agent-spot-pulse { 0%, 100% { box-shadow: 0 0 0 4px #8b5cf640, 0 0 36px #8b5cf680, inset 0 0 24px #8b5cf626; } 50% { box-shadow: 0 0 0 7px #8b5cf626, 0 0 52px #8b5cf6a6, inset 0 0 30px #8b5cf640; } }
 @media(prefers-reduced-motion:reduce) { .agent-spotlight { animation: none; transition: none; } .agent-caption { transition: none; } }
 .practice-shell .assistant-actions .assistant-stop { background: #6d4fd6; color: #fff; border-color: #a78bfa; font-weight: 700; }
+.practice-shell .assistant-actions .assistant-pause { background: #2f4a63; color: #fff; border-color: #a78bfa; font-weight: 700; }
 .practice-shell .assistant-chip.narrate { background: #2a1f52; border-color: #7c5fd6; color: #e9e2ff; }
 .practice-shell .assistant-chip.narrate:hover { background: #3a2c6e; }
 

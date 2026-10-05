@@ -188,6 +188,24 @@
 
   // ---- Voice: one sentence at a time, resolved when it has been read (or would have been). ----
   let voice = true, cancelled = false;
+  // Pause (the panel's ⏸, the Space key): the clip or utterance playing is held, typing stops,
+  // and the next action waits; resume picks up exactly there. The spotlight stays where it is.
+  let paused = false, running = false;
+  async function waitWhilePaused() { while (paused && !cancelled) await sleep(100); }
+  function pause() {
+    if (!running || paused) return paused;
+    paused = true;
+    if (currentAudio) { try { currentAudio.pause(); } catch {} }
+    if ('speechSynthesis' in window) { try { window.speechSynthesis.pause(); } catch {} }
+    return paused;
+  }
+  function resume() {
+    if (!paused) return paused;
+    paused = false;
+    if (currentAudio) { currentAudio.play().catch(() => {}); }
+    if ('speechSynthesis' in window) { try { window.speechSynthesis.resume(); } catch {} }
+    return paused;
+  }
   // ---- Neural voice: clips come from assets/layout/voice.js (the app's /tts endpoint). ----
   let currentAudio = null;
   const neural = () => (globalThis.molipVoice && globalThis.molipVoice.enabled()) ? globalThis.molipVoice : null;
@@ -266,6 +284,7 @@
     if (!body.endsWith('\n')) body += '\n';
     if (current && !current.endsWith('\n')) body = '\n' + body;
     for (let i = 0; i < body.length && !cancelled; i += 2) {
+      if (paused) await waitWhilePaused();
       api.appendValue(body.slice(i, i + 2));
       await sleep(18);
     }
@@ -379,11 +398,12 @@
   };
   async function run(actions) {
     if (!Array.isArray(actions)) return '동작 목록이 배열이 아닙니다.';
-    cancelled = false;
+    cancelled = false; paused = false; running = true;
     prefetch(actions);
     const lines = [];
     try {
       for (const [i, action] of actions.entries()) {
+        await waitWhilePaused();
         if (cancelled) { lines.push(`${i + 1}. 학생이 멈춤을 눌러 여기서 중단했습니다.`); break; }
         const name = action && action.action;
         const handler = handlers[name];
@@ -393,6 +413,7 @@
           if (sentence && name !== 'type_code' && name !== 'answer_quiz') {
             spotlight(DEFAULT_TARGET[name] ? DEFAULT_TARGET[name](action) : null, sentence);
             await speak(sentence);
+            await waitWhilePaused();
             if (cancelled) { lines.push(`${i + 1}. 학생이 멈춤을 눌러 여기서 중단했습니다.`); break; }
           } else if (sentence && name === 'answer_quiz') {
             spotlight('quiz', sentence);
@@ -406,13 +427,14 @@
         }
       }
     } finally {
+      running = false; paused = false;
       stopSpeech();
       clearSpot();
     }
     return lines.join('\n');
   }
-  function stop() { cancelled = true; cancelAnimationFrame(glideFrame); stopSpeech(); clearSpot(); }
+  function stop() { cancelled = true; paused = false; cancelAnimationFrame(glideFrame); stopSpeech(); clearSpot(); }
   function setVoice(on) { voice = !!on; if (!voice) stopSpeech(); return voice; }
   function setVoiceName(name) { return globalThis.molipVoice ? globalThis.molipVoice.setName(name) : String(name || 'system'); }
-  globalThis.molipAgent = { run, stop, setVoice, setVoiceName, resolveTarget, glideTo, get voice() { return voice; }, get voiceName() { return globalThis.molipVoice ? globalThis.molipVoice.name : 'system'; }, get lastSpeech() { return lastSpeech; }, get playbackRate() { return currentAudio ? currentAudio.playbackRate : null; }, actions: Object.keys(handlers) };
+  globalThis.molipAgent = { run, stop, pause, resume, get paused() { return paused; }, get running() { return running; }, setVoice, setVoiceName, resolveTarget, glideTo, get voice() { return voice; }, get voiceName() { return globalThis.molipVoice ? globalThis.molipVoice.name : 'system'; }, get lastSpeech() { return lastSpeech; }, get playbackRate() { return currentAudio ? currentAudio.playbackRate : null; }, actions: Object.keys(handlers) };
 })();

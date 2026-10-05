@@ -31,6 +31,15 @@
         return;
       }
     }
+    // Space pauses or resumes a running 해설 (the panel's button keeps the Rust side in step).
+    const agent = globalThis.molipAgent;
+    if (event.key === ' ' && agent && agent.running && !event.ctrlKey && !event.metaKey && !event.altKey
+        && !(event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement || event.target.isContentEditable)) {
+      event.preventDefault(); event.stopPropagation();
+      const button = document.getElementById('narration-pause');
+      if (button) button.click(); else if (agent.paused) agent.resume(); else agent.pause();
+      return;
+    }
     if (event.key === 'Escape') {
       // /auto-all: the learning view renders a hidden stop button while it runs.
       const stop = document.getElementById('autopilot-stop');
