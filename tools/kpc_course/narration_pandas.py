@@ -211,4 +211,14 @@ NARRATION = {
         ("이 앱 안에서는 둘 다 실행하지 않아요", "앱 안에서는 둘 다 안 돌려요. 받은 결과를 저장한 파일로 연습하고, 받는 두 줄은 회사 컴퓨터에서 붙이면 돼요."),
         ("check", "확인 문항이요. 검색창에 글자를 넣는 것까지 브라우저를 조종하는 도구, 뭐였죠?"),
     ],
+    "live-crawl": [
+        ("problem", "자, 이번엔 진짜 인터넷이에요. 위키백과 KOSPI 문서에 연도별 종가 표가 있어요. 그걸 긁어서 표로 만들고, 가장 많이 오른 해를 찾아요."),
+        ("starter", "준비 코드가 requests로 페이지를 받아 soup까지 만들어 뒀어요. User-Agent 헤더랑 timeout, 개념에서 본 그대로죠?"),
+        ("code", "table = [t for t in soup.select('table.wikitable') if 'Closing level' in t.get_text()][0]\n", "페이지에 wikitable이 여럿이라 글자에 Closing level이 든 표를 골라요."),
+        ("code", "rows = []\nfor tr in table.select('tr'):\n    cells = [td.get_text(strip=True) for td in tr.select('td')]\n    if len(cells) < 4 or not cells[3]:\n        continue\n    rows.append({'연도': int(cells[0]), '종가': float(cells[1].replace(',', '')), '변화율': float(cells[3].replace('−', '-'))})\n", "행마다 td 글자를 꺼내요. 네 칸이 안 되거나 등락률이 빈 행은 건너뛰고요. 쉼표는 지우고, 위키의 마이너스 기호는 보통 빼기로 바꿔야 float이 돼요."),
+        ("code", "kospi = pd.DataFrame(rows)\nbest_year = int(kospi.loc[kospi['변화율'].idxmax(), '연도'])\nup_years = int((kospi['변화율'] > 0).sum())\n", "딕셔너리 리스트를 표로. 변화율이 가장 큰 행의 연도가 best_year, 0보다 큰 해의 수가 up_years예요."),
+        ("code", "print(kospi.tail())\nprint(best_year, up_years, round(kospi['변화율'].mean(), 1))\n", "표 끝이랑 두 값, 평균 변화율을 출력해요."),
+        ("output", "표 끝에 최근 몇 해가 보이죠? 가장 많이 오른 해는 2025년, 75.6%예요. 1982년부터 오른 해가 더 많아요. 위키 표가 바뀌면 숫자도 바뀌니 검사는 모양만 봐요."),
+        ("submit", "제출할게요. 검사는 열 이름, 30행 이상, 연도 오름차순, 두 값이 표와 맞는지를 봐요."),
+    ],
 }

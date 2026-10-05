@@ -31,7 +31,7 @@ async fn probe(executable: &str, args: &[&str]) -> Option<Vec<u8>> {
 pub async fn inspect() -> Vec<Check> {
     let mut checks = Vec::new();
     let python = python_executable();
-    let script = "import sys,json,importlib\nresult={'python':sys.version.split()[0]}\nfor name in ['pandas','matplotlib','seaborn','sklearn','openpyxl','bs4']:\n try:\n  module=importlib.import_module(name); result[name]=getattr(module,'__version__','설치됨')\n except Exception: result[name]=None\nprint(json.dumps(result))";
+    let script = "import sys,json,importlib\nresult={'python':sys.version.split()[0]}\nfor name in ['pandas','matplotlib','seaborn','sklearn','openpyxl','bs4','requests','FinanceDataReader','yfinance']:\n try:\n  module=importlib.import_module(name); result[name]=getattr(module,'__version__','설치됨')\n except Exception: result[name]=None\nprint(json.dumps(result))";
     let result = probe(&python, &["-I", "-X", "utf8", "-c", script])
         .await
         .and_then(|out| serde_json::from_slice::<serde_json::Value>(&out).ok());
@@ -51,6 +51,9 @@ pub async fn inspect() -> Vec<Check> {
         ("sklearn", "scikit-learn · 모델 학습"),
         ("openpyxl", "openpyxl · Excel 읽기"),
         ("bs4", "BeautifulSoup · HTML 분석"),
+        ("requests", "requests · 웹 페이지 받기"),
+        ("FinanceDataReader", "FinanceDataReader · 주가 받기"),
+        ("yfinance", "yfinance · 주가 받기 (야후)"),
     ] {
         let version = result.as_ref().and_then(|v| v[key].as_str());
         checks.push(Check {

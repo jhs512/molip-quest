@@ -110,6 +110,21 @@ UNIT = unit('stock-data', '주가 파일과 시점', [
         """,
         check=short('야후 파이낸스에서 주가 표를 받아 오는 yfinance의 함수 이름은 뭘까요?', ['download', 'yf.download', 'yfinance.download', 'download()'],
                     '`yf.download(종목, start=, end=)`예요. FinanceDataReader는 `fdr.DataReader`고요. 받은 표는 저장해 두고, 분석은 저장 파일로 해요.')),
+    coding('live-prices', '진짜 웹에서: 지금 이 순간의 삼성전자 주가',
+        intro="""
+        인터넷이 필요한 미션이에요. 저장 파일이 아니라 **지금** 시세를 받아 봐요. `FinanceDataReader`로 삼성전자(`005930`)를 올해 1월 1일부터 받으면 날짜가 인덱스인 표가 와요. 열은 `Open`, `High`, `Low`, `Close`, `Volume`, `Change`예요.
+        """,
+        goal="""
+        `fdr.DataReader('005930', '2026-01-01')`로 받은 표를 날짜순으로 정렬해 `live`에 두세요. 마지막 종가를 정수로 `latest_close`에, 최근 5거래일 종가 평균을 `ma5`에 담으세요. 표 끝부분과 마지막 날짜, 두 값을 출력하세요.
+
+        받는 날에 따라 숫자가 달라요. 그래서 검사는 값이 아니라 모양을 봐요. 날짜 인덱스, 20행 이상, 마지막 날짜가 2주 안, 그리고 두 값이 표와 맞는지요.
+        """,
+        hint="""
+        `live = fdr.DataReader('005930', '2026-01-01').sort_index()`. 마지막 종가는 `live['Close'].iloc[-1]`, 5일 평균은 `live['Close'].rolling(5).mean().iloc[-1]`이에요. yfinance를 쓰고 싶으면 `yf.download('005930.KS', start='2026-01-01', auto_adjust=True, multi_level_index=False)`로 받으면 열 이름이 같은 모양이 돼요.
+        """,
+        starter="import pandas as pd\nimport FinanceDataReader as fdr\n# live, latest_close, ma5를 만드세요\n",
+        solution="import pandas as pd\nimport FinanceDataReader as fdr\nlive = fdr.DataReader('005930', '2026-01-01').sort_index()\nlatest_close = int(live['Close'].iloc[-1])\nma5 = float(live['Close'].rolling(5).mean().iloc[-1])\nprint(live.tail())\nprint(live.index.max().date(), latest_close, round(ma5))\n",
+        check="import pandas as pd\nassert isinstance(s['live'].index, pd.DatetimeIndex) and len(s['live'])>=20\nassert 'Close' in s['live'].columns and (s['live']['Close']>0).all()\nassert s['live'].index.is_monotonic_increasing\nassert (pd.Timestamp.today()-s['live'].index.max()).days<=14\nassert s['latest_close']==int(s['live']['Close'].iloc[-1])\nassert abs(s['ma5']-float(s['live']['Close'].rolling(5).mean().iloc[-1]))<1e-6"),
     coding('stock-load', '날짜 순서와 크기 확인',
         goal="""
         주가 파일을 읽어 `prices`에 저장하세요. `날짜` 열은 글자가 아니라 날짜로 읽어 인덱스로 올리세요. 그리고 `sort_index()`로 정렬하세요. 행 수는 `n_rows`에 담으세요. 열 수는 `n_columns`에 담고요. 첫 날짜와 마지막 날짜도 출력하세요.

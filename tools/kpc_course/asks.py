@@ -177,4 +177,6 @@ ASKS = {
     "live-web": ["requests와 Selenium 중 뭘 써야 할지 어떻게 정해?", "User-Agent는 왜 붙여?", "robots.txt가 뭐야?"],
     "fetch-prices": ["005930.KS에서 .KS가 뭐야?", "받은 표를 왜 저장해서 써?", "FinanceDataReader와 yfinance는 뭐가 달라?"],
     "rate-by-attribute": ["pd.cut의 right=False가 뭐야?", "지금 쓴 코드 어디가 틀렸어?", "이 문제 풀어서 제출까지 해 줘"],
+    "live-crawl": ["Closing level이 든 표를 어떻게 골라?", "지금 쓴 코드 어디가 틀렸어?", "이 문제 풀어서 제출까지 해 줘"],
+    "live-prices": ["검사가 값 대신 모양을 보는 이유가 뭐야?", "yfinance로 받으면 뭐가 달라?", "이 문제 풀어서 제출까지 해 줘"],
 }

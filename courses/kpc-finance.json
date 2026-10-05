@@ -5070,8 +5070,72 @@
               ]
             },
             {
+              "id": "live-crawl",
+              "title": "2-3-8 진짜 웹에서: 코스피 연도별 종가 긁어 오기",
+              "kind": "coding",
+              "problem": {
+                "id": "live-crawl",
+                "title": "진짜 웹에서: 코스피 연도별 종가 긁어 오기",
+                "content": "### 문제에서 필요한 설명\n\n인터넷이 필요한 미션이에요. 위키백과의 KOSPI 문서에는 1981년부터 해마다 코스피 종가와 그해 등락률이 적힌 표가 있어요. 준비 코드가 그 페이지를 `requests`로 받아 `soup`까지 만들어 둬요. 포털 시세 화면은 자바스크립트로 그려져서 `requests`로는 비어 오니, 정적인 위키 표를 써요.\n\n### 목표\n\n`soup.select('table.wikitable')` 중 글자에 `Closing level`이 든 표를 골라 `table`에 두세요. 그 표의 `tr`마다 `td` 글자를 리스트로 꺼내요. 칸이 네 개 미만이거나 넷째 칸(등락률)이 비어 있으면 건너뛰어요. 나머지 행에서 연도(`int`), 종가(쉼표를 지우고 `float`), 변화율(`−` 기호를 `-`로 바꾸고 `float`)을 뽑아 `kospi` 표를 만드세요. 열 이름은 `연도`, `종가`, `변화율`이에요.\n\n그 표로 두 가지를 구하세요. 가장 많이 오른 해를 `best_year`에, 오른 해의 수를 `up_years`에 담고, 표 끝부분과 두 값, 평균 변화율을 출력하세요.\n\n### 힌트\n\n표 고르기는 `[t for t in soup.select('table.wikitable') if 'Closing level' in t.get_text()][0]`이에요. 행 반복은 `for tr in table.select('tr'):` 안에서 `cells = [td.get_text(strip=True) for td in tr.select('td')]`. 위키의 음수 기호는 `-`가 아니라 `−`(유니코드)라서 `.replace('−', '-')`가 필요해요. 가장 많이 오른 해는 `kospi.loc[kospi['변화율'].idxmax(), '연도']`.",
+                "starter_code": "import requests\nimport pandas as pd\nfrom bs4 import BeautifulSoup\nurl = 'https://en.wikipedia.org/wiki/KOSPI'\nresponse = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=10)\nsoup = BeautifulSoup(response.text, 'html.parser')\n# table, kospi, best_year, up_years를 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['best_year', 'kospi', 'up_years']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert len(s['kospi'])>=30\n    assert list(s['kospi'].columns)==['연도','종가','변화율']\n    assert (s['kospi']['종가']>0).all() and s['kospi']['연도'].is_monotonic_increasing\n    assert 2020 in set(s['kospi']['연도'])\n    assert s['best_year']==int(s['kospi'].loc[s['kospi']['변화율'].idxmax(),'연도'])\n    assert s['up_years']==int((s['kospi']['변화율']>0).sum())\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
+                "prompt": "파이썬. requests로 https://en.wikipedia.org/wiki/KOSPI 를 받고(User-Agent 헤더, timeout 10) BeautifulSoup으로 읽어.\nwikitable 중 'Closing level'이 든 표에서 행마다 td 글자를 뽑아 연도(int), 종가(쉼표 제거 float), 변화율(넷째 칸, '−'를 '-'로, float) 열의 kospi 표.\n칸이 4개 미만이거나 변화율이 빈 행은 제외. 변화율 최대인 연도를 best_year, 변화율>0인 해의 수를 up_years에.\n\n---\n코드만 줘",
+                "prompt_why": "- `User-Agent 헤더` → 없으면 거절하는 사이트가 있다.\n- `'Closing level'이 든 표` → 페이지에 wikitable이 여럿이라 고르는 기준을 줘야 한다.\n- `'−'를 '-'로` → 위키의 음수 기호는 유니코드라 float()이 실패한다. 이걸 모르면 AI 코드도 깨진다.\n- `빈 행은 제외` → 첫해는 등락률이 없다."
+              },
+              "ask": [
+                "Closing level이 든 표를 어떻게 골라?",
+                "지금 쓴 코드 어디가 틀렸어?",
+                "이 문제 풀어서 제출까지 해 줘"
+              ],
+              "narration": [
+                {
+                  "action": "say",
+                  "target": "problem",
+                  "text": "자, 이번엔 진짜 인터넷이에요. 위키백과 KOSPI 문서에 연도별 종가 표가 있어요. 그걸 긁어서 표로 만들고, 가장 많이 오른 해를 찾아요."
+                },
+                {
+                  "action": "set_code",
+                  "code": "import requests\nimport pandas as pd\nfrom bs4 import BeautifulSoup\nurl = 'https://en.wikipedia.org/wiki/KOSPI'\nresponse = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=10)\nsoup = BeautifulSoup(response.text, 'html.parser')\n",
+                  "say": "준비 코드가 requests로 페이지를 받아 soup까지 만들어 뒀어요. User-Agent 헤더랑 timeout, 개념에서 본 그대로죠?"
+                },
+                {
+                  "action": "type_code",
+                  "code": "table = [t for t in soup.select('table.wikitable') if 'Closing level' in t.get_text()][0]\n",
+                  "say": "페이지에 wikitable이 여럿이라 글자에 Closing level이 든 표를 골라요."
+                },
+                {
+                  "action": "type_code",
+                  "code": "rows = []\nfor tr in table.select('tr'):\n    cells = [td.get_text(strip=True) for td in tr.select('td')]\n    if len(cells) < 4 or not cells[3]:\n        continue\n    rows.append({'연도': int(cells[0]), '종가': float(cells[1].replace(',', '')), '변화율': float(cells[3].replace('−', '-'))})\n",
+                  "say": "행마다 td 글자를 꺼내요. 네 칸이 안 되거나 등락률이 빈 행은 건너뛰고요. 쉼표는 지우고, 위키의 마이너스 기호는 보통 빼기로 바꿔야 float이 돼요."
+                },
+                {
+                  "action": "type_code",
+                  "code": "kospi = pd.DataFrame(rows)\nbest_year = int(kospi.loc[kospi['변화율'].idxmax(), '연도'])\nup_years = int((kospi['변화율'] > 0).sum())\n",
+                  "say": "딕셔너리 리스트를 표로. 변화율이 가장 큰 행의 연도가 best_year, 0보다 큰 해의 수가 up_years예요."
+                },
+                {
+                  "action": "type_code",
+                  "code": "print(kospi.tail())\nprint(best_year, up_years, round(kospi['변화율'].mean(), 1))\n",
+                  "say": "표 끝이랑 두 값, 평균 변화율을 출력해요."
+                },
+                {
+                  "action": "run",
+                  "say": "자, 실행해 볼게요."
+                },
+                {
+                  "action": "say",
+                  "target": "output",
+                  "text": "표 끝에 최근 몇 해가 보이죠? 가장 많이 오른 해는 2025년, 75.6%예요. 1982년부터 오른 해가 더 많아요. 위키 표가 바뀌면 숫자도 바뀌니 검사는 모양만 봐요."
+                },
+                {
+                  "action": "submit",
+                  "say": "제출할게요. 검사는 열 이름, 30행 이상, 연도 오름차순, 두 값이 표와 맞는지를 봐요."
+                }
+              ]
+            },
+            {
               "id": "html-check",
-              "title": "2-3-8 단원 점검",
+              "title": "2-3-9 단원 점검",
               "kind": "quiz",
               "questions": [
                 {
@@ -5251,7 +5315,7 @@
             },
             {
               "id": "croissant-clean",
-              "title": "2-3-9 ★ 도전 과제 · 크루아상 판매 기록 정리",
+              "title": "2-3-10 ★ 도전 과제 · 크루아상 판매 기록 정리",
               "kind": "coding",
               "problem": {
                 "id": "croissant-clean",
@@ -17678,8 +17742,67 @@
               ]
             },
             {
+              "id": "live-prices",
+              "title": "7-1-4 진짜 웹에서: 지금 이 순간의 삼성전자 주가",
+              "kind": "coding",
+              "problem": {
+                "id": "live-prices",
+                "title": "진짜 웹에서: 지금 이 순간의 삼성전자 주가",
+                "content": "### 문제에서 필요한 설명\n\n인터넷이 필요한 미션이에요. 저장 파일이 아니라 **지금** 시세를 받아 봐요. `FinanceDataReader`로 삼성전자(`005930`)를 올해 1월 1일부터 받으면 날짜가 인덱스인 표가 와요. 열은 `Open`, `High`, `Low`, `Close`, `Volume`, `Change`예요.\n\n### 목표\n\n`fdr.DataReader('005930', '2026-01-01')`로 받은 표를 날짜순으로 정렬해 `live`에 두세요. 마지막 종가를 정수로 `latest_close`에, 최근 5거래일 종가 평균을 `ma5`에 담으세요. 표 끝부분과 마지막 날짜, 두 값을 출력하세요.\n\n받는 날에 따라 숫자가 달라요. 그래서 검사는 값이 아니라 모양을 봐요. 날짜 인덱스, 20행 이상, 마지막 날짜가 2주 안, 그리고 두 값이 표와 맞는지요.\n\n### 힌트\n\n`live = fdr.DataReader('005930', '2026-01-01').sort_index()`. 마지막 종가는 `live['Close'].iloc[-1]`, 5일 평균은 `live['Close'].rolling(5).mean().iloc[-1]`이에요. yfinance를 쓰고 싶으면 `yf.download('005930.KS', start='2026-01-01', auto_adjust=True, multi_level_index=False)`로 받으면 열 이름이 같은 모양이 돼요.",
+                "starter_code": "import pandas as pd\nimport FinanceDataReader as fdr\n# live, latest_close, ma5를 만드세요\n",
+                "checker": "import matplotlib\nmatplotlib.use('Agg')\nimport runpy, sys\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['latest_close', 'live', 'ma5']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    import pandas as pd\n    assert isinstance(s['live'].index, pd.DatetimeIndex) and len(s['live'])>=20\n    assert 'Close' in s['live'].columns and (s['live']['Close']>0).all()\n    assert s['live'].index.is_monotonic_increasing\n    assert (pd.Timestamp.today()-s['live'].index.max()).days<=14\n    assert s['latest_close']==int(s['live']['Close'].iloc[-1])\n    assert abs(s['ma5']-float(s['live']['Close'].rolling(5).mean().iloc[-1]))<1e-6\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
+                "prompt": "파이썬. FinanceDataReader로 삼성전자 005930을 2026-01-01부터 받아 날짜순 정렬한 live.\n마지막 Close를 int로 latest_close, Close의 5일 rolling 평균 마지막 값을 ma5에. tail과 마지막 날짜, 두 값 출력.\n\n---\n코드만 줘",
+                "prompt_why": "- `FinanceDataReader` → 국내 종목 코드를 그대로 쓰는 쪽. yfinance면 '005930.KS'와 multi_level_index=False가 필요하다.\n- `날짜순 정렬` → 받은 순서를 믿지 않는다. 시간 자료의 첫 습관.\n- `5일 rolling 평균` → 뒤 단원에서 입력으로 쓰는 ma5와 같은 계산이다."
+              },
+              "ask": [
+                "검사가 값 대신 모양을 보는 이유가 뭐야?",
+                "yfinance로 받으면 뭐가 달라?",
+                "이 문제 풀어서 제출까지 해 줘"
+              ],
+              "narration": [
+                {
+                  "action": "say",
+                  "target": "problem",
+                  "text": "자, 이번엔 저장 파일이 아니라 지금 시세예요. FinanceDataReader로 삼성전자를 올해 1월부터 받아요."
+                },
+                {
+                  "action": "set_code",
+                  "code": "import pandas as pd\nimport FinanceDataReader as fdr\n",
+                  "say": "준비 코드는 pandas랑 FinanceDataReader 임포트뿐이에요."
+                },
+                {
+                  "action": "type_code",
+                  "code": "live = fdr.DataReader('005930', '2026-01-01').sort_index()\n",
+                  "say": "DataReader에 종목 코드와 시작일. 받자마자 날짜순으로 정렬해요. 받은 순서를 믿지 않는 게 시간 자료의 첫 습관이에요."
+                },
+                {
+                  "action": "type_code",
+                  "code": "latest_close = int(live['Close'].iloc[-1])\nma5 = float(live['Close'].rolling(5).mean().iloc[-1])\n",
+                  "say": "마지막 종가는 Close의 맨 끝 값, 5일 평균은 rolling(5).mean()의 맨 끝 값이에요. 뒤 단원의 ma5와 같은 계산이죠."
+                },
+                {
+                  "action": "type_code",
+                  "code": "print(live.tail())\nprint(live.index.max().date(), latest_close, round(ma5))\n",
+                  "say": "표 끝이랑 마지막 날짜, 두 값을 출력해요."
+                },
+                {
+                  "action": "run",
+                  "say": "자, 실행해 볼게요."
+                },
+                {
+                  "action": "say",
+                  "target": "output",
+                  "text": "오늘 기준 최근 거래일의 종가가 보이죠? 받는 날마다 숫자가 달라요. 그래서 검사는 값이 아니라 모양을 봐요. 날짜 인덱스, 20행 이상, 마지막 날짜가 2주 안."
+                },
+                {
+                  "action": "submit",
+                  "say": "제출할게요. 두 값이 표와 맞는지도 확인해요."
+                }
+              ]
+            },
+            {
               "id": "stock-load",
-              "title": "7-1-4 날짜 순서와 크기 확인",
+              "title": "7-1-5 날짜 순서와 크기 확인",
               "kind": "coding",
               "problem": {
                 "id": "stock-load",
@@ -17738,7 +17861,7 @@
             },
             {
               "id": "close-plot",
-              "title": "7-1-5 종가를 선으로 그리기",
+              "title": "7-1-6 종가를 선으로 그리기",
               "kind": "coding",
               "problem": {
                 "id": "close-plot",
@@ -17792,7 +17915,7 @@
             },
             {
               "id": "price-range",
-              "title": "7-1-6 기간과 최고 종가",
+              "title": "7-1-7 기간과 최고 종가",
               "kind": "coding",
               "problem": {
                 "id": "price-range",
@@ -17851,7 +17974,7 @@
             },
             {
               "id": "stock-data-check",
-              "title": "7-1-7 단원 점검",
+              "title": "7-1-8 단원 점검",
               "kind": "quiz",
               "questions": [
                 {

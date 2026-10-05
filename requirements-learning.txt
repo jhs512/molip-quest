@@ -4,3 +4,6 @@ seaborn==0.13.2
 scikit-learn==1.9.1
 openpyxl==3.1.5
 beautifulsoup4==4.14.3
+requests==2.34.2
+finance-datareader==0.9.202
+yfinance==1.7.0

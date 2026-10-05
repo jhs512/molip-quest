@@ -634,4 +634,22 @@ observed=True로 groupby한 평균을 rate_by_age에. 셋 다 출력.
 - `bins, right=False, labels` → 구간의 경계와 이름을 지정하지 않으면 AI가 임의로 자른다.
 - `observed=True` → 범주형으로 묶을 때 비어 있는 구간을 빼고 경고를 막는다.
 """),
+    "live-crawl": p("""
+파이썬. requests로 https://en.wikipedia.org/wiki/KOSPI 를 받고(User-Agent 헤더, timeout 10) BeautifulSoup으로 읽어.
+wikitable 중 'Closing level'이 든 표에서 행마다 td 글자를 뽑아 연도(int), 종가(쉼표 제거 float), 변화율(넷째 칸, '−'를 '-'로, float) 열의 kospi 표.
+칸이 4개 미만이거나 변화율이 빈 행은 제외. 변화율 최대인 연도를 best_year, 변화율>0인 해의 수를 up_years에.
+""", """
+- `User-Agent 헤더` → 없으면 거절하는 사이트가 있다.
+- `'Closing level'이 든 표` → 페이지에 wikitable이 여럿이라 고르는 기준을 줘야 한다.
+- `'−'를 '-'로` → 위키의 음수 기호는 유니코드라 float()이 실패한다. 이걸 모르면 AI 코드도 깨진다.
+- `빈 행은 제외` → 첫해는 등락률이 없다.
+"""),
+    "live-prices": p("""
+파이썬. FinanceDataReader로 삼성전자 005930을 2026-01-01부터 받아 날짜순 정렬한 live.
+마지막 Close를 int로 latest_close, Close의 5일 rolling 평균 마지막 값을 ma5에. tail과 마지막 날짜, 두 값 출력.
+""", """
+- `FinanceDataReader` → 국내 종목 코드를 그대로 쓰는 쪽. yfinance면 '005930.KS'와 multi_level_index=False가 필요하다.
+- `날짜순 정렬` → 받은 순서를 믿지 않는다. 시간 자료의 첫 습관.
+- `5일 rolling 평균` → 뒤 단원에서 입력으로 쓰는 ma5와 같은 계산이다.
+"""),
 }

@@ -140,6 +140,21 @@ UNIT = unit('html', '저장 HTML에서 자료 수집', [
         """,
         check=short('검색창에 글자를 넣고 엔터를 치는 것까지 브라우저를 조종하는 도구는 뭘까요?', ['Selenium', '셀레니움', 'selenium'],
                     'Selenium이에요. 주소만으로 내용이 다 오는 페이지는 `requests`로 충분해요. 자바스크립트로 그려지거나 입력이 필요한 페이지만 Selenium을 써요.')),
+    coding('live-crawl', '진짜 웹에서: 코스피 연도별 종가 긁어 오기',
+        intro="""
+        인터넷이 필요한 미션이에요. 위키백과의 KOSPI 문서에는 1981년부터 해마다 코스피 종가와 그해 등락률이 적힌 표가 있어요. 준비 코드가 그 페이지를 `requests`로 받아 `soup`까지 만들어 둬요. 포털 시세 화면은 자바스크립트로 그려져서 `requests`로는 비어 오니, 정적인 위키 표를 써요.
+        """,
+        goal="""
+        `soup.select('table.wikitable')` 중 글자에 `Closing level`이 든 표를 골라 `table`에 두세요. 그 표의 `tr`마다 `td` 글자를 리스트로 꺼내요. 칸이 네 개 미만이거나 넷째 칸(등락률)이 비어 있으면 건너뛰어요. 나머지 행에서 연도(`int`), 종가(쉼표를 지우고 `float`), 변화율(`−` 기호를 `-`로 바꾸고 `float`)을 뽑아 `kospi` 표를 만드세요. 열 이름은 `연도`, `종가`, `변화율`이에요.
+
+        그 표로 두 가지를 구하세요. 가장 많이 오른 해를 `best_year`에, 오른 해의 수를 `up_years`에 담고, 표 끝부분과 두 값, 평균 변화율을 출력하세요.
+        """,
+        hint="""
+        표 고르기는 `[t for t in soup.select('table.wikitable') if 'Closing level' in t.get_text()][0]`이에요. 행 반복은 `for tr in table.select('tr'):` 안에서 `cells = [td.get_text(strip=True) for td in tr.select('td')]`. 위키의 음수 기호는 `-`가 아니라 `−`(유니코드)라서 `.replace('−', '-')`가 필요해요. 가장 많이 오른 해는 `kospi.loc[kospi['변화율'].idxmax(), '연도']`.
+        """,
+        starter="import requests\nimport pandas as pd\nfrom bs4 import BeautifulSoup\nurl = 'https://en.wikipedia.org/wiki/KOSPI'\nresponse = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=10)\nsoup = BeautifulSoup(response.text, 'html.parser')\n# table, kospi, best_year, up_years를 만드세요\n",
+        solution="import requests\nimport pandas as pd\nfrom bs4 import BeautifulSoup\nurl = 'https://en.wikipedia.org/wiki/KOSPI'\nresponse = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=10)\nsoup = BeautifulSoup(response.text, 'html.parser')\ntable = [t for t in soup.select('table.wikitable') if 'Closing level' in t.get_text()][0]\nrows = []\nfor tr in table.select('tr'):\n    cells = [td.get_text(strip=True) for td in tr.select('td')]\n    if len(cells) < 4 or not cells[3]:\n        continue\n    rows.append({'연도': int(cells[0]), '종가': float(cells[1].replace(',', '')), '변화율': float(cells[3].replace('−', '-'))})\nkospi = pd.DataFrame(rows)\nbest_year = int(kospi.loc[kospi['변화율'].idxmax(), '연도'])\nup_years = int((kospi['변화율'] > 0).sum())\nprint(kospi.tail())\nprint(best_year, up_years, round(kospi['변화율'].mean(), 1))\n",
+        check="assert len(s['kospi'])>=30\nassert list(s['kospi'].columns)==['연도','종가','변화율']\nassert (s['kospi']['종가']>0).all() and s['kospi']['연도'].is_monotonic_increasing\nassert 2020 in set(s['kospi']['연도'])\nassert s['best_year']==int(s['kospi'].loc[s['kospi']['변화율'].idxmax(),'연도'])\nassert s['up_years']==int((s['kospi']['변화율']>0).sum())"),
     quiz('html-check', '단원 점검',
         choice('포털 검색 결과처럼 검색어를 입력해야 나오는 페이지를 모으려고 해요. 맞는 도구는 무엇인가요?',
                ['Selenium으로 브라우저를 조종해 검색어를 넣고 그려진 화면을 받는다',

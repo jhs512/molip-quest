@@ -102,4 +102,13 @@ NARRATION = {
         ("prices.to_csv('stock.csv')", "회사에서도 받는 코드는 하루 한 번 돌려 저장하고, 분석 코드는 그 파일을 읽어요. 섞어 두면 사이트가 바뀔 때 분석까지 멈춰요."),
         ("check", "확인 문항이요. 야후 파이낸스에서 받는 함수 이름, 코드 첫 줄에 있었죠?"),
     ],
+    "live-prices": [
+        ("problem", "자, 이번엔 저장 파일이 아니라 지금 시세예요. FinanceDataReader로 삼성전자를 올해 1월부터 받아요."),
+        ("starter", "준비 코드는 pandas랑 FinanceDataReader 임포트뿐이에요."),
+        ("code", "live = fdr.DataReader('005930', '2026-01-01').sort_index()\n", "DataReader에 종목 코드와 시작일. 받자마자 날짜순으로 정렬해요. 받은 순서를 믿지 않는 게 시간 자료의 첫 습관이에요."),
+        ("code", "latest_close = int(live['Close'].iloc[-1])\nma5 = float(live['Close'].rolling(5).mean().iloc[-1])\n", "마지막 종가는 Close의 맨 끝 값, 5일 평균은 rolling(5).mean()의 맨 끝 값이에요. 뒤 단원의 ma5와 같은 계산이죠."),
+        ("code", "print(live.tail())\nprint(live.index.max().date(), latest_close, round(ma5))\n", "표 끝이랑 마지막 날짜, 두 값을 출력해요."),
+        ("output", "오늘 기준 최근 거래일의 종가가 보이죠? 받는 날마다 숫자가 달라요. 그래서 검사는 값이 아니라 모양을 봐요. 날짜 인덱스, 20행 이상, 마지막 날짜가 2주 안."),
+        ("submit", "제출할게요. 두 값이 표와 맞는지도 확인해요."),
+    ],
 }
