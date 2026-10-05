@@ -61,7 +61,11 @@ fn mission_progress<'a>(
 }
 
 #[component]
-pub fn Learning(course: Course, #[props(default)] start_unit: String, #[props(default = usize::MAX)] start_mission: usize) -> Element {
+pub fn Learning(
+    course: Course,
+    #[props(default)] start_unit: String,
+    #[props(default = usize::MAX)] start_mission: usize,
+) -> Element {
     let mut selected = use_signal(|| start_unit);
     let mut mission_index = use_signal(|| start_mission);
     let mut clear_popup = use_signal(|| false);
@@ -133,6 +137,8 @@ pub fn Learning(course: Course, #[props(default)] start_unit: String, #[props(de
     let mut assistant_messages = use_signal(Vec::<molip_quest::assistant::Turn>::new);
     let mut assistant_kind = String::new();
     let mut assistant_ask: Vec<String> = Vec::new();
+    // The mission's precompiled 해설 script as JSON ("[]" when it has none).
+    let mut assistant_narration = String::from("[]");
     let (assistant_title, assistant_context) = {
         let chapter_title = course
             .chapters
@@ -144,6 +150,8 @@ pub fn Learning(course: Course, #[props(default)] start_unit: String, #[props(de
             Some(activity) => {
                 assistant_kind = activity.label().to_string();
                 assistant_ask = activity.ask.clone();
+                assistant_narration =
+                    serde_json::to_string(&activity.narration).unwrap_or_else(|_| "[]".into());
                 let draft_code = match &activity.kind {
                     ActivityKind::Coding { problem } => drafts::load(&format!(
                         "local:{}:{}:{}",
@@ -176,6 +184,16 @@ pub fn Learning(course: Course, #[props(default)] start_unit: String, #[props(de
         use_effect(use_reactive!(|context| {
             if *assistant_context_signal.peek() != context {
                 assistant_context_signal.set(context.clone());
+            }
+        }));
+    }
+    // Same for the mission's 해설 script: read by the panel when /auto starts a round.
+    let mut assistant_narration_signal = use_signal(|| assistant_narration.clone());
+    {
+        let narration = assistant_narration.clone();
+        use_effect(use_reactive!(|narration| {
+            if *assistant_narration_signal.peek() != narration {
+                assistant_narration_signal.set(narration.clone());
             }
         }));
     }
@@ -279,7 +297,7 @@ pub fn Learning(course: Course, #[props(default)] start_unit: String, #[props(de
         }
         // 접기 hides the dock; the panel stays mounted so a running request or /auto-all continues.
         aside {class:"assistant-dock",hidden:!assistant_open(),
-                AssistantPanel {title:assistant_title.clone(),kind:assistant_kind.clone(),ask:assistant_ask.clone(),context:assistant_context_signal,messages:assistant_messages,
+                AssistantPanel {title:assistant_title.clone(),kind:assistant_kind.clone(),ask:assistant_ask.clone(),context:assistant_context_signal,narration:assistant_narration_signal,messages:assistant_messages,
                     autopilot,auto_round,auto_cancel,mission_marker,
                     onauto_advance:move |_|{
                         // The tutor is done with this mission: take the clear popup's 다음 미션, or the
@@ -478,7 +496,9 @@ fn QuizView(
         if all_passed {p {class:"clear-banner",role:"status","미션 클리어! 다음 미션으로 이동할 수 있어요."}}
         else {p {"맞힌 문항은 저장됩니다. 아직 맞히지 못한 문항만 다시 도전하세요."}}
         for (n,q) in questions.iter().enumerate().filter(|(_,q)|!passed.read().contains(&q.id)) {
-            section {key:"{q.id}",class:"quiz-question",div {class:"question-heading",Markdown {text:format!("{}. {}",n+1,q.prompt)}}
+            // data-question numbers the question for the tutor agent, which addresses
+            // "quiz:N" by this number even after earlier questions were passed and hidden.
+            section {key:"{q.id}",class:"quiz-question","data-question":(n+1).to_string(),div {class:"question-heading",Markdown {text:format!("{}. {}",n+1,q.prompt)}}
                 match &q.kind {
                     QuestionKind::Choice {options,..}=>rsx! {
                         for (option,text) in options.iter().enumerate() {
@@ -642,6 +662,7 @@ fn AssistantPanel(
     kind: String,
     ask: Vec<String>,
     context: Signal<String>,
+    narration: Signal<String>,
     messages: Signal<Vec<molip_quest::assistant::Turn>>,
     autopilot: Signal<bool>,
     auto_round: Signal<u32>,
@@ -665,6 +686,68 @@ fn AssistantPanel(
     const SCROLL: &str =
         "const m=document.querySelector('.assistant-messages');if(m)m.scrollTop=m.scrollHeight;";
     let mut running = use_signal(|| false);
+    // A round (an answer with its actions, or a precompiled narration) is over: in /auto-all, hand
+    // control back to the learning flow, which moves on and bumps auto_round; an error ends the
+    // run where it is.
+    let settle = Callback::new(move |_: ()| {
+        pending.set(false);
+        document::eval(SCROLL);
+        if *autopilot.peek() {
+            if !error.peek().is_empty() {
+                autopilot.set(false);
+                messages.write().push(Turn {
+                    role: "note".into(),
+                    text: "오류가 나서 자동 진행을 멈췄습니다.".into(),
+                });
+            } else if *mission_marker.peek() == *auto_started_on.peek() {
+                onauto_advance.call(());
+            } else {
+                auto_round += 1;
+            }
+        }
+    });
+    // Play the mission's precompiled 해설 script (courses/*.json `narration`): the lines go into
+    // the conversation at once, then the agent performs them on screen and reports back.
+    let narrate = Callback::new(move |_: ()| {
+        pending.set(true);
+        error.set(String::new());
+        let actions = narration();
+        let lines = assistant::narration_lines(&actions);
+        messages.write().push(Turn {
+            role: "model".into(),
+            text: format!(
+                "해설 대본 · {}단계\n\n{}",
+                lines.len(),
+                lines
+                    .iter()
+                    .map(|l| format!("- {l}"))
+                    .collect::<Vec<_>>()
+                    .join("\n")
+            ),
+        });
+        document::eval(SCROLL);
+        let task = spawn(async move {
+            running.set(true);
+            let script = format!(
+                "(async () => {{ try {{ dioxus.send(await window.molipAgent.run({actions})); }} catch (e) {{ dioxus.send('동작 실행 실패: ' + (e && e.message ? e.message : e)); }} }})()"
+            );
+            let mut eval = document::eval(&script);
+            let report: String = eval
+                .recv()
+                .await
+                .unwrap_or_else(|e| format!("동작 실행 실패: {e:?}"));
+            running.set(false);
+            if report.contains("오류 - ") || report.starts_with("동작 실행 실패") {
+                error.set("해설 동작이 중간에 멈췄습니다. 화면을 확인하세요.".into());
+            }
+            messages.write().push(Turn {
+                role: "tool".into(),
+                text: report,
+            });
+            settle.call(());
+        });
+        current_task.set(Some(task));
+    });
     // Ask with the conversation as it stands (the last turn is the student's question). When the
     // assistant appends actions, run them on the screen, hand the report back and ask again,
     // until it answers without actions (at most a few rounds).
@@ -720,22 +803,17 @@ fn AssistantPanel(
                     }
                 }
             }
-            pending.set(false);
-            document::eval(SCROLL);
-            // /auto-all: a finished mission hands control back to the learning flow, which moves
-            // on and bumps auto_round; an error ends the run where it is.
-            if *autopilot.peek() {
-                if !error.peek().is_empty() {
-                    autopilot.set(false);
-                    messages.write().push(Turn { role: "note".into(), text: "오류가 나서 자동 진행을 멈췄습니다.".into() });
-                } else if *mission_marker.peek() == *auto_started_on.peek() {
-                    onauto_advance.call(());
-                } else {
-                    auto_round += 1;
-                }
-            }
+            settle.call(());
         });
         current_task.set(Some(task));
+    });
+    // /auto on the mission on screen: its precompiled script when it has one, else the CLI.
+    let auto = Callback::new(move |_: ()| {
+        if narration.peek().trim() != "[]" {
+            narrate.call(());
+        } else {
+            request.call(());
+        }
     });
     // The next mission's /auto, a moment after the screen has switched.
     let mut handled_round = use_signal(|| 0u32);
@@ -754,9 +832,12 @@ fn AssistantPanel(
                 return;
             }
             auto_started_on.set(mission_marker.peek().clone());
-            messages.write().push(Turn { role: "user".into(), text: AUTO.into() });
+            messages.write().push(Turn {
+                role: "user".into(),
+                text: AUTO.into(),
+            });
             document::eval(SCROLL);
-            request.call(());
+            auto.call(());
         });
     });
     // Esc / 해제: drop the running request (which kills the CLI) and settle the panel.
@@ -772,7 +853,10 @@ fn AssistantPanel(
         }
         pending.set(false);
         running.set(false);
-        messages.write().push(Turn { role: "note".into(), text: "자동 진행을 해제했습니다.".into() });
+        messages.write().push(Turn {
+            role: "note".into(),
+            text: "자동 진행을 해제했습니다.".into(),
+        });
         document::eval(SCROLL);
     });
     let send = Callback::new(move |_: ()| {
@@ -795,11 +879,16 @@ fn AssistantPanel(
             autopilot.set(true);
             auto_started_on.set(mission_marker.peek().clone());
         }
+        let is_auto = question == AUTO || question == AUTO_ALL;
         messages.write().push(Turn {
             role: "user".into(),
             text: question,
         });
-        request.call(());
+        if is_auto {
+            auto.call(());
+        } else {
+            request.call(());
+        }
     });
     // Three suggested questions that fit the mission on screen; a tap sends one right away.
     // The course supplies questions written for this mission (`ask`); these are the fallback.
@@ -842,7 +931,9 @@ fn AssistantPanel(
     use_effect(move || {
         let on = settings.read().narration_voice;
         let name = serde_json::to_string(&settings.read().narration_voice_name).unwrap_or_default();
-        document::eval(&format!("window.molipAgent && (molipAgent.setVoice({on}), molipAgent.setVoiceName({name}));"));
+        document::eval(&format!(
+            "window.molipAgent && (molipAgent.setVoice({on}), molipAgent.setVoiceName({name}));"
+        ));
     });
     // A failed question stays in the conversation; 다시 시도 re-sends it without duplicating it.
     let can_retry = move || messages.read().last().is_some_and(|t| t.role == "user") && !pending();
@@ -1305,7 +1396,12 @@ pub fn Gallery(course: Course, kind: GalleryKind) -> Element {
 
 /// Missions in the course, which is what levels count.
 pub fn total_missions(course: &Course) -> usize {
-    course.chapters.iter().flat_map(|c| c.units.iter()).map(|u| u.activities.len()).sum()
+    course
+        .chapters
+        .iter()
+        .flat_map(|c| c.units.iter())
+        .map(|u| u.activities.len())
+        .sum()
 }
 
 /// Cleared missions of this course on this computer.

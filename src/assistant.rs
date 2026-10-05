@@ -31,7 +31,7 @@ type_code{code:첫 조각, say:설명, replace:true}(기존 코드를 지우고 
 run{say:\"실행해 볼게요\"} → say{target:\"output\", text:결과 읽기} → submit{say}. 퀴즈는 say{target:\"quiz:1\", text:문항 풀이} 뒤 answer_quiz{answers, say}. \
 빈칸 문제는 say{target:\"blanks\"} 뒤 fill_blanks{values, say}. 개념 미션은 say{target:\"problem\"}을 2~4번 이어 핵심을 짚은 뒤 확인 문항이 있으면 answer_quiz{answers, say}. \
 슬라이드 미션은 장마다 say{target:\"slides\", text:그 장의 요지}와 next_slide를 번갈아 넣고 마지막에 finish_slides. \
-target 값: problem, examples, editor, input, output, run, submit, hint, quiz, quiz:N, option:N:M, blanks, slides, nav. \
+target 값: problem, examples, editor, input, output, run, submit, hint, quiz, quiz:N, option:N:M, blanks, slides, nav, title, text:본문의 구절(그 구절이 든 문단·코드·만화로 화면을 천천히 내려 비춤). \
 type_code의 code는 지금까지의 전체가 아니라 덧붙일 부분만 적고, 조각을 모두 이으면 완전한 정답 코드가 되어야 합니다.";
 
 /// What the `/auto` and `/auto-all` commands ask for, in the words the system prompt expects.
@@ -236,6 +236,28 @@ pub async fn ask(settings: &Settings, context: &str, history: &[Turn]) -> Result
     }
 }
 
+/// The spoken lines of a precompiled 해설 script (an `Activity::narration` as JSON), in order:
+/// what the panel shows before the agent starts performing them.
+pub fn narration_lines(actions_json: &str) -> Vec<String> {
+    let Ok(serde_json::Value::Array(actions)) = serde_json::from_str(actions_json) else {
+        return Vec::new();
+    };
+    actions
+        .iter()
+        .filter_map(|a| {
+            let text = if a.get("action")?.as_str()? == "say" {
+                a.get("text")?
+            } else {
+                a.get("say")?
+            };
+            text.as_str()
+                .map(str::trim)
+                .filter(|t| !t.is_empty())
+                .map(String::from)
+        })
+        .collect()
+}
+
 /// Split an answer into the text to show and the ```molip-actions JSON array, if the
 /// assistant appended one.
 pub fn split_actions(reply: &str) -> (String, Option<serde_json::Value>) {
@@ -319,7 +341,7 @@ async fn ask_cli(
         .stderr(Stdio::piped());
     #[cfg(windows)]
     cmd.creation_flags(0x0800_0000); // CREATE_NO_WINDOW
-    // Cancelling the request (Esc in /auto-all) drops this future and must end the CLI with it.
+                                     // Cancelling the request (Esc in /auto-all) drops this future and must end the CLI with it.
     cmd.kill_on_drop(true);
     let mut child = cmd.spawn().map_err(|e| {
         format!("'{command}' 명령을 실행하지 못했습니다: {e}. 설치되어 있고 PATH에 있는지, 설정의 명령 이름이 맞는지 확인하세요.")
@@ -377,13 +399,22 @@ mod tests {
 
     #[test]
     fn auto_commands_become_the_narration_request() {
-        let history = vec![Turn { role: "user".into(), text: "/auto".into() }];
+        let history = vec![Turn {
+            role: "user".into(),
+            text: "/auto".into(),
+        }];
         let text = transcript("문제", &history);
         assert!(text.contains(AUTO_REQUEST));
         assert!(!text.contains("학생: /auto"));
-        let history = vec![Turn { role: "user".into(), text: " /auto-all ".into() }];
+        let history = vec![Turn {
+            role: "user".into(),
+            text: " /auto-all ".into(),
+        }];
         assert!(transcript("문제", &history).contains(AUTO_REQUEST));
-        let history = vec![Turn { role: "user".into(), text: "/autobahn".into() }];
+        let history = vec![Turn {
+            role: "user".into(),
+            text: "/autobahn".into(),
+        }];
         assert!(transcript("문제", &history).contains("학생: /autobahn"));
     }
 
@@ -396,6 +427,71 @@ mod tests {
         let (text, none) = split_actions("그냥 설명입니다.");
         assert_eq!(text, "그냥 설명입니다.");
         assert!(none.is_none());
+    }
+
+    #[test]
+    fn narration_lines_are_the_spoken_sentences_in_order() {
+        let json = r#"[{"action":"say","target":"problem","text":"문제를 볼게요."},{"action":"type_code","code":"print(1)\n","say":"한 줄이에요."},{"action":"next_slide"},{"action":"submit","say":"제출할게요."}]"#;
+        assert_eq!(
+            narration_lines(json),
+            ["문제를 볼게요.", "한 줄이에요.", "제출할게요."]
+        );
+        assert!(narration_lines("[]").is_empty());
+        assert!(narration_lines("not json").is_empty());
+    }
+
+    /// Every mission ships with a precompiled 해설 script (tools/kpc_course/narration.py), so
+    /// /auto-all never waits for the CLI: concepts walk the text, coding problems type the
+    /// solution in pieces and submit, quizzes answer and grade, decks turn every slide.
+    #[test]
+    fn every_kpc_mission_has_a_narration_that_ends_the_mission() {
+        let course = crate::Course::parse(include_str!("../courses/kpc-finance.json")).unwrap();
+        for unit in course.chapters.iter().flat_map(|c| &c.units) {
+            for activity in &unit.activities {
+                let where_ = format!("{}/{}", unit.id, activity.id);
+                let last = activity
+                    .narration
+                    .last()
+                    .unwrap_or_else(|| panic!("{where_}: 해설 없음"));
+                let last_action = last["action"].as_str().unwrap();
+                let expected = match &activity.kind {
+                    ActivityKind::Slides { .. } => "finish_slides",
+                    ActivityKind::Concept { .. } | ActivityKind::Quiz { .. } => "answer_quiz",
+                    ActivityKind::Coding { .. } => "submit",
+                };
+                assert_eq!(last_action, expected, "{where_}");
+                let lines = narration_lines(&serde_json::to_string(&activity.narration).unwrap());
+                assert!(lines.len() >= 2, "{where_}: 해설 문장이 너무 적습니다");
+                if let ActivityKind::Coding { problem } = &activity.kind {
+                    // The kept starter code plus the typed pieces spell a whole program that is
+                    // run before it is submitted (the build checks it equals the solution).
+                    let actions: Vec<&str> = activity
+                        .narration
+                        .iter()
+                        .filter_map(|a| a["action"].as_str())
+                        .collect();
+                    assert!(
+                        actions.contains(&"type_code") && actions.contains(&"run"),
+                        "{where_}"
+                    );
+                    let typed: String = activity
+                        .narration
+                        .iter()
+                        .filter(|a| matches!(a["action"].as_str(), Some("set_code" | "type_code")))
+                        .filter_map(|a| a["code"].as_str())
+                        .collect();
+                    let kept: Vec<&str> = problem
+                        .starter_code
+                        .lines()
+                        .filter(|l| !l.trim().is_empty() && !l.trim_start().starts_with('#'))
+                        .collect();
+                    assert!(
+                        kept.iter().all(|l| typed.contains(l)),
+                        "{where_}: 준비 코드가 빠졌습니다"
+                    );
+                }
+            }
+        }
     }
 
     #[test]

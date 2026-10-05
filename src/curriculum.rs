@@ -15,6 +15,11 @@ pub struct Activity {
     /// Quick questions for the tutor panel, written for this activity (tools/kpc_course/dsl.py).
     #[serde(default)]
     pub ask: Vec<String>,
+    /// 해설 모드 script: the agent actions (assets/layout/agent.js) that `/auto` plays for this
+    /// mission, compiled at build time (tools/kpc_course/narration.py). Empty means the tutor
+    /// CLI improvises one.
+    #[serde(default)]
+    pub narration: Vec<serde_json::Value>,
     #[serde(flatten)]
     pub kind: ActivityKind,
 }

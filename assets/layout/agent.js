@@ -9,7 +9,10 @@
 // screen it is about to touch, shows the sentence in a caption there and reads it aloud (Web
 // Speech, Korean voice, the reading speed the 읽어주기 panel saved), and only then acts.
 // `say` {target, text} is narration alone; `type_code` {code, say, replace} types code into the
-// editor a few characters at a time while the explanation is spoken. The voice comes from
+// editor a few characters at a time while the explanation is spoken. A target of the form
+// "text:<구절>" is the block of the mission text that contains that phrase (a paragraph, a
+// code block, a comic): the page glides there slowly before the sentence is read, so an
+// explanation of something below the fold is seen, not just heard. The voice comes from
 // assets/layout/voice.js (neural clips) with Web Speech as the fallback. molipAgent.stop() ends a
 // narration (the sidebar's 멈춤 button), molipAgent.setVoice(false) keeps the captions but mutes.
 (function () {
@@ -50,16 +53,41 @@
     missions: ['.mission-cell.current', '.mission-cell'],
     slides: ['.slides-host'],
     xp: ['.learning-xp'],
+    title: ['.reading-mission h2', '.problem-pane h2', '.slides-mission h2'],
   };
+  const normalize = value => String(value || '').replace(/[`*]/g, '').replace(/\s+/g, ' ').trim();
+  // The question numbered N (data-question, set by the Rust side), or the N-th on screen.
+  function question(n) {
+    return document.querySelector(`.quiz-question[data-question="${n}"]`)
+      || document.querySelectorAll('.quiz-question')[Number(n) - 1] || null;
+  }
+  // The smallest block of the mission text that contains the phrase: a paragraph, list item,
+  // heading, table, code block or rendered figure (comics keep their title as SVG text).
+  function textBlock(phrase) {
+    const wanted = normalize(phrase);
+    if (!wanted) return null;
+    const roots = [...document.querySelectorAll('.reading-mission .markdown, .problem-pane .markdown, .quiz-question')];
+    for (const root of roots) {
+      for (const block of root.children) {
+        if (!normalize(block.textContent).includes(wanted)) continue;
+        // A list or table: narrow to the item/row when one holds the whole phrase.
+        const inner = [...block.querySelectorAll('li, tr, p')].find(e => normalize(e.textContent).includes(wanted));
+        return inner && inner.getBoundingClientRect().height > 0 ? inner : block;
+      }
+    }
+    const fallback = [...document.querySelectorAll('.reading-mission, .problem-pane')].find(e => normalize(e.textContent).includes(wanted));
+    return fallback || null;
+  }
   function resolveTarget(target) {
     if (!target) return null;
     const key = String(target).trim();
     // "quiz:2" is the second question; "option:2:3" its third choice.
+    if (key.startsWith('text:')) return textBlock(key.slice(5));
     let m = key.match(/^quiz[:\s]+(\d+)$/);
-    if (m) return document.querySelectorAll('.quiz-question')[Number(m[1]) - 1] || document.querySelector('.quiz-question');
+    if (m) return question(m[1]) || document.querySelector('.quiz-question');
     m = key.match(/^option[:\s]+(\d+)[:\s]+(\d+)$/);
     if (m) {
-      const section = document.querySelectorAll('.quiz-question')[Number(m[1]) - 1];
+      const section = question(m[1]);
       return (section && section.querySelectorAll('.quiz-option')[Number(m[2]) - 1]) || section || null;
     }
     const candidates = TARGETS[key];
@@ -105,12 +133,47 @@
     }
     raf = requestAnimationFrame(place);
   }
+  // ---- Glide: bring the element into view slowly, the way a presenter scrolls while talking. ----
+  const scrollParent = element => {
+    for (let node = element.parentElement; node; node = node.parentElement) {
+      const style = getComputedStyle(node);
+      if (/(auto|scroll)/.test(style.overflowY) && node.scrollHeight > node.clientHeight + 1) return node;
+    }
+    return document.scrollingElement || document.documentElement;
+  };
+  const ease = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  let glideFrame = 0;
+  function glideTo(element) {
+    cancelAnimationFrame(glideFrame);
+    const container = scrollParent(element);
+    const viewport = container === document.scrollingElement || container === document.documentElement;
+    const box = viewport ? { top: 0, height: innerHeight } : container.getBoundingClientRect();
+    const r = element.getBoundingClientRect();
+    const margin = 24;
+    // Already fully on screen: leave the page where it is.
+    if (r.top >= box.top + margin && r.bottom <= box.top + box.height - margin) return 0;
+    // Centre the block; a block taller than the view lands with its top near the top.
+    const offset = r.height > box.height * 0.6 ? margin + 12 : (box.height - r.height) / 2;
+    const target = Math.max(0, Math.min(container.scrollTop + (r.top - box.top) - offset, container.scrollHeight - container.clientHeight));
+    const start = container.scrollTop, distance = target - start;
+    if (Math.abs(distance) < 2) return 0;
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const duration = reduced ? 0 : Math.min(1600, Math.max(600, 450 + Math.abs(distance) * 0.7));
+    const began = performance.now();
+    const step = now => {
+      const t = duration ? Math.min(1, (now - began) / duration) : 1;
+      container.scrollTop = start + distance * ease(t);
+      if (t < 1) glideFrame = requestAnimationFrame(step);
+    };
+    glideFrame = requestAnimationFrame(step);
+    return duration;
+  }
   function spotlight(target, sentence) {
     ensureSpot();
     const element = resolveTarget(target);
     spotTarget = element || null;
     if (element) {
-      try { element.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' }); } catch {}
+      try { glideTo(element); } catch {}
     }
     caption.textContent = sentence || '';
     caption.hidden = !sentence;
@@ -263,15 +326,18 @@
       const answers = a.answers && typeof a.answers === 'object' ? a.answers : {};
       const notes = [];
       for (const [key, value] of Object.entries(answers)) {
-        const section = sections[Number(key) - 1];
-        if (!section) { notes.push(`${key}번 문항이 없습니다`); continue; }
+        const section = question(key);
+        if (!section) { notes.push(`${key}번 문항이 없습니다 (이미 맞힌 문항이거나 번호가 다릅니다)`); continue; }
         const want = String(value).trim();
         const radios = [...section.querySelectorAll('input[type=radio]')];
         if (radios.length) {
-          let pick = radios.find(r => r.value.trim() === want)
-            || radios.find(r => r.value.trim().includes(want) || want.includes(r.value.trim()));
+          // Options are matched by their text (what the model reads) or by 1-based number.
+          const label = r => normalize((r.closest('.quiz-option') || r.parentElement || r).textContent);
+          const wantText = normalize(want);
+          let pick = radios.find(r => label(r) === wantText)
+            || radios.find(r => wantText && (label(r).includes(wantText) || (wantText.length > 6 && wantText.includes(label(r)))));
           if (!pick && /^\d+$/.test(want)) pick = radios[Number(want) - 1];
-          if (!pick) { notes.push(`${key}번: 보기 "${want}"를 찾지 못했습니다. 보기: ${radios.map(r => r.value).join(' | ')}`); continue; }
+          if (!pick) { notes.push(`${key}번: 보기 "${want}"를 찾지 못했습니다. 보기: ${radios.map(r => label(r)).join(' | ')}`); continue; }
           if (a.say) { spotlight(pick.closest('.quiz-option') ? `option:${key}:${radios.indexOf(pick) + 1}` : `quiz:${key}`, a.say); }
           pick.click();
         } else {
@@ -345,8 +411,8 @@
     }
     return lines.join('\n');
   }
-  function stop() { cancelled = true; stopSpeech(); clearSpot(); }
+  function stop() { cancelled = true; cancelAnimationFrame(glideFrame); stopSpeech(); clearSpot(); }
   function setVoice(on) { voice = !!on; if (!voice) stopSpeech(); return voice; }
   function setVoiceName(name) { return globalThis.molipVoice ? globalThis.molipVoice.setName(name) : String(name || 'system'); }
-  globalThis.molipAgent = { run, stop, setVoice, setVoiceName, get voice() { return voice; }, get voiceName() { return globalThis.molipVoice ? globalThis.molipVoice.name : 'system'; }, get lastSpeech() { return lastSpeech; }, get playbackRate() { return currentAudio ? currentAudio.playbackRate : null; }, actions: Object.keys(handlers) };
+  globalThis.molipAgent = { run, stop, setVoice, setVoiceName, resolveTarget, glideTo, get voice() { return voice; }, get voiceName() { return globalThis.molipVoice ? globalThis.molipVoice.name : 'system'; }, get lastSpeech() { return lastSpeech; }, get playbackRate() { return currentAudio ? currentAudio.playbackRate : null; }, actions: Object.keys(handlers) };
 })();
