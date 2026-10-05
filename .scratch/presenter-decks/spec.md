@@ -37,7 +37,7 @@ Status: done (2026-10-05) · 30 decks, 235 slides, every slide with a script; co
 ## 덱 목록 (챕터 · 단원 · 위치 → id · 제목 · 중심 주제)
 
 ### python
-- u0 · 0 → `why-this-course` 회사는 매일 숫자를 맞힙니다 · 회사는 매일 숫자를 맞히고, 틀리면 돈이 든다 (기존 INTRO 앞부분)
+- u0 · 0 → `why-this-course` 회사는 매일 숫자를 예측합니다 · 회사는 매일 숫자를 맞히고, 틀리면 돈이 든다 (기존 INTRO 앞부분)
 - u0 · 0 (둘째) → `expert-ask` "해 줘"가 전문가의 "해 줘"가 되려면 · 같은 "해 줘"인데 단어를 알면 다른 코드가 온다 (기존 INTRO 뒷부분, 앱 사용법 포함)
 - u1 · 0 → `deck-structures` 값에 이름표 붙이기 · 변수·리스트·딕셔너리는 값을 담는 세 가지 그릇
 - u2 · 0 → `deck-control` 규칙을 코드로 · 조건과 반복으로 "~이면 ~한다"를 적는다

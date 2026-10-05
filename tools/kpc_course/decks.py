@@ -10,10 +10,10 @@ from kpc_course import decks_python_pandas, decks_eda_viz, decks_modeling_credit
 
 FRONT = MARP_FRONT
 
-INTRO = slides('why-this-course', '회사는 매일 숫자를 맞힙니다 · 이 수업이 하는 일', FRONT + r"""
+INTRO = slides('why-this-course', '회사는 매일 숫자를 예측합니다 · 이 수업이 하는 일', FRONT + r"""
 <!-- _class: lead -->
 
-# 회사는 매일 숫자를 맞힙니다
+# 회사는 매일 숫자를 예측합니다
 
 **머신러닝을 활용한 금융데이터 분석**
 먼저, 이 수업이 여러분 일에 무슨 쓸모가 있는지부터 이야기합니다.

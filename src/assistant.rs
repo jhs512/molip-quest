@@ -550,7 +550,7 @@ mod tests {
         let unit = &chapter.units[0];
         let deck = &unit.activities[0];
         let text = page_context(&course.title, &chapter.title, unit, deck, None);
-        assert!(text.contains("슬라이드") && text.contains("회사는 매일 숫자를 맞힙니다"));
+        assert!(text.contains("슬라이드") && text.contains("회사는 매일 숫자를 예측합니다"));
         let problem = unit
             .activities
             .iter()
