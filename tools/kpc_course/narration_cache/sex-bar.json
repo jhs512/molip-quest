@@ -1,13 +1,13 @@
 {
  "format": 2,
- "hash": "edf612375f135272",
+ "hash": "981f9c4b50df3e2f",
  "by": "claude",
  "blocks": {
   "title": "b51cd11df1d8",
   "problem": "2f51e976d86f",
   "starter": "5b2bc9914f5c",
   "example": "e3b0c44298fc",
-  "solution": "57f941ef48d6"
+  "solution": "e9f92314cf57"
  },
  "sources": [
   {
@@ -20,31 +20,71 @@
   },
   {
    "block": "solution",
-   "hash": "57f941ef48d6"
+   "hash": "e9f92314cf57"
   },
   {
    "block": "solution",
-   "hash": "57f941ef48d6"
+   "hash": "e9f92314cf57"
   },
   {
    "block": "solution",
-   "hash": "57f941ef48d6"
+   "hash": "e9f92314cf57"
   },
   {
    "block": "solution",
-   "hash": "57f941ef48d6"
+   "hash": "e9f92314cf57"
   },
   {
    "block": "solution",
-   "hash": "57f941ef48d6"
+   "hash": "e9f92314cf57"
   },
   {
    "block": "solution",
-   "hash": "57f941ef48d6"
+   "hash": "e9f92314cf57"
   },
   {
    "block": "solution",
-   "hash": "57f941ef48d6"
+   "hash": "e9f92314cf57"
+  },
+  {
+   "block": "solution",
+   "hash": "e9f92314cf57"
+  },
+  {
+   "block": "solution",
+   "hash": "e9f92314cf57"
+  },
+  {
+   "block": "solution",
+   "hash": "e9f92314cf57"
+  },
+  {
+   "block": "solution",
+   "hash": "e9f92314cf57"
+  },
+  {
+   "block": "solution",
+   "hash": "e9f92314cf57"
+  },
+  {
+   "block": "solution",
+   "hash": "e9f92314cf57"
+  },
+  {
+   "block": "solution",
+   "hash": "e9f92314cf57"
+  },
+  {
+   "block": "solution",
+   "hash": "e9f92314cf57"
+  },
+  {
+   "block": "solution",
+   "hash": "e9f92314cf57"
+  },
+  {
+   "block": "solution",
+   "hash": "e9f92314cf57"
   }
  ],
  "entry": [
@@ -58,22 +98,64 @@
   ],
   [
    "code",
-   "rates = titanic.groupby('성별')['생존'].mean()\n",
+   "# 성별로 묶어서 생존 열의 평균을 내요. 생존이 0·1이라 평균이 곧 생존율이에요\n# 열 이름은 따옴표 안에 정확히 '성별', '생존'으로 써요\nrates = titanic.groupby('성별')['생존'].mean()\n",
    "앞 단원과 같아요. 성별로 묶어서 생존 평균을 rates에 담아요."
   ],
   [
-   "code",
-   "fig, ax = plt.subplots()\nax.bar(rates.index, rates * 100)\n",
-   "도화지를 하나 펴고요. x엔 rates의 이름표, 높이엔 rates에 100을 곱한 퍼센트를 줘요."
+   "run",
+   "일단 실행해 볼게요."
+  ],
+  [
+   "output",
+   "화면에 아무것도 안 나오죠? rates에 담기만 하고 print를 안 했거든요. 오류 없이 조용하면 된 거예요."
+  ],
+  [
+   "try",
+   "ax.bar(rates.index, rates * 100)\n",
+   "바로 막대를 그려 볼까요? 이렇게 하기 쉬워요."
+  ],
+  [
+   "run",
+   "실행하면요."
+  ],
+  [
+   "output",
+   "NameError가 떴죠? name 'ax' is not defined, ax라는 이름이 아직 없다는 뜻이에요. max 아니냐고 되묻기까지 하네요."
+  ],
+  [
+   "undo",
+   "그래서 도화지부터 펴야 해요. 되돌릴게요."
   ],
   [
    "code",
-   "ax.set(xlabel='성별', ylabel='생존율 (%)', ylim=(0, 100), title='성별 생존율')\n",
+   "# 도화지(fig)와 그림 칸(ax)을 하나씩 만들어요. 그리기는 ax에 해요\nfig, ax = plt.subplots()\n",
+   "plt.subplots()로 도화지 fig와 그림 칸 ax를 하나씩 받아요."
+  ],
+  [
+   "code",
+   "# 막대 그래프예요. x는 묶음 이름(rates.index), 높이는 생존율에 100을 곱한 퍼센트\n# rates는 0~1 사이 숫자라 그대로 그리면 막대가 아주 낮아 보여요\nax.bar(rates.index, rates * 100)\n",
+   "이제 ax.bar예요. x엔 rates의 이름표, 높이엔 rates에 100을 곱한 퍼센트를 줘요."
+  ],
+  [
+   "run",
+   "여기서 한 번 실행해요."
+  ],
+  [
+   "output",
+   "이번엔 오류가 없죠? 그런데 창도 안 떠요. plt.show()가 아직 없거든요. 조용히 지나가면 된 거예요."
+  ],
+  [
+   "caution",
+   "100을 안 곱하고 rates를 그대로 그리기 쉬운데, 그러면 막대 높이가 0에서 1 사이라 퍼센트로 안 읽히니 조심하세요."
+  ],
+  [
+   "code",
+   "# 축 이름과 제목을 한 번에 꾸며요. ylim=(0, 100)으로 y축을 0부터 100까지 고정해요\n# 괄호 안 이름(xlabel, ylabel, ylim, title)은 정해진 철자라 바꾸면 안 돼요\nax.set(xlabel='성별', ylabel='생존율 (%)', ylim=(0, 100), title='성별 생존율')\n",
    "set 한 줄로 축 이름과 제목을 붙여요. ylim을 0에서 100으로 고정하면 퍼센트가 그대로 읽히거든요."
   ],
   [
    "code",
-   "plt.show()\n",
+   "# 이 줄이 있어야 그래프 창이 실제로 떠요\nplt.show()\n",
    "마지막에 plt.show()로 띄우면 돼요."
   ],
   [
@@ -82,7 +164,7 @@
   ],
   [
    "output",
-   "막대 둘이 섰죠? 여성 막대가 남성보다 훨씬 높고, y축은 0에서 100까지예요."
+   "글자 출력은 비어 있고 대신 그래프 창이 떠요. 막대 둘을 보세요. 여성 막대가 남성보다 훨씬 높죠? y축 눈금이 0에서 100까지인지도 확인해요."
   ],
   [
    "submit",

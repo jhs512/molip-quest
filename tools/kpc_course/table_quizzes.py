@@ -188,7 +188,7 @@ EDGE_ROWS = [i for i, r in enumerate(BOUNDARY["rows"]) if r[0] < TEST_START and 
 
 TIME_TABLE = quiz('time-split-table', '표에서 고르기 · 시간의 경계',
     exact_rows(f"""
-        테스트 시작일이 `{TEST_START}`예요. **훈련 자료로 쓸 수 있는 행**을 모두 고르세요. 입력 날짜도, 정답 날짜(`target_date`)도 테스트 시작 전이어야 해요.
+        테스트 시작일이 `{TEST_START}`이에요. **훈련 자료로 쓸 수 있는 행**을 모두 고르세요. 입력 날짜도, 정답 날짜(`target_date`)도 테스트 시작 전이어야 해요.
         """, BOUNDARY, f"""
         입력 날짜가 `{TEST_START}` 전이면서 `target_date`도 그 전인 행이에요. 경계 바로 앞 하루는 빼요. 입력은 훈련 기간인데 정답이 테스트 첫날 종가거든요. 그 행을 넣으면 테스트 첫날 답을 미리 본 셈이에요.
         """, "5월 7일까지의 행 다섯 개", TRAIN_ROWS),

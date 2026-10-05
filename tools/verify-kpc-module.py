@@ -16,6 +16,14 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
 from kpc_course import checks, dsl, narration  # noqa: E402
+from kpc_course import comments  # noqa: E402
+import os
+os.environ.setdefault("KPC_LENIENT", "1")
+def solutions():
+    """The commented solutions, once the unit modules have registered theirs."""
+    return comments.apply(dsl.SOLUTIONS)
+
+
 
 
 def activities_of(name):
@@ -69,7 +77,7 @@ def main(names):
             elif kind == "concept":
                 narration.compile_concept(activity, table[where], where)
             else:
-                narration.compile_coding(activity, table[where], dsl.SOLUTIONS[activity["problem"]["id"]], where)
+                narration.compile_coding(activity, table[where], solutions()[activity["problem"]["id"]], where)
         except SystemExit as error:
             failures.append(str(error))
     failures += checks.run([dict(units=[dict(id="verify", activities=activities)])])

@@ -1,13 +1,13 @@
 {
  "format": 2,
- "hash": "b30f3b2ede332a1b",
+ "hash": "c2b9754c90be13cf",
  "by": "claude",
  "blocks": {
   "title": "78a3ad6b3ebc",
   "problem": "4d9b864ab11d",
   "starter": "93e2e2ec62b8",
   "example": "e3b0c44298fc",
-  "solution": "1e048cc64246"
+  "solution": "fe4bb95a2e61"
  },
  "sources": [
   {
@@ -20,35 +20,67 @@
   },
   {
    "block": "solution",
-   "hash": "1e048cc64246"
+   "hash": "fe4bb95a2e61"
   },
   {
    "block": "solution",
-   "hash": "1e048cc64246"
+   "hash": "fe4bb95a2e61"
   },
   {
    "block": "solution",
-   "hash": "1e048cc64246"
+   "hash": "fe4bb95a2e61"
   },
   {
    "block": "solution",
-   "hash": "1e048cc64246"
+   "hash": "fe4bb95a2e61"
   },
   {
    "block": "solution",
-   "hash": "1e048cc64246"
+   "hash": "fe4bb95a2e61"
   },
   {
    "block": "solution",
-   "hash": "1e048cc64246"
+   "hash": "fe4bb95a2e61"
   },
   {
    "block": "solution",
-   "hash": "1e048cc64246"
+   "hash": "fe4bb95a2e61"
   },
   {
    "block": "solution",
-   "hash": "1e048cc64246"
+   "hash": "fe4bb95a2e61"
+  },
+  {
+   "block": "solution",
+   "hash": "fe4bb95a2e61"
+  },
+  {
+   "block": "solution",
+   "hash": "fe4bb95a2e61"
+  },
+  {
+   "block": "solution",
+   "hash": "fe4bb95a2e61"
+  },
+  {
+   "block": "solution",
+   "hash": "fe4bb95a2e61"
+  },
+  {
+   "block": "solution",
+   "hash": "fe4bb95a2e61"
+  },
+  {
+   "block": "solution",
+   "hash": "fe4bb95a2e61"
+  },
+  {
+   "block": "solution",
+   "hash": "fe4bb95a2e61"
+  },
+  {
+   "block": "solution",
+   "hash": "fe4bb95a2e61"
   }
  ],
  "entry": [
@@ -62,36 +94,68 @@
   ],
   [
    "code",
-   "grouped = titanic.groupby(['성별', '객실등급'])['생존'].agg(['count', 'mean'])\n",
+   "# 성별과 객실등급 두 열로 묶어요. 대괄호 안에 열 이름 두 개를 리스트로 넣어요.\n# ['생존']으로 생존 열만 골라서 count(사람 수)와 mean(생존율)을 같이 구해요.\ngrouped = titanic.groupby(['성별', '객실등급'])['생존'].agg(['count', 'mean'])\n",
    "앞 미션과 같아요. 성별과 객실등급으로 묶어서 count와 mean을 같이 구해요."
   ],
   [
+   "run",
+   "일단 실행해 볼게요."
+  ],
+  [
+   "output",
+   "아무것도 안 나오죠? grouped에 담기만 하고 print를 안 했거든요."
+  ],
+  [
+   "try",
+   "wide = grouped['mean'].unstack('객실 등급') * 100\n",
+   "이제 mean만 꺼내서 펼칠게요. 이렇게 해 볼까요?"
+  ],
+  [
+   "run",
+   "실행하면요."
+  ],
+  [
+   "output",
+   "빨간 글자가 길게 나오죠? 맨 아래 줄을 보세요. KeyError, Level 객실 등급 not found예요. 띄어 쓴 객실 등급이라는 열이 없다는 뜻이에요. 표에는 붙여 쓴 객실등급만 있거든요."
+  ],
+  [
+   "undo",
+   "그래서 열 이름은 표에 있는 글자 그대로 붙여 써요."
+  ],
+  [
    "code",
-   "wide = grouped['mean'].unstack('객실등급') * 100\n",
+   "# 생존율(mean)만 꺼내서 객실등급을 열로 펼쳐요. 성별이 행, 등급이 열인 넓은 표가 돼요.\n# 끝에 * 100을 붙여 0~1 비율을 퍼센트로 바꿔요.\nwide = grouped['mean'].unstack('객실등급') * 100\n",
    "mean만 꺼내 객실등급을 열로 펼치고, 100을 곱해 퍼센트로 만들어요."
   ],
   [
    "code",
-   "ax = wide.plot.bar(ylim=(0, 100), rot=0)\n",
+   "# 넓은 표를 막대그래프로 그려요. 행(성별)마다 등급 막대 세 개가 묶여요.\n# ylim=(0, 100)은 y축을 0부터 100까지로 고정하고, rot=0은 x축 글자를 안 눕혀요.\nax = wide.plot.bar(ylim=(0, 100), rot=0)\n",
    "wide.plot.bar가 막대 그래프를 그려요. ylim은 y축을 0에서 100으로 고정하고, rot=0은 x축 글자를 눕히지 않아요. 돌려받은 ax가 그래프 영역이에요."
   ],
   [
-   "code",
-   "ax.set(ylabel='생존율 (%)', title='성별·객실등급별 생존율 (%)')\n",
-   "그 ax에 set으로 y축 이름과 제목을 한 번에 붙여요."
-  ],
-  [
-   "code",
-   "plt.show()\n",
-   "plt.show()로 그래프를 띄워요."
-  ],
-  [
    "run",
-   "실행해 볼게요."
+   "여기서 한번 실행해 볼게요."
   ],
   [
    "output",
-   "막대 여섯 개가 보이죠? 성별 두 묶음에 등급 막대가 셋씩이에요. 등급을 나눈 뒤에도 여자 쪽이 높은지, 그 차이가 등급마다 비슷한지 읽어 보세요."
+   "이번에도 아무것도 안 나오죠? 그래프를 그려 두기만 했지 아직 띄우진 않았거든요."
+  ],
+  [
+   "caution",
+   "여기서 끝내기 쉬운데, plt.show()가 없으면 그림이 안 보일 수 있으니 조심하세요."
+  ],
+  [
+   "code",
+   "# 돌려받은 ax에 y축 이름과 제목을 붙여요. 따옴표 안이 화면에 그대로 보여요.\nax.set(ylabel='생존율 (%)', title='성별·객실등급별 생존율 (%)')\n# 그래프를 화면에 띄워요. 이 줄이 없으면 그림이 안 보일 수 있어요.\nplt.show()\n",
+   "그 ax에 set으로 y축 이름과 제목을 한 번에 붙이고, plt.show()로 띄워요."
+  ],
+  [
+   "run",
+   "다시 실행해 볼게요."
+  ],
+  [
+   "output",
+   "글자는 안 나오고 그래프가 떠요. 막대 여섯 개가 보이죠? 성별 두 묶음에 등급 막대가 셋씩이에요. 등급을 나눈 뒤에도 여자 쪽이 높은지, 그 차이가 등급마다 비슷한지 읽어 보세요."
   ],
   [
    "submit",

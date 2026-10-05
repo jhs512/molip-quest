@@ -234,8 +234,8 @@
    },
    {
     "key": "solution",
-    "hash": "62b31fa9a784",
-    "text": "print('Hello, KPC!')"
+    "hash": "0a44871bb0f1",
+    "text": "# print()는 괄호 안의 내용을 화면에 보여 줘요 # 글자는 따옴…"
    }
   ]
  },
@@ -306,8 +306,8 @@
    },
    {
     "key": "solution",
-    "hash": "86d003846810",
-    "text": "print(10000 * 3)"
+    "hash": "341399ccb1cf",
+    "text": "# 따옴표 없이 10000 * 3을 넣어요. 파이썬이 먼저 곱한 뒤 3…"
    }
   ]
  },
@@ -337,8 +337,8 @@
    },
    {
     "key": "solution",
-    "hash": "f3eb44a5c9ae",
-    "text": "price = 10000 quantity = 3 amount = pri…"
+    "hash": "f149db9b2b30",
+    "text": "price = 10000 quantity = 3 # 오른쪽 price …"
    }
   ]
  },
@@ -368,8 +368,8 @@
    },
    {
     "key": "solution",
-    "hash": "235cb1be9100",
-    "text": "quantity = int(input()) print(10000 * q…"
+    "hash": "aa5dec7c03e5",
+    "text": "quantity = int(input()) # 가격 10000에 수량 …"
    }
   ]
  },
@@ -440,7 +440,7 @@
    },
    {
     "key": "solution",
-    "hash": "2df7fa63c2e6",
+    "hash": "eac374c0f494",
     "text": "price, quantity = map(int, input().spli…"
    }
   ]
@@ -471,7 +471,7 @@
    },
    {
     "key": "solution",
-    "hash": "c7a35a463821",
+    "hash": "405cf483188b",
     "text": "price, quantity = map(int, input().spli…"
    }
   ]
@@ -655,8 +655,8 @@
    },
    {
     "key": "solution",
-    "hash": "9b426a0a6066",
-    "text": "prices = [10000, 10200, 10100] first = …"
+    "hash": "016e70471226",
+    "text": "prices = [10000, 10200, 10100] # 리스트의 자…"
    }
   ]
  },
@@ -686,8 +686,8 @@
    },
    {
     "key": "solution",
-    "hash": "119008ce1479",
-    "text": "prices = [10000, 10200, 10100] count = …"
+    "hash": "1882d0e3d69c",
+    "text": "prices = [10000, 10200, 10100] # len()은…"
    }
   ]
  },
@@ -717,7 +717,7 @@
    },
    {
     "key": "solution",
-    "hash": "a3a9694ffafa",
+    "hash": "a6b285ae3e53",
     "text": "holding = {'name': '연습A', 'price': 1000…"
    }
   ]
@@ -748,7 +748,7 @@
    },
    {
     "key": "solution",
-    "hash": "f1dc4675c9b2",
+    "hash": "18062da905ad",
     "text": "holdings = [{'name': 'A', 'price': 1000…"
    }
   ]
@@ -779,7 +779,7 @@
    },
    {
     "key": "solution",
-    "hash": "b9075296495c",
+    "hash": "74c9e389c6f3",
     "text": "holding = {'name': '연습A', 'price': 1000…"
    }
   ]
@@ -810,8 +810,8 @@
    },
    {
     "key": "solution",
-    "hash": "ce27f469ab38",
-    "text": "prices = [10000, 10200, 10100] prices.a…"
+    "hash": "a1f4df2bc80c",
+    "text": "prices = [10000, 10200, 10100] # 넷째 날 가…"
    }
   ]
  },
@@ -994,8 +994,8 @@
    },
    {
     "key": "solution",
-    "hash": "24e8aa2bb624",
-    "text": "price = int(input()) if price >= 10000:…"
+    "hash": "077b5e0a4b96",
+    "text": "price = int(input()) # 조건 뒤엔 콜론(:)을 꼭 찍…"
    }
   ]
  },
@@ -1025,7 +1025,7 @@
    },
    {
     "key": "solution",
-    "hash": "6eff631c457c",
+    "hash": "cce8b68aca25",
     "text": "prices = [10000, 10200, 9900, 10100] to…"
    }
   ]
@@ -1056,7 +1056,7 @@
    },
    {
     "key": "solution",
-    "hash": "a79ba86851d2",
+    "hash": "69d9e9afe47c",
     "text": "prices = [10000, 10200, 9900, 10100] to…"
    }
   ]
@@ -1087,7 +1087,7 @@
    },
    {
     "key": "solution",
-    "hash": "2923d89075ea",
+    "hash": "45a8188a9316",
     "text": "prices = [10000, 10200, 9900, 10100] hi…"
    }
   ]
@@ -1118,8 +1118,8 @@
    },
    {
     "key": "solution",
-    "hash": "1b94c24a7e87",
-    "text": "sold = [412, 388, 455] total = 0 for co…"
+    "hash": "b961a31128ba",
+    "text": "sold = [412, 388, 455] total = 0 # sold…"
    }
   ]
  },
@@ -1149,7 +1149,7 @@
    },
    {
     "key": "solution",
-    "hash": "7104074937cc",
+    "hash": "811cebc36968",
     "text": "holdings = [{'name': 'A', 'price': 1000…"
    }
   ]
@@ -1180,7 +1180,7 @@
    },
    {
     "key": "solution",
-    "hash": "0b36889b6a5b",
+    "hash": "705eb068327b",
     "text": "holdings = [{'name': 'A', 'price': 1000…"
    }
   ]
@@ -1262,7 +1262,7 @@
    },
    {
     "key": "solution",
-    "hash": "41122ef36b49",
+    "hash": "23424a20c232",
     "text": "import pandas as pd holdings = [{'name'…"
    }
   ]
@@ -1293,7 +1293,7 @@
    },
    {
     "key": "solution",
-    "hash": "9f3726779a59",
+    "hash": "c0247e372bc2",
     "text": "import pandas as pd holdings = [{'name'…"
    }
   ]
@@ -1339,8 +1339,8 @@
    },
    {
     "key": "s7",
-    "hash": "5eef910227c6",
-    "text": "## 그래서 아나콘다가 필요했었습니다 - NumPy는 C 코드 → 설치…"
+    "hash": "b5b4e40e8f40",
+    "text": "## 그래서 아나콘다가 필요했어요 - NumPy는 C 코드 → 설치하려…"
    },
    {
     "key": "s8",
@@ -1431,7 +1431,7 @@
    },
    {
     "key": "solution",
-    "hash": "8c962f201b55",
+    "hash": "52125ff6eaf5",
     "text": "import time import numpy as np values =…"
    }
   ]
@@ -1487,7 +1487,7 @@
    },
    {
     "key": "q9",
-    "hash": "7eb4db5a47a4",
+    "hash": "e535811286b0",
     "text": "{\"correct\": 0, \"explanation\": \"정답은 현장 규…"
    }
   ]
@@ -1518,7 +1518,7 @@
    },
    {
     "key": "solution",
-    "hash": "ed36e2aa66ce",
+    "hash": "b21c02cb0a6c",
     "text": "import pandas as pd sales = {'월': 412, …"
    }
   ]
@@ -1641,7 +1641,7 @@
    },
    {
     "key": "solution",
-    "hash": "32d1c30b3b5a",
+    "hash": "816e3fc13478",
     "text": "import pandas as pd orders = pd.DataFra…"
    }
   ]
@@ -1672,7 +1672,7 @@
    },
    {
     "key": "solution",
-    "hash": "09ed6391520a",
+    "hash": "e218ebc5d8af",
     "text": "import pandas as pd orders = pd.DataFra…"
    }
   ]
@@ -1703,7 +1703,7 @@
    },
    {
     "key": "solution",
-    "hash": "cfa570f82ca3",
+    "hash": "3db8b4f1276c",
     "text": "import pandas as pd orders = pd.DataFra…"
    }
   ]
@@ -1734,7 +1734,7 @@
    },
    {
     "key": "solution",
-    "hash": "5303f817082d",
+    "hash": "98b9874c4c29",
     "text": "import pandas as pd orders = pd.DataFra…"
    }
   ]
@@ -1765,7 +1765,7 @@
    },
    {
     "key": "solution",
-    "hash": "5bdd183ea43b",
+    "hash": "17d416e99980",
     "text": "import pandas as pd orders = pd.DataFra…"
    }
   ]
@@ -1796,7 +1796,7 @@
    },
    {
     "key": "solution",
-    "hash": "7e81af359062",
+    "hash": "8407453de062",
     "text": "import pandas as pd orders = pd.DataFra…"
    }
   ]
@@ -1827,8 +1827,8 @@
    },
    {
     "key": "solution",
-    "hash": "df7ea3fdef07",
-    "text": "import pandas as pd titanic = pd.read_c…"
+    "hash": "172fc076805b",
+    "text": "import pandas as pd # 'data/titanic.csv…"
    }
   ]
  },
@@ -1919,7 +1919,7 @@
    },
    {
     "key": "s6",
-    "hash": "02bffc44670e",
+    "hash": "81c0110b34a3",
     "text": "## 조건이 둘이면 괄호와 &, | ```python expensive…"
    },
    {
@@ -2042,7 +2042,7 @@
    },
    {
     "key": "solution",
-    "hash": "4fe520804671",
+    "hash": "de4a34cf2ddb",
     "text": "import pandas as pd orders = pd.DataFra…"
    }
   ]
@@ -2073,7 +2073,7 @@
    },
    {
     "key": "solution",
-    "hash": "e8821c5d881c",
+    "hash": "5b579722d691",
     "text": "import pandas as pd orders = pd.DataFra…"
    }
   ]
@@ -2104,7 +2104,7 @@
    },
    {
     "key": "solution",
-    "hash": "99cd5519c7ad",
+    "hash": "d0b8259e895e",
     "text": "import pandas as pd orders = pd.DataFra…"
    }
   ]
@@ -2135,7 +2135,7 @@
    },
    {
     "key": "solution",
-    "hash": "9f710985bb21",
+    "hash": "35a36a3d8077",
     "text": "import pandas as pd orders = pd.DataFra…"
    }
   ]
@@ -2166,7 +2166,7 @@
    },
    {
     "key": "solution",
-    "hash": "6e0408238105",
+    "hash": "e7aabd8fb920",
     "text": "import pandas as pd orders = pd.DataFra…"
    }
   ]
@@ -2197,7 +2197,7 @@
    },
    {
     "key": "solution",
-    "hash": "8c8d90d7e988",
+    "hash": "36f96673a08b",
     "text": "import pandas as pd orders = pd.DataFra…"
    }
   ]
@@ -2381,8 +2381,8 @@
    },
    {
     "key": "solution",
-    "hash": "d66203bbdf05",
-    "text": "price_text = '10,000' price = int(price…"
+    "hash": "22f41fea2ab7",
+    "text": "price_text = '10,000' # replace(',', ''…"
    }
   ]
  },
@@ -2412,7 +2412,7 @@
    },
    {
     "key": "solution",
-    "hash": "5ab512caa059",
+    "hash": "e5beca78a688",
     "text": "import pandas as pd from pathlib import…"
    }
   ]
@@ -2443,7 +2443,7 @@
    },
    {
     "key": "solution",
-    "hash": "231ddf2e130b",
+    "hash": "54d298622785",
     "text": "import pandas as pd from pathlib import…"
    }
   ]
@@ -2474,7 +2474,7 @@
    },
    {
     "key": "solution",
-    "hash": "fdc0ea2aba8b",
+    "hash": "68747d687816",
     "text": "import pandas as pd from pathlib import…"
    }
   ]
@@ -2566,7 +2566,7 @@
    },
    {
     "key": "solution",
-    "hash": "eb5312cc087f",
+    "hash": "4b2ba339d4f0",
     "text": "import requests import pandas as pd fro…"
    }
   ]
@@ -2653,7 +2653,7 @@
    },
    {
     "key": "solution",
-    "hash": "63b22f8f0c28",
+    "hash": "02e79b13d2e4",
     "text": "import pandas as pd sales = pd.read_csv…"
    }
   ]
@@ -2807,7 +2807,7 @@
    },
    {
     "key": "solution",
-    "hash": "a0bb234ee0b0",
+    "hash": "a1f45f9c74f0",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -2838,7 +2838,7 @@
    },
    {
     "key": "solution",
-    "hash": "fa920d734fd8",
+    "hash": "b992fdd35a91",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -2869,7 +2869,7 @@
    },
    {
     "key": "solution",
-    "hash": "38a655b3ad35",
+    "hash": "7fbcf38b3026",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -2926,7 +2926,7 @@
    },
    {
     "key": "solution",
-    "hash": "fa195831361b",
+    "hash": "8b3a15ffbb96",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -3136,7 +3136,7 @@
    },
    {
     "key": "solution",
-    "hash": "ad5af2479f50",
+    "hash": "781d81f2e350",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -3167,7 +3167,7 @@
    },
    {
     "key": "solution",
-    "hash": "0c22a0683c18",
+    "hash": "ae3ae8ff7bea",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -3198,7 +3198,7 @@
    },
    {
     "key": "solution",
-    "hash": "56ba15571355",
+    "hash": "0d34b6aaf82c",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -3229,7 +3229,7 @@
    },
    {
     "key": "solution",
-    "hash": "285848fd01d6",
+    "hash": "dbe438778c1a",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -3260,7 +3260,7 @@
    },
    {
     "key": "solution",
-    "hash": "9a9535a7ba1f",
+    "hash": "6944e1cd33e5",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -3342,7 +3342,7 @@
    },
    {
     "key": "solution",
-    "hash": "f39d05e9e9e8",
+    "hash": "858129323c14",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -3506,7 +3506,7 @@
    },
    {
     "key": "solution",
-    "hash": "e7e96d2c55a9",
+    "hash": "453ba0117b17",
     "text": "import matplotlib.pyplot as plt names =…"
    }
   ]
@@ -3537,7 +3537,7 @@
    },
    {
     "key": "solution",
-    "hash": "57f941ef48d6",
+    "hash": "e9f92314cf57",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -3568,7 +3568,7 @@
    },
    {
     "key": "solution",
-    "hash": "67bdac9f9cc3",
+    "hash": "4496002fc2f0",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -3660,7 +3660,7 @@
    },
    {
     "key": "s6",
-    "hash": "3488ab138ba1",
+    "hash": "4760b81a7ebb",
     "text": "## 상관계수: 관계를 숫자 하나로 | 상관계수(correlation)…"
    },
    {
@@ -3788,7 +3788,7 @@
    },
    {
     "key": "solution",
-    "hash": "fb4127795a3b",
+    "hash": "5bf7e369b67a",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -3819,7 +3819,7 @@
    },
    {
     "key": "solution",
-    "hash": "91ae4022336b",
+    "hash": "bdcaf0d7d12d",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -3850,7 +3850,7 @@
    },
    {
     "key": "solution",
-    "hash": "12c76621ef48",
+    "hash": "dd1ddce6ba39",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -4044,7 +4044,7 @@
    },
    {
     "key": "solution",
-    "hash": "d0f1ab2b2188",
+    "hash": "dd8854b83538",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -4075,7 +4075,7 @@
    },
    {
     "key": "solution",
-    "hash": "32353a35fe8a",
+    "hash": "3de2c2094d8a",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -4106,7 +4106,7 @@
    },
    {
     "key": "solution",
-    "hash": "1e048cc64246",
+    "hash": "fe4bb95a2e61",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -4152,7 +4152,7 @@
    },
    {
     "key": "q7",
-    "hash": "1966382a4b1f",
+    "hash": "5d1ea3762686",
     "text": "{\"correct\": 3, \"explanation\": \"정답은 두 열로…"
    },
    {
@@ -4188,7 +4188,7 @@
    },
    {
     "key": "solution",
-    "hash": "0f1c80e5b431",
+    "hash": "d1b9ddce6949",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -4449,7 +4449,7 @@
    },
    {
     "key": "solution",
-    "hash": "78ce1d2b4a4e",
+    "hash": "cb40c9cc817c",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -4480,7 +4480,7 @@
    },
    {
     "key": "solution",
-    "hash": "b9b7a62c9f88",
+    "hash": "5deca5ff9581",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -4511,7 +4511,7 @@
    },
    {
     "key": "solution",
-    "hash": "81efa6ff8b70",
+    "hash": "5dae69d8815f",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -4542,7 +4542,7 @@
    },
    {
     "key": "solution",
-    "hash": "99f69c51e7df",
+    "hash": "e47027755d0b",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -4762,7 +4762,7 @@
    },
    {
     "key": "solution",
-    "hash": "69d70897c333",
+    "hash": "4a8486776728",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -4793,7 +4793,7 @@
    },
    {
     "key": "solution",
-    "hash": "b191dc9e4d1b",
+    "hash": "f07f45e2b2fa",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -4824,7 +4824,7 @@
    },
    {
     "key": "solution",
-    "hash": "a6441cd15ccf",
+    "hash": "8f3f1aa37904",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -4855,7 +4855,7 @@
    },
    {
     "key": "solution",
-    "hash": "d608758d4384",
+    "hash": "f9cd186e0273",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -4983,7 +4983,7 @@
    },
    {
     "key": "solution",
-    "hash": "5174df5ef13d",
+    "hash": "a3cb9fd92514",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -5019,7 +5019,7 @@
    },
    {
     "key": "q5",
-    "hash": "20a9afc660b5",
+    "hash": "3f91ad3d70b7",
     "text": "{\"correct\": 1, \"explanation\": \"단계를 묶으면 …"
    },
    {
@@ -5055,7 +5055,7 @@
    },
    {
     "key": "s2",
-    "hash": "b1b86989a4f2",
+    "hash": "e01478283452",
     "text": "## 찍어도 62점이 나오는 시험 - 객관식 100문제, 정답은 1번 …"
    },
    {
@@ -5075,7 +5075,7 @@
    },
    {
     "key": "s6",
-    "hash": "db41a1c01923",
+    "hash": "57d8c9488bcb",
     "text": "# 점수는 \"찍으면 몇 점\"과 나란히 놓아야 뜻이 생긴다 그 찍는 모델…"
    }
   ]
@@ -5141,7 +5141,7 @@
    },
    {
     "key": "check",
-    "hash": "b288d3a61797",
+    "hash": "7c94c856a697",
     "text": "입력을 안 보고 가장 많은 답만 찍는 기준 모델이 있죠. `scikit…"
    }
   ]
@@ -5198,7 +5198,7 @@
    },
    {
     "key": "solution",
-    "hash": "974fe9288317",
+    "hash": "eed36fbb7d90",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -5229,7 +5229,7 @@
    },
    {
     "key": "solution",
-    "hash": "d039055107ca",
+    "hash": "a12b618ab6d2",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -5296,7 +5296,7 @@
    },
    {
     "key": "solution",
-    "hash": "5abb7db25cf1",
+    "hash": "ab28f3f8b9d4",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -5409,7 +5409,7 @@
    },
    {
     "key": "solution",
-    "hash": "cc308e72801a",
+    "hash": "62907087dd4a",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -5522,7 +5522,7 @@
    },
    {
     "key": "solution",
-    "hash": "d49c8d636680",
+    "hash": "e7d42e01b5e5",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -5614,7 +5614,7 @@
    },
    {
     "key": "solution",
-    "hash": "24a57b43e8c3",
+    "hash": "098e3dbb9458",
     "text": "import pandas as pd from sklearn.model_…"
    }
   ]
@@ -5788,7 +5788,7 @@
    },
    {
     "key": "solution",
-    "hash": "cecc352035c3",
+    "hash": "7e817a557abf",
     "text": "import pandas as pd credit = pd.read_cs…"
    }
   ]
@@ -5819,7 +5819,7 @@
    },
    {
     "key": "solution",
-    "hash": "a4517af3050e",
+    "hash": "48843a53ab24",
     "text": "import pandas as pd credit = pd.read_cs…"
    }
   ]
@@ -5850,7 +5850,7 @@
    },
    {
     "key": "solution",
-    "hash": "828aa1d3a608",
+    "hash": "9bfc15c722c2",
     "text": "import pandas as pd credit = pd.read_cs…"
    }
   ]
@@ -5881,7 +5881,7 @@
    },
    {
     "key": "solution",
-    "hash": "a87de57b06b4",
+    "hash": "ea7108c94d30",
     "text": "import pandas as pd credit = pd.read_cs…"
    }
   ]
@@ -5912,7 +5912,7 @@
    },
    {
     "key": "solution",
-    "hash": "102eb53f1797",
+    "hash": "6335163cf323",
     "text": "import pandas as pd credit = pd.read_cs…"
    }
   ]
@@ -5943,7 +5943,7 @@
    },
    {
     "key": "solution",
-    "hash": "32437d59d54f",
+    "hash": "9e5835270ca9",
     "text": "import pandas as pd credit = pd.read_cs…"
    }
   ]
@@ -6035,7 +6035,7 @@
    },
    {
     "key": "s6",
-    "hash": "932267fcb88d",
+    "hash": "9910f5984dc3",
     "text": "## 카드사 예: 경고 100명, 실제 부도 50명 ```mapping…"
    },
    {
@@ -6081,8 +6081,8 @@
    },
    {
     "key": "solution",
-    "hash": "a654a6970f36",
-    "text": "tp, fp, fn, tn = 2, 1, 1, 2 precision =…"
+    "hash": "808448e57f75",
+    "text": "tp, fp, fn, tn = 2, 1, 1, 2 # 정밀도: 부도라고…"
    }
   ]
  },
@@ -6143,7 +6143,7 @@
    },
    {
     "key": "solution",
-    "hash": "d69a9a385f75",
+    "hash": "9798926403b8",
     "text": "from sklearn.metrics import accuracy_sc…"
    }
   ]
@@ -6174,7 +6174,7 @@
    },
    {
     "key": "solution",
-    "hash": "ad2770bcb7b8",
+    "hash": "47508c0c4522",
     "text": "import pandas as pd credit = pd.read_cs…"
    }
   ]
@@ -6195,7 +6195,7 @@
    },
    {
     "key": "s2",
-    "hash": "ad64014d0469",
+    "hash": "6dee160d111c",
     "text": "## predict_proba의 [:, 1]이 부도 확률 ```pyth…"
    },
    {
@@ -6251,7 +6251,7 @@
    },
    {
     "key": "solution",
-    "hash": "2ac36602ca69",
+    "hash": "b24b9b232072",
     "text": "import pandas as pd credit = pd.read_cs…"
    }
   ]
@@ -6282,7 +6282,7 @@
    },
    {
     "key": "solution",
-    "hash": "6391f116a07c",
+    "hash": "3fc5fb54645f",
     "text": "import numpy as np probabilities = np.a…"
    }
   ]
@@ -6364,7 +6364,7 @@
    },
    {
     "key": "solution",
-    "hash": "651748f9ae38",
+    "hash": "f6eb534a3f6e",
     "text": "import pandas as pd credit = pd.read_cs…"
    }
   ]
@@ -6553,7 +6553,7 @@
    },
    {
     "key": "solution",
-    "hash": "9926ac5b231f",
+    "hash": "fe35c2139020",
     "text": "import pandas as pd import FinanceDataR…"
    }
   ]
@@ -6584,8 +6584,8 @@
    },
    {
     "key": "solution",
-    "hash": "d3519a0466e7",
-    "text": "import pandas as pd prices = pd.read_cs…"
+    "hash": "90275d70afd8",
+    "text": "import pandas as pd # 주가 파일을 읽어요. parse…"
    }
   ]
  },
@@ -6615,7 +6615,7 @@
    },
    {
     "key": "solution",
-    "hash": "246f1b48ab1d",
+    "hash": "949f0014e384",
     "text": "import pandas as pd prices = pd.read_cs…"
    }
   ]
@@ -6646,7 +6646,7 @@
    },
    {
     "key": "solution",
-    "hash": "4ec81bf55489",
+    "hash": "9b7163561f1f",
     "text": "import pandas as pd prices = pd.read_cs…"
    }
   ]
@@ -6672,7 +6672,7 @@
    },
    {
     "key": "q3",
-    "hash": "10b5d5f24343",
+    "hash": "437fdd2a200c",
     "text": "{\"correct\": 0, \"explanation\": \"정답이 \\\"생존…"
    },
    {
@@ -6733,8 +6733,8 @@
    },
    {
     "key": "s5",
-    "hash": "d78601531df8",
-    "text": "## 앞쪽 행이 비는 이유 | 열 | 비는 행 | 이유 | | --- …"
+    "hash": "1b61a048eedc",
+    "text": "## 앞뒤 행이 비는 이유 | 열 | 비는 행 | 이유 | | --- …"
    },
    {
     "key": "s6",
@@ -6764,7 +6764,7 @@
    },
    {
     "key": "p1",
-    "hash": "99304f9612d6",
+    "hash": "92536cc31f05",
     "text": "타이타닉에서는 입력 열이 이미 표에 있었어요. 주가 표에서 우리가 쓰는…"
    },
    {
@@ -6866,7 +6866,7 @@
    },
    {
     "key": "solution",
-    "hash": "188a9b2bcd97",
+    "hash": "0c8eefcb52d5",
     "text": "import pandas as pd prices = pd.read_cs…"
    }
   ]
@@ -6897,7 +6897,7 @@
    },
    {
     "key": "solution",
-    "hash": "b4bdbf3ffab6",
+    "hash": "3c48b6790491",
     "text": "import pandas as pd prices = pd.read_cs…"
    }
   ]
@@ -6928,7 +6928,7 @@
    },
    {
     "key": "solution",
-    "hash": "db8577ee41ac",
+    "hash": "48c07ae4571a",
     "text": "import pandas as pd prices = pd.read_cs…"
    }
   ]
@@ -6959,7 +6959,7 @@
    },
    {
     "key": "solution",
-    "hash": "091c2c4611f2",
+    "hash": "fe60488f212d",
     "text": "import pandas as pd prices = pd.read_cs…"
    }
   ]
@@ -7123,7 +7123,7 @@
    },
    {
     "key": "q1",
-    "hash": "d8f347623ef7",
+    "hash": "1b7cecf1785a",
     "text": "{\"expected\": \"5월 7일까지의 행 다섯 개\", \"explan…"
    },
    {
@@ -7164,7 +7164,7 @@
    },
    {
     "key": "solution",
-    "hash": "f6ce6669d03d",
+    "hash": "43fb684dc348",
     "text": "import pandas as pd prices = pd.read_cs…"
    }
   ]
@@ -7195,7 +7195,7 @@
    },
    {
     "key": "solution",
-    "hash": "48f02857db4b",
+    "hash": "eb50c5ec6f2e",
     "text": "import pandas as pd prices = pd.read_cs…"
    }
   ]
@@ -7241,13 +7241,13 @@
    },
    {
     "key": "s7",
-    "hash": "5e492fc03829",
-    "text": "## 빵 공장과 콜센터는 다릅니다 | 현장 | 기준 모델 | 기준이 모…"
+    "hash": "54171494adf7",
+    "text": "## 빵 공장과 콜센터는 달라요 | 현장 | 기준 모델 | 기준이 모르…"
    },
    {
     "key": "s8",
-    "hash": "9add26a30415",
-    "text": "# 못 이기면 못 이겼다고 씁니다 이 수업의 목표는 기준을 이기는 게 …"
+    "hash": "c4a2c5e64af4",
+    "text": "# 못 이기면 못 이겼다고 써요 이 수업의 목표는 기준을 이기는 게 아…"
    }
   ]
  },
@@ -7277,7 +7277,7 @@
    },
    {
     "key": "solution",
-    "hash": "03b5bdafc28a",
+    "hash": "6bebc246987d",
     "text": "import pandas as pd prices = pd.read_cs…"
    }
   ]
@@ -7308,7 +7308,7 @@
    },
    {
     "key": "solution",
-    "hash": "eeff4d7e4511",
+    "hash": "d1f96843dfe3",
     "text": "import pandas as pd prices = pd.read_cs…"
    }
   ]
@@ -7339,7 +7339,7 @@
    },
    {
     "key": "solution",
-    "hash": "64837cff8abc",
+    "hash": "1f7a024770e2",
     "text": "import pandas as pd calls = pd.DataFram…"
    }
   ]
@@ -7467,7 +7467,7 @@
    },
    {
     "key": "p5",
-    "hash": "bf98a74f2c84",
+    "hash": "4810a358b15d",
     "text": "점수는 셋을 함께 적어요. **MAE**는 앞 단원 그대로, 하루 평균…"
    },
    {
@@ -7528,7 +7528,7 @@
    },
    {
     "key": "solution",
-    "hash": "b926bc33b614",
+    "hash": "a86a0a61dd3d",
     "text": "import pandas as pd prices = pd.read_cs…"
    }
   ]
@@ -7559,7 +7559,7 @@
    },
    {
     "key": "solution",
-    "hash": "add6983cb111",
+    "hash": "23c9d124ebf7",
     "text": "import pandas as pd prices = pd.read_cs…"
    }
   ]
@@ -7611,7 +7611,7 @@
    },
    {
     "key": "solution",
-    "hash": "a79ee5ac46ee",
+    "hash": "35cba93e080b",
     "text": "import pandas as pd prices = pd.read_cs…"
    }
   ]
@@ -7642,7 +7642,7 @@
    },
    {
     "key": "solution",
-    "hash": "c3308a6edf09",
+    "hash": "bbad82e0156e",
     "text": "import pandas as pd prices = pd.read_cs…"
    }
   ]
@@ -7673,7 +7673,7 @@
    },
    {
     "key": "solution",
-    "hash": "7c5b42e8a382",
+    "hash": "6e4d4a817aae",
     "text": "import pandas as pd prices = pd.read_cs…"
    }
   ]
@@ -7837,7 +7837,7 @@
    },
    {
     "key": "solution",
-    "hash": "38be708f12ad",
+    "hash": "e5b46baaf1a4",
     "text": "import pandas as pd prices = pd.read_cs…"
    }
   ]

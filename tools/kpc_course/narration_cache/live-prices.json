@@ -1,13 +1,13 @@
 {
  "format": 2,
- "hash": "44ddfd52e82a8b6a",
+ "hash": "72591e898cc5f100",
  "by": "claude",
  "blocks": {
   "title": "4dc58d2d875e",
   "problem": "edc1fd5f0977",
   "starter": "b133c60ea23c",
   "example": "e3b0c44298fc",
-  "solution": "9926ac5b231f"
+  "solution": "fe35c2139020"
  },
  "sources": [
   {
@@ -20,27 +20,71 @@
   },
   {
    "block": "solution",
-   "hash": "9926ac5b231f"
+   "hash": "fe35c2139020"
   },
   {
    "block": "solution",
-   "hash": "9926ac5b231f"
+   "hash": "fe35c2139020"
   },
   {
    "block": "solution",
-   "hash": "9926ac5b231f"
+   "hash": "fe35c2139020"
   },
   {
    "block": "solution",
-   "hash": "9926ac5b231f"
+   "hash": "fe35c2139020"
   },
   {
    "block": "solution",
-   "hash": "9926ac5b231f"
+   "hash": "fe35c2139020"
   },
   {
    "block": "solution",
-   "hash": "9926ac5b231f"
+   "hash": "fe35c2139020"
+  },
+  {
+   "block": "solution",
+   "hash": "fe35c2139020"
+  },
+  {
+   "block": "solution",
+   "hash": "fe35c2139020"
+  },
+  {
+   "block": "solution",
+   "hash": "fe35c2139020"
+  },
+  {
+   "block": "solution",
+   "hash": "fe35c2139020"
+  },
+  {
+   "block": "solution",
+   "hash": "fe35c2139020"
+  },
+  {
+   "block": "solution",
+   "hash": "fe35c2139020"
+  },
+  {
+   "block": "solution",
+   "hash": "fe35c2139020"
+  },
+  {
+   "block": "solution",
+   "hash": "fe35c2139020"
+  },
+  {
+   "block": "solution",
+   "hash": "fe35c2139020"
+  },
+  {
+   "block": "solution",
+   "hash": "fe35c2139020"
+  },
+  {
+   "block": "solution",
+   "hash": "fe35c2139020"
   }
  ],
  "entry": [
@@ -54,26 +98,73 @@
   ],
   [
    "code",
-   "\nlive = fdr.DataReader('005930', '2026-01-01').sort_index()\n",
-   "fdr.DataReader에 종목 코드 005930과 시작일을 주면 날짜가 인덱스인 표가 와요. sort_index로 날짜순으로 정렬해서 live에 담아요."
+   "\n# 삼성전자 종목 코드는 숫자지만 글자('005930')로 줘야 해요. 앞의 0이 날아가거든요.\n# 받은 표는 날짜가 인덱스라서 sort_index()로 날짜순을 맞춰 둬요.\nlive = fdr.DataReader('005930', '2026-01-01').sort_index()\n",
+   "fdr.DataReader에 종목 코드 005930과 시작일을 주면 날짜가 인덱스인 표가 와요. sort_index로 날짜순을 맞춰 live에 담아요."
   ],
   [
-   "code",
-   "latest_close = int(live['Close'].iloc[-1])\nma5 = float(live['Close'].rolling(5).mean().iloc[-1])\n",
-   "Close 열의 마지막 값이 최근 종가죠? 정수로 바꿔 latest_close에 두고, rolling(5)로 5거래일 평균을 만든 뒤 마지막 값을 ma5에 담아요."
-  ],
-  [
-   "code",
-   "print(live.tail())\nprint(live.index.max().date(), latest_close, round(ma5))\n",
-   "표 끝부분을 보여 주고, 마지막 날짜와 두 값을 한 줄로 출력하면 돼요."
+   "caution",
+   "종목 코드를 따옴표 없이 숫자 5930으로 쓰기 쉬운데, 앞의 0이 날아가 다른 종목이 되니 조심하세요."
   ],
   [
    "run",
-   "실행해 볼게요. 인터넷에서 받아오니 잠깐 걸릴 수 있어요."
+   "일단 실행해 볼게요. 인터넷에서 받아오니 잠깐 걸릴 수 있어요."
   ],
   [
    "output",
-   "표 끝에 최근 5거래일이 보이죠? 마지막 날짜 2026-10-02, 종가 276000, 5일 평균 273000이 나왔어요. 받는 날에 따라 숫자는 달라져요."
+   "아무것도 안 나오죠? 받아서 live에 넣기만 했거든요. 출력은 없지만 표는 live 안에 들어 있어요."
+  ],
+  [
+   "try",
+   "print(live['close'].iloc[-1])\n",
+   "마지막 종가를 보고 싶어요. 이렇게 해 볼까요?"
+  ],
+  [
+   "run",
+   "실행하면요."
+  ],
+  [
+   "output",
+   "맨 아래에 KeyError: 'close'가 나왔죠? 소문자 close라는 열이 없다는 뜻이에요. 이 표의 열 이름은 대문자 Close거든요."
+  ],
+  [
+   "undo",
+   "그래서 열 이름은 대문자 그대로 Close로 써요."
+  ],
+  [
+   "code",
+   "# iloc[-1]은 맨 마지막 줄이에요. 종가는 소수가 섞일 수 있어서 int()로 정수로 만들어요.\nlatest_close = int(live['Close'].iloc[-1])\n",
+   "Close 열의 마지막 값이 최근 종가죠? 정수로 바꿔 latest_close에 둬요."
+  ],
+  [
+   "code",
+   "# rolling(5).mean()은 5거래일씩 묶은 평균이에요. 그 마지막 값이 최근 5일 평균이죠.\nma5 = float(live['Close'].rolling(5).mean().iloc[-1])\n",
+   "rolling(5)로 5거래일 평균을 만들고, 그 마지막 값을 ma5에 담아요."
+  ],
+  [
+   "code",
+   "# tail()은 표 끝 5줄이에요. 열 이름과 최근 날짜가 맞는지 눈으로 확인해요.\nprint(live.tail())\n",
+   "표 끝부분을 먼저 보여 줄게요. 열 이름과 날짜가 맞는지 눈으로 확인하는 거예요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
+  ],
+  [
+   "output",
+   "9월 28일부터 10월 2일까지 다섯 줄이 보이죠? 날짜가 인덱스고 Open, High, Low, Close, Volume, Change 열이 있어요. 마지막 줄 Close가 276000이에요."
+  ],
+  [
+   "code",
+   "# index.max()가 마지막 날짜예요. .date()로 시간을 떼고, ma5는 round로 보기 좋게 반올림해요.\nprint(live.index.max().date(), latest_close, round(ma5))\n",
+   "마지막 날짜와 두 값을 한 줄로 출력하면 돼요. ma5는 round로 반올림해서 보기 좋게요."
+  ],
+  [
+   "run",
+   "다시 실행해요."
+  ],
+  [
+   "output",
+   "표 아래 마지막 줄을 보세요. 2026-10-02, 종가 276000, 5일 평균 273000이 나왔어요. 받는 날에 따라 숫자는 달라져요."
   ],
   [
    "submit",

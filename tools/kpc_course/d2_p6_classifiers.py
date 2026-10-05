@@ -67,7 +67,7 @@ UNIT = unit('classifiers', '세 분류 모델과 기준 비교', [
 
         점수는 정확도(accuracy, 전체 중 맞힌 비율) 하나만 보지 않아요. 생존자가 적은 자료에서는 생존자를 얼마나 잘 찾았는지도 봐야 해요. 그래서 F1 점수도 같이 적어요. 자세한 뜻은 뒤 단원에서 다뤄요. 지금은 "두 점수를 표로 나란히 적는다"까지만.
         """,
-        check=short('입력을 안 보고 가장 많은 답만 찍는 기준 모델이 있죠. `scikit-learn` 이름이 뭔가요?', ['DummyClassifier', 'Dummy', '더미 분류기', '더미분류기'],
+        check=short('입력을 안 보고 가장 많은 답만 찍는 기준 모델이 있죠. `scikit-learn`에서의 이름이 뭔가요?', ['DummyClassifier', 'Dummy', '더미 분류기', '더미분류기'],
                     '`DummyClassifier(strategy="most_frequent")`가 기준이에요. 이 점수를 못 넘는 모델은 아무것도 못 배운 거예요.')),
     coding('dummy-only', '찍기 점수부터 재기',
         goal="""

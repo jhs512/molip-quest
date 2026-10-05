@@ -10,7 +10,7 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools"))
 
-from kpc_course import chapters as outline, dsl, narration, sources  # noqa: E402
+from kpc_course import chapters as outline, comments, dsl, narration, sources  # noqa: E402
 
 
 def _narrate():
@@ -23,6 +23,8 @@ def _narrate():
 # outline.build() is not repeatable (quiz options are shuffled with a seeded generator that
 # keeps advancing), so the course is built once and shared, as the real build does.
 _CHAPTERS = outline.build()
+# The solutions as the build sees them: with their comments.
+_SOLUTIONS = comments.apply(dsl.SOLUTIONS)
 
 
 def _missions():
@@ -97,11 +99,11 @@ def test_a_new_paragraph_keeps_every_existing_line():
 def test_a_changed_solution_names_the_code_run_and_output_lines():
     coding = _missions()["variable-print"]
     cached = narration.read_cache(coding["id"])
-    solution = dsl.SOLUTIONS[coding["problem"]["id"]]
+    solution = _SOLUTIONS[coding["problem"]["id"]]
     keys, kept, why = narration.stale_report(coding, cached, solution + "\nprint(1)\n")
     assert keys == ["solution"]
     affected_steps = {cached["entry"][i][0] for i in range(len(cached["entry"])) if i not in kept}
-    assert affected_steps == {"code", "run", "output", "submit"}
+    assert {"code", "run", "output", "submit"} <= affected_steps <= {"code", "try", "undo", "caution", "run", "output", "submit"}
     kept_steps = {cached["entry"][i][0] for i in kept}
     assert "problem" in kept_steps
 
@@ -116,7 +118,7 @@ def test_line_sources_follow_anchors_and_coding_steps():
     assert [line["block"] for line in recorded][-1] == "check"
     assert all(index[line["block"]] == line["hash"] for line in recorded)
     coding = missions["variable-print"]
-    solution = dsl.SOLUTIONS[coding["problem"]["id"]]
+    solution = _SOLUTIONS[coding["problem"]["id"]]
     entry = narration.read_cache(coding["id"])["entry"]
     recorded = narration.line_sources(coding, entry, solution)
     assert {line["block"] for line in recorded} <= {"problem", "starter", "example", "solution"}
@@ -134,7 +136,7 @@ def test_restore_kept_puts_unchanged_lines_back_verbatim():
 
 
 def test_course_index_lists_every_block_with_hash_and_excerpt():
-    index = sources.course_index(_CHAPTERS, dsl.SOLUTIONS)
+    index = sources.course_index(_CHAPTERS, _SOLUTIONS)
     assert len(index) == len(_missions())
     sample = next(iter(index.values()))
     assert {"key", "hash", "text"} <= set(sample["blocks"][0])
@@ -147,5 +149,5 @@ def test_narration_prompts_embed_the_shared_voice_guide():
     concept = _missions()["numbers-text"]
     assert guide in narrate.concept_prompt(concept)
     coding = _missions()["variable-print"]
-    solution = dsl.SOLUTIONS[coding["problem"]["id"]]
+    solution = _SOLUTIONS[coding["problem"]["id"]]
     assert guide in narrate.coding_prompt(coding, solution, "30000", "")

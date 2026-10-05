@@ -12,6 +12,10 @@ Before triaging an issue, read `docs/agents/triage-labels.md` for the default ro
 
 Before exploring the codebase, read `docs/agents/domain.md` for the single-context layout and domain documentation rules.
 
+### 콘텐츠 룰
+
+수업 내용(해설, 정답 코드, 주석)을 만들거나 고치기 전에 `docs/content-rules.md`를 읽는다. 코딩 해설은 살짝 코딩→실행을 반복하고 「조심하세요」 순간이 있어야 하며, 정답 코드에는 주석이 풍부해야 한다. 빌드가 강제한다.
+
 ### 목소리
 
 학생에게 가는 글이나 LLM 프롬프트를 쓰기 전에 `docs/voice.md`를 읽는다. 말투·용어 규칙은 그 파일에만 있고, `tools/narrate.py`와 `src/assistant.rs`가 그 파일을 통째로 프롬프트에 넣는다. 새 LLM 호출을 만들면 같은 파일을 넣는다.

@@ -7,9 +7,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
-from kpc_course import chapters as outline, checks, dsl, narration, sources  # noqa: E402
+from kpc_course import chapters as outline, checks, comments, dsl, narration, sources  # noqa: E402
 
-chapters = narration.attach(outline.build(), dsl.SOLUTIONS)
+chapters = outline.build()  # fills dsl.SOLUTIONS as the unit modules load
+# Solutions with their comments (tools/annotate.py): what 정답 보기 shows and the 해설 types.
+SOLUTIONS = comments.apply(dsl.SOLUTIONS)
+chapters = narration.attach(chapters, SOLUTIONS)
 
 problems = checks.run(chapters)
 if problems and not os.environ.get("KPC_LENIENT"):
@@ -23,10 +26,10 @@ course = dict(
     chapters=chapters,
 )
 (ROOT / "courses/kpc-finance.json").write_text(json.dumps(course, ensure_ascii=False, indent=2), encoding="utf-8")
-(ROOT / "courses/kpc-solutions.json").write_text(json.dumps(dsl.SOLUTIONS, ensure_ascii=False, indent=2), encoding="utf-8")
+(ROOT / "courses/kpc-solutions.json").write_text(json.dumps(SOLUTIONS, ensure_ascii=False, indent=2), encoding="utf-8")
 # Every source block's key, hash and opening words: its diff shows what a commit changed.
 (ROOT / "courses/kpc-finance.sources.json").write_text(
-    json.dumps(sources.course_index(chapters, dsl.SOLUTIONS), ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    json.dumps(sources.course_index(chapters, SOLUTIONS), ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
 
 units = [u for c in chapters for u in c["units"]]
 

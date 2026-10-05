@@ -1,13 +1,13 @@
 {
  "format": 2,
- "hash": "f12466b79ce0d7f0",
+ "hash": "de8046146fca759a",
  "by": "claude",
  "blocks": {
   "title": "88a737ae9c88",
   "problem": "785c0e8ae60d",
   "starter": "ee8843f95fb0",
   "example": "e3b0c44298fc",
-  "solution": "fa920d734fd8"
+  "solution": "b992fdd35a91"
  },
  "sources": [
   {
@@ -20,27 +20,67 @@
   },
   {
    "block": "solution",
-   "hash": "fa920d734fd8"
+   "hash": "b992fdd35a91"
   },
   {
    "block": "solution",
-   "hash": "fa920d734fd8"
+   "hash": "b992fdd35a91"
   },
   {
    "block": "solution",
-   "hash": "fa920d734fd8"
+   "hash": "b992fdd35a91"
   },
   {
    "block": "solution",
-   "hash": "fa920d734fd8"
+   "hash": "b992fdd35a91"
   },
   {
    "block": "solution",
-   "hash": "fa920d734fd8"
+   "hash": "b992fdd35a91"
   },
   {
    "block": "solution",
-   "hash": "fa920d734fd8"
+   "hash": "b992fdd35a91"
+  },
+  {
+   "block": "solution",
+   "hash": "b992fdd35a91"
+  },
+  {
+   "block": "solution",
+   "hash": "b992fdd35a91"
+  },
+  {
+   "block": "solution",
+   "hash": "b992fdd35a91"
+  },
+  {
+   "block": "solution",
+   "hash": "b992fdd35a91"
+  },
+  {
+   "block": "solution",
+   "hash": "b992fdd35a91"
+  },
+  {
+   "block": "solution",
+   "hash": "b992fdd35a91"
+  },
+  {
+   "block": "solution",
+   "hash": "b992fdd35a91"
+  },
+  {
+   "block": "solution",
+   "hash": "b992fdd35a91"
+  },
+  {
+   "block": "solution",
+   "hash": "b992fdd35a91"
+  },
+  {
+   "block": "solution",
+   "hash": "b992fdd35a91"
   }
  ],
  "entry": [
@@ -54,26 +94,69 @@
   ],
   [
    "code",
-   "counts = titanic['생존'].value_counts()\n",
+   "\n# 타깃 열 '생존'에서 값마다 몇 번 나오는지 세요(0과 1 두 가지)\ncounts = titanic['생존'].value_counts()\n",
    "생존 열에 value_counts()를 붙이면 값마다 몇 번 나오는지 세어 줘요. 그걸 counts에 넣어요."
   ],
   [
-   "code",
-   "n_dead = int(counts[0])\nn_alive = int(counts[1])\n",
-   "counts[0]이 0의 개수, 그러니까 사망 인원이거든요. counts[1]이 생존 인원이죠. int()로 감싸서 정수로 담아요."
-  ],
-  [
-   "code",
-   "print(counts)\nprint(n_dead, n_alive)\n",
-   "셋 다 출력해요. counts 표 하나, 두 정수 한 줄이에요."
-  ],
-  [
    "run",
-   "실행해 볼게요."
+   "일단 실행해 볼게요."
   ],
   [
    "output",
-   "0이 809, 1이 500이에요. 더하면 1309, 전체 인원이 맞죠? 마지막 줄에 809 500이 정수로 나왔어요."
+   "아무것도 안 나오죠? counts에 담기만 하고 출력은 안 했거든요. 아래에서 꺼내 볼게요."
+  ],
+  [
+   "try",
+   "n_dead = int(counts['0'])\n",
+   "이렇게 해 볼까요? 0에 따옴표를 붙여서요."
+  ],
+  [
+   "run",
+   "실행하면요."
+  ],
+  [
+   "output",
+   "빨간 글이 길게 나오죠? 맨 끝을 보세요. KeyError: '0'이에요. 생존 열의 값은 글자 '0'이 아니라 숫자 0이라서 못 찾은 거예요."
+  ],
+  [
+   "undo",
+   "그래서 따옴표 없이 숫자 0으로 찾아요."
+  ],
+  [
+   "code",
+   "# counts[0]은 0(사망)의 개수예요. 자리가 아니라 값 0으로 찾는 거예요\n# int()로 감싸야 평범한 정수로 저장돼요\nn_dead = int(counts[0])\n",
+   "counts[0]이 값 0의 개수, 그러니까 사망 인원이에요. int()로 감싸서 정수로 담아요."
+  ],
+  [
+   "code",
+   "# counts[1]은 1(생존)의 개수고요\nn_alive = int(counts[1])\n",
+   "같은 방식으로 counts[1]이 생존 인원이죠. 이것도 정수로 담고요."
+  ],
+  [
+   "code",
+   "# 세 값을 모두 출력해요. 두 수를 더하면 전체 인원이 나와야 해요\nprint(counts)\n",
+   "먼저 counts 표부터 출력해 볼게요."
+  ],
+  [
+   "run",
+   "실행해요."
+  ],
+  [
+   "output",
+   "표가 나왔죠? 0이 809, 1이 500이에요. 더하면 1309, 전체 인원과 딱 맞아요."
+  ],
+  [
+   "code",
+   "print(n_dead, n_alive)\n",
+   "이제 두 정수를 한 줄에 출력해요."
+  ],
+  [
+   "run",
+   "다시 실행해요."
+  ],
+  [
+   "output",
+   "표 아래 마지막 줄에 809 500이 나왔어요. 사망 809, 생존 500이 정수로 나란히 보이죠?"
   ],
   [
    "submit",

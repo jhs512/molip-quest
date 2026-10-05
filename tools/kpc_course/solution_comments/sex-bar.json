@@ -1,0 +1,5 @@
+{
+ "hash": "fe172b144bbf6d06",
+ "by": "claude",
+ "code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n# 성별로 묶어서 생존 열의 평균을 내요. 생존이 0·1이라 평균이 곧 생존율이에요\n# 열 이름은 따옴표 안에 정확히 '성별', '생존'으로 써요\nrates = titanic.groupby('성별')['생존'].mean()\n# 도화지(fig)와 그림 칸(ax)을 하나씩 만들어요. 그리기는 ax에 해요\nfig, ax = plt.subplots()\n# 막대 그래프예요. x는 묶음 이름(rates.index), 높이는 생존율에 100을 곱한 퍼센트\n# rates는 0~1 사이 숫자라 그대로 그리면 막대가 아주 낮아 보여요\nax.bar(rates.index, rates * 100)\n# 축 이름과 제목을 한 번에 꾸며요. ylim=(0, 100)으로 y축을 0부터 100까지 고정해요\n# 괄호 안 이름(xlabel, ylabel, ylim, title)은 정해진 철자라 바꾸면 안 돼요\nax.set(xlabel='성별', ylabel='생존율 (%)', ylim=(0, 100), title='성별 생존율')\n# 이 줄이 있어야 그래프 창이 실제로 떠요\nplt.show()\n"
+}

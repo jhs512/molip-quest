@@ -116,6 +116,14 @@ fn coding_narrations_type_the_reference_solution_then_submit() {
             activity.id
         );
         assert!(ran && submitted, "{}: must run and submit", activity.id);
+        // The content rule: the program grows run by run, and a pitfall is shown or spoken.
+        let chunks = activity.narration.iter().filter(|s| s["action"] == "type_code").count();
+        let runs = activity.narration.iter().filter(|s| s["action"] == "run").count();
+        assert!(chunks < 2 || runs >= 2, "{}: {chunks} chunks but only {runs} run(s): code a little, run, repeat", activity.id);
+        let caution = activity.narration.iter().any(|s| s["action"] == "say" && s["target"] == "editor");
+        let first_typed = activity.narration.iter().position(|s| s["action"] == "type_code").unwrap_or(0);
+        let undo = activity.narration.iter().skip(first_typed + 1).any(|s| s["action"] == "set_code");
+        assert!(caution || undo, "{}: no 「이렇게 하기 쉬운데 … 조심하세요」 moment", activity.id);
         // The first chunk starts a clean editor unless the starter was put in first.
         let first = activity.narration.iter().find(|s| matches!(s["action"].as_str(), Some("set_code") | Some("type_code"))).unwrap();
         assert!(

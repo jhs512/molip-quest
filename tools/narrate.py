@@ -33,9 +33,10 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
-from kpc_course import chapters as outline, dsl, narration, sources  # noqa: E402
+from kpc_course import chapters as outline, comments, dsl, narration, sources  # noqa: E402
 
-RULES = (ROOT / "docs" / "agents" / "narration.md").read_text(encoding="utf-8")
+RULES = ((ROOT / "docs" / "content-rules.md").read_text(encoding="utf-8") + "\n\n"
+         + (ROOT / "docs" / "agents" / "narration.md").read_text(encoding="utf-8"))
 
 # The one voice guide every LLM call in this project shares (the app's tutor embeds the same
 # file): change docs/voice.md, not this script, to change how narrations sound.
@@ -101,7 +102,7 @@ def concept_prompt(activity, keep=""):
 """
 
 
-def coding_prompt(activity, solution, output, prefix, keep=""):
+def coding_prompt(activity, solution, prefix, keep=""):
     problem = activity["problem"]
     rest = solution[len(prefix):] if prefix and solution.startswith(prefix) else solution
     return keep + f"""{RULES}
@@ -109,11 +110,13 @@ def coding_prompt(activity, solution, output, prefix, keep=""):
 {VOICE}
 
 아래 코딩 미션의 해설 대본을 JSON으로만 답하세요. 형식: 단계 목록
-[["problem", "말"], ["starter", "말"], ["code", "코드 조각", "말"], ..., ["run", "말"], ["output", "말"], ["submit", "말"]]
-- "code" 조각들을 순서대로 이어 붙이면 아래 '타이핑할 코드'와 글자 하나까지 같아야 한다(띄어쓰기·줄 바꿈 포함). 조각은 2~4줄씩, 한 조각에 새로 배우는 것 하나. 한 줄짜리면 조각 하나.
-- "starter"는 준비 코드가 있을 때만(아래 '그대로 두는 준비 코드'가 비어 있지 않을 때) 넣고, 무엇이 준비되어 있는지 말한다.
-- "output"은 아래 '실제 실행 결과'에 나온 값을 말한다. 결과가 길면 무엇을 볼지를 말한다.
-- "examples", "hint", "input"은 필요할 때만.
+[["problem", "말"], ["starter", "말"], ["code", "코드 조각", "말"], ["run", "말"], ["output", "말"], ["caution", "말"], ["try", "코드 조각", "말"], ["run", "말"], ["output", "말"], ["undo", "말"], ["code", "코드 조각", "말"], ["run", "말"], ["output", "말"], ..., ["submit", "말"]]
+- 살짝 코딩 → 실행 → 출력 읽기를 반복한다: 한 번에 다 쓰고 끝에 한 번 실행하지 않는다. 조각은 1~3줄, 조각마다(또는 두 조각마다) run과 output을 넣는다. 실행했을 때 오류 없이 무언가 보이는 자리에서 run 한다(예: 변수를 만든 뒤 print로 확인).
+- "이렇게 해볼까요? 이렇게 하기 쉬운데, 그러면 이런 문제가 생기니 조심하세요"를 1~2번 넣는다. 방법은 둘 중 하나: ["try", 틀리기 쉬운 코드, "이렇게 해 볼까요?"] → ["run", ...] → ["output", 무엇이 잘못됐는지] → ["undo", "그래서 이렇게 고쳐요"]로 실제로 보여 주거나, 코드를 치지 않고 ["caution", "…하기 쉬운데 …하니 조심하세요"]로 말만 한다. try는 반드시 undo로 되돌린다.
+- "code" 조각들을 순서대로 이어 붙이면(try는 undo로 되돌린 뒤) 아래 '타이핑할 코드'와 글자 하나까지 같아야 한다(띄어쓰기·줄 바꿈 포함). 조각을 더 잘게 나눌 수는 있지만 글자를 바꾸면 안 된다.
+- "starter"는 준비 코드가 있을 때만 넣고, 무엇이 준비되어 있는지 말한다. "examples", "hint", "input"은 필요할 때만.
+- "output"은 그 시점에 실제로 나오는 값을 말한다. 지금은 모르면 "결과를 보세요"처럼 두면 되고, 제가 실제 출력을 알려 주면 그때 고쳐 쓴다.
+- 마지막은 run → output → submit.
 
 ## 미션: {activity['title']}
 
@@ -129,11 +132,26 @@ def coding_prompt(activity, solution, output, prefix, keep=""):
 ```python
 {rest}
 ```
+"""
 
-### 실제 실행 결과
-```
-{output}
-```
+
+def outputs_prompt(activity, entry, outputs):
+    """Second pass: the real output at every run, so each output line says what is on screen."""
+    rows = []
+    run_index = 0
+    for i, step in enumerate(entry):
+        mark = ""
+        if step[0] == "run":
+            mark = f"   ← 실제 출력:\n```\n{outputs[run_index]}\n```"
+            run_index += 1
+        rows.append(f"{i + 1}. {json.dumps(list(step), ensure_ascii=False)}{mark}")
+    return f"""{VOICE}
+
+아래는 코딩 미션 「{activity['title']}」의 해설 대본과, 각 run 시점에 실제로 나온 출력입니다.
+"output" 줄만 실제 출력에 맞게 다시 쓰세요(값을 말하고, 길면 무엇을 볼지를 말한다). try 뒤의 output은 무엇이 잘못됐는지 실제 출력으로 설명한다.
+다른 줄은 글자 그대로 두고, 전체 목록을 같은 형식의 JSON으로만 답하세요.
+
+{chr(10).join(rows)}
 """
 
 
@@ -168,6 +186,53 @@ def validate(activity, entry, solution):
     return None
 
 
+def run_states(activity, entry, solution):
+    """The real output at every run of a coding entry, in order."""
+    problem = activity["problem"]
+    prefix = narration._starter_prefix(problem, solution)
+    outputs = []
+    text = prefix
+    tried = []
+    for step in entry:
+        kind = step[0]
+        if kind in ("code", "try"):
+            if kind == "try":
+                tried.append(text)
+            text = text + step[1].rstrip("\n") + "\n"
+        elif kind == "undo":
+            text = tried.pop()
+        elif kind == "run":
+            outputs.append(run_solution(problem, text))
+    return outputs
+
+
+def run_errors(entry, outputs):
+    """Runs that crashed where the script did not mean to show a mistake: a run right after a
+    plain code chunk must not end in a traceback."""
+    problems = []
+    run_index = 0
+    last_typed = None
+    for step in entry:
+        if step[0] in ("code", "try", "undo"):
+            last_typed = step[0]
+        elif step[0] == "run":
+            out = outputs[run_index]
+            run_index += 1
+            if "Traceback" in out and last_typed != "try":
+                problems.append(f"{run_index}번째 run이 오류로 끝납니다 (try가 아닌 조각 뒤): {out.strip().splitlines()[-1][:120]}")
+    return problems
+
+
+def restore_except_outputs(fixed, entry):
+    """The second pass may only change output lines: everything else comes back from `entry`."""
+    if len(fixed) != len(entry):
+        return entry
+    out = []
+    for new, old in zip(fixed, entry):
+        out.append(tuple(new) if old[0] == "output" and new[0] == "output" else old)
+    return out
+
+
 def restore_kept(entry, previous, kept):
     """Put the kept lines back exactly as they were: a concept line by its anchor, a coding
     step by its name (code chunks by their code)."""
@@ -185,9 +250,9 @@ def generate(activity, solution, attempts=3, previous=None, kept=()):
     keep = keep_section(previous, kept) if previous else ""
     if activity["kind"] == "coding":
         problem = activity["problem"]
-        output = run_solution(problem, solution)
-        prefix = narration._starter_prefix(problem, solution.rstrip("\n") + "\n")
-        prompt = coding_prompt(activity, solution.rstrip("\n") + "\n", output, prefix, keep)
+        solution = solution.rstrip("\n") + "\n"
+        prefix = narration._starter_prefix(problem, solution)
+        prompt = coding_prompt(activity, solution, prefix, keep)
     else:
         prompt = concept_prompt(activity, keep)
     feedback = ""
@@ -202,6 +267,20 @@ def generate(activity, solution, attempts=3, previous=None, kept=()):
         if previous and kept:
             entry = restore_kept(entry, previous, kept)
         error = validate(activity, entry, solution)
+        if error is None and activity["kind"] == "coding":
+            # Every run really runs; then the output lines are rewritten from what came out.
+            outputs = run_states(activity, entry, solution)
+            crashed = run_errors(entry, outputs)
+            if crashed:
+                error = "\n".join(crashed)
+            else:
+                try:
+                    fixed = parse_entry(ask_claude(outputs_prompt(activity, entry, outputs)))
+                    candidate = restore_except_outputs(fixed, entry)
+                    if validate(activity, candidate, solution) is None:
+                        entry = candidate
+                except (ValueError, json.JSONDecodeError, RuntimeError):
+                    pass  # the first-pass output lines stay
         if error is None:
             return entry
         last_error = error
@@ -220,6 +299,7 @@ def missions(chapters):
 def main():
     parser = argparse.ArgumentParser(description="AI 나레이션 재작업")
     parser.add_argument("--all", action="store_true", help="모든 개념·코딩 미션을 다시 쓴다")
+    parser.add_argument("--kind", choices=["concept", "coding"], help="이 종류의 미션만 (--all과 함께)")
     parser.add_argument("--ids", nargs="*", default=[], help="이 미션들만")
     parser.add_argument("--import", dest="import_modules", action="store_true", help="narration_*.py의 손글 항목을 캐시로 옮긴다")
     parser.add_argument("--check", action="store_true", help="낡은 항목만 나열한다")
@@ -229,7 +309,8 @@ def main():
     args = parser.parse_args()
 
     chapters = outline.build()
-    solutions = dsl.SOLUTIONS
+    # The commented solutions: the 해설 types code with its comments (docs/content-rules.md 3).
+    solutions = comments.apply(dsl.SOLUTIONS)
     todo = []
     for unit, activity in missions(chapters):
         solution = solutions[activity["problem"]["id"]] if activity["kind"] == "coding" else None
@@ -267,6 +348,8 @@ def main():
             continue
         wanted = args.all or activity["id"] in args.ids or status in ("stale", "none", "module")
         if args.ids and activity["id"] not in args.ids:
+            wanted = False
+        if args.kind and activity["kind"] != args.kind:
             wanted = False
         # A stale entry keeps the lines whose source block did not change.
         kept = []

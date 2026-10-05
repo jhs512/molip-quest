@@ -1,13 +1,13 @@
 {
  "format": 2,
- "hash": "071f39f7f125b646",
+ "hash": "9a0d4f142216368d",
  "by": "claude",
  "blocks": {
   "title": "8c9db0ef68e6",
   "problem": "ef1c3da42b56",
   "starter": "c7b2d2b17f82",
   "example": "f482dc2f31f9",
-  "solution": "235cb1be9100"
+  "solution": "aa5dec7c03e5"
  },
  "sources": [
   {
@@ -24,7 +24,23 @@
   },
   {
    "block": "solution",
-   "hash": "235cb1be9100"
+   "hash": "aa5dec7c03e5"
+  },
+  {
+   "block": "solution",
+   "hash": "aa5dec7c03e5"
+  },
+  {
+   "block": "solution",
+   "hash": "aa5dec7c03e5"
+  },
+  {
+   "block": "solution",
+   "hash": "aa5dec7c03e5"
+  },
+  {
+   "block": "solution",
+   "hash": "aa5dec7c03e5"
   },
   {
    "block": "example",
@@ -32,15 +48,15 @@
   },
   {
    "block": "solution",
-   "hash": "235cb1be9100"
+   "hash": "aa5dec7c03e5"
   },
   {
    "block": "solution",
-   "hash": "235cb1be9100"
+   "hash": "aa5dec7c03e5"
   },
   {
    "block": "solution",
-   "hash": "235cb1be9100"
+   "hash": "aa5dec7c03e5"
   }
  ],
  "entry": [
@@ -57,9 +73,26 @@
    "준비 코드 한 줄을 보세요. input()으로 읽은 글자를 int()로 정수로 바꿔 quantity에 넣어 뒀어요. 이건 그대로 둘게요."
   ],
   [
+   "try",
+   "print('10000' * quantity)\n",
+   "이렇게 해 볼까요? 10000을 따옴표로 감싸 봤어요."
+  ],
+  [
+   "run",
+   "실행하면요."
+  ],
+  [
+   "output",
+   "100001000010000이 나왔죠? 10000이 세 번 이어 붙은 글자예요. 따옴표 안은 숫자가 아니라 글자라서 곱셈이 아니라 반복이 됐거든요."
+  ],
+  [
+   "undo",
+   "그래서 숫자는 따옴표 없이 써요. 되돌릴게요."
+  ],
+  [
    "code",
-   "print(10000 * quantity)\n",
-   "가격 10000에 quantity를 곱해서 print로 출력해요. 한 줄이면 돼요."
+   "\n# 가격 10000에 수량 quantity를 곱해요. quantity는 int()로 정수가 됐으니 곱셈이 돼요.\n# 10000을 '10000'처럼 따옴표로 감싸면 글자가 되어 곱셈이 안 돼요. 숫자는 따옴표 없이 써요.\nprint(10000 * quantity)\n",
+   "가격 10000에 quantity를 곱해서 print로 출력해요. 주석은 왜 이렇게 쓰는지 남겨 둔 메모예요."
   ],
   [
    "input",
@@ -71,7 +104,7 @@
   ],
   [
    "output",
-   "30000이 나왔죠? 입력 칸을 7이나 0으로 바꿔 보면 값이 따라 바뀌거든요."
+   "30000이 나왔죠? 입력 3에 가격 10000을 곱한 값이에요. 입력 칸을 7이나 0으로 바꿔 보면 값이 따라 바뀌거든요."
   ],
   [
    "submit",

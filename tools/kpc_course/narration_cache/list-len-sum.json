@@ -1,13 +1,13 @@
 {
  "format": 2,
- "hash": "c8a90593940b59c8",
+ "hash": "bb38b3311f50543c",
  "by": "claude",
  "blocks": {
   "title": "2b8b42df6a4f",
   "problem": "fd2ffdbcfe4b",
   "starter": "97aa22718103",
   "example": "e3b0c44298fc",
-  "solution": "119008ce1479"
+  "solution": "1882d0e3d69c"
  },
  "sources": [
   {
@@ -20,27 +20,55 @@
   },
   {
    "block": "solution",
-   "hash": "119008ce1479"
+   "hash": "1882d0e3d69c"
   },
   {
    "block": "solution",
-   "hash": "119008ce1479"
+   "hash": "1882d0e3d69c"
   },
   {
    "block": "solution",
-   "hash": "119008ce1479"
+   "hash": "1882d0e3d69c"
   },
   {
    "block": "solution",
-   "hash": "119008ce1479"
+   "hash": "1882d0e3d69c"
   },
   {
    "block": "solution",
-   "hash": "119008ce1479"
+   "hash": "1882d0e3d69c"
   },
   {
    "block": "solution",
-   "hash": "119008ce1479"
+   "hash": "1882d0e3d69c"
+  },
+  {
+   "block": "solution",
+   "hash": "1882d0e3d69c"
+  },
+  {
+   "block": "solution",
+   "hash": "1882d0e3d69c"
+  },
+  {
+   "block": "solution",
+   "hash": "1882d0e3d69c"
+  },
+  {
+   "block": "solution",
+   "hash": "1882d0e3d69c"
+  },
+  {
+   "block": "solution",
+   "hash": "1882d0e3d69c"
+  },
+  {
+   "block": "solution",
+   "hash": "1882d0e3d69c"
+  },
+  {
+   "block": "solution",
+   "hash": "1882d0e3d69c"
   }
  ],
  "entry": [
@@ -54,17 +82,46 @@
   ],
   [
    "code",
-   "count = len(prices)\n",
+   "\n# len()은 리스트 안에 값이 몇 개인지 세 줘요. 여기선 3이에요.\ncount = len(prices)\n",
    "len은 리스트에 몇 개 들었는지 세 줘요. 그 값을 count에 넣어요."
   ],
   [
-   "code",
-   "total = sum(prices)\n",
-   "sum은 리스트를 다 더해 줘요. 그 합계를 total에 담으면 돼요."
+   "run",
+   "일단 실행해 볼게요."
+  ],
+  [
+   "output",
+   "아무것도 안 나오죠? 담기만 했지 아직 안 찍었거든요."
+  ],
+  [
+   "try",
+   "total = sum(price)\n",
+   "이번엔 합계예요. 이렇게 해 볼까요?"
+  ],
+  [
+   "run",
+   "실행하면요."
+  ],
+  [
+   "output",
+   "NameError가 나죠? name 'price' is not defined, 그러니까 price라는 이름은 없다는 거예요. 파이썬이 친절하게 Did you mean: 'prices'까지 물어 주고요. 리스트 이름은 끝에 s가 붙은 prices예요."
+  ],
+  [
+   "undo",
+   "이름 하나 틀리기 쉬운데, 그러면 바로 멈추니 조심하세요. prices로 정확히 써요."
   ],
   [
    "code",
-   "print(count, total)\n",
+   "# sum()은 리스트 안의 숫자를 다 더해요. 숫자가 글자('10000')였다면 더할 수 없으니 조심하세요.\ntotal = sum(prices)\n",
+   "sum은 리스트를 다 더해 줘요. 그 합계를 total에 담으면 돼요."
+  ],
+  [
+   "caution",
+   "가격을 '10000'처럼 따옴표로 쓰기 쉬운데, 글자는 sum으로 못 더하니 조심하세요."
+  ],
+  [
+   "code",
+   "# 쉼표로 두 변수를 나란히 넣으면 한 줄에 띄어쓰기로 같이 찍혀요.\nprint(count, total)\n",
    "두 변수를 쉼표로 이어 주면 한 줄에 나란히 찍혀요."
   ],
   [
@@ -73,7 +130,7 @@
   ],
   [
    "output",
-   "3 30300이 나왔죠? 개수 3에 합계 30300이에요."
+   "3 30300이 나왔죠? 앞의 3이 개수, 뒤의 삼만 삼백이 합계예요."
   ],
   [
    "submit",

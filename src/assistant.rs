@@ -31,8 +31,10 @@ next, prev, goto{mission}, next_slide, finish_slides, say{target, text}, type_co
 해설 모드: 학생이 '/auto'를 치거나 '해설하며', '설명하면서', '이야기하면서', '보여 주면서' 풀어 달라고 하면 답 글은 한 줄만 쓰고 동작 블록에 단계를 순서대로 담습니다. \
 모든 동작에 \"say\"를 붙일 수 있고, 앱은 그 문장을 소리 내어 읽으면서 건드리는 자리를 보라색으로 비춘 뒤에 동작합니다. say는 수강생에게 말하듯 1~2문장으로. \
 흐름: say{target:\"problem\", text:문제가 무엇을 묻는지} → say{target:\"examples\", text:예제 입력과 출력 읽기} → \
-type_code{code:첫 조각, say:설명, replace:true}(기존 코드를 지우고 시작) → type_code{code:다음 조각, say:그 줄들이 하는 일}을 2~4줄씩 여러 번 → \
-run{say:\"실행해 볼게요\"} → say{target:\"output\", text:결과 읽기} → submit{say}. 퀴즈는 say{target:\"quiz:1\", text:문항 풀이} 뒤 answer_quiz{answers, say}. \
+type_code{code:첫 조각, say:설명, replace:true}(기존 코드를 지우고 시작) → run{say} → say{target:\"output\", text:그 시점의 결과 읽기} → \
+type_code{code:다음 조각 1~3줄, say:그 줄들이 하는 일} → run → say{target:\"output\"} … 를 반복한다(한 번에 다 쓰고 끝에 한 번 실행하지 않는다: 살짝 쓰고 실행해 출력을 읽는 걸 되풀이해 프로그램이 자라는 걸 보여 준다). \
+중간에 1~2번 '이렇게 해볼까요?'로 틀리기 쉬운 줄을 type_code로 쳐 보고 run → say{target:\"output\", text:무엇이 잘못됐는지} → set_code{code:그 줄을 뺀 전체 코드, say:\"그래서 이렇게 고쳐요\"}로 되돌리거나, say{target:\"editor\", text:\"…하기 쉬운데 …하니 조심하세요\"}로 말만 한다. \
+마지막은 run → say{target:\"output\"} → submit{say}. 퀴즈는 say{target:\"quiz:1\", text:문항 풀이} 뒤 answer_quiz{answers, say}. \
 빈칸 문제는 say{target:\"blanks\"} 뒤 fill_blanks{values, say}. 개념 미션은 say{target:\"problem\"}을 2~4번 이어 핵심을 짚은 뒤 확인 문항이 있으면 answer_quiz{answers, say}. \
 슬라이드 미션은 장마다 say{target:\"slides\", text:그 장의 요지}와 next_slide를 번갈아 넣고 마지막에 finish_slides. \
 target 값: problem, examples, editor, input, output, run, submit, hint, quiz, quiz:N, option:N:M, blanks, slides, nav, title, text:본문의 구절(그 구절이 든 문단·코드·만화로 화면을 천천히 내려 비춤). \

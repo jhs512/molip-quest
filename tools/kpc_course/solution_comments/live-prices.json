@@ -1,0 +1,5 @@
+{
+ "hash": "2779e936fdc74276",
+ "by": "claude",
+ "code": "import pandas as pd\nimport FinanceDataReader as fdr\n\n# 삼성전자 종목 코드는 숫자지만 글자('005930')로 줘야 해요. 앞의 0이 날아가거든요.\n# 받은 표는 날짜가 인덱스라서 sort_index()로 날짜순을 맞춰 둬요.\nlive = fdr.DataReader('005930', '2026-01-01').sort_index()\n# iloc[-1]은 맨 마지막 줄이에요. 종가는 소수가 섞일 수 있어서 int()로 정수로 만들어요.\nlatest_close = int(live['Close'].iloc[-1])\n# rolling(5).mean()은 5거래일씩 묶은 평균이에요. 그 마지막 값이 최근 5일 평균이죠.\nma5 = float(live['Close'].rolling(5).mean().iloc[-1])\n# tail()은 표 끝 5줄이에요. 열 이름과 최근 날짜가 맞는지 눈으로 확인해요.\nprint(live.tail())\n# index.max()가 마지막 날짜예요. .date()로 시간을 떼고, ma5는 round로 보기 좋게 반올림해요.\nprint(live.index.max().date(), latest_close, round(ma5))\n"
+}

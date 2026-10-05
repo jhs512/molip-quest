@@ -1,13 +1,13 @@
 {
  "format": 2,
- "hash": "da679340a29b0e22",
+ "hash": "2b9ed40bd68f7f2b",
  "by": "claude",
  "blocks": {
   "title": "daf2b447552a",
   "problem": "a60382d17e57",
   "starter": "3435eb31868d",
   "example": "e3b0c44298fc",
-  "solution": "5ab512caa059"
+  "solution": "e5beca78a688"
  },
  "sources": [
   {
@@ -20,27 +20,55 @@
   },
   {
    "block": "solution",
-   "hash": "5ab512caa059"
+   "hash": "e5beca78a688"
   },
   {
    "block": "solution",
-   "hash": "5ab512caa059"
+   "hash": "e5beca78a688"
   },
   {
    "block": "solution",
-   "hash": "5ab512caa059"
+   "hash": "e5beca78a688"
   },
   {
    "block": "solution",
-   "hash": "5ab512caa059"
+   "hash": "e5beca78a688"
   },
   {
    "block": "solution",
-   "hash": "5ab512caa059"
+   "hash": "e5beca78a688"
   },
   {
    "block": "solution",
-   "hash": "5ab512caa059"
+   "hash": "e5beca78a688"
+  },
+  {
+   "block": "solution",
+   "hash": "e5beca78a688"
+  },
+  {
+   "block": "solution",
+   "hash": "e5beca78a688"
+  },
+  {
+   "block": "solution",
+   "hash": "e5beca78a688"
+  },
+  {
+   "block": "solution",
+   "hash": "e5beca78a688"
+  },
+  {
+   "block": "solution",
+   "hash": "e5beca78a688"
+  },
+  {
+   "block": "solution",
+   "hash": "e5beca78a688"
+  },
+  {
+   "block": "solution",
+   "hash": "e5beca78a688"
   }
  ],
  "entry": [
@@ -54,22 +82,52 @@
   ],
   [
    "code",
-   "items = soup.select('#prices li')\nn_items = len(items)\n",
-   "soup.select는 맞는 요소를 리스트로 돌려주거든요. 그러니 len으로 세면 개수가 나와요."
+   "# '#prices li'는 id가 prices인 요소 안의 li를 전부 찾는 선택자예요\n# select()는 맞는 요소를 리스트로 돌려줘요(하나만 찾는 select_one과 달라요)\nitems = soup.select('#prices li')\n",
+   "soup.select는 맞는 요소를 리스트로 돌려주거든요. 하나만 찾는 select_one과 달라요."
   ],
   [
    "code",
-   "first_name = items[0].select_one('.name').get_text(strip=True)\n",
+   "# 리스트니까 len()으로 세면 몇 개인지 나와요\nn_items = len(items)\n",
+   "리스트니까 len으로 세면 개수가 나와요."
+  ],
+  [
+   "run",
+   "일단 실행해 볼게요."
+  ],
+  [
+   "output",
+   "아무것도 안 나오죠? 담기만 했지 아직 print를 안 했거든요."
+  ],
+  [
+   "try",
+   "print(items[1].select_one('.name').get_text(strip=True))\n",
+   "첫 종목이니까 1이라고 쓰기 쉬워요. 이렇게 해 볼까요?"
+  ],
+  [
+   "run",
+   "실행하면요."
+  ],
+  [
+   "output",
+   "가상B가 나왔죠? 첫 종목이 아니라 둘째예요. 파이썬은 0부터 세거든요."
+  ],
+  [
+   "undo",
+   "그래서 첫 요소는 [0]으로 써야 해요."
+  ],
+  [
+   "code",
+   "# [0]이 첫 요소예요(1이 아니라 0부터 세요)\n# .select_one('.name')으로 그 안의 이름 요소 하나를 찾고\n# .get_text(strip=True)로 태그 없이 글자만, 앞뒤 공백 지우고 꺼내요\nfirst_name = items[0].select_one('.name').get_text(strip=True)\n",
    "첫 요소 [0]에서 select_one으로 .name 요소를 찾고, get_text로 글자만 꺼내요."
   ],
   [
    "code",
-   "print(n_items, first_name)\n",
+   "# 두 값을 한 줄에 같이 출력해요\nprint(n_items, first_name)\n",
    "둘을 한 줄에 출력할게요."
   ],
   [
    "run",
-   "실행해 볼게요."
+   "다시 실행해 볼게요."
   ],
   [
    "output",

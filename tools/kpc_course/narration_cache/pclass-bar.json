@@ -1,13 +1,13 @@
 {
  "format": 2,
- "hash": "aa9a806f90f1eb57",
+ "hash": "8e7ae4c59fbc98dd",
  "by": "claude",
  "blocks": {
   "title": "f0e313f81be8",
   "problem": "f787ae94d76a",
   "starter": "5b2bc9914f5c",
   "example": "e3b0c44298fc",
-  "solution": "67bdac9f9cc3"
+  "solution": "4496002fc2f0"
  },
  "sources": [
   {
@@ -24,27 +24,59 @@
   },
   {
    "block": "solution",
-   "hash": "67bdac9f9cc3"
+   "hash": "4496002fc2f0"
   },
   {
    "block": "solution",
-   "hash": "67bdac9f9cc3"
+   "hash": "4496002fc2f0"
   },
   {
    "block": "solution",
-   "hash": "67bdac9f9cc3"
+   "hash": "4496002fc2f0"
   },
   {
    "block": "solution",
-   "hash": "67bdac9f9cc3"
+   "hash": "4496002fc2f0"
   },
   {
    "block": "solution",
-   "hash": "67bdac9f9cc3"
+   "hash": "4496002fc2f0"
   },
   {
    "block": "solution",
-   "hash": "67bdac9f9cc3"
+   "hash": "4496002fc2f0"
+  },
+  {
+   "block": "solution",
+   "hash": "4496002fc2f0"
+  },
+  {
+   "block": "solution",
+   "hash": "4496002fc2f0"
+  },
+  {
+   "block": "solution",
+   "hash": "4496002fc2f0"
+  },
+  {
+   "block": "solution",
+   "hash": "4496002fc2f0"
+  },
+  {
+   "block": "solution",
+   "hash": "4496002fc2f0"
+  },
+  {
+   "block": "solution",
+   "hash": "4496002fc2f0"
+  },
+  {
+   "block": "solution",
+   "hash": "4496002fc2f0"
+  },
+  {
+   "block": "solution",
+   "hash": "4496002fc2f0"
   }
  ],
  "entry": [
@@ -61,18 +93,51 @@
    "titanic 표를 읽는 줄과 plt, sns 가져오기는 준비돼 있어요. 그대로 둘게요."
   ],
   [
+   "try",
+   "rates = titanic.groupby('객실 등급')['생존'].mean()\n",
+   "이렇게 해 볼까요? 열 이름을 띄어 쓰기 쉽거든요."
+  ],
+  [
+   "run",
+   "실행하면요."
+  ],
+  [
+   "output",
+   "빨간 글자가 잔뜩 나오죠? 맨 아랫줄을 보세요. KeyError: 객실 등급이에요. 표에 그런 열이 없다는 뜻이거든요. 열 이름은 붙여서 객실등급이에요."
+  ],
+  [
+   "undo",
+   "그래서 열 이름은 표에 있는 글자 그대로 써요."
+  ],
+  [
    "code",
-   "rates = titanic.groupby('객실등급')['생존'].mean()\n",
+   "# 객실등급별로 묶어서 생존 열의 평균을 내요. 열 이름은 따옴표 안에 정확히 써야 해요.\n# 생존이 0과 1이라 평균이 곧 생존율이에요. 1등급·2등급·3등급 값 세 개가 나와요.\nrates = titanic.groupby('객실등급')['생존'].mean()\n",
    "성별 그래프와 똑같은데, groupby 안의 열 이름만 객실등급으로 바꿔요. 등급마다 생존 평균이 나오죠?"
   ],
   [
-   "code",
-   "fig, ax = plt.subplots()\nax.bar(rates.index.astype(str), rates * 100)\n",
-   "그림판을 만들고 막대를 그려요. rates.index.astype(str)로 등급을 글자로 바꿔야 x축 간격이 고르게 나와요. 높이는 rates * 100이에요."
+   "run",
+   "일단 실행해 볼게요."
+  ],
+  [
+   "output",
+   "이번엔 아무것도 안 나오죠? 에러 없이 조용하면 성공이에요. rates에 담기만 했거든요."
   ],
   [
    "code",
-   "ax.set(xlabel='객실등급', ylabel='생존율 (%)', ylim=(0, 100), title='Survival by class')\nplt.show()\n",
+   "# 빈 그림(fig)과 그 안의 축(ax)을 하나 만들어요. 그래프는 ax에 그려요.\nfig, ax = plt.subplots()\n# 등급 1·2·3은 숫자라 그대로 넘기면 x축 간격이 어색해요. astype(str)로 글자로 바꿔요.\n# rates * 100은 0.63 같은 비율을 63처럼 퍼센트로 바꿔요.\nax.bar(rates.index.astype(str), rates * 100)\n",
+   "그림판을 만들고 막대를 그려요. rates.index.astype(str)로 등급을 글자로 바꿔야 x축 간격이 고르게 나와요. 높이는 rates * 100이에요."
+  ],
+  [
+   "run",
+   "여기서 한 번 실행해요."
+  ],
+  [
+   "output",
+   "아직 화면엔 아무것도 없죠? 그려 두기만 하고 띄우진 않았거든요."
+  ],
+  [
+   "code",
+   "# 축 이름, y축 범위(0~100), 제목을 한 번에 정해요. ylim은 괄호 안에 (아래, 위) 순서예요.\nax.set(xlabel='객실등급', ylabel='생존율 (%)', ylim=(0, 100), title='Survival by class')\n# 그린 그래프를 화면에 띄워요. 이 줄이 없으면 그림이 안 보여요.\nplt.show()\n",
    "축 이름과 y축 범위 0~100을 한 번에 정하고 보여 줘요. 범위를 고정해야 성별 그래프와 나란히 비교되거든요."
   ],
   [
@@ -81,7 +146,7 @@
   ],
   [
    "output",
-   "막대 세 개가 나왔죠? 1등급에서 3등급으로 갈수록 막대가 낮아지는지 보세요."
+   "글자 출력은 없고 그림이 떠요. 막대 세 개가 보이죠? 1등급에서 3등급으로 갈수록 막대가 낮아지는지 보세요."
   ],
   [
    "submit",

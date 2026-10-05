@@ -1,13 +1,13 @@
 {
  "format": 2,
- "hash": "609b4a23af992eed",
+ "hash": "667af8b2e63dd0b4",
  "by": "claude",
  "blocks": {
   "title": "c8ce2fa5511d",
   "problem": "fbcec1a98283",
   "starter": "ee95792d26a6",
   "example": "e3b0c44298fc",
-  "solution": "c3308a6edf09"
+  "solution": "bbad82e0156e"
  },
  "sources": [
   {
@@ -20,31 +20,111 @@
   },
   {
    "block": "solution",
-   "hash": "c3308a6edf09"
+   "hash": "bbad82e0156e"
   },
   {
    "block": "solution",
-   "hash": "c3308a6edf09"
+   "hash": "bbad82e0156e"
   },
   {
    "block": "solution",
-   "hash": "c3308a6edf09"
+   "hash": "bbad82e0156e"
   },
   {
    "block": "solution",
-   "hash": "c3308a6edf09"
+   "hash": "bbad82e0156e"
   },
   {
    "block": "solution",
-   "hash": "c3308a6edf09"
+   "hash": "bbad82e0156e"
   },
   {
    "block": "solution",
-   "hash": "c3308a6edf09"
+   "hash": "bbad82e0156e"
   },
   {
    "block": "solution",
-   "hash": "c3308a6edf09"
+   "hash": "bbad82e0156e"
+  },
+  {
+   "block": "solution",
+   "hash": "bbad82e0156e"
+  },
+  {
+   "block": "solution",
+   "hash": "bbad82e0156e"
+  },
+  {
+   "block": "solution",
+   "hash": "bbad82e0156e"
+  },
+  {
+   "block": "solution",
+   "hash": "bbad82e0156e"
+  },
+  {
+   "block": "solution",
+   "hash": "bbad82e0156e"
+  },
+  {
+   "block": "solution",
+   "hash": "bbad82e0156e"
+  },
+  {
+   "block": "solution",
+   "hash": "bbad82e0156e"
+  },
+  {
+   "block": "solution",
+   "hash": "bbad82e0156e"
+  },
+  {
+   "block": "solution",
+   "hash": "bbad82e0156e"
+  },
+  {
+   "block": "solution",
+   "hash": "bbad82e0156e"
+  },
+  {
+   "block": "solution",
+   "hash": "bbad82e0156e"
+  },
+  {
+   "block": "solution",
+   "hash": "bbad82e0156e"
+  },
+  {
+   "block": "solution",
+   "hash": "bbad82e0156e"
+  },
+  {
+   "block": "solution",
+   "hash": "bbad82e0156e"
+  },
+  {
+   "block": "solution",
+   "hash": "bbad82e0156e"
+  },
+  {
+   "block": "solution",
+   "hash": "bbad82e0156e"
+  },
+  {
+   "block": "solution",
+   "hash": "bbad82e0156e"
+  },
+  {
+   "block": "solution",
+   "hash": "bbad82e0156e"
+  },
+  {
+   "block": "solution",
+   "hash": "bbad82e0156e"
+  },
+  {
+   "block": "solution",
+   "hash": "bbad82e0156e"
   }
  ],
  "entry": [
@@ -58,23 +138,25 @@
   ],
   [
    "code",
-   "model = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))])\nmodel.fit(X_train, y_train)\nprediction = model.predict(X_test)\n",
-   "스케일 맞추기와 릿지를 파이프라인으로 묶어 훈련 자료로 학습해요. 테스트 자료 X_test로 예측해서 prediction에 담고요."
+   "# 표준화 → 릿지 순서로 묶은 파이프라인이에요. alpha=1은 규제 세기고요\nmodel = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))])\n# 학습은 훈련 자료로만 해요. 테스트 자료를 넣으면 누수예요\nmodel.fit(X_train, y_train)\n",
+   "스케일 맞추기와 릿지를 파이프라인으로 묶어요. 그리고 훈련 자료로만 학습해요."
+  ],
+  [
+   "run",
+   "일단 실행해 볼게요."
+  ],
+  [
+   "output",
+   "아무것도 안 나오죠? 학습만 했지 아직 꺼내 본 게 없거든요."
+  ],
+  [
+   "caution",
+   "여기서 X_test, y_test로 학습하기 쉬운데, 그러면 시험지에 답을 적어 주는 누수가 되니 조심하세요."
   ],
   [
    "code",
-   "comparison = pd.DataFrame({'actual': y_test.to_numpy(), 'prediction': prediction}, index=pd.DatetimeIndex(frame.loc[test_mask, 'target_date']))\n",
-   "실제 값 actual과 예측 prediction을 한 표로 만들어요. 인덱스는 target_date, 그러니까 정답이 생긴 날짜예요."
-  ],
-  [
-   "code",
-   "fig, ax = plt.subplots()\nax.plot(comparison.index, comparison['actual'], label='Actual next close')\nax.plot(comparison.index, comparison['prediction'], label='Ridge')\n",
-   "도화지 fig, ax를 만들고 같은 날짜 축에 두 선을 그려요. 실제 선 먼저, 예측 선 하나 더요."
-  ],
-  [
-   "code",
-   "ax.set(xlabel='정답 날짜', ylabel='Price', title='Held-out next trading day')\nax.legend()\nplt.show()\ncomparison.head()\n",
-   "x축 이름을 정답 날짜로 적고 범례도 켜요. 그래프를 띄운 뒤 표 첫 다섯 줄도 같이 봐요."
+   "# 테스트 자료의 다음 종가를 예측해요. 결과는 numpy 배열이에요\nprediction = model.predict(X_test)\n# 실제(actual)와 예측(prediction)을 한 표에 나란히 둬요\n# y_test는 .to_numpy()로 인덱스를 떼야 prediction과 길이만 맞춰 붙어요\n# 인덱스는 입력 날짜가 아니라 정답 날짜(target_date)예요. 그래야 \"그날의 실제 vs 예측\"이 돼요\ncomparison = pd.DataFrame({'actual': y_test.to_numpy(), 'prediction': prediction}, index=pd.DatetimeIndex(frame.loc[test_mask, 'target_date']))\n",
+   "테스트 자료로 예측해서 prediction에 담아요. 실제 값 actual과 나란히 한 표로 만들고요. 인덱스는 target_date, 정답이 생긴 날짜예요."
   ],
   [
    "run",
@@ -82,7 +164,89 @@
   ],
   [
    "output",
-   "두 선이 겹쳐 나왔죠? 예측 선이 실제 선을 어디까지 따라가고 어느 구간에서 벌어지는지 보세요. 표 인덱스가 정답 날짜인 것도 확인하고요."
+   "여전히 아무것도 안 나와요. 표를 변수에 담기만 했거든요. 그래프를 그리면서 확인해요."
+  ],
+  [
+   "code",
+   "# 그림(fig) 하나, 그 안의 축(ax) 하나를 만들어요\nfig, ax = plt.subplots()\n",
+   "도화지 fig와 축 ax를 하나 만들어요."
+  ],
+  [
+   "run",
+   "실행하면요."
+  ],
+  [
+   "output",
+   "화면엔 아직 아무것도 안 떠요. 도화지만 만들고 보여 주진 않았거든요. 이제 선을 올리면 돼요."
+  ],
+  [
+   "try",
+   "ax.plot(comparison.index, comparison[actual], label='Actual next close')\n",
+   "이렇게 해 볼까요? 열 이름을 따옴표 없이 적어 봐요."
+  ],
+  [
+   "run",
+   "실행해 보면요."
+  ],
+  [
+   "output",
+   "NameError가 나죠? name 'actual' is not defined, actual이라는 변수가 없다는 뜻이에요. 열 이름은 글자라서 따옴표가 필요해요."
+  ],
+  [
+   "undo",
+   "그래서 따옴표를 꼭 붙여요."
+  ],
+  [
+   "code",
+   "# 실제 선. x는 날짜 인덱스, y는 'actual' 열. 열 이름은 따옴표로요\nax.plot(comparison.index, comparison['actual'], label='Actual next close')\n",
+   "실제 선 먼저요. x는 정답 날짜, y는 actual 열이에요."
+  ],
+  [
+   "run",
+   "다시 실행해요."
+  ],
+  [
+   "output",
+   "이번엔 에러가 없죠? 출력은 비어 있어요. 아직 그림을 띄우지 않아서 그래요. 선은 축 위에 올라가 있어요."
+  ],
+  [
+   "code",
+   "# 예측 선도 같은 날짜 축에 겹쳐 그려요. label은 범례에 뜨는 이름이에요\nax.plot(comparison.index, comparison['prediction'], label='Ridge')\n",
+   "예측 선을 같은 축에 하나 더 겹쳐요. label은 범례 이름이고요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
+  ],
+  [
+   "output",
+   "역시 조용히 지나가요. 선이 둘 올라갔지만 아직 화면엔 안 보여요."
+  ],
+  [
+   "code",
+   "# 축 이름과 제목을 한 번에 정해요. x축은 '정답 날짜'로 꼭 맞춰요\nax.set(xlabel='정답 날짜', ylabel='Price', title='Held-out next trading day')\n# 범례를 켜야 어느 선이 실제고 어느 선이 예측인지 보여요\nax.legend()\n",
+   "x축 이름을 정답 날짜로 적고 제목도 달아요. 범례도 켜고요."
+  ],
+  [
+   "run",
+   "실행하면요."
+  ],
+  [
+   "output",
+   "출력은 아직 비어 있어요. 축 이름과 범례는 다 준비됐고, 보여 주기만 남았어요."
+  ],
+  [
+   "code",
+   "# 그림을 화면에 띄워요\nplt.show()\n# 표의 앞 다섯 줄로 값이 제대로 들어갔는지 확인해요\ncomparison.head()\n",
+   "그래프를 띄우고, 표 첫 다섯 줄도 같이 봐요."
+  ],
+  [
+   "run",
+   "마지막으로 실행해요."
+  ],
+  [
+   "output",
+   "글자 출력은 비어 있죠? 그래프는 창으로 따로 떠요. 표는 마지막 줄에 그냥 적으면 안 찍혀요. print로 감싸야 보여요. 그래프에서 예측 선이 실제 선을 어디까지 따라가고 어느 구간에서 벌어지는지 보세요. x축이 정답 날짜인 것도 확인하고요."
   ],
   [
    "submit",

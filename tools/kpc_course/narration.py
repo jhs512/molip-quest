@@ -72,7 +72,8 @@ def write_cache(activity_id, hash_, entry, by, sources, blocks=None):
 
 # Which source block each kind of coding step is written for (sources.py keys).
 CODING_STEP_BLOCK = {"problem": "problem", "examples": "example", "hint": "problem", "starter": "starter",
-                     "code": "solution", "run": "solution", "input": "example", "output": "solution", "submit": "solution"}
+                     "code": "solution", "try": "solution", "undo": "solution", "caution": "solution",
+                     "run": "solution", "input": "example", "output": "solution", "submit": "solution"}
 
 
 def line_sources(activity, entry, solution=None):
@@ -353,27 +354,87 @@ def _default_problem_line(problem):
     return "자, 문제부터 볼게요. " + spoken(paragraph)
 
 
+CODING_STEPS = {"problem", "examples", "hint", "starter", "code", "try", "undo", "run", "input", "output", "caution", "submit"}
+
+
+def coding_states(entry, prefix):
+    """The editor's text after each step of a coding entry, following the agent: `code` and
+    `try` append a chunk, `undo` puts the text back to what it was before the last `try`.
+    Returns [(step, text_after)] and raises on a stray undo or an unfinished try."""
+    text = prefix
+    tried = []
+    states = []
+    for step in entry:
+        kind = step[0]
+        if kind in ("code", "try"):
+            if kind == "try":
+                tried.append(text)
+            text = text + step[1].rstrip("\n") + "\n"
+        elif kind == "undo":
+            if not tried:
+                raise SystemExit("되돌릴 try가 없습니다")
+            text = tried.pop()
+        states.append((step, text))
+    if tried:
+        raise SystemExit("try를 undo로 되돌리지 않았습니다")
+    return states
+
+
 def compile_coding(activity, entry, solution, where):
+    """A coding 해설 builds the program a little at a time: code → run → read the output, again
+    and again, with a tempting mistake tried and taken back (try/undo) or a spoken caution on
+    the way. The build refuses a script that types everything and runs once at the end."""
     if not isinstance(entry, (list, tuple)) or not entry:
         raise SystemExit(f"{where}: 코딩 해설은 단계 목록이어야 합니다.")
     problem = activity["problem"]
     solution = solution.rstrip("\n") + "\n"
     prefix = _starter_prefix(problem, solution)
-    steps = {step[0]: step for step in entry if step and step[0] != "code"}
-    chunks = [step for step in entry if step and step[0] == "code"]
+    for step in entry:
+        if not step or step[0] not in CODING_STEPS:
+            raise SystemExit(f"{where}: 모르는 해설 단계 {step!r} (가능: {', '.join(sorted(CODING_STEPS))})")
+        if step[0] in ("code", "try") and len(step) != 3:
+            raise SystemExit(f"{where}: {step[0]} 단계는 ('{step[0]}', 코드, 말) 셋이어야 합니다.")
+        if step[0] not in ("code", "try") and len(step) != 2:
+            raise SystemExit(f"{where}: {step[0]} 단계는 ('{step[0]}', 말) 둘이어야 합니다.")
+    steps = {step[0]: step for step in entry if step[0] in ("problem", "examples", "hint", "starter", "input", "submit")}
+    chunks = [step for step in entry if step[0] == "code"]
     if not chunks:
         raise SystemExit(f"{where}: 코딩 해설에 code 단계가 없습니다.")
-    joined = prefix + "".join(c[1].rstrip("\n") + "\n" for c in chunks)
-    if joined != solution:
-        raise SystemExit(f"{where}: 해설의 코드 조각을 이으면 정답 코드가 되어야 합니다. 정답을 바꿨다면 해설도 고치세요.\n--- 조각 ---\n{joined}--- 정답 ---\n{solution}")
-    known = {"problem", "examples", "hint", "starter", "code", "run", "input", "output", "submit"}
-    for step in entry:
-        if not step or step[0] not in known:
-            raise SystemExit(f"{where}: 모르는 해설 단계 {step!r} (가능: {', '.join(sorted(known))})")
-        if step[0] == "code" and len(step) != 3:
-            raise SystemExit(f"{where}: code 단계는 ('code', 코드, 말) 셋이어야 합니다.")
-        if step[0] != "code" and len(step) != 2:
-            raise SystemExit(f"{where}: {step[0]} 단계는 ('{step[0]}', 말) 둘이어야 합니다.")
+    try:
+        states = coding_states([step for step in entry if step[0] in ("code", "try", "undo")], prefix)
+    except SystemExit as error:
+        raise SystemExit(f"{where}: {error}") from None
+    final = states[-1][1] if states else prefix
+    if final != solution:
+        raise SystemExit(f"{where}: 해설의 코드 조각을 이으면(try는 undo로 되돌린 뒤) 정답 코드가 되어야 합니다. 정답을 바꿨다면 해설도 고치세요.\n--- 조각을 이은 것\n{final}\n--- 정답\n{solution}")
+    if prefix and "starter" not in steps:
+        pass
+    elif not prefix and "starter" in steps:
+        raise SystemExit(f"{where}: 정답이 준비 코드로 시작하지 않아 starter 단계를 쓸 수 없습니다.")
+    # The rule: a run (with its output read) after the chunks, not one run at the very end.
+    kinds = [step[0] for step in entry]
+    runs = kinds.count("run")
+    if len(chunks) >= 2 and runs < 2:
+        raise SystemExit(f"{where}: 코드를 조금 쓰고 실행해 보는 걸 반복해야 합니다 (조각 {len(chunks)}개에 실행 {runs}번). 조각 사이에 run과 output을 넣으세요.")
+    typed_since_run = False
+    for kind in kinds:
+        if kind in ("code", "try", "undo"):
+            typed_since_run = True
+        elif kind == "run":
+            if not typed_since_run:
+                raise SystemExit(f"{where}: 코드를 더 쓰지 않고 run을 반복했습니다.")
+            typed_since_run = False
+    if typed_since_run:
+        raise SystemExit(f"{where}: 마지막 조각 뒤에 run과 output이 있어야 제출할 수 있습니다.")
+    for i, kind in enumerate(kinds):
+        if kind == "output" and (i == 0 or kinds[i - 1] != "run"):
+            raise SystemExit(f"{where}: output은 run 바로 뒤에 옵니다.")
+        if kind == "run" and (i + 1 >= len(kinds) or kinds[i + 1] != "output"):
+            raise SystemExit(f"{where}: run 뒤에는 output(결과 읽기)이 와야 합니다.")
+    if "try" not in kinds and "caution" not in kinds:
+        raise SystemExit(f"{where}: 「이렇게 하기 쉬운데 … 조심하세요」가 하나는 있어야 합니다 (try/undo 또는 caution).")
+    if kinds[-1] != "submit":
+        raise SystemExit(f"{where}: 마지막 단계는 submit이어야 합니다.")
     actions = [_say("problem", steps["problem"][1] if "problem" in steps else _default_problem_line(problem))]
     if "examples" in steps:
         actions.append(_say("examples", steps["examples"][1]))
@@ -386,18 +447,33 @@ def compile_coding(activity, entry, solution, where):
     if prefix:
         actions.append({"action": "set_code", "code": prefix,
                         "say": steps["starter"][1] if "starter" in steps else "준비 코드는 그대로 두고, 그 아래에 이어서 써요."})
-    elif "starter" in steps:
-        raise SystemExit(f"{where}: 정답이 준비 코드로 시작하지 않아 starter 단계를 쓸 수 없습니다.")
-    for n, (_, chunk, line) in enumerate(chunks):
-        action = {"action": "type_code", "code": chunk.rstrip("\n") + "\n", "say": spoken(line)}
-        if n == 0 and not prefix:
-            action["replace"] = True
-        actions.append(action)
-    if "input" in steps:
-        actions.append(_say("input", steps["input"][1]))
-    actions.append({"action": "run", "say": spoken(steps["run"][1]) if "run" in steps else "자, 실행해 볼게요."})
-    actions.append(_say("output", steps["output"][1] if "output" in steps else "결과가 나왔죠? 예상한 값이 맞는지 보세요."))
-    actions.append({"action": "submit", "say": spoken(steps["submit"][1]) if "submit" in steps else "제출해서 채점할게요."})
+    typed_any = False
+    text = prefix
+    tried = []
+    for step in entry:
+        kind = step[0]
+        if kind in ("code", "try"):
+            if kind == "try":
+                tried.append(text)
+            action = {"action": "type_code", "code": step[1].rstrip("\n") + "\n", "say": spoken(step[2])}
+            if not typed_any and not prefix:
+                action["replace"] = True
+            typed_any = True
+            text = text + step[1].rstrip("\n") + "\n"
+            actions.append(action)
+        elif kind == "undo":
+            text = tried.pop()
+            actions.append({"action": "set_code", "code": text, "say": spoken(step[1])})
+        elif kind == "run":
+            actions.append({"action": "run", "say": spoken(step[1])})
+        elif kind == "output":
+            actions.append(_say("output", step[1]))
+        elif kind == "caution":
+            actions.append(_say("editor", step[1]))
+        elif kind == "input":
+            actions.append(_say("input", step[1]))
+        elif kind == "submit":
+            actions.append({"action": "submit", "say": spoken(step[1])})
     return actions
 
 
@@ -445,7 +521,7 @@ def compile_tour(activity):
                 picks += _sentences(a["say"], 1)
         output = [a for a in says if a.get("target") == "output"]
         if output:
-            picks += _sentences(output[0]["text"], 1)
+            picks += _sentences(output[-1]["text"], 1)
     elif kind == "quiz":
         questions = activity["questions"]
         picks.append(f"단원 점검 {len(questions)}문항이에요.")

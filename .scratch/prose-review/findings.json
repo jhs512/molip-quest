@@ -1,0 +1,170 @@
+[
+ {
+  "mission": "why-pandas",
+  "unit": "control",
+  "label": "markdown",
+  "before": "그래서 아나콘다가 필요했었습니다",
+  "after": "그래서 아나콘다가 필요했어요",
+  "why": "제목만 합니다체(~했었습니다)라 본문의 해요체와 어긋남"
+ },
+ {
+  "mission": "control-check",
+  "unit": "control",
+  "label": "q9",
+  "before": "변수 이름도 형식도 없어요. 검사기가 못 읽어요.",
+  "after": "결과를 담을 변수 이름도 출력 형식도 없어요. 검사기가 못 읽어요.",
+  "why": "그 보기에는 sold라는 변수 이름이 있어서 '변수 이름이 없다'가 보기와 어긋남"
+ },
+ {
+  "mission": "deck-missing",
+  "unit": "missing",
+  "label": "markdown",
+  "before": "괄호를 빼면 파이썬이 `&`를 먼저 계산하려다 오류를 내거든요.",
+  "after": "한 줄에서 괄호를 빼면 파이썬이 `&`를 먼저 계산하려다 오류를 내거든요.",
+  "why": "바로 앞 문장 「괄호가 필요 없어요」 뒤에 와서 모순처럼 읽힘. 한 줄에 쓸 때 얘기임을 밝힘"
+ },
+ {
+  "mission": "deck-distribution",
+  "unit": "distribution",
+  "label": "markdown",
+  "before": "열 여섯 개면 6×6 표가 돼요.",
+  "after": "열이 여섯 개면 6×6 표가 돼요.",
+  "why": "「열 여섯 개」가 16개(열여섯)로 읽혀 6×6과 모순돼 보임"
+ },
+ {
+  "mission": "deck-distribution",
+  "unit": "distribution",
+  "label": "markdown",
+  "before": "열 여섯 개면 6 곱하기 6 표가 되고",
+  "after": "열이 여섯 개면 6 곱하기 6 표가 되고",
+  "why": "소리 내어 읽으면 「열여섯 개」로 들려 6 곱하기 6과 안 맞음"
+ },
+ {
+  "mission": "insight-check",
+  "unit": "insight",
+  "label": "q7",
+  "before": "어떤 값(인원? 비율?)의 교차표인지 없어요.",
+  "after": "어떤 값(인원? 비율?)의 교차표인지 안 적혀 있어요.",
+  "why": "「~인지 없어요」는 주어가 빠져 문장이 성립하지 않아 읽다 멈춤"
+ },
+ {
+  "mission": "pipeline-check",
+  "unit": "preprocessing",
+  "label": "q5",
+  "before": "`fit` 한 번에 전부 훈련에서 기준을 정해요",
+  "after": "`fit` 한 번에 모든 단계가 훈련 자료에서 기준을 정해요",
+  "why": "「전부 훈련에서」가 무엇이 전부인지, 어디서 정하는지 읽히지 않음 (수업 용어는 훈련 자료)"
+ },
+ {
+  "mission": "deck-baseline",
+  "unit": "classifiers",
+  "label": "markdown",
+  "before": "**승객을 안 보고 \"다 죽었다\"**고 해도",
+  "after": "**승객을 안 보고 \"다 죽었다\"고** 해도",
+  "why": "닫는 ** 뒤에 바로 '고'가 붙어 굵게가 안 닫히고 **가 그대로 보임"
+ },
+ {
+  "mission": "deck-baseline",
+  "unit": "classifiers",
+  "label": "markdown",
+  "before": "**기준 모델(DummyClassifier)**이에요",
+  "after": "**기준 모델**(DummyClassifier)이에요",
+  "why": "닫는 ** 앞이 ')'이고 뒤에 바로 글자가 붙어 굵게가 안 닫히고 **가 그대로 보임"
+ },
+ {
+  "mission": "baselines",
+  "unit": "classifiers",
+  "label": "check",
+  "before": "`scikit-learn` 이름이 뭔가요?",
+  "after": "`scikit-learn`에서의 이름이 뭔가요?",
+  "why": "조사가 빠져 '라이브러리 이름이 뭔가'로 읽힐 수 있어요. 기준 모델의 클래스 이름을 묻는 문장이라 '에서'가 필요해요."
+ },
+ {
+  "mission": "deck-metrics",
+  "unit": "credit-metrics",
+  "label": "markdown",
+  "before": "놓친 30명이 돈을 떼이는 쪽이라 은행은 재현율을 먼저 봐요.",
+  "after": "놓친 30명이 돈을 떼이는 쪽이라 카드사는 재현율을 먼저 봐요.",
+  "why": "슬라이드 제목과 본문이 「카드사 예」인데 결론 문장만 「은행」이라 같은 예 안에서 주체가 바뀐다"
+ },
+ {
+  "mission": "deck-threshold",
+  "unit": "credit-metrics",
+  "label": "markdown",
+  "before": "0.5를 넘나만 보는 거고요",
+  "after": "0.5를 넘는지만 보는 거고요",
+  "why": "「넘나만」은 깨진 말로 읽혀요"
+ },
+ {
+  "mission": "deck-threshold",
+  "unit": "credit-metrics",
+  "label": "markdown",
+  "before": "확률이 0.5를 넘으면 1이라고 답할 뿐이에요",
+  "after": "확률이 0.5 이상이면 1이라고 답할 뿐이에요",
+  "why": "옆 코드는 >= 0.5라서 「넘으면」과 어긋나요"
+ },
+ {
+  "mission": "stock-data-check",
+  "unit": "stock-data",
+  "label": "q3",
+  "before": "고르는 분류와 숫자를 맞히는 회귀",
+  "after": "둘 중 하나를 고르는 분류와 숫자를 맞히는 회귀",
+  "why": "무엇을 고르는지 빠져서 보기 문장이 어색하게 읽힘"
+ },
+ {
+  "mission": "deck-features",
+  "unit": "stock-features",
+  "label": "markdown",
+  "before": "## 앞쪽 행이 비는 이유",
+  "after": "## 앞뒤 행이 비는 이유",
+  "why": "바로 아래 표에 target_next_close는 「마지막 행」이 빈다고 적혀 있어 제목의 「앞쪽」과 모순"
+ },
+ {
+  "mission": "lag-target",
+  "unit": "stock-features",
+  "label": "body",
+  "before": "(수익률)예요",
+  "after": "(수익률)이에요",
+  "why": "'수익률'은 받침이 있어 '이에요'가 맞아요"
+ },
+ {
+  "mission": "lag-target",
+  "unit": "stock-features",
+  "label": "body",
+  "before": "(이동평균)고요",
+  "after": "(이동평균)이고요",
+  "why": "'이동평균'은 받침이 있어 '이고요'가 맞아요"
+ },
+ {
+  "mission": "time-split-table",
+  "unit": "stock-split",
+  "label": "q1",
+  "before": "`2026-05-11`예요",
+  "after": "`2026-05-11`이에요",
+  "why": "11(십일)은 받침으로 끝나 '이에요'가 맞아요"
+ },
+ {
+  "mission": "deck-naive",
+  "unit": "stock-split",
+  "label": "markdown",
+  "before": "## 빵 공장과 콜센터는 다릅니다",
+  "after": "## 빵 공장과 콜센터는 달라요",
+  "why": "「~입니다」체. 수업 말투 규칙은 해요체만 쓴다"
+ },
+ {
+  "mission": "deck-naive",
+  "unit": "stock-split",
+  "label": "markdown",
+  "before": "# 못 이기면 못 이겼다고 씁니다",
+  "after": "# 못 이기면 못 이겼다고 써요",
+  "why": "「~ㅂ니다」체. 수업 말투 규칙은 해요체만 쓴다"
+ },
+ {
+  "mission": "regression-metrics",
+  "unit": "regression-project",
+  "label": "body",
+  "before": "단위는 같은 원인데 **큰 실수에 더 민감**하죠.",
+  "after": "단위는 똑같이 원인데 **큰 실수에 더 민감**하죠.",
+  "why": "'같은 원인데'가 '같은 원인(原因)'으로 읽혀 뜻이 헷갈림"
+ }
+]

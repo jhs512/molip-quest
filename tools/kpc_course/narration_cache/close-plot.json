@@ -1,13 +1,13 @@
 {
  "format": 2,
- "hash": "cd4a41ff452b3700",
+ "hash": "b3b86c240915010e",
  "by": "claude",
  "blocks": {
   "title": "b6184a8f316d",
   "problem": "b7d1680a5a83",
   "starter": "b155e6cb2218",
   "example": "e3b0c44298fc",
-  "solution": "246f1b48ab1d"
+  "solution": "949f0014e384"
  },
  "sources": [
   {
@@ -24,31 +24,59 @@
   },
   {
    "block": "solution",
-   "hash": "246f1b48ab1d"
+   "hash": "949f0014e384"
   },
   {
    "block": "solution",
-   "hash": "246f1b48ab1d"
+   "hash": "949f0014e384"
   },
   {
    "block": "solution",
-   "hash": "246f1b48ab1d"
+   "hash": "949f0014e384"
   },
   {
    "block": "solution",
-   "hash": "246f1b48ab1d"
+   "hash": "949f0014e384"
   },
   {
    "block": "solution",
-   "hash": "246f1b48ab1d"
+   "hash": "949f0014e384"
   },
   {
    "block": "solution",
-   "hash": "246f1b48ab1d"
+   "hash": "949f0014e384"
   },
   {
    "block": "solution",
-   "hash": "246f1b48ab1d"
+   "hash": "949f0014e384"
+  },
+  {
+   "block": "solution",
+   "hash": "949f0014e384"
+  },
+  {
+   "block": "solution",
+   "hash": "949f0014e384"
+  },
+  {
+   "block": "solution",
+   "hash": "949f0014e384"
+  },
+  {
+   "block": "solution",
+   "hash": "949f0014e384"
+  },
+  {
+   "block": "solution",
+   "hash": "949f0014e384"
+  },
+  {
+   "block": "solution",
+   "hash": "949f0014e384"
+  },
+  {
+   "block": "solution",
+   "hash": "949f0014e384"
   }
  ],
  "entry": [
@@ -66,31 +94,60 @@
   ],
   [
    "code",
-   "\nfig, ax = plt.subplots()\n",
-   "자, 먼저 plt.subplots()로 도화지 fig와 그릴 칸 ax를 만들어요."
+   "\n# 도화지(fig)와 그림 칸(ax)을 한 번에 만들어요. 그래프는 ax에 그려요.\nfig, ax = plt.subplots()\n",
+   "먼저 plt.subplots()로 도화지 fig와 그릴 칸 ax를 만들어요. 그래프는 ax에 그리거든요."
+  ],
+  [
+   "run",
+   "일단 실행해 볼게요."
+  ],
+  [
+   "output",
+   "아무것도 안 뜨죠? 도화지만 만들었고 아직 show()를 안 했거든요."
+  ],
+  [
+   "try",
+   "ax.plot(prices.index, prices[종가])\n",
+   "이렇게 해 볼까요? 열 이름을 따옴표 없이 적어 봤어요."
+  ],
+  [
+   "run",
+   "실행하면요."
+  ],
+  [
+   "output",
+   "NameError: name '종가' is not defined가 나요. 따옴표가 없으면 파이썬이 종가를 변수 이름으로 찾거든요."
+  ],
+  [
+   "undo",
+   "그래서 열 이름엔 따옴표를 꼭 써요. 되돌릴게요."
   ],
   [
    "code",
-   "ax.plot(prices.index, prices['종가'])\n",
-   "ax.plot에 x로 날짜 인덱스 prices.index, y로 prices['종가']를 넣으면 종가를 선으로 잇거든요."
+   "# 선그래프는 plot이에요. 막대(bar)와 자리는 같아요.\n# x는 날짜 인덱스 prices.index, y는 '종가' 열이에요. 열 이름엔 따옴표를 꼭 써요.\nax.plot(prices.index, prices['종가'])\n",
+   "ax.plot에 x로 날짜 인덱스 prices.index, y로 prices['종가']를 넣어요. 막대와 자리는 같고 이름만 plot이죠."
   ],
   [
    "code",
-   "ax.set(xlabel='날짜', ylabel='종가', title='Close price')\n",
+   "# 축 이름과 제목을 한 줄로 붙여요. xlabel은 가로축, ylabel은 세로축이에요.\nax.set(xlabel='날짜', ylabel='종가', title='Close price')\n",
    "ax.set으로 x축 이름 날짜, y축 이름 종가, 제목을 한 번에 붙여요."
   ],
   [
    "code",
-   "plt.show()\n",
-   "plt.show()로 그림을 띄우면 돼요."
+   "# 여기까지는 준비만 한 거예요. show()를 해야 화면에 떠요.\nplt.show()\n",
+   "여기까지는 준비만 한 거예요. plt.show()를 해야 화면에 떠요."
   ],
   [
    "run",
-   "실행해 볼게요."
+   "이제 실행해 볼게요."
   ],
   [
    "output",
-   "401개 점을 이은 선 하나가 보이죠? 1년 8개월 동안 가격이 어떻게 움직였는지 보세요."
+   "글자 출력은 없고 그래프 창이 떠요. 종가 선이 날짜를 따라 어떻게 오르내리는지 보세요."
+  ],
+  [
+   "caution",
+   "준비 코드의 sort_index를 빼기 쉬운데, 날짜가 뒤섞이면 선이 앞뒤로 왔다 갔다 하니 조심하세요."
   ],
   [
    "submit",

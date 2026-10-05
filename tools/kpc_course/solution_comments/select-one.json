@@ -1,0 +1,5 @@
+{
+ "hash": "d964b11546cbd823",
+ "by": "claude",
+ "code": "import pandas as pd\nfrom pathlib import Path\nfrom bs4 import BeautifulSoup\n\nhtml = Path('data/prices.html').read_text(encoding='utf-8')\nsoup = BeautifulSoup(html, 'html.parser')\n# '#prices li'는 id가 prices인 요소 안의 li를 전부 찾는 선택자예요\n# select()는 맞는 요소를 리스트로 돌려줘요(하나만 찾는 select_one과 달라요)\nitems = soup.select('#prices li')\n# 리스트니까 len()으로 세면 몇 개인지 나와요\nn_items = len(items)\n# [0]이 첫 요소예요(1이 아니라 0부터 세요)\n# .select_one('.name')으로 그 안의 이름 요소 하나를 찾고\n# .get_text(strip=True)로 태그 없이 글자만, 앞뒤 공백 지우고 꺼내요\nfirst_name = items[0].select_one('.name').get_text(strip=True)\n# 두 값을 한 줄에 같이 출력해요\nprint(n_items, first_name)\n"
+}

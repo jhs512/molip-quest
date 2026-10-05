@@ -1,9 +1,9 @@
-//! Runs the Python tests of the source-identity and stale-detection logic
-//! (tools/kpc_course/test_sources.py) from `cargo test`. Skipped when python or pytest is missing.
+//! Runs the Python tests of the course tooling (tools/kpc_course/test_*.py: source identity,
+//! stale detection, the coding 해설 compiler rules) from `cargo test`. Skipped when python or pytest is missing.
 
 #[test]
 fn source_identity_python_tests_pass() {
-    let test_file = concat!(env!("CARGO_MANIFEST_DIR"), "/tools/kpc_course/test_sources.py");
+    let test_file = concat!(env!("CARGO_MANIFEST_DIR"), "/tools/kpc_course");
     let output = match std::process::Command::new("python")
         .args(["-m", "pytest", "-q", test_file])
         .env("PYTHONIOENCODING", "utf-8")
@@ -22,7 +22,7 @@ fn source_identity_python_tests_pass() {
     }
     assert!(
         output.status.success(),
-        "python -m pytest tools/kpc_course/test_sources.py 실패\n{stdout}\n{}",
+        "python -m pytest tools/kpc_course 실패\n{stdout}\n{}",
         String::from_utf8_lossy(&output.stderr)
     );
 }
