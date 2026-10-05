@@ -90,7 +90,7 @@ UNIT = unit('credit-target', '부도 정의와 연체 이력', [
         check="assert s['n_rows']==30000 and s['n_columns']==25\nassert s['target_counts'][1]==6636 and s['target_counts'][0]==23364"),
     coding('default-summary', '부도 인원과 부도율, 그리고 입력 표',
         goal="""
-        부도 인원은 `default_count`에 담으세요. 부도율은 `default_rate`에 담고요. 그리고 `고객번호`와 정답 열을 뺀 입력 표를 `X`에 만드세요. 세 값을 출력하세요.
+        부도 인원은 `default_count`에 담으세요. 부도율은 `default_rate`에 담고요. 그리고 `고객번호`와 타깃 열을 뺀 입력 표를 `X`에 만드세요. 세 값을 출력하세요.
 
         부도율은 0과 1의 평균이라 20% 근처가 나와요. `X`는 23열이고요.
         """,

@@ -191,7 +191,7 @@ pandas. orders DataFrame에서 product, price 두 열만 고른 표를 selected�
     "loc-condition": p("""
 pandas. orders DataFrame에서 quantity가 3 이상인 행만 불리언 마스크로 골라 many에 담고 마지막 줄에 many.
 """, """
-- `불리언 마스크` → `orders[orders['quantity'] >= 3]`. 조건으로 행을 고르는 표준 용어.
+- `불리언 마스크` → 참·거짓 마스크. 행마다 참·거짓을 매겨 참인 행만 남긴다: `orders[orders['quantity'] >= 3]`.
 """),
     "read-csv-titanic": p("""
 pandas. data/titanic.csv를 read_csv로 읽어 titanic에 담고, titanic.shape 출력, 마지막 줄에 titanic.head().
@@ -303,9 +303,9 @@ pandas. titanic DataFrame. 성별로 groupby한 생존에 agg(['count','sum','me
 - `agg(['count','sum','mean'])` → 인원·생존자·생존율을 한 표에. "몇 명 중"을 늘 같이 본다.
 """),
     "pclass-summary": p("""
-pandas. titanic DataFrame. 객실등급로 groupby한 생존에 agg(['count','sum','mean'])을 적용해 pclass_summary에.
+pandas. titanic DataFrame. 객실등급으로 groupby한 생존에 agg(['count','sum','mean'])을 적용해 pclass_summary에.
 """, """
-- 앞 프롬프트에서 `성별`을 `객실등급`로만 바꿈. 같은 집계는 프롬프트도 복사해서 쓴다.
+- 앞 프롬프트에서 `성별`을 `객실등급`으로만 바꿈. 같은 집계는 프롬프트도 복사해서 쓴다.
 """),
     "age-groups": p("""
 pandas. titanic DataFrame. pd.cut으로 나이를 bins=[0, 20, 40, 60, float('inf')], labels=['0~19','20~39','40~59','60+'], right=False 로 나눈 열 age_group을 titanic에 추가하고, age_group으로 groupby한 생존의 agg(['count','sum','mean'])을 age_summary에.
@@ -427,14 +427,15 @@ scikit-learn. X_train, X_test가 있고 numeric = ['객실등급','나이','형�
     "dummy-only": p("""
 scikit-learn. X_train, X_test, y_train, y_test가 있어. DummyClassifier(strategy='most_frequent')를 dummy에 만들어 fit하고 X_test 예측의 accuracy_score를 dummy_accuracy에 담아 출력.
 """, """
-- `DummyClassifier(strategy='most_frequent')` → 기준선(baseline). 모델보다 먼저 "찍기 점수"를 잰다.
+- `DummyClassifier(strategy='most_frequent')` → 기준 모델(baseline). 모델보다 먼저 "찍기 점수"를 잰다.
 """),
     "model-comparison": p("""
 scikit-learn. X_train, X_test, y_train, y_test와 make_preprocessor()가 있어. models = {'Dummy': DummyClassifier(strategy='most_frequent'), 'Logistic': LogisticRegression(max_iter=2000), 'Tree': DecisionTreeClassifier(max_depth=5, random_state=42), 'Forest': RandomForestClassifier(n_estimators=50, max_depth=5, random_state=42)}.
 각각 Pipeline([('prepare', make_preprocessor()), ('model', m)])로 fit/predict해서 accuracy_score와 f1_score를 구하고, 모델 이름을 인덱스로 accuracy, f1 두 열인 DataFrame results를 만들어.
 """, """
 - 같은 `Pipeline`, 같은 분할, 같은 지표 → 공정한 비교. Dummy가 표의 첫 행.
-- `max_depth`, `random_state` → 재현성.
+- `max_depth=5` → Tree와 Forest를 같은 조건으로. 깊이는 재현성이 아니라 공정한 비교 조건.
+- `random_state=42` → 재현성. 누가 돌려도 같은 표.
 """),
     "train-vs-test": p("""
 scikit-learn. X_train, X_test, y_train, y_test, make_preprocessor()가 있어. Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(random_state=42))])를 model에 fit하고, 훈련 자료 정확도를 train_accuracy, 테스트 자료 정확도를 test_accuracy에 담아 둘 다 출력.
@@ -443,7 +444,7 @@ scikit-learn. X_train, X_test, y_train, y_test, make_preprocessor()가 있어. P
 - `max_depth` 없음 → 일부러 제한 없는 트리. 두 점수가 벌어지는 걸 본다.
 """),
     "save-and-load": p("""
-타이타닉 생존 분류. 손질기 make_preprocessor()와 LogisticRegression(max_iter=1000)을 Pipeline으로 묶어 model에 fit.
+scikit-learn. X_train, X_test, y_train, y_test, 손질기 make_preprocessor()가 있어. make_preprocessor()와 LogisticRegression(max_iter=1000)을 Pipeline으로 묶어 model에 fit.
 joblib.dump로 titanic_model.joblib에 저장하고 joblib.load로 loaded에 불러와
 테스트 정확도를 test_accuracy에 담아 출력. 불러온 뒤에 다시 훈련하지 마
 """, """
@@ -452,7 +453,7 @@ joblib.dump로 titanic_model.joblib에 저장하고 joblib.load로 loaded에 불
 - `다시 훈련하지 마` → 불러온 모델로 predict만 하는 코드를 받는다.
 """),
     "tune-depth": p("""
-타이타닉 생존 분류. depths = [2, 3, 5, 8, 12] 후보마다 make_preprocessor()와 DecisionTreeClassifier(max_depth=깊이, random_state=42)를 Pipeline으로 묶고
+scikit-learn. X_train, X_test, y_train, y_test, make_preprocessor()가 있어. depths = [2, 3, 5, 8, 12] 후보마다 make_preprocessor()와 DecisionTreeClassifier(max_depth=깊이, random_state=42)를 Pipeline으로 묶고
 cross_val_score(cv=5) 평균을 cv_scores 딕셔너리에. 최고 깊이를 best_depth에 고르고 그 깊이로 다시 fit한 model의 테스트 정확도를 test_accuracy에 출력.
 테스트 자료는 깊이 고르는 데 쓰지 마
 """, """
@@ -469,7 +470,7 @@ pandas. credit = pd.read_csv('data/credit.csv'), target = '다음달 부도'. �
     "default-summary": p("""
 pandas. credit DataFrame, target = '다음달 부도'. 부도(1) 인원을 default_count, 부도율(타깃 평균)을 default_rate에 담고, 고객번호와 target 열을 drop한 입력 표를 X에 만들어. 셋 다 출력.
 """, """
-- `고객번호 … drop` → 고객 번호는 식별자. 넣으면 모델이 번호를 외운다.
+- `고객번호 … drop` → 고객 번호는 그냥 번호 열. 넣으면 모델이 번호를 외운다.
 - `부도율(타깃 평균)` → 0/1 평균 = 비율.
 """),
     "limit-by-default": p("""
@@ -493,13 +494,13 @@ pandas. credit DataFrame, target. 상환_9월로 groupby한 target의 agg(['coun
 파이썬. tp, fp, fn, tn = 2, 1, 1, 2. precision = tp/(tp+fp), recall = tp/(tp+fn), accuracy = (tp+tn)/(tp+fp+fn+tn) 계산해서 세 변수에 담고 출력.
 """, """
 - 공식을 그대로 → 정의를 아는 사람의 프롬프트. AI는 계산만.
-- `tp, fp, fn, tn` → 혼동 행렬 네 칸의 공통 언어.
+- `tp, fp, fn, tn` → 혼동행렬 네 칸의 공통 언어.
 """),
     "metrics-matrix": p("""
 scikit-learn. y_true=[0,0,1,1,1,0], y_pred=[0,1,1,0,1,0]. accuracy_score, precision_score, recall_score, f1_score를 같은 이름 키('accuracy','precision','recall','f1')로 metrics 딕셔너리에 담고, confusion_matrix(y_true, y_pred, labels=[0,1])를 matrix에. 둘 다 출력.
 """, """
 - `(y_true, y_pred)` → 인자 순서. 바꾸면 값이 달라진다.
-- `labels=[0,1]` → 혼동 행렬 칸 위치 고정.
+- `labels=[0,1]` → 혼동행렬 칸 위치 고정.
 """),
     "credit-model": p("""
 scikit-learn. X_train, X_test, y_train, y_test가 있어(입력 상환_9월, 신용한도, 나이). models = {'Dummy': DummyClassifier(strategy='most_frequent'), 'Logistic': LogisticRegression(max_iter=1000)}. 각각 Pipeline([('scale', StandardScaler()), ('model', m)])로 fit/predict해서 accuracy, precision, recall, f1 네 지표를 구하고 모델 이름을 인덱스로 한 DataFrame results를 만들어. precision은 zero_division=0.
@@ -511,12 +512,12 @@ scikit-learn. X_train, X_test, y_train, y_test가 있어(입력 상환_9월, 신
 scikit-learn. 학습된 Pipeline model과 X_test가 있어. model.predict_proba(X_test)[:, 1]을 probabilities에 담고, 0.5 이상인 개수를 n_positive_05, 0.3 이상인 개수를 n_positive_03에 int로 담아 출력.
 """, """
 - `predict_proba(...)[:, 1]` → 부도일 확률 열. `[:, 1]` 없으면 두 열.
-- `0.5`, `0.3` → 임계값은 모델이 아니라 사람이 정한다.
+- `0.5`, `0.3` → 기준값은 모델이 아니라 사람이 정한다.
 """),
     "thresholds": p("""
 numpy. probabilities = np.array([0.1,0.35,0.49,0.51,0.8]). 0.5 이상이면 1 아니면 0인 정수 배열을 pred_05, 0.3 이상이면 1인 배열을 pred_03에 담고 각각 1의 개수 출력. (probabilities >= 0.5).astype(int) 식으로.
 """, """
-- `(p >= 0.5).astype(int)` → 임계값 적용을 벡터 연산 한 줄로. `int`까지 맞춰야 채점 통과.
+- `(probabilities >= 0.5).astype(int)` → 기준값을 배열 전체에 한 번에 적용. 반복문 없이 한 줄. `int`까지 맞춰야 채점 통과.
 """),
     # ----
     "stock-load": p("""
@@ -564,7 +565,10 @@ pandas. frame(날짜 인덱스, 396행)이 있어. 마지막 80행의 첫 날짜
 - `frame.index[-80]` → "마지막 80거래일을 테스트로"를 코드로. `n_test == 80` 검산.
 """),
     "time-boundary": p("""
-pandas. frame(날짜 인덱스, 열 close, return_1, ma5, lag_close_1, target_next_close, target_date). test_start = frame.index[-80]. 입력 날짜와 target_date가 둘 다 test_start 전인 행을 train_mask, 입력 날짜가 test_start 이상인 행을 test_mask로 만들고, feature_columns=['close','return_1','ma5','lag_close_1']로 X_train, X_test, y_train(target_next_close), y_test 만들어. 두 쪽 행 수 출력(훈련 315, 테스트 80).
+pandas. frame(날짜 인덱스, 열 close, return_1, ma5, lag_close_1, target_next_close, target_date). test_start = frame.index[-80].
+입력 날짜와 target_date가 둘 다 test_start 전인 행을 train_mask, 입력 날짜가 test_start 이상인 행을 test_mask로.
+feature_columns=['close','return_1','ma5','lag_close_1']로 X_train, X_test, y_train(target_next_close), y_test 만들어.
+두 쪽 행 수 출력(훈련 315, 테스트 80).
 """, """
 - `target_date도 test_start 전` → 이 조건이 없으면 테스트 첫날 정답을 훈련에서 본다(경계 누수). AI는 거의 항상 빼먹는다.
 - `훈련 315, 테스트 80` → 검산.
@@ -573,7 +577,7 @@ pandas. frame(날짜 인덱스, 열 close, return_1, ma5, lag_close_1, target_ne
 pandas. X_test(close 열)와 y_test가 있어. "내일 종가 = 오늘 종가" 기준 예측의 오차 (y_test - X_test['close']).abs()를 errors에, 그 평균을 manual_mae에 담아 출력.
 """, """
 - `(y_test - X_test['close']).abs()` 평균 → MAE의 정의를 코드로. 함수 전에 손으로.
-- `내일 종가 = 오늘 종가` → naive 기준 예측.
+- `내일 종가 = 오늘 종가` → 순진한 기준(naive) 예측. 가장 단순한 기준 모델.
 """),
     "close-baseline": p("""
 scikit-learn. X_test(close 열), y_test. 기준 예측 X_test['close'].to_numpy()를 baseline_pred에, mean_absolute_error(y_test, baseline_pred)를 baseline_mae에 담아 출력.
@@ -595,16 +599,20 @@ scikit-learn. X_train, X_test, y_train, y_test가 있어(temporal split 완료).
 - `named_steps['model'].coef_` → 단계 이름으로 계수 꺼내기.
 """),
     "regression-table": p("""
-scikit-learn. X_train, X_test, y_train, y_test(temporal split). models = {'Linear': LinearRegression(), 'Ridge': Ridge(alpha=1), 'Lasso': Lasso(alpha=10, max_iter=20000, tol=0.001)}. 각각 StandardScaler와 Pipeline으로 fit해서 fitted 딕셔너리에 보관하고 테스트 예측을 predictions 딕셔너리에 모아. predictions['Baseline']은 X_test['close'] 값. 네 예측 각각 MAE, RMSE, R2를 구해 인덱스가 모델 이름이고 열이 MAE, RMSE, R2인 DataFrame results를 만들어. RMSE는 mean_squared_error의 제곱근.
+scikit-learn. X_train, X_test, y_train, y_test(temporal split).
+models = {'Linear': LinearRegression(), 'Ridge': Ridge(alpha=1), 'Lasso': Lasso(alpha=10, max_iter=20000, tol=0.001)}.
+각각 StandardScaler와 Pipeline으로 fit해서 fitted 딕셔너리에 보관하고 테스트 예측을 predictions 딕셔너리에 모아.
+predictions['Baseline']은 X_test['close'] 값.
+네 예측 각각 MAE, RMSE, R2를 구해 인덱스가 모델 이름이고 열이 MAE, RMSE, R2인 DataFrame results를 만들어. RMSE는 mean_squared_error의 제곱근.
 """, """
 - `predictions['Baseline']` → 기준 예측을 표의 한 행으로.
 - `RMSE는 mean_squared_error의 제곱근` → 정의를 적어 다른 공식을 막는다.
-- `alpha=…` → 재현성.
+- `alpha=…` → 브레이크 세기. 숫자를 정해 줘야 누가 돌려도 같은 표가 나온다.
 """),
     "beat-baseline": p("""
 scikit-learn. X_train, X_test, y_train, y_test(temporal split). 기준 예측 X_test['close']의 MAE를 baseline_mae, Pipeline(StandardScaler, Ridge(alpha=1))의 테스트 MAE를 ridge_mae에 담고, improved = ridge_mae < baseline_mae. 셋 다 출력. improved가 False여도 그대로 둬.
 """, """
-- `False여도 그대로 둬` → "개선"을 요구하면 AI는 기간이나 매개변수를 바꿔 이기는 결과를 만든다. 정직한 비교.
+- `False여도 그대로 둬` → "개선"을 요구하면 AI는 기간이나 하이퍼파라미터를 바꿔 이기는 결과를 만든다. 정직한 비교.
 """),
     "forecast-plot": p("""
 scikit-learn + matplotlib. frame, X_train, X_test, y_train, y_test, test_mask(temporal split). Pipeline(StandardScaler, Ridge(alpha=1))을 fit해 prediction을 구하고, frame.loc[test_mask, 'target_date']를 인덱스로 actual(y_test 값)과 prediction 두 열인 comparison DataFrame을 만들어. fig, ax에 두 선을 그리고 xlabel '정답 날짜', 범례 표시, plt.show().

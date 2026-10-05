@@ -30,7 +30,7 @@ NARRATION = {
         ("submit", "제출할게요. 검사는 행 수, 열 수와 두 인원을 봐요."),
     ],
     "default-summary": [
-        ("problem", "자, 부도 인원과 부도율을 구하고 입력 표 X를 만들어요. 타깃이 0과 1이라 합이 인원, 평균이 부도율이에요. X에서는 고객번호와 정답 열을 빼면 돼요."),
+        ("problem", "자, 부도 인원과 부도율을 구하고 입력 표 X를 만들어요. 타깃이 0과 1이라 합이 인원, 평균이 부도율이에요. X에서는 고객번호와 타깃 열을 빼면 돼요."),
         ("starter", "준비 코드는 그대로 두고 아래에 이어 써요."),
         ("code", "default_count=int(credit[target].sum())\ndefault_rate=credit[target].mean()\n", "1만 더해지니까 sum이 부도 인원이에요. int로 감싸서 정수로 두고요. mean은 0과 1의 평균이라 그게 바로 부도율이에요."),
         ("code", "X=credit.drop(columns=['고객번호',target])\n", "drop에 뺄 열 두 개를 리스트로 넘겨요. 고객번호는 사람 구별용이라 규칙의 재료가 아니고, target은 정답이니까 입력에 있으면 안 되죠."),

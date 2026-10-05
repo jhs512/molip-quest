@@ -1,6 +1,6 @@
 # 02 · 용어 통일 (전체 파일)
 
-Status: open
+Status: resolved (2026-10-05, Claude)
 Type: task
 Blocked by: 01
 

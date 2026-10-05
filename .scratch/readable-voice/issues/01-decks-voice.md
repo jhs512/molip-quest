@@ -1,6 +1,6 @@
 # 01 · 덱 30개의 슬라이드 글을 강사 목소리로
 
-Status: open
+Status: resolved (2026-10-05, Claude)
 Type: task
 Blocked by: (없음)
 

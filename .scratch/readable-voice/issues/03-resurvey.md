@@ -1,6 +1,6 @@
 # 03 · 3차: 처음부터 다시 읽기
 
-Status: open
+Status: open (사용자가 2026-10-05에 보류)
 Type: task
 Blocked by: 01, 02
 

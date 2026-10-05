@@ -1,6 +1,14 @@
 # 읽기 쉬운 수업 글 (readable-voice)
 
-Status: pass 1 done (2026-10-05, 태그 `readable-voice-pass-1`) · 2차·3차는 `issues/01~03`으로 넘김 (Codex가 이어받음) · 스냅숏 태그 `before-readable-voice`
+Status: pass 2 done (2026-10-05, 태그 `readable-voice-pass-2`) · 3차는 보류(issues/03) · 스냅숏 태그 `before-readable-voice`
+
+## 2차 결과
+
+덱 30개의 슬라이드 글을 해요체로, script의 "자,"를 덱마다 첫 장·마지막 장 정도로(두 파일 74줄 전부 → 20줄), 그림 밑 문단과 script의 중복을 정리하고, 빽빽한 장 7개를 둘로 나눴다(why-this-course 9장, expert-ask 7장, deck-baseline 6장, deck-metrics 9장, deck-naive 8장). 덱 사실 오류 4건과 프롬프트 해설(재현성 오용, 풀이 없는 용어, 조사 오류)을 고치고 용어를 spec 표대로 통일했다. 남은 "~니다" 28개는 장 제목(헤드라인)과 만화 대사.
+
+| 시점 | 문장 | 45자 초과 | ~니다 | ~다 |
+| --- | --- | --- | --- | --- |
+| 2차 뒤 | 4,935 | 96 | 28 | 202 |
 
 ## 1차 결과
 
