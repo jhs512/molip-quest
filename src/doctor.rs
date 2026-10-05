@@ -231,3 +231,32 @@ pub async fn install(report: tokio::sync::mpsc::UnboundedSender<String>) -> Resu
     result?;
     Ok(format!("설치 완료 · {python_str}"))
 }
+
+#[cfg(test)]
+mod install_tests {
+    /// Needs the network and a few minutes: `cargo test -- --ignored environment_installs`.
+    /// Creates the managed environment in the real app data folder.
+    #[tokio::test]
+    #[ignore]
+    async fn environment_installs_and_passes_the_checks() {
+        let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel::<String>();
+        let worker = tokio::spawn(super::install(tx));
+        while let Some(line) = rx.recv().await {
+            eprintln!("{line}");
+        }
+        let done = worker.await.unwrap().unwrap();
+        eprintln!("{done}");
+        assert!(done.contains("ml-env"));
+        let python = done.trim_start_matches("설치 완료 · ").to_string();
+        let out = super::probe(
+            &python,
+            &[
+                "-c",
+                "import pandas, sklearn, matplotlib, yfinance; print('ok')",
+            ],
+        )
+        .await
+        .unwrap();
+        assert_eq!(String::from_utf8_lossy(&out).trim(), "ok");
+    }
+}
