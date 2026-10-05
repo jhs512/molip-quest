@@ -1,6 +1,6 @@
 #![cfg_attr(all(windows, not(debug_assertions)), windows_subsystem = "windows")]
 
-mod collection;
+mod practice;
 mod ui;
 use dioxus::prelude::*;
 use molip_quest::Course;
@@ -121,7 +121,6 @@ window.molipVoice && molipVoice.setName({});",
         document::eval(include_str!("../assets/layout/victory.js"));
         // Reward effects on or off, as saved from the home screen.
         document::eval(&molip_quest::prefs::Prefs::load().script());
-        document::eval(include_str!("../assets/layout/collection.js"));
         document::eval(include_str!("../assets/layout/diagrams.js"));
         document::eval(include_str!("../assets/layout/interactive.js"));
         document::eval(include_str!("../assets/layout/agent.js"));
@@ -228,21 +227,23 @@ fn tts_response(
 enum View {
     Home,
     Learning,
+    Practice,
     Gallery(ui::GalleryKind),
     Avatars,
-    Collection,
 }
 
 /// Auto-update (src/updater.rs). On start a newer release is installed without asking: the
 /// panel shows the download, then the app closes and the new build opens. Later, a release that
 /// appears while the app runs is offered in a banner (지금 업데이트 / 나중에). Development
 /// builds never see this.
-/// "HH:MM" in Korean time (the class's zone; no time-zone crate), for the update status line.
-fn clock_now() -> String {
+/// "HH:MM" of the local time, for the update status line.
+fn chrono_like_now() -> String {
     let secs = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .map(|d| d.as_secs())
         .unwrap_or(0) as i64;
+    // Local offset from the C runtime is not available without a crate; show Korean time
+    // (UTC+9), the class's time zone.
     let local = secs + 9 * 3600;
     format!("{:02}:{:02}", local / 3600 % 24, local / 60 % 60)
 }
@@ -311,10 +312,15 @@ fn UpdateGate() -> Element {
                 let result = tokio::task::spawn_blocking(updater::check)
                     .await
                     .unwrap_or_else(|e| Err(e.to_string()));
-                let stamp = clock_now();
+                let stamp = chrono_like_now();
                 match &result {
-                    Ok(Some(found)) => status.set(format!("새 버전 있음 · {} ({stamp} 확인)", found.title)),
-                    Ok(None) => status.set(format!("최신 버전입니다 · 빌드 {} ({stamp} 확인)", updater::current_build())),
+                    Ok(Some(found)) => {
+                        status.set(format!("새 버전 있음 · {} ({stamp} 확인)", found.title))
+                    }
+                    Ok(None) => status.set(format!(
+                        "최신 버전입니다 · 빌드 {} ({stamp} 확인)",
+                        updater::current_build()
+                    )),
                     Err(e) => status.set(format!("확인 실패 · {e} ({stamp})")),
                 }
                 if let Ok(Some(found)) = result {
@@ -425,7 +431,7 @@ fn Workspace() -> Element {
             rsx! { main { h1 {"수업을 불러올 수 없습니다."} p {"{error}"} ui::DoctorPanel {} } }
         }
         Ok(course) => {
-            rsx! { div { class: match view() { View::Home => "shell", View::Learning => "shell practice-shell", View::Gallery(_) | View::Avatars | View::Collection => "shell practice-shell gallery-shell" },
+            rsx! { div { class: match view() { View::Home => "shell", View::Learning | View::Practice => "shell practice-shell", View::Gallery(_) | View::Avatars => "shell practice-shell gallery-shell" },
                 UpdateGate {}
                 aside { class:"sidebar", div {class:"brand", "몰입 퀘스트"} h3 {"KPC 금융 데이터 분석"} p {"7챕터 · 20단원"}
                     p {class:"build-number", {let build = molip_quest::updater::current_build(); if build > 0 {format!("빌드 {build} · 새 버전은 자동으로 설치됩니다")} else {"개발 빌드".to_string()}}}
@@ -437,6 +443,10 @@ fn Workspace() -> Element {
                     ui::DoctorPanel {} }
                 main {
                     match view() {
+                        View::Practice => rsx! {
+                            button {class:"classroom-back", onclick:move |_|view.set(View::Home), "← 클래스룸"}
+                            practice::PracticeView {}
+                        },
                         View::Learning => rsx! {
                             button {class:"classroom-back", onclick:move |_|view.set(View::Home), "← 클래스룸"}
                             Learning { course:course.clone(),start_unit:study_target().0,start_mission:study_target().1 }
@@ -448,10 +458,6 @@ fn Workspace() -> Element {
                         View::Avatars => rsx! {
                             button {class:"classroom-back", onclick:move |_|view.set(View::Home), "← 클래스룸"}
                             ui::AvatarGallery { course:course.clone() }
-                        },
-                        View::Collection => rsx! {
-                            button {class:"classroom-back",onclick:move |_|view.set(View::Home),"← 클래스룸"}
-                            collection::Collection {course:course.clone(),onstudy:move |target|{study_target.set(target);view.set(View::Learning);}}
                         },
                         View::Home => rsx! {
                             h1 {"KPC 학습 여정"} p {"개념을 확인하고 코딩 미션과 퀴즈를 클리어하며 성장하세요."}
@@ -480,7 +486,7 @@ fn Workspace() -> Element {
                                 p {{format!("{} 단원",course.total_units())}}
                                 div {class:"course-actions",
                                     button {class:"primary",onclick:move |_|{study_target.set((String::new(),usize::MAX));view.set(View::Learning);},"학습 시작 · 이어하기"}
-                                    button {class:"gallery-link",onclick:move |_|view.set(View::Collection),"분석가 도감"}
+                                    button {class:"gallery-link",onclick:move |_|view.set(View::Practice),"도전 과제"}
                                     for kind in ui::GalleryKind::ALL {
                                         button {class:"gallery-link",onclick:move |_|view.set(View::Gallery(kind)),{kind.label()}}
                                     }

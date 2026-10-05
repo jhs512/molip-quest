@@ -119,7 +119,7 @@
   // ---- widget 2: threshold — probabilities become yes/no where the student puts the line ----
   function threshold(container) {
     const H = 330, W = 720, L = 50, R = 690, T = 40, B = 240, N = 40;
-    const f = frame(container, '임계값: 확률을 경고로 바꾸는 선', H);
+    const f = frame(container, '기준값: 확률을 경고로 바꾸는 선', H);
     const random = rng(11);
     // Defaults are more likely at high probabilities but also hide among the low ones, so the
     // threshold trades missed defaults against false alarms instead of just adding alarms.
@@ -131,7 +131,7 @@
     const bars = customers.map(c => el('rect', { x: sx(c.p) - bw / 2, y: B - 20 - c.p * (B - T - 30), width: bw, height: 20 + c.p * (B - T - 30), class: 'bar fade' }, f.svg));
     const marks = customers.map(c => el('circle', { cx: sx(c.p), cy: B - 10, r: 4, class: 'bad fade', style: c.bad ? '' : 'display:none' }, f.svg));
     const cut = el('line', { x1: sx(0.5), y1: T - 10, x2: sx(0.5), y2: B, class: 'cut fade' }, f.svg);
-    const cutLabel = text(f.svg, sx(0.5), T - 16, '임계값 0.50', { class: 'label cut-label fade', 'text-anchor': 'middle' });
+    const cutLabel = text(f.svg, sx(0.5), T - 16, '기준값 0.50', { class: 'label cut-label fade', 'text-anchor': 'middle' });
     const summary = text(f.svg, L, H - 12, '', { class: 'score' });
     const cost = text(f.svg, R, H - 12, '', { class: 'score', 'text-anchor': 'end' });
     let t = 0.5, showCost = false;
@@ -142,17 +142,17 @@
         bars[i].classList.toggle('warn', warn);
         if (warn && c.bad) tp++; else if (warn) fp++; else if (c.bad) fn++; else tn++;
       });
-      cut.setAttribute('x1', sx(t)); cut.setAttribute('x2', sx(t)); cutLabel.setAttribute('x', sx(t)); cutLabel.textContent = `임계값 ${t.toFixed(2)}`;
+      cut.setAttribute('x1', sx(t)); cut.setAttribute('x2', sx(t)); cutLabel.setAttribute('x', sx(t)); cutLabel.textContent = `기준값 ${t.toFixed(2)}`;
       const precision = tp + fp ? tp / (tp + fp) : 0, recall = tp + fn ? tp / (tp + fn) : 0;
       summary.textContent = `경고 ${tp + fp}명 · 맞음 ${tp} 틀림 ${fp} · 놓침 ${fn} · 정밀도 ${precision.toFixed(2)} 재현율 ${recall.toFixed(2)}`;
       cost.textContent = showCost ? `비용 ${(fn * 100 + fp * 5).toLocaleString()}만 원 (놓침 100만, 헛경고 5만)` : '';
     }
-    const s = slider(f.extra, '임계값', 0.05, 0.95, 0.05, 0.5, v => { t = v; draw(); });
+    const s = slider(f.extra, '기준값', 0.05, 0.95, 0.05, 0.5, v => { t = v; draw(); });
     f.start([
-      { text: '고객 40명을 모델이 말한 부도 확률 순서로 세웠습니다. 막대가 높을수록 부도 확률이 큽니다.', enter() { bars.forEach(show); marks.forEach(hide); hide(cut); hide(cutLabel); s.wrap.hidden = true; showCost = false; t = 0.5; s.set(0.5); draw(); summary.textContent = ''; } },
-      { text: '점이 찍힌 사람이 실제로 부도를 낸 고객입니다. 확률이 높은 쪽에 많지만 낮은 쪽에도 있습니다.', enter() { marks.forEach(show); } },
-      { text: '임계값 0.5보다 오른쪽이면 경고를 보냅니다. 경고 중 맞은 비율이 정밀도, 실제 부도 중 잡은 비율이 재현율입니다.', enter() { show(cut); show(cutLabel); draw(); } },
-      { text: '선을 움직여 보세요. 왼쪽으로 가면 놓치는 부도(FN)는 줄고 헛경고(FP)는 늘어납니다. 어디에 둘지는 비용을 아는 사람이 정합니다.', enter() { s.enable(); showCost = true; draw(); } },
+      { text: '고객 40명을 모델이 말한 부도 확률 순서로 세웠어요. 막대가 높을수록 부도 확률이 커요.', enter() { bars.forEach(show); marks.forEach(hide); hide(cut); hide(cutLabel); s.wrap.hidden = true; showCost = false; t = 0.5; s.set(0.5); draw(); summary.textContent = ''; } },
+      { text: '점이 찍힌 사람이 실제로 부도를 낸 고객이에요. 확률이 높은 쪽에 많지만 낮은 쪽에도 있어요.', enter() { marks.forEach(show); } },
+      { text: '기준값 0.5보다 오른쪽이면 경고를 보내요. 경고 중 맞은 비율이 정밀도, 실제 부도 중 잡은 비율이 재현율이에요.', enter() { show(cut); show(cutLabel); draw(); } },
+      { text: '선을 움직여 보세요. 왼쪽으로 가면 놓치는 부도(FN)는 줄고 헛경고(FP)는 늘어요. 어디에 둘지는 비용을 아는 사람이 정해요.', enter() { s.enable(); showCost = true; draw(); } },
     ]);
   }
 
@@ -216,13 +216,13 @@
       testLabel.textContent = `테스트 20명 · 생존 ${sSurv}명 (${Math.round(sSurv / 20 * 100)}%)`;
       dots.forEach(d => d.classList.toggle('dim', true));
     }
-    const again = document.createElement('button'); again.type = 'button'; again.className = 'interactive-action'; again.textContent = '다시 나누기'; again.hidden = true; again.onclick = split; f.extra.append(again);
+    const again = document.createElement('button'); again.type = 'button'; again.className = 'interactive-action'; again.textContent = '랜덤 나누기'; again.hidden = true; again.onclick = split; f.extra.append(again);
     const toggle = document.createElement('label'); toggle.className = 'interactive-toggle'; toggle.hidden = true;
     const box = document.createElement('input'); box.type = 'checkbox'; toggle.append(box, document.createTextNode(' stratify=y')); box.onchange = () => { useStratify = box.checked; split(); }; f.extra.append(toggle);
     f.start([
       { text: '승객 100명 중 38명이 생존(초록)입니다. 이 비율이 정답의 비율입니다.', enter() { show(gAll); hide(gSplit); again.hidden = true; toggle.hidden = true; box.checked = false; useStratify = false; dots.forEach(d => d.classList.remove('dim')); } },
-      { text: '무작위로 20명을 테스트로 떼어 냈습니다. 테스트 쪽 생존 비율을 보세요. "다시 나누기"를 눌러 보면 매번 다릅니다.', enter() { show(gSplit); again.hidden = false; split(); } },
-      { text: 'stratify=y를 켜고 다시 나눠 보세요. 생존자와 사망자를 각각 20%씩 떼어 내므로 테스트 비율이 전체 비율 38%에서 거의 벗어나지 않습니다.', enter() { toggle.hidden = false; } },
+      { text: '무작위로 20명을 테스트로 떼어 냈습니다. 테스트 쪽 생존 비율을 보세요. "랜덤 나누기"를 눌러 보면 매번 다릅니다.', enter() { show(gSplit); again.hidden = false; split(); } },
+      { text: 'stratify=y를 켜고 다시 나눠 보세요. 생존자와 사망자를 각각 20%씩 떼어 내므로 테스트 비율이 전체 비율 38%에서 거의 벗어나지 않습니다.', enter() { again.hidden = true; toggle.hidden = false; } },
     ]);
   }
 

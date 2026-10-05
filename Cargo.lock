@@ -2756,9 +2756,11 @@ version = "0.1.0"
 dependencies = [
  "ammonia",
  "arboard",
+ "base64 0.23.1",
  "dioxus",
  "directories",
  "pulldown-cmark",
+ "ring",
  "rusqlite",
  "serde",
  "serde_json",
