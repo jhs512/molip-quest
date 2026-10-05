@@ -1,6 +1,7 @@
 #![cfg_attr(all(windows, not(debug_assertions)), windows_subsystem = "windows")]
 
 mod practice;
+mod instructor_mode;
 mod ui;
 use dioxus::prelude::*;
 use molip_quest::Course;
@@ -410,6 +411,7 @@ fn UpdateGate() -> Element {
 #[component]
 fn Workspace() -> Element {
     let mut view = use_signal(|| View::Home);
+    use_context_provider(|| instructor_mode::InstructorSession(Signal::new(None::<practice::Materials>)));
     let mut study_target = use_signal(|| (String::new(), usize::MAX));
     // Bumped when progress is reset from home, so the avatar card reads the store again.
     let mut home_epoch = use_signal(|| 0u32);
@@ -487,6 +489,7 @@ fn Workspace() -> Element {
                                 div {class:"course-actions",
                                     button {class:"primary",onclick:move |_|{study_target.set((String::new(),usize::MAX));view.set(View::Learning);},"학습 시작 · 이어하기"}
                                     button {class:"gallery-link",onclick:move |_|view.set(View::Practice),"도전 과제"}
+                                    instructor_mode::InstructorLogin {}
                                     for kind in ui::GalleryKind::ALL {
                                         button {class:"gallery-link",onclick:move |_|view.set(View::Gallery(kind)),{kind.label()}}
                                     }

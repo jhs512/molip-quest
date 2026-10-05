@@ -8,12 +8,12 @@ use std::{collections::HashMap, num::NonZeroU32};
 pub(crate) const COURSE_ID: &str = "kpc-morning-practice-v1";
 
 #[derive(Clone, Deserialize)]
-struct Material {
+pub(crate) struct Material {
     code: String,
     explanation: Vec<String>,
     narration: Vec<serde_json::Value>,
 }
-type Materials = HashMap<String, Material>;
+pub(crate) type Materials = HashMap<String, Material>;
 
 #[derive(Deserialize)]
 struct Encrypted {
@@ -23,7 +23,7 @@ struct Encrypted {
     ciphertext: String,
 }
 
-fn decrypt(password: &str) -> Result<Materials, String> {
+pub(crate) fn decrypt(password: &str) -> Result<Materials, String> {
     let data: Encrypted = serde_json::from_str(include_str!("../site/data/instructor.json"))
         .map_err(|_| "강사용 자료를 읽지 못했습니다.")?;
     let salt = STANDARD
@@ -59,6 +59,29 @@ fn decrypt(password: &str) -> Result<Materials, String> {
     serde_json::from_slice(plaintext).map_err(|_| "강사용 자료를 읽지 못했습니다.".into())
 }
 
+fn numbered_units(course: &Course) -> Vec<molip_quest::Unit> {
+    course
+        .chapters
+        .iter()
+        .enumerate()
+        .flat_map(|(chapter, group)| {
+            group.units.iter().enumerate().map(move |(ordinal, unit)| {
+                let mut unit = unit.clone();
+                let title = unit
+                    .title
+                    .split_once(". ")
+                    .filter(|(prefix, _)| prefix.chars().all(|c| c.is_ascii_digit()))
+                    .map(|(_, title)| title)
+                    .unwrap_or(&unit.title);
+                if !unit.title.starts_with("C-") {
+                    unit.title = format!("C-{}-{} · {}", chapter + 1, ordinal + 1, title);
+                }
+                unit
+            })
+        })
+        .collect()
+}
+
 #[component]
 pub(crate) fn PracticeView() -> Element {
     let course = use_hook(|| Course::parse(include_str!("../courses/morning-practice.json")));
@@ -67,17 +90,13 @@ pub(crate) fn PracticeView() -> Element {
     };
     let mut selected = use_signal(|| 0usize);
     let mut refresh = use_signal(|| 0u64);
-    let mut materials = use_signal(|| None::<Materials>);
-    let mut password = use_signal(String::new);
-    let mut error = use_signal(String::new);
-    let mut busy = use_signal(|| false);
-    let mut requested = use_signal(|| None::<bool>); // true: full code, false: explanation
+    let materials = use_context::<crate::instructor_mode::InstructorSession>().0;
     let mut shown = use_signal(|| None::<bool>);
     let mut demo_round = use_signal(|| 0u64);
     let mut demo_running = use_signal(|| false);
     let mut demo_paused = use_signal(|| false);
     let mut demo_report = use_signal(String::new);
-    let demo_units = course.chapters[0].units.clone();
+    let demo_units = numbered_units(&course);
     use_drop(|| {
         document::eval("window.molipAgent?.stop()");
     });
@@ -118,18 +137,24 @@ pub(crate) fn PracticeView() -> Element {
             }
         });
     });
-    let units = &course.chapters[0].units;
+    let units = numbered_units(&course);
     let unit = units[selected()].clone();
     let _ = refresh();
     let completed = LearningStore::user_store()
         .and_then(|store| store.completed(&course))
         .unwrap_or_default();
     rsx! {
-        header {class:"practice-header",h1 {"도전 과제 · 카페 매출 분석"}}
-        nav {class:"separate-practice-nav",aria_label:"실습 문제",
+        header {class:"practice-header",h1 {"도전 과제"}
+        nav {class:"header-course-actions",aria_label:"실습 문제",
             button {class:"curriculum-toggle",onclick:move |_|{document::eval(r#"const dialog = document.querySelector('.practice-list');
                 if (!dialog.dataset.dismissBound) {dialog.addEventListener('click', event => {if(event.target === dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}});dialog.dataset.dismissBound='true';}
                 dialog.showModal();"#);},"도전 과제 목록"}
+                    if materials().is_some() {
+                button {class:"instructor-answer",onclick:move |_|{document::eval("window.molipAgent?.stop()");shown.set(Some(true));},"정답 보기"}
+                button {class:"instructor-explain",disabled:demo_running(),onclick:move |_|{shown.set(Some(false));demo_round+=1;},"해설 보기"}
+            }
+        }
+        span {class:"practice-current-title","{unit.title}"}
         }
         dialog {class:"curriculum-menu practice-list",aria_label:"도전 과제 목록",
             div {class:"curriculum-modal-header",h2 {"도전 과제 목록"}
@@ -140,20 +165,27 @@ pub(crate) fn PracticeView() -> Element {
                 div {class:"curriculum-gauge-track",div {class:"curriculum-gauge-fill",style:format!("width:{}%",completed.len()*100/units.len())}}
             }
             nav {class:"curriculum",
-                for (index, problem) in units.iter().enumerate() {
-                    div {class:"curriculum-unit",button {class:format!("unit{}{}",if selected()==index{" selected"}else{""},if completed.contains(&problem.id){" done"}else{""}),aria_current:if selected()==index {"step"}else{"false"},onclick:move |_|{document::eval("window.molipAgent?.stop();document.querySelector('.practice-list').close()");selected.set(index);shown.set(None);},
-                        span {class:"unit-title",{format!("{} {}",if completed.contains(&problem.id){"✓"}else if selected()==index{"▶"}else{"○"},problem.title)}}
-                        span {class:"unit-progress",{if completed.contains(&problem.id){"클리어"}else if selected()==index{"학습 중"}else{"미완료"}}}
-                    }}
+                for chapter in &course.chapters {
+                    details {class:"curriculum-chapter",open:chapter.units.iter().any(|problem|problem.id==unit.id),
+                        summary {h3 {span {class:"curriculum-kind","📚 챕터"}{format!(" {} · {} / {} · {}%",chapter.title,chapter.units.iter().filter(|problem|completed.contains(&problem.id)).count(),chapter.units.len(),if chapter.units.is_empty(){0}else{chapter.units.iter().filter(|problem|completed.contains(&problem.id)).count()*100/chapter.units.len()})}}
+                        }
+                        for problem in &chapter.units {
+                            {
+                                let index=units.iter().position(|candidate|candidate.id==problem.id).unwrap();
+                                let title=units[index].title.clone();
+                                rsx! {
+                                    div {class:"curriculum-unit",button {class:format!("unit{}{}",if selected()==index{" selected"}else{""},if completed.contains(&problem.id){" done"}else{""}),aria_current:if selected()==index {"step"}else{"false"},onclick:move |_|{document::eval("window.molipAgent?.stop();document.querySelector('.practice-list').close()");selected.set(index);shown.set(None);},
+                                        span {class:"unit-title",{format!("{} {}",if completed.contains(&problem.id){"✓"}else if selected()==index{"▶"}else{"○"},title)}}
+                                        if selected()==index {span {class:"unit-current","학습 중"}}
+                                    }}
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
-        div {class:"practice-instructor-actions",span {"강사용"}
-            button {onclick:move |_|{if materials().is_some(){document::eval("window.molipAgent?.stop()");shown.set(Some(true));}else{error.set(String::new());requested.set(Some(true));}},"정답 보기"}
-            button {onclick:move |_|{if materials().is_some(){if !demo_running(){shown.set(Some(false));demo_round+=1;}}else{error.set(String::new());requested.set(Some(false));}},"해설 보기"}
-            if materials().is_some() {button {onclick:move |_|{document::eval("window.molipAgent?.stop()");materials.set(None);shown.set(None);},"강사용 자료 잠그기"}}
-        }
-        if let Some(code_view) = shown() {
+        if materials().is_some() { if let Some(code_view) = shown() {
             if let Some(material)=materials().and_then(|m|m.get(&unit.id).cloned()) {
                 section {class:"practice-instructor-result",h2 {{if code_view{"정답"}else{"해설"}}}
                     if code_view {pre {code {{material.code.replace("\"cafe-sales.xlsx\"", "\"data/cafe-sales.xlsx\"")}}}}
@@ -171,21 +203,6 @@ pub(crate) fn PracticeView() -> Element {
                 }
             }
         }
-        if requested().is_some() {
-            div {class:"doctor-backdrop",onclick:move |_|{if !busy(){requested.set(None);password.set(String::new());}},
-                form {class:"doctor-panel practice-password",role:"dialog",aria_modal:"true",aria_label:"강사용 자료 열기",onclick:move |e|e.stop_propagation(),onkeydown:move |e|{if e.key()==Key::Escape&&!busy(){requested.set(None);password.set(String::new());}},
-                    onsubmit:move |e|{e.prevent_default();if busy(){return;}let supplied=password();password.set(String::new());busy.set(true);error.set(String::new());spawn(async move {
-                        let result = tokio::task::spawn_blocking(move ||decrypt(&supplied)).await;
-                        match result {Ok(Ok(value))=>{materials.set(Some(value));let explain=requested()==Some(false);shown.set(requested());requested.set(None);if explain {demo_round+=1;}},Ok(Err(message))=>error.set(message),Err(_)=>error.set("자료를 읽지 못했습니다. 다시 시도하세요.".into())}
-                        busy.set(false);
-                    });},
-                    h2 {"강사용 자료 열기"}label {r#for:"practice-password","비밀번호"}
-                    input {id:"practice-password",r#type:"password",autofocus:true,autocomplete:"off",value:password(),oninput:move |e|password.set(e.value())}
-                    p {class:"error",role:"status","{error}"}
-                    div {class:"actions",button {r#type:"submit",class:"primary",disabled:busy()||password().is_empty(),{if busy(){"확인 중…"}else{"확인"}}}
-                        button {r#type:"button",disabled:busy(),onclick:move |_|{requested.set(None);password.set(String::new());},"취소"}}
-                }
-            }
         }
         div {class:"separate-practice-workspace", {rsx! {
             crate::ui::UnitWorkspace {key:"{unit.id}",course_id:COURSE_ID.to_string(),unit,
@@ -202,12 +219,35 @@ mod tests {
     fn practice_is_separate_and_all_problems_have_tests() {
         let course = Course::parse(include_str!("../courses/morning-practice.json")).unwrap();
         assert_eq!(course.id, COURSE_ID);
-        assert_eq!(course.total_units(), 3);
+        assert!(course.total_units() >= 3);
+        let numbered = numbered_units(&course);
+        assert_eq!(numbered.len(), course.total_units());
+        assert!(numbered[0].title.starts_with("C-1-1"));
+        assert_eq!(numbered[0].id, "sales");
+        assert_eq!(numbered[1].id, "total");
+        assert_eq!(numbered[2].id, "best");
         for unit in &course.chapters[0].units {
             assert_eq!(unit.tests.len(), 1);
             assert!(unit.starter_code.contains("data/cafe-sales.xlsx"));
         }
         assert!(decrypt("incorrect-password").is_err());
+    }
+    #[test]
+    fn numbering_flattens_chapters_without_changing_progress_ids() {
+        let mut course = Course::parse(include_str!("../courses/morning-practice.json")).unwrap();
+        let mut second = course.chapters[0].clone();
+        second.id = "second-numbering-test".into();
+        for problem in &mut second.units {
+            problem.id = format!("second-{}", problem.id);
+        }
+        let first_count = course.total_units();
+        course.chapters.push(second);
+        let numbered = numbered_units(&course);
+        assert!(numbered[first_count]
+            .title
+            .starts_with(&format!("C-{}-1", course.chapters.len())));
+        assert_eq!(numbered[first_count].id, "second-sales");
+        assert_eq!(numbered[0].id, "sales");
     }
     #[tokio::test]
     #[ignore = "requires local instructor password file"]
@@ -216,7 +256,7 @@ mod tests {
         let password = std::fs::read_to_string(path).unwrap();
         let materials = decrypt(password.trim()).unwrap();
         let course = Course::parse(include_str!("../courses/morning-practice.json")).unwrap();
-        for unit in &course.chapters[0].units {
+        for unit in course.chapters.iter().flat_map(|chapter| &chapter.units) {
             let code = materials[&unit.id]
                 .code
                 .replace("\"cafe-sales.xlsx\"", "\"data/cafe-sales.xlsx\"");

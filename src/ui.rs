@@ -254,6 +254,20 @@ pub fn Learning(
         }
     });
     rsx! {header {class:"practice-header", h1 {"{course.title}"}
+        div {class:"learning-mission-toolbar",
+        button {class:"curriculum-toggle",onclick:move |_|{document::eval(r#"const dialog = document.querySelector('.curriculum-menu');
+            if (!dialog.dataset.dismissBound) {
+                dialog.addEventListener('click', event => { if (event.target === dialog) {
+                    const rect = dialog.getBoundingClientRect();
+                    if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) dialog.close();
+                }});
+                dialog.dataset.dismissBound = 'true';
+            }
+            dialog.showModal();"#);},"수업 목차"}
+            if let Some(activity)=active.activities.get(active_mission) {
+                crate::instructor_mode::InstructorControls {key:"instructor-controls-{active.id}-{activity.id}",activity:activity.clone()}
+            }
+        }
         button {class:"assistant-open",onclick:move |_|{let v=assistant_open();assistant_open.set(!v);},{if assistant_open() {"AI 접기"} else {"AI에게 물어보기"}}}
         div {class:"header-navigation",aria_label:"학습 이동",
             button {disabled:!can_prev,onclick:move |_|navigate.call(-1),"← 이전"}
@@ -265,15 +279,6 @@ pub fn Learning(
         ResetProgress {course_id:course.id.clone(),onreset:move |_|{selected.set(String::new());mission_index.set(usize::MAX);clear_popup.set(false);refresh+=1;epoch+=1;}}}
         div {class:if assistant_open() {"learning-row assistant-docked"} else {"learning-row"},
         div {class:"learning",
-        button {class:"curriculum-toggle",onclick:move |_|{document::eval(r#"const dialog = document.querySelector('.curriculum-menu');
-            if (!dialog.dataset.dismissBound) {
-                dialog.addEventListener('click', event => { if (event.target === dialog) {
-                    const rect = dialog.getBoundingClientRect();
-                    if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) dialog.close();
-                }});
-                dialog.dataset.dismissBound = 'true';
-            }
-            dialog.showModal();"#);},"수업 목차"}
         dialog {class:"curriculum-menu",aria_label:"수업 목차",
             div {class:"curriculum-modal-header",h2 {"수업 목차"}
                 button {class:"curriculum-close",aria_label:"수업 목차 닫기",autofocus:true,onclick:move |_|{document::eval("document.querySelector('.curriculum-menu').close();");},"닫기 ×"}

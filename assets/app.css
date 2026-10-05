@@ -677,3 +677,15 @@ html.fx-still .assistant-tts-dot { animation: none; }
 
 /* An option the narration talked about keeps a soft mark until the run ends. */
 .quiz-option.agent-said { box-shadow: inset 0 0 0 2px #a78bfa88; background: #2d3350; }
+
+.learning-mission-toolbar,.separate-practice-nav {display:flex;align-items:center;gap:10px;flex-wrap:wrap;} .learning-mission-toolbar .curriculum-toggle,.separate-practice-nav .curriculum-toggle {position:static;margin:0;} .instructor-controls {display:flex;align-items:center;gap:10px;flex-wrap:wrap;} .instructor-answer-panel {width:min(900px,92vw);max-height:85vh;overflow:auto;} .instructor-answer-panel pre {white-space:pre-wrap;line-height:1.6;}
+
+/* Course navigation belongs to the shared title header. */
+.practice-header .learning-mission-toolbar,
+.practice-header .header-course-actions { display:flex; align-items:center; gap:6px; flex-wrap:nowrap; padding:0; margin:0; background:transparent; border:0; }
+.practice-header .instructor-controls { gap:6px; flex-wrap:nowrap; }
+.practice-header button { font-family:inherit; font-weight:600; font-size:13px; line-height:1.2; height:34px; padding:0 12px; white-space:nowrap; border-radius:6px; }
+.practice-header .curriculum-toggle { position:static; margin:0; background:#284354; border:1px solid #527286; }
+.practice-header .instructor-answer,.practice-header .instructor-explain { background:#223744; border:1px solid #425c6c; }
+.practice-header h1 { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.practice-header .practice-current-title { margin-left:auto; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }

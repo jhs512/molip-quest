@@ -193,6 +193,7 @@ async fn execute_python(
     let data = directory.path().join("data");
     std::fs::create_dir(&data).map_err(|e| e.to_string())?;
     for (name, bytes) in [
+        ("cafe-sales.xlsx", include_bytes!("../site/data/cafe-sales.xlsx").as_slice()),
         (
             "titanic.csv",
             include_bytes!("../courses/data/titanic.csv").as_slice(),
