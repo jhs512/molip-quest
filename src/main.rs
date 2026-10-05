@@ -489,12 +489,12 @@ fn Workspace() -> Element {
                                 div {class:"course-actions",
                                     button {class:"primary",onclick:move |_|{study_target.set((String::new(),usize::MAX));view.set(View::Learning);},"학습 시작 · 이어하기"}
                                     button {class:"gallery-link",onclick:move |_|view.set(View::Practice),"도전 과제"}
-                                    instructor_mode::InstructorLogin {}
                                     for kind in ui::GalleryKind::ALL {
                                         button {class:"gallery-link",onclick:move |_|view.set(View::Gallery(kind)),{kind.label()}}
                                     }
                                     ui::ResetProgress {course_id:course.id.clone(),onreset:move |_|{home_epoch+=1;}}
                                 }
+                                div {class:"course-actions instructor-row", instructor_mode::InstructorLogin {}}
                             }
                         },
                     }

@@ -12,7 +12,7 @@ pub(crate) fn InstructorLogin() -> Element {
     let mut error = use_signal(String::new);
     let mut busy = use_signal(|| false);
     rsx! {
-        button {class:"gallery-link",onclick:move |_|{if session().is_some(){document::eval("window.molipAgent?.stop()");session.set(None);}else{open.set(true);error.set(String::new());}}, {if session().is_some(){"강사모드 종료"}else{"강사모드 접속"}}}
+        button {class:"instructor-login",onclick:move |_|{if session().is_some(){document::eval("window.molipAgent?.stop()");session.set(None);}else{open.set(true);error.set(String::new());}}, {if session().is_some(){"강사모드 종료"}else{"강사모드 접속"}}}
         if open() {
             div {class:"doctor-backdrop",onclick:move |_|{if !busy(){open.set(false);password.set(String::new());}},
                 form {class:"doctor-panel practice-password",role:"dialog",aria_modal:"true",aria_label:"강사모드 접속",onclick:move |e|e.stop_propagation(),onkeydown:move |e|{if e.key()==Key::Escape&&!busy(){open.set(false);password.set(String::new());}},

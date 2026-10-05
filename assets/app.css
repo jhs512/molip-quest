@@ -397,7 +397,8 @@ body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { poi
 .slides-presenting .slides-stage .slides-scaler { margin: 0 auto; }
 .slides-presenting .slides-bar { position: fixed; left: 0; right: 0; bottom: 0; margin: 0; padding: 18px 0 20px; background: linear-gradient(transparent, rgba(0, 0, 0, 0.75)); opacity: 0; pointer-events: none; transition: opacity 0.25s; }
 .slides-presenting.slides-ui-visible .slides-bar { opacity: 1; pointer-events: auto; }
-.shortcut-help { color: #5f7570; font-size: 13px; margin: 6px 0 0; line-height: 2; }
+.shortcut-help { color: #5f7570; font-size: 13px; margin: 6px 0 18px; line-height: 2; }
+.shortcut-help .shortcut-sheet-open { vertical-align: middle; }
 .shortcut-help kbd { font-family: inherit; background: #eef2ef; border: 1px solid #c9d4ce; border-radius: 4px; padding: 1px 6px; font-size: 12px; color: #173d36; }
 .slides-stage { background: #0b141c; border: 1px solid #405970; border-radius: 10px; padding: 8px; overflow: hidden; }
 /* The deck is laid out at 1280×720 and scaled by slides.js (a transform on .marpit inside
@@ -415,6 +416,10 @@ body.splitting .cm-editor, body.splitting iframe, body.splitting .markdown { poi
 .course-actions .reset-progress { margin: 0 0 0 auto; color: #6b7f78; border-color: #c9d6d0; }
 .gallery-link { background: #eef4f1; color: #173d36; border: 1px solid #cfdcd6; }
 .gallery-link:hover { background: #dfeae4; }
+/* The instructor sign-in sits on its own line under the course buttons, in a colour of its own. */
+.instructor-row { margin-top: 12px; }
+.instructor-login { background: #b45309; color: #fff; }
+.instructor-login:hover { background: #92400e; }
 /* Gallery pages: a list of entries, one opens at a time. */
 .gallery { max-width: 1100px; }
 .gallery-count { color: #bcd7ee; font-size: 13px; margin: 0 0 8px; }
