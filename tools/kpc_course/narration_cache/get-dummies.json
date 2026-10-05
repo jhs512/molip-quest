@@ -1,0 +1,36 @@
+{
+ "hash": "24b34aef6e55cb99",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 모델은 여성, 남성 같은 글자를 못 먹어요. 값마다 열을 하나씩 만들어 해당하면 1, 아니면 0을 적는 게 One-hot이에요. pd.get_dummies로 성별 열을 바꿔 encoded에 담고 head를 보면 돼요."
+  ],
+  [
+   "hint",
+   "만화를 보세요. 성별 하나가 성별_여성, 성별_남성 두 열로 갈라지죠? 각 행에서 둘 중 하나만 1이에요."
+  ],
+  [
+   "starter",
+   "준비 코드는 titanic을 읽는 두 줄이에요. 그대로 둘게요."
+  ],
+  [
+   "code",
+   "encoded = pd.get_dummies(titanic[['성별']])\n",
+   "pd.get_dummies에 표를 넘겨요. 대괄호 두 겹으로 titanic[['성별']]을 써야 열 하나짜리 표가 되거든요. 값마다 새 열이 생겨요."
+  ],
+  [
+   "code",
+   "print(encoded.shape)\nencoded.head()\n",
+   "모양을 출력하고 앞 다섯 줄을 봐요."
+  ],
+  [
+   "output",
+   "(1309, 2)가 나왔죠? 열이 성별_남성, 성별_여성 둘이에요. 표에는 True, False로 보이는데 True가 1이에요. 행마다 둘 중 하나만 True죠?"
+  ],
+  [
+   "submit",
+   "제출하면 열 두 개와 행마다 합이 1인지 확인해요. 다음 단원의 OneHotEncoder가 같은 일을 모델 흐름 안에서 해요."
+  ]
+ ]
+}

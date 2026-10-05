@@ -1,0 +1,42 @@
+{
+ "hash": "58f4a9f05e4a4896",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 평균 나이를 말하려면 몇 명으로 나눈 평균인지부터 알아야 해요. 전체 n_total, 나이를 아는 사람 n_known, 모르는 사람 n_unknown, 그리고 생존율 survival_rate를 구해 출력해요."
+  ],
+  [
+   "starter",
+   "준비 코드는 그대로 두고 아래에 써요."
+  ],
+  [
+   "code",
+   "n_total=len(titanic)\n",
+   "전체 인원은 len(titanic)이에요. 행 수죠."
+  ],
+  [
+   "code",
+   "n_known=int(titanic['나이'].notna().sum())\nn_unknown=int(titanic['나이'].isna().sum())\n",
+   "notna()는 값이 있는 칸이 True, isna()는 빈칸이 True예요. 각각 sum()으로 세고 int로 감싸요. 둘을 더하면 전체가 되어야 해요."
+  ],
+  [
+   "code",
+   "survival_rate=titanic['생존'].mean()\n",
+   "생존 열의 mean()이 생존율이에요. 0과 1의 평균이 1의 비율이거든요."
+  ],
+  [
+   "code",
+   "print(n_total,n_known,n_unknown)\nprint(f'{survival_rate:.2%}')\n",
+   "인원 셋을 한 줄에 찍고, 생존율은 f 문자열에 .2%를 붙여 퍼센트로 보여요."
+  ],
+  [
+   "output",
+   "1309 1046 263, 그리고 38.20%예요. 1046 더하기 263이 1309죠? 평균 나이는 1309명이 아니라 1046명의 평균이라는 뜻이에요."
+  ],
+  [
+   "submit",
+   "제출할게요. 인원 셋과 생존율 500 나누기 1309를 검사해요."
+  ]
+ ]
+}

@@ -1,0 +1,32 @@
+{
+ "hash": "f5343e1399461248",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 인원과 비율을 따로 구하지 말고 한 표로 봐요. 성별로 묶은 생존에 agg로 count, sum, mean을 한 번에 구해 gender_summary에 담고, 마지막 줄에 이름만 적어요."
+  ],
+  [
+   "starter",
+   "준비 코드는 그대로 둘게요."
+  ],
+  [
+   "code",
+   "gender_summary=titanic.groupby('성별')['생존'].agg(['count','sum','mean'])\n",
+   "mean() 자리에 agg를 쓰고 리스트로 count, sum, mean 셋을 넘겨요. 인원, 생존자 수, 생존율이 열 세 개로 나와요."
+  ],
+  [
+   "code",
+   "gender_summary\n",
+   "마지막 줄에 이름만 적으면 앱이 표로 보여 줘요."
+  ],
+  [
+   "output",
+   "남성 843명 중 161명 19%, 여성 466명 중 339명 73%. count 합이 1309, sum 합이 500이죠? 이 표 한 장이 몇 명 중 몇 명을 다 담아요."
+  ],
+  [
+   "submit",
+   "제출할게요. 열 이름 셋과 인원, 생존자 합을 검사해요."
+  ]
+ ]
+}

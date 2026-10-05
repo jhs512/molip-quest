@@ -1,0 +1,28 @@
+{
+ "hash": "78595aa3b2069066",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 같은 계산을 이번엔 이름표로 해요. 준비 코드에 price와 quantity가 있어요. 둘을 곱해서 amount에 저장하고 출력하면 돼요."
+  ],
+  [
+   "starter",
+   "준비 코드 두 줄은 그대로 둘게요. price가 10000, quantity가 3이에요."
+  ],
+  [
+   "code",
+   "amount = price * quantity\n",
+   "amount = price 곱하기 quantity. 오른쪽을 먼저 계산해서 amount에 넣어요. 30000을 직접 적으면 가격이 바뀔 때 틀리는 코드가 돼요."
+  ],
+  [
+   "code",
+   "print(amount)\n",
+   "그다음 줄에서 amount를 출력해요. 이름으로 꺼내 쓰는 거죠."
+  ],
+  [
+   "output",
+   "30000이 나왔어요. 검사는 amount가 price 곱하기 quantity로 계산됐는지도 봐요."
+  ]
+ ]
+}

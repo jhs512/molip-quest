@@ -1,0 +1,28 @@
+{
+ "hash": "afc7261d02e4d211",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 앞 단원엔 sum()이 합계를 내 줬죠? 이번엔 그 일을 직접 해요. prices 값을 for로 하나씩 꺼내 total에 더하고, 끝나면 total을 출력하면 돼요. sum()은 안 써요."
+  ],
+  [
+   "starter",
+   "준비 코드 두 줄, prices와 total = 0은 그대로 둘게요. total은 반복 전에 한 번만 만들어요."
+  ],
+  [
+   "code",
+   "for price in prices:\n    total += price\n",
+   "for price in prices 콜론. 들여쓴 줄에서 total += price. 네 번 돌면서 합이 쌓여요."
+  ],
+  [
+   "code",
+   "print(total)\n",
+   "print는 들여쓰기 없이 반복문 밖이에요. 그래야 마지막에 한 번만 찍혀요."
+  ],
+  [
+   "output",
+   "40200이 나왔죠? sum(prices)와 같은 값이에요. 안에서 벌어진 일을 직접 짠 거예요."
+  ]
+ ]
+}

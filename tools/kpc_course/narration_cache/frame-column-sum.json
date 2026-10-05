@@ -1,0 +1,28 @@
+{
+ "hash": "d9ddd8a0a404bc44",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 아까 반복문으로 구한 전체 금액을 이번엔 표로 구해요. df의 amount 열을 골라 .sum()으로 합계를 내서 total_amount에 담아 출력하면 돼요."
+  ],
+  [
+   "starter",
+   "준비 코드가 df까지 만들어 뒀어요. 그대로 둘게요."
+  ],
+  [
+   "code",
+   "total_amount = df['amount'].sum()\n",
+   "df['amount']가 한 열이에요. 뒤에 .sum()을 붙이면 그 열의 합계예요. total_amount = 0도, for도 필요 없어요."
+  ],
+  [
+   "code",
+   "print(total_amount)\n",
+   "출력해요."
+  ],
+  [
+   "output",
+   "130000, 반복문과 같은 값이죠? 네 줄이 한 줄이 됐어요. 그런데 왜 빠른지는 다음 개념이에요."
+  ]
+ ]
+}

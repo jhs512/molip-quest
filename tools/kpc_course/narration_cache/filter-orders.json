@@ -1,0 +1,27 @@
+{
+ "hash": "895bc81469c4427b",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 조건 두 개를 모두 만족하는 거래요. 가격 12000 이상이고 수량 2 이상인 행을 selected에 담아요. 열 세 개는 유지하고 끝에 .copy()를 붙여요."
+  ],
+  [
+   "starter",
+   "준비 코드의 orders 표는 그대로 둘게요."
+  ],
+  [
+   "code",
+   "selected=orders.loc[(orders['price']>=12000)&(orders['quantity']>=2),['product','price','quantity']].copy()\nselected\n",
+   "조건마다 괄호로 감싸고 &로 이어요. loc의 쉼표 뒤에 열 이름 리스트를 넣으면 행과 열을 한 번에 고르고, copy()는 뒤에서 고쳐도 원본이 안 바뀌게 해요."
+  ],
+  [
+   "output",
+   "B와 A 두 건, 수량 2와 4가 남았죠? 가격이 빈 C는 비교 자체가 안 돼서 빠져요."
+  ],
+  [
+   "submit",
+   "제출할게요."
+  ]
+ ]
+}

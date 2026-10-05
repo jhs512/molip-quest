@@ -1,0 +1,32 @@
+{
+ "hash": "11d533c07cbb4c6b",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 타이타닉에서 쓴 groupby를 그대로 가져와요. 타깃으로 묶어서 신용한도의 평균을 구해 limit_by_default에 담고 출력하면 돼요."
+  ],
+  [
+   "starter",
+   "준비 코드는 그대로 둘게요."
+  ],
+  [
+   "code",
+   "limit_by_default = credit.groupby(target)['신용한도'].mean()\n",
+   "groupby 괄호에 묶는 열 target, 대괄호에 평균 낼 열 신용한도. 타이타닉에서 성별로 묶어 생존 평균 낸 것과 같은 모양이에요."
+  ],
+  [
+   "code",
+   "print(limit_by_default)\n",
+   "출력해서 두 그룹을 비교해요."
+  ],
+  [
+   "output",
+   "정상 0은 약 17만 8천, 부도 1은 약 13만. 한도가 낮은 쪽에 부도가 더 많아요. 다만 원인이라고 단정하진 말아요. 관찰이에요."
+  ],
+  [
+   "submit",
+   "제출할게요."
+  ]
+ ]
+}

@@ -1,0 +1,28 @@
+{
+ "hash": "625e443ff872fdb4",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 리스트 안이 숫자가 아니라 딕셔너리여도 for는 똑같이 돌아요. holdings 세 종목을 돌면서 가격 곱하기 수량을 각 종목의 amount 키에 넣으면 돼요."
+  ],
+  [
+   "starter",
+   "준비 코드의 holdings는 그대로 둘게요. 세 종목이에요."
+  ],
+  [
+   "code",
+   "for holding in holdings:\n    holding['amount'] = holding['price'] * holding['quantity']\n",
+   "for holding in holdings 콜론. holding에 딕셔너리가 하나씩 들어와요. 안에서 새 키 amount에 가격 곱하기 수량을 넣어요. 앞 단원 holding 미션을 세 번 돈 거예요."
+  ],
+  [
+   "code",
+   "print(holdings)\n",
+   "반복이 끝난 뒤 리스트 전체를 출력해요."
+  ],
+  [
+   "output",
+   "세 딕셔너리에 amount가 30000, 40000, 60000으로 붙었죠? 합계는 다음 미션이에요."
+  ]
+ ]
+}

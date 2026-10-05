@@ -1,0 +1,41 @@
+{
+ "hash": "110b8addc2e49a19",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 나이는 값이 수십 가지라 그대로 묶으면 그룹이 너무 많아요. pd.cut으로 네 구간으로 나눈 age_group 열을 만들고, 구간별 count, sum, mean을 age_summary에 담아요."
+  ],
+  [
+   "hint",
+   "경계는 0, 20, 40, 60, 무한대고 right=False를 주면 왼쪽 경계를 포함해요. 20살은 20~39에 들어가요."
+  ],
+  [
+   "starter",
+   "준비 코드는 그대로 둘게요."
+  ],
+  [
+   "code",
+   "titanic['age_group']=pd.cut(titanic['나이'],bins=[0,20,40,60,float('inf')],labels=['0~19','20~39','40~59','60+'],right=False)\n",
+   "pd.cut에 나이 열, 경계 bins, 이름표 labels, right=False를 줘요. 결과를 titanic의 새 열 age_group에 넣어요. 나이가 빈 사람은 구간도 비어요."
+  ],
+  [
+   "code",
+   "age_summary=titanic.groupby('age_group',observed=True)['생존'].agg(['count','sum','mean'])\n",
+   "이제 age_group으로 묶어요. observed=True는 아무도 없는 구간을 표에서 빼 달라는 옵션이에요. 집계는 아까와 같은 agg 셋이에요."
+  ],
+  [
+   "code",
+   "age_summary\n",
+   "마지막 줄에 이름을 적어 표로 봐요."
+  ],
+  [
+   "output",
+   "0~19가 225명 중 47%, 20~39가 576명 중 39%, 40~59가 205명 중 41%, 60 이상은 40명 중 30%예요. count 합은 1046이에요. 나이 모르는 263명이 빠졌거든요."
+  ],
+  [
+   "submit",
+   "제출할게요. count 합 1046, 빈 구간 263명, 20살이 20~39에 들어가는지를 검사해요."
+  ]
+ ]
+}

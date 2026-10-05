@@ -1,0 +1,27 @@
+{
+ "hash": "297d33bb01e39af1",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 이번엔 또는이에요. 제품이 A이거나 수량이 1인 거래를 either에 담고 표로 확인해요."
+  ],
+  [
+   "starter",
+   "준비 코드의 orders 표는 그대로 둘게요."
+  ],
+  [
+   "code",
+   "either = orders.loc[(orders['product'] == 'A') | (orders['quantity'] == 1)]\neither\n",
+   "&가 그리고, |가 또는이에요. 괄호는 똑같이 조건마다 쳐요. 괄호가 없으면 'A' | orders['quantity']를 먼저 계산하려다 오류가 나거든요."
+  ],
+  [
+   "output",
+   "A, A, C 세 건이 남았죠? 앞의 둘은 제품이 A라서, C는 수량이 1이라서 들어왔어요."
+  ],
+  [
+   "submit",
+   "제출할게요."
+  ]
+ ]
+}

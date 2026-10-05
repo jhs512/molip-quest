@@ -1,0 +1,37 @@
+{
+ "hash": "df8eb86446a589c3",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 양 끝 날짜를 first_date와 last_date에, 가장 높았던 종가를 max_close에, 그 날짜를 max_date에 담고 출력해요."
+  ],
+  [
+   "starter",
+   "준비 코드가 prices를 읽어 뒀어요. 그대로 둘게요."
+  ],
+  [
+   "code",
+   "first_date = prices.index.min()\nlast_date = prices.index.max()\n",
+   "날짜 인덱스의 min과 max가 양 끝 날짜예요. 정렬돼 있으니 첫 행과 마지막 행이기도 하죠."
+  ],
+  [
+   "code",
+   "max_close = prices['종가'].max()\nmax_date = prices['종가'].idxmax()\n",
+   "종가 열의 max는 값이고, idxmax는 그 값이 있는 행 이름이에요. 행 이름이 날짜니까 날짜가 나와요."
+  ],
+  [
+   "code",
+   "print(first_date, last_date)\nprint(max_close, max_date)\n",
+   "네 개를 두 줄로 출력해요."
+  ],
+  [
+   "output",
+   "2025년 1월 13일부터 2026년 9월 4일이죠? 최고 종가는 362500, 2026년 6월 18일이에요. 그래프의 꼭대기와 맞춰 보세요."
+  ],
+  [
+   "submit",
+   "제출할게요."
+  ]
+ ]
+}

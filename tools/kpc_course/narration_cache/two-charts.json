@@ -1,0 +1,55 @@
+{
+ "hash": "a5d39fd05466d06c",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 도전 과제예요. 종이 한 장에 그래프 영역 둘을 나란히 만들고, 왼쪽에 묶음 막대, 오른쪽에 나이 히스토그램을 그려요."
+  ],
+  [
+   "hint",
+   "힌트를 보세요. 두 그림 다 ax를 지정하는 게 핵심이에요. ax=ax1, ax=ax2가 빠지면 엉뚱한 곳에 그려져요."
+  ],
+  [
+   "starter",
+   "준비 코드는 그대로 둘게요."
+  ],
+  [
+   "code",
+   "wide = titanic.groupby(['객실등급', '성별'])['생존'].mean().unstack('성별') * 100\nknown_age = titanic[titanic['나이'].notna()]\n",
+   "재료 둘을 먼저 만들어요. 이번엔 등급이 행, 성별이 열인 wide에 100을 곱하고, 나이가 있는 승객만 known_age에 담아요."
+  ],
+  [
+   "code",
+   "fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4))\n",
+   "subplots에 1, 2를 주면 영역이 가로로 둘이에요. 왼쪽이 ax1, 오른쪽이 ax2. figsize로 종이를 넓게 잡아요."
+  ],
+  [
+   "code",
+   "wide.plot.bar(ax=ax1, ylim=(0, 100), rot=0)\nax1.set_ylabel('생존율 (%)')\nax1.set_title('등급과 성별에 따른 생존율')\n",
+   "왼쪽이에요. plot.bar에 ax=ax1을 넘겨 그 영역에 그리고, ax1에 y축 이름과 제목을 붙여요."
+  ],
+  [
+   "code",
+   "sns.histplot(data=known_age, x='나이', bins=20, ax=ax2)\nax2.set_title('나이 분포')\n",
+   "오른쪽이에요. histplot에 ax=ax2, bins 20. 제목도 ax2에 붙여요."
+  ],
+  [
+   "code",
+   "plt.show()\n",
+   "다 그렸으니 띄워요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
+  ],
+  [
+   "output",
+   "왼쪽에 막대 여섯 개, 등급마다 남성과 여성이 짝이죠? 오른쪽은 막대 스무 개짜리 나이 분포예요. 한 장에 두 질문의 답이 들어갔어요."
+  ],
+  [
+   "submit",
+   "제출할게요. 검사기는 fig의 영역 둘, 막대 여섯과 스물, 제목 둘을 봐요."
+  ]
+ ]
+}

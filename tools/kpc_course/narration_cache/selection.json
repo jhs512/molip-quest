@@ -1,0 +1,37 @@
+{
+ "hash": "3ca1c881d3668440",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 표에서 필요한 부분만 잘라 내요. product와 price 두 열만 고른 표를 selected에, 첫 두 행만 고른 표를 first_two에 담아요."
+  ],
+  [
+   "starter",
+   "준비 코드의 orders 표는 그대로 둘게요."
+  ],
+  [
+   "code",
+   "selected=orders[['product','price']]\n",
+   "열 여러 개는 이름 리스트로 골라요. 그러니까 대괄호 두 겹이죠."
+  ],
+  [
+   "code",
+   "first_two=orders.iloc[:2]\n",
+   "행을 자리 번호로 고를 땐 iloc이에요. 리스트와 같은 규칙이라 끝 번호 2는 안 들어가고 0번, 1번만 남아요."
+  ],
+  [
+   "code",
+   "print(selected.shape,first_two.shape)\nselected\n",
+   "두 표의 크기를 출력하고 selected를 표로 봐요."
+  ],
+  [
+   "output",
+   "(4, 2) (2, 3)이 나왔죠? selected는 4행 2열, first_two는 2행 3열이에요. 아래 표엔 product와 price만 남았어요."
+  ],
+  [
+   "submit",
+   "제출할게요. selected의 열 이름과 first_two의 제품이 A, B인지 봐요."
+  ]
+ ]
+}

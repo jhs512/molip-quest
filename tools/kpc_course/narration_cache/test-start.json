@@ -1,0 +1,28 @@
+{
+ "hash": "86e389fcfcf78ba7",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 첫 코딩이에요. 준비된 frame에서 마지막 80행의 첫 날짜를 test_start에 넣고, 그 날짜 이상인 행 수를 n_test에 담아 출력해요. 80이 나와야 맞아요."
+  ],
+  [
+   "starter",
+   "준비 코드가 앞 단원에 만든 frame을 그대로 만들어 둬요. 여섯 열에 dropna까지요. 그대로 둘게요."
+  ],
+  [
+   "code",
+   "test_start = frame.index[-80]\n",
+   "frame.index[-80], 뒤에서 80번째 날짜예요. 거기가 테스트 첫날이에요."
+  ],
+  [
+   "code",
+   "n_test = int((frame.index >= test_start).sum())\nprint(test_start, n_test)\n",
+   "frame.index >= test_start는 행마다 참·거짓이고, sum()이 참의 개수예요. int로 감싸 정수로 저장하고 출력해요."
+  ],
+  [
+   "output",
+   "2026년 5월 11일, 그리고 80이 나왔죠? 그 날짜부터 끝까지가 테스트 자료예요."
+  ]
+ ]
+}

@@ -1,0 +1,47 @@
+{
+ "hash": "0ef9865336473c0b",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 공부법을 골라요. 깊이 후보 depths마다 손질기와 묶은 결정 트리를 cross_val_score 평균으로 채점해 cv_scores에 담고, 가장 높은 깊이를 best_depth로 골라요. 그 깊이로 다시 학습해 테스트 정확도를 test_accuracy에 담으면 돼요. 테스트는 고른 뒤 한 번만이에요."
+  ],
+  [
+   "starter",
+   "준비 코드가 분리와 손질기까지 해 놓고 depths에 2, 3, 5, 8, 12를, cv_scores에 빈 딕셔너리를 둬 뒀어요. 그대로 둘게요."
+  ],
+  [
+   "code",
+   "for depth in depths:\n    model = Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(max_depth=depth, random_state=42))])\n    cv_scores[depth] = cross_val_score(model, X_train, y_train, cv=5).mean()\n",
+   "후보마다 그 깊이의 트리를 손질기와 묶어 만들고, cross_val_score에 훈련 자료만 넣어요. cv=5니까 훈련 안에서 5번 나눠 채점한 평균이 cv_scores에 깊이별로 들어가요."
+  ],
+  [
+   "code",
+   "best_depth = max(cv_scores, key=cv_scores.get)\n",
+   "max에 key=cv_scores.get을 주면 값이 가장 큰 키, 곧 점수가 가장 높은 깊이가 나와요."
+  ],
+  [
+   "code",
+   "model = Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(max_depth=best_depth, random_state=42))])\nmodel.fit(X_train, y_train)\n",
+   "고른 깊이로 모델을 새로 만들어 훈련 자료 전체로 다시 학습해요."
+  ],
+  [
+   "code",
+   "test_accuracy = accuracy_score(y_test, model.predict(X_test))\n",
+   "이제야 테스트 자료를 써요. 고르는 데는 안 썼으니 처음 보는 자료 그대로죠."
+  ],
+  [
+   "code",
+   "print({depth: round(float(score), 3) for depth, score in cv_scores.items()})\nprint(f'고른 깊이 {best_depth}, 테스트 정확도 {test_accuracy:.3f}')\n",
+   "깊이별 점수를 float로 바꿔 소수 셋째 자리로 출력하고, 고른 깊이와 테스트 정확도를 문장으로 출력해요."
+  ],
+  [
+   "output",
+   "깊이 2는 0.768, 3은 0.806, 5는 0.793, 8은 0.772, 12는 0.726이에요. 깊을수록 좋은 게 아니죠? 고른 깊이는 3, 테스트 정확도는 0.836이에요. 앞 미션의 외운 트리 0.798보다 높아요."
+  ],
+  [
+   "submit",
+   "제출하면 다섯 후보의 점수, best_depth가 최댓값의 키인지, model의 깊이가 그 값인지 확인해요."
+  ]
+ ]
+}

@@ -1,0 +1,42 @@
+{
+ "hash": "5d00026ba760bb81",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 로지스틱 회귀를 손질기와 묶어 model에 학습하고 joblib.dump로 titanic_model.joblib에 저장해요. 그다음 joblib.load로 loaded에 다시 불러와서 테스트 정확도를 test_accuracy에 담아 출력하면 돼요. 저장과 불러오기 사이에 학습은 없어요."
+  ],
+  [
+   "starter",
+   "준비 코드가 분리와 손질기까지 해 놓고 joblib, LogisticRegression, accuracy_score를 불러왔어요. 그대로 둘게요."
+  ],
+  [
+   "code",
+   "model = Pipeline([('prepare', make_preprocessor()), ('model', LogisticRegression(max_iter=1000))])\nmodel.fit(X_train, y_train)\n",
+   "손질기 뒤에 로지스틱 회귀를 붙인 Pipeline을 만들고 훈련 자료로 학습해요. 여기까지는 늘 하던 거죠."
+  ],
+  [
+   "code",
+   "joblib.dump(model, 'titanic_model.joblib')\n",
+   "joblib.dump에 모델과 파일 이름을 넣어요. 파이프라인 전체가 파일로 들어가요. 손질 기준까지요."
+  ],
+  [
+   "code",
+   "loaded = joblib.load('titanic_model.joblib')\n",
+   "joblib.load로 그 파일을 다시 읽어 loaded에 담아요. 다른 날, 다른 프로그램에서 하는 일을 지금 흉내 내는 거예요."
+  ],
+  [
+   "code",
+   "test_accuracy = accuracy_score(y_test, loaded.predict(X_test))\nprint(f'불러온 모델의 테스트 정확도: {test_accuracy:.3f}')\n",
+   "불러온 loaded로 테스트를 예측해 정확도를 재요. fit은 다시 안 해요. 그걸 문장으로 출력해요."
+  ],
+  [
+   "output",
+   "불러온 모델의 테스트 정확도 0.809예요. 앞 비교표의 Logistic과 같은 숫자죠? 저장하고 불러와도 예측이 그대로예요."
+  ],
+  [
+   "submit",
+   "제출하면 파일이 생겼는지, loaded와 model의 예측이 완전히 같은지 확인해요."
+  ]
+ ]
+}

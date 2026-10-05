@@ -1,0 +1,32 @@
+{
+ "hash": "2004d659e07c5306",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 대괄호 한 겹과 두 겹의 차이예요. orders['price']와 orders[['price']]를 각각 변수에 담고 type을 출력해 봐요."
+  ],
+  [
+   "starter",
+   "준비 코드의 orders 표는 그대로 둘게요."
+  ],
+  [
+   "code",
+   "price_series = orders['price']\nprice_frame = orders[['price']]\n",
+   "한 겹은 열 하나를 세로줄로 꺼내는 거고, 두 겹은 이 이름들의 열로 된 표를 달라는 뜻이에요. 안쪽 대괄호가 열 이름 리스트거든요."
+  ],
+  [
+   "code",
+   "print(type(price_series))\nprint(type(price_frame))\n",
+   "type으로 자료구조 이름을 확인해요."
+  ],
+  [
+   "output",
+   "pandas.Series와 pandas.DataFrame이 나왔죠? 열 하나에 sum이나 mean을 할 땐 한 겹, 열 여러 개를 표로 쓸 땐 두 겹이에요."
+  ],
+  [
+   "submit",
+   "제출할게요. 하나는 Series, 하나는 DataFrame인지 봐요."
+  ]
+ ]
+}

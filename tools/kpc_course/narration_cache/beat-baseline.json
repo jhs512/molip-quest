@@ -1,0 +1,33 @@
+{
+ "hash": "a71118eb8628e2ba",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 비교를 참·거짓 하나로 정리해요. 기준 MAE를 baseline_mae, Ridge(alpha=1) 파이프라인의 MAE를 ridge_mae에 담고, ridge_mae < baseline_mae를 improved에 넣어 세 값을 출력해요. False여도 틀린 게 아니에요."
+  ],
+  [
+   "starter",
+   "준비 코드는 그대로예요. 분리된 자료와 회귀 도구가 있어요."
+  ],
+  [
+   "code",
+   "baseline_mae = mean_absolute_error(y_test, X_test['close'])\n",
+   "기준부터요. 정답 y_test, 예측은 오늘 종가 close."
+  ],
+  [
+   "code",
+   "ridge = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))])\nridge.fit(X_train, y_train)\nridge_mae = mean_absolute_error(y_test, ridge.predict(X_test))\n",
+   "릿지 파이프라인을 학습하고 테스트 예측으로 MAE를 구해요. 비교는 같은 y_test로요."
+  ],
+  [
+   "code",
+   "improved = bool(ridge_mae < baseline_mae)\nprint(baseline_mae, ridge_mae, improved)\n",
+   "작으면 True, 아니면 False. bool로 감싸 파이썬 참·거짓으로 만들어요."
+  ],
+  [
+   "output",
+   "13637.5, 13601, True예요. 이 기간에서 릿지가 36원쯤 줄였어요. 만화처럼 False가 나오는 기간도 있어요. 그때는 그대로 적는 거예요."
+  ]
+ ]
+}

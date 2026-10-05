@@ -1,0 +1,37 @@
+{
+ "hash": "f12466b79ce0d7f0",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 타깃 열을 세요. 생존 열의 value_counts()를 counts에 담고, 사망 0 인원을 n_dead, 생존 1 인원을 n_alive에 정수로 담아 출력해요. 둘을 더하면 1309가 되어야 해요."
+  ],
+  [
+   "starter",
+   "준비 코드는 그대로 둘게요. titanic이 이미 읽혀 있어요."
+  ],
+  [
+   "code",
+   "counts = titanic['생존'].value_counts()\n",
+   "생존 열을 꺼내서 value_counts()를 붙여요. 값마다 몇 번 나오는지 세 주거든요. 여기선 0과 1 두 줄이에요."
+  ],
+  [
+   "code",
+   "n_dead = int(counts[0])\nn_alive = int(counts[1])\n",
+   "counts[0]이 0의 개수, counts[1]이 1의 개수예요. int로 감싸서 보통 정수로 만들어 둬요."
+  ],
+  [
+   "code",
+   "print(counts)\nprint(n_dead, n_alive)\n",
+   "표 자체와 두 숫자를 같이 출력해서 눈으로 맞춰 봐요."
+  ],
+  [
+   "output",
+   "0이 809, 1이 500이에요. 더하면 1309, 전체 인원과 맞죠? 사망이 생존보다 훨씬 많아요."
+  ],
+  [
+   "submit",
+   "제출할게요. 809와 500, 그리고 합이 1309인지 검사해요."
+  ]
+ ]
+}

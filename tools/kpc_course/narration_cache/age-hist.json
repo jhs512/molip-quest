@@ -1,0 +1,41 @@
+{
+ "hash": "669e746a57b09265",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 승객 나이가 어떻게 퍼져 있는지 봐요. 빈 나이를 뺀 승객을 known_age에 담고, 구간 20개짜리 히스토그램을 그려요."
+  ],
+  [
+   "starter",
+   "준비 코드는 그대로 둘게요. seaborn이 sns로 들어와 있어요."
+  ],
+  [
+   "code",
+   "known_age=titanic.dropna(subset=['나이'])\n",
+   "dropna에 subset으로 나이를 주면 나이가 빈 263명만 빠져요. 1046명이 남죠."
+  ],
+  [
+   "code",
+   "fig,ax=plt.subplots()\nsns.histplot(data=known_age,x='나이',bins=20,ax=ax)\n",
+   "종이와 영역을 만들고 sns.histplot에 표, 열 이름, bins 20을 넘겨요. ax=ax가 빠지면 다른 곳에 그려서 검사기가 못 찾아요."
+  ],
+  [
+   "code",
+   "ax.set(xlabel='나이',ylabel='Passenger count',title='Known ages only')\nplt.show()\n",
+   "축 이름과 제목을 붙이고 띄워요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
+  ],
+  [
+   "output",
+   "막대 스무 개가 20대 초반에서 30대 초반 사이에 제일 높죠? 그 네 구간에 500명 넘게 몰려 있어요. 60세 넘어가면 거의 없어요."
+  ],
+  [
+   "submit",
+   "제출할게요. 검사기는 1046명과 막대 20개를 확인해요."
+  ]
+ ]
+}

@@ -1,0 +1,37 @@
+{
+ "hash": "0c18b1b09f205fdc",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 빈칸 세기부터요. orders에서 열마다 결측이 몇 개인지 missing_counts에 담고, 그중 price 열의 개수를 정수로 n_missing_price에 담아 출력해요."
+  ],
+  [
+   "starter",
+   "준비 코드의 orders 표는 그대로 둘게요. C의 가격이 비어 있죠."
+  ],
+  [
+   "code",
+   "missing_counts = orders.isna().sum()\n",
+   "isna()가 빈칸을 True로 표시하고 sum이 열마다 True를 세요. 결과는 열 이름으로 꺼내는 Series예요."
+  ],
+  [
+   "code",
+   "n_missing_price = int(missing_counts['price'])\n",
+   "missing_counts['price']로 가격 열 값을 꺼내고 int로 감싸 정수로 만들어요."
+  ],
+  [
+   "code",
+   "print(missing_counts)\nprint(n_missing_price)\n",
+   "둘 다 출력해요."
+  ],
+  [
+   "output",
+   "product 0, price 1, quantity 0, 그리고 1이 나왔죠? 가격 열에만 하나 비어 있어요."
+  ],
+  [
+   "submit",
+   "제출할게요."
+  ]
+ ]
+}

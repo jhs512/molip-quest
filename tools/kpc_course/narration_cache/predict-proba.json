@@ -1,0 +1,37 @@
+{
+ "hash": "d3bc20ba8cf2245d",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 로지스틱 회귀는 사실 부도일 확률을 먼저 계산하고 0.5를 넘으면 부도라고 답해요. 위 위젯에서 기준값을 움직여 보세요. 훈련된 model에서 부도 확률을 probabilities에 담고, 0.5 이상인 고객 수와 0.3 이상인 고객 수를 세어 출력하면 돼요."
+  ],
+  [
+   "starter",
+   "준비 코드가 Pipeline으로 Logistic을 훈련까지 해 뒀어요. 그대로 둘게요."
+  ],
+  [
+   "code",
+   "probabilities = model.predict_proba(X_test)[:, 1]\n",
+   "predict_proba는 행마다 정상 확률, 부도 확률 두 열을 돌려줘요. 콜론 쉼표 1로 두 번째 열, 부도 확률만 골라요."
+  ],
+  [
+   "code",
+   "n_positive_05 = int((probabilities >= 0.5).sum())\nn_positive_03 = int((probabilities >= 0.3).sum())\n",
+   "probabilities >= 0.5는 참, 거짓 배열이고 sum이 참의 개수예요. 같은 식에서 기준값만 0.3으로 바꾸고, 둘 다 int로 감싸 정수로 둬요."
+  ],
+  [
+   "code",
+   "print(n_positive_05, n_positive_03)\n",
+   "두 개수를 나란히 출력해요."
+  ],
+  [
+   "output",
+   "495 1155가 나왔죠? 기준을 0.5에서 0.3으로 낮추니 부도 경고가 495명에서 1155명으로, 두 배 넘게 늘었어요. 모델은 그대로고 기준만 바꾼 거예요."
+  ],
+  [
+   "submit",
+   "제출할게요."
+  ]
+ ]
+}

@@ -1,0 +1,37 @@
+{
+ "hash": "7dda866943e5fd19",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 새 자료는 뼈대부터 봐요. credit의 행 수와 열 수를 n_rows, n_columns에 담고, 타깃의 value_counts를 target_counts에 담아 둘 다 출력하면 돼요."
+  ],
+  [
+   "starter",
+   "준비 코드가 credit.csv를 읽고 target에 열 이름을 담아 뒀어요. 그대로 둘게요."
+  ],
+  [
+   "code",
+   "n_rows, n_columns = credit.shape\n",
+   "shape는 행 수, 열 수 두 개를 돌려주니까 이름 두 개에 나눠 담아요."
+  ],
+  [
+   "code",
+   "target_counts = credit[target].value_counts()\n",
+   "열 이름에 공백이 있어서 점으로는 못 불러요. credit[target]으로 꺼내서 value_counts를 세요."
+  ],
+  [
+   "code",
+   "print(n_rows, n_columns)\nprint(target_counts)\n",
+   "두 줄로 출력해요. 크기 먼저, 인원 표 다음이요."
+  ],
+  [
+   "output",
+   "30000 25가 나왔죠? 3만 명에 25열이에요. 아래 표를 보면 정상 0이 23364명, 부도 1이 6636명. 정상이 훨씬 많아요."
+  ],
+  [
+   "submit",
+   "제출할게요. 검사는 행 수, 열 수와 두 인원을 봐요."
+  ]
+ ]
+}

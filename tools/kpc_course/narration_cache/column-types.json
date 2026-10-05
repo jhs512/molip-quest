@@ -1,0 +1,37 @@
+{
+ "hash": "fbe099e4255bccc9",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 다음 단원에서 숫자 열과 글자 열을 다르게 손질할 거라 미리 갈라 둬요. X에서 숫자 열 이름을 numeric_columns, 글자 열 이름을 category_columns에 담고 출력하면 돼요."
+  ],
+  [
+   "starter",
+   "준비 코드가 titanic을 읽고 features, X, y까지 만들어 뒀어요. 그대로 둘게요."
+  ],
+  [
+   "code",
+   "numeric_columns = list(X.select_dtypes('number').columns)\n",
+   "select_dtypes('number')는 숫자 열만 남긴 표예요. 그 columns를 list로 감싸서 numeric_columns에 담아요."
+  ],
+  [
+   "code",
+   "category_columns = list(X.select_dtypes(exclude='number').columns)\n",
+   "exclude='number'를 주면 반대로 숫자가 아닌 열만 남아요. 그게 글자 열, 범주 열이죠."
+  ],
+  [
+   "code",
+   "print(numeric_columns)\nprint(category_columns)\n",
+   "두 리스트를 출력해요."
+  ],
+  [
+   "output",
+   "숫자 열 다섯, 객실등급, 나이, 형제배우자, 부모자녀, 요금이에요. 글자 열은 성별, 탑승항구 둘이죠? 다섯과 둘이면 맞아요."
+  ],
+  [
+   "submit",
+   "제출하면 두 리스트의 열 이름을 확인해요."
+  ]
+ ]
+}

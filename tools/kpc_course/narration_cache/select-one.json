@@ -1,0 +1,37 @@
+{
+ "hash": "abe21c77182a7c00",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 선택자로 요소를 찾아요. #prices li가 몇 개인지 n_items에, 첫 종목의 이름을 first_name에 담아 출력해요."
+  ],
+  [
+   "starter",
+   "준비 코드가 prices.html을 읽어 soup까지 만들어 뒀어요. 그대로 둘게요."
+  ],
+  [
+   "code",
+   "items = soup.select('#prices li')\nn_items = len(items)\n",
+   "select는 맞는 요소를 리스트로 돌려줘요. 그러니 len으로 세면 되죠."
+  ],
+  [
+   "code",
+   "first_name = items[0].select_one('.name').get_text(strip=True)\n",
+   "첫 요소 [0]에서 select_one('.name')으로 이름 요소를 찾고, get_text(strip=True)로 글자만 꺼내요. strip은 앞뒤 공백을 지워요."
+  ],
+  [
+   "code",
+   "print(n_items, first_name)\n",
+   "둘을 한 줄에 출력해요."
+  ],
+  [
+   "output",
+   "2 가상A가 나왔죠? li가 두 개고 첫 종목 이름이 가상A예요."
+  ],
+  [
+   "submit",
+   "제출할게요."
+  ]
+ ]
+}

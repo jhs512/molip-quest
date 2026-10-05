@@ -1,0 +1,42 @@
+{
+ "hash": "6a927c30473b528e",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 두 길을 나란히 비교해요. 중앙값으로 채운 filled와 빈 행을 뺀 dropped를 만들고, 각각 가격 곱하기 수량 열 amount를 만들어 합계를 비교해요."
+  ],
+  [
+   "starter",
+   "준비 코드의 orders 표는 그대로 둘게요."
+  ],
+  [
+   "code",
+   "filled=orders.copy()\nfilled['price']=filled['price'].fillna(filled['price'].median())\nfilled['amount']=filled['price']*filled['quantity']\n",
+   "먼저 채우기 길이요. orders를 copy해서 filled를 만들고, price의 빈칸을 중앙값으로 채운 뒤 amount 열을 만들어요. 열끼리 곱하면 행마다 계산돼요."
+  ],
+  [
+   "code",
+   "dropped=orders.dropna(subset=['price']).copy()\ndropped['amount']=dropped['price']*dropped['quantity']\n",
+   "다음은 빼기 길이요. dropna로 가격이 빈 행을 뺀 표에 copy()를 붙여 dropped를 만들고, 같은 amount 열을 만들어요."
+  ],
+  [
+   "code",
+   "filled_total=filled['amount'].sum()\ndropped_total=dropped['amount'].sum()\n",
+   "두 표의 amount를 각각 sum해서 합계 둘을 만들어요."
+  ],
+  [
+   "code",
+   "print(filled_total,dropped_total)\nfilled\n",
+   "두 합계를 나란히 출력하고 filled를 표로 봐요."
+  ],
+  [
+   "output",
+   "130000과 118000, 12000 차이가 나죠? 어느 쪽도 진짜 전체 금액은 아니에요. 빈칸 하나를 어떻게 다루기로 했는지에 따라 답이 달라지니까, 보고서에는 그 선택을 적어야 해요."
+  ],
+  [
+   "submit",
+   "제출할게요. 두 합계와 두 표의 행 수를 봐요."
+  ]
+ ]
+}

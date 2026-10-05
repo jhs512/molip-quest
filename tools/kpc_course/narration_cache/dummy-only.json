@@ -1,0 +1,37 @@
+{
+ "hash": "b43663ae9083f977",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 기준 모델만 먼저 돌려요. DummyClassifier를 most_frequent 전략으로 dummy에 만들고, 훈련 자료로 학습해서 테스트 정확도를 dummy_accuracy에 담아 출력하면 돼요. 입력을 안 보니까 손질도 필요 없어요."
+  ],
+  [
+   "starter",
+   "준비 코드가 분리까지 끝내고 DummyClassifier와 accuracy_score를 불러왔어요. 그대로 둘게요."
+  ],
+  [
+   "code",
+   "dummy = DummyClassifier(strategy='most_frequent')\n",
+   "DummyClassifier에 strategy='most_frequent'를 줘요. 가장 많은 답만 찍는 모델이에요."
+  ],
+  [
+   "code",
+   "dummy.fit(X_train, y_train)\n",
+   "fit은 형식상 해요. 훈련 정답에서 뭐가 가장 많은지만 세는 거예요. 사망이죠."
+  ],
+  [
+   "code",
+   "dummy_accuracy = accuracy_score(y_test, dummy.predict(X_test))\nprint(dummy_accuracy)\n",
+   "테스트를 예측하면 전부 0이 나와요. 그걸 테스트 정답과 비교한 비율이 dummy_accuracy예요."
+  ],
+  [
+   "output",
+   "0.618, 약 62%예요. 테스트 262명 중 사망 162명이라 162 나누기 262죠. 이 숫자가 이 단원의 기준 모델의 점수예요. 이걸 못 넘는 모델은 아무것도 못 배운 거예요."
+  ],
+  [
+   "submit",
+   "제출하면 162 나누기 262와 같은지, 예측이 전부 0인지 확인해요."
+  ]
+ ]
+}

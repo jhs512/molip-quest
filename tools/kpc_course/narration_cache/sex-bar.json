@@ -1,0 +1,41 @@
+{
+ "hash": "8861bebebafda85b",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 앞 단원의 성별 생존율 표를 그래프로 바꿔요. 비율에 100을 곱해 퍼센트로 그리고, y축은 0에서 100으로 고정해요."
+  ],
+  [
+   "starter",
+   "준비 코드가 titanic을 읽고 matplotlib과 seaborn을 불러 뒀어요. 그대로 둘게요."
+  ],
+  [
+   "code",
+   "rates=titanic.groupby('성별')['생존'].mean()\n",
+   "rates는 앞 단원과 같아요. 성별로 묶은 생존의 평균, 그게 생존율이거든요."
+  ],
+  [
+   "code",
+   "fig,ax=plt.subplots()\nax.bar(rates.index,rates*100)\n",
+   "종이와 영역을 만들고, 막대 이름은 rates.index, 높이는 rates 곱하기 100이에요. 퍼센트로 바꾸는 거죠."
+  ],
+  [
+   "code",
+   "ax.set(xlabel='성별',ylabel='생존율 (%)',ylim=(0,100),title='성별 생존율')\nplt.show()\n",
+   "ax.set에 x축 이름, y축 이름, 그리고 ylim을 0에서 100으로 넣어요. 그래야 막대 높이가 퍼센트로 읽혀요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
+  ],
+  [
+   "output",
+   "여성 막대가 73 근처, 남성 막대가 19 근처죠? 축이 0에서 100이라 차이가 과장 없이 보여요."
+  ],
+  [
+   "submit",
+   "제출할게요. 검사기가 축 범위와 막대 높이를 봐요."
+  ]
+ ]
+}

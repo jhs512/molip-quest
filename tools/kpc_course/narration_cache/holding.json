@@ -1,0 +1,33 @@
+{
+ "hash": "9c78b6bbdac84775",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 읽기만 했으니 이번엔 고쳐요. holding의 수량을 5로 바꾸고, 바뀐 수량으로 가격 곱하기 수량을 amount라는 새 키에 넣으면 돼요."
+  ],
+  [
+   "starter",
+   "준비 코드의 holding은 그대로 둘게요. 수량은 지금 3이에요."
+  ],
+  [
+   "code",
+   "holding['quantity'] = 5\n",
+   "키에 새 값을 넣으면 바뀌어요. 등호 왼쪽에 holding['quantity']를 두는 거죠."
+  ],
+  [
+   "code",
+   "holding['amount'] = holding['price'] * holding['quantity']\n",
+   "없던 키 amount에 넣으면 추가돼요. 수량을 바꾼 다음에 곱해야 50000이에요. 순서가 바뀌면 30000이 들어가거든요."
+  ],
+  [
+   "code",
+   "print(holding)\n",
+   "딕셔너리 전체를 출력해서 확인해요."
+  ],
+  [
+   "output",
+   "quantity가 5, amount가 50000으로 들어갔죠? 키가 네 개로 늘었어요."
+  ]
+ ]
+}

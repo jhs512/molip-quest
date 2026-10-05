@@ -1,0 +1,32 @@
+{
+ "hash": "665e67adcb3c8424",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 날짜순 자료는 선그래프예요. fig, ax를 만들고 종가를 선으로 그려요. x축 이름 날짜, y축 이름 종가를 붙이면 돼요."
+  ],
+  [
+   "starter",
+   "준비 코드가 prices를 읽고 matplotlib까지 불러 뒀어요. 그대로 둘게요."
+  ],
+  [
+   "code",
+   "fig, ax = plt.subplots()\nax.plot(prices.index, prices['종가'])\n",
+   "뼈대는 막대그래프 때랑 같아요. ax.bar 대신 ax.plot이에요. x에 날짜 인덱스, y에 종가 열이에요."
+  ],
+  [
+   "code",
+   "ax.set(xlabel='날짜', ylabel='종가', title='Close price')\nplt.show()\n",
+   "ax.set으로 축 이름과 제목을 한 번에 붙이고, plt.show()로 띄워요."
+  ],
+  [
+   "output",
+   "401개 점을 이은 선 하나가 보이죠? 2025년엔 5만 원대였다가 2026년 중반에 36만 원 넘게 올라가요. 1년 8개월의 움직임이에요."
+  ],
+  [
+   "submit",
+   "제출할게요. 검사는 선이 하나이고 점이 401개인지, y축 이름이 종가인지 봐요."
+  ]
+ ]
+}

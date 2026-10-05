@@ -1,0 +1,41 @@
+{
+ "hash": "ee582aeaf92ea94b",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 산점도를 열 쌍마다 그리는 대신 상관계수 표를 만들어 색으로 봐요. 숫자 열 여섯 개예요."
+  ],
+  [
+   "starter",
+   "준비 코드에 columns 리스트가 있어요. 그대로 둘게요."
+  ],
+  [
+   "code",
+   "corr=titanic[columns].corr()\n",
+   "여섯 열만 골라서 corr()을 붙이면 6 곱하기 6 상관계수 표가 corr에 들어가요."
+  ],
+  [
+   "code",
+   "fig,ax=plt.subplots()\nsns.heatmap(corr,annot=True,vmin=-1,vmax=1,center=0,cmap='coolwarm',ax=ax)\n",
+   "sns.heatmap에 corr를 넘겨요. annot은 칸에 숫자 쓰기, vmin과 vmax는 색 범위를 -1에서 1로 고정, coolwarm은 양수가 붉고 음수가 푸른 색이에요."
+  ],
+  [
+   "code",
+   "plt.show()\n",
+   "띄워요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
+  ],
+  [
+   "output",
+   "대각선이 전부 1로 붉죠? 생존 행을 보세요. 요금이 0.24로 제일 붉고, 객실등급이 -0.31로 제일 푸르러요. 등급 숫자가 커질수록 생존이 줄어든다는 거예요."
+  ],
+  [
+   "submit",
+   "제출할게요. 검사기는 표 크기와 대각선, 색 범위를 봐요."
+  ]
+ ]
+}

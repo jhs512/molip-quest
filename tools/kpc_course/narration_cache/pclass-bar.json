@@ -1,0 +1,41 @@
+{
+ "hash": "aa9a806f90f1eb57",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 같은 그래프를 객실 등급으로 그려요. groupby의 열 이름만 바꾸면 되는데, 등급이 숫자라 하나 손봐야 해요."
+  ],
+  [
+   "starter",
+   "준비 코드는 그대로 둘게요."
+  ],
+  [
+   "code",
+   "rates = titanic.groupby('객실등급')['생존'].mean()\n",
+   "성별 자리에 객실등급을 넣으면 등급별 생존율이에요."
+  ],
+  [
+   "code",
+   "fig, ax = plt.subplots()\nax.bar(rates.index.astype(str), rates * 100)\n",
+   "등급 1, 2, 3은 숫자라 x축 간격이 어색해져요. astype(str)로 글자로 바꿔 넘기면 막대가 고르게 서요."
+  ],
+  [
+   "code",
+   "ax.set(xlabel='객실등급', ylabel='생존율 (%)', ylim=(0, 100), title='Survival by class')\nplt.show()\n",
+   "축 이름과 0에서 100 범위를 붙이고 띄워요."
+  ],
+  [
+   "run",
+   "실행해 볼게요."
+  ],
+  [
+   "output",
+   "1등급 62, 2등급 43, 3등급 26 근처로 계단처럼 내려가죠? 등급이 낮아질수록 생존율이 떨어져요."
+  ],
+  [
+   "submit",
+   "제출할게요."
+  ]
+ ]
+}

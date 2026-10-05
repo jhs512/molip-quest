@@ -1,0 +1,51 @@
+{
+ "hash": "83acf51181bd557c",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 도전 과제예요. 빵 공장의 8주치 판매 기록 56행인데 판매량이 빈 날이 있어요. 읽기, 결측, 조건 선택, 저장을 한 번에 써요. 다섯 가지 결과 변수를 만들면 돼요."
+  ],
+  [
+   "hint",
+   "힌트를 보세요. 결측 세기는 isna().sum(), 채우기는 fillna를 새 변수에, 토 또는 일은 isin이 편해요. 저장은 to_csv(index=False)예요."
+  ],
+  [
+   "starter",
+   "준비 코드가 data/croissant.csv를 sales에 읽어 뒀어요. 그대로 둘게요."
+  ],
+  [
+   "code",
+   "n_missing = int(sales['판매량'].isna().sum())\n",
+   "1번, 결측 개수요. 판매량 열에 isna().sum()을 하고 int로 감싸요."
+  ],
+  [
+   "code",
+   "filled = sales.copy()\nfilled['판매량'] = filled['판매량'].fillna(sales['판매량'].median())\n",
+   "2번, 채우기요. 원본을 건드리면 안 되니까 copy로 filled를 만들고, 그 판매량을 중앙값으로 채워요."
+  ],
+  [
+   "code",
+   "rainy = filled[filled['날씨'] == '비']\nweekend_mean = filled[filled['요일'].isin(['토', '일'])]['판매량'].mean()\n",
+   "3번과 4번, 조건 선택이요. 날씨가 비인 행은 등호 조건으로, 토 또는 일은 isin으로 골라요. 고른 행의 판매량에 mean을 붙이면 주말 평균이에요."
+  ],
+  [
+   "code",
+   "filled.to_csv('croissant_clean.csv', index=False)\nsaved = pd.read_csv('croissant_clean.csv')\n",
+   "5번, 저장이요. filled를 index=False로 저장하고 다시 읽어 saved에 담아요."
+  ],
+  [
+   "code",
+   "print(n_missing, len(rainy), round(weekend_mean, 1), saved.shape)\n",
+   "네 값을 한 줄에 출력해서 확인해요."
+  ],
+  [
+   "output",
+   "2 15 557.6 (56, 5)가 나왔죠? 결측 2개, 비 온 날 15일, 주말 평균 557.6개, 저장한 표 56행 5열이에요."
+  ],
+  [
+   "submit",
+   "제출할게요. 검사는 원본 sales가 그대로인지, filled에 빈칸이 없는지도 봐요."
+  ]
+ ]
+}

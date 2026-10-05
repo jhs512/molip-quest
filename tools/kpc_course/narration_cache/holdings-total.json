@@ -1,0 +1,33 @@
+{
+ "hash": "2ace5b6ec4d5d425",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 준비 코드엔 금액이 이미 들어 있어요. 세 종목의 amount를 다 더해 total_amount에 담아 출력하면 돼요. for-sum과 같은 모양이에요."
+  ],
+  [
+   "starter",
+   "준비 코드의 holdings는 그대로 둘게요. amount 키까지 있어요."
+  ],
+  [
+   "code",
+   "total_amount = 0\n",
+   "누적할 그릇을 반복 전에 한 번 만들어요."
+  ],
+  [
+   "code",
+   "for holding in holdings:\n    total_amount += holding['amount']\n",
+   "종목을 하나씩 꺼내 그 amount를 total_amount에 더해요."
+  ],
+  [
+   "code",
+   "print(total_amount)\n",
+   "반복문 밖에서 출력해요."
+  ],
+  [
+   "output",
+   "130000이 나왔죠? 이 네 줄이 다음 개념에서 한 줄로 줄어요."
+  ]
+ ]
+}

@@ -1,0 +1,43 @@
+{
+ "hash": "def8f2fbdd9caec9",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 분류 비교표를 회귀로 다시 만들어요. Linear, Ridge, Lasso 세 모델을 StandardScaler와 묶어 학습하고, 기준 예측 Baseline까지 네 예측의 MAE, RMSE, R2를 results 표에 모아요."
+  ],
+  [
+   "starter",
+   "준비 코드는 앞 미션과 같아요. 분리된 네 자료와 회귀 도구들이 준비돼 있어요."
+  ],
+  [
+   "code",
+   "models={'Linear':LinearRegression(),'Ridge':Ridge(alpha=1),'Lasso':Lasso(alpha=10,max_iter=20000,tol=0.001)}\n",
+   "models 딕셔너리에 세 모델을 이름표 붙여 넣어요. 라쏘는 계산이 끝까지 가라고 max_iter와 tol을 넉넉히 줬어요."
+  ],
+  [
+   "code",
+   "predictions={'Baseline':X_test['close'].to_numpy()}\nfitted={}\n",
+   "predictions는 기준 예측 Baseline으로 시작해요. 오늘 종가 그대로죠. fitted는 학습한 모델을 보관할 빈 딕셔너리예요."
+  ],
+  [
+   "code",
+   "for name,estimator in models.items():\n    model=Pipeline([('scale',StandardScaler()),('model',estimator)])\n    model.fit(X_train,y_train)\n    predictions[name]=model.predict(X_test)\n    fitted[name]=model\n",
+   "첫 반복이에요. 모델마다 파이프라인을 만들어 fit하고, 테스트 예측을 predictions에, 모델은 fitted에 넣어요."
+  ],
+  [
+   "code",
+   "rows=[]\nfor name,pred in predictions.items():\n    rows.append({'model':name,'MAE':mean_absolute_error(y_test,pred),'RMSE':mean_squared_error(y_test,pred)**0.5,'R2':r2_score(y_test,pred)})\n",
+   "둘째 반복은 네 예측을 채점해요. RMSE는 mean_squared_error에 0.5 제곱, 그게 제곱근이에요. 전부 정답, 예측 순서죠."
+  ],
+  [
+   "code",
+   "results=pd.DataFrame(rows).set_index('model')\nresults\n",
+   "rows를 DataFrame으로 만들고 model을 인덱스로 세워요. 마지막 줄에 results만 두면 표로 보여 줘요."
+  ],
+  [
+   "output",
+   "네 행 세 열이죠? MAE는 Linear 13521, Ridge 13601, Lasso 13630, 셋 다 기준 13637.5를 아슬아슬하게 넘어요. 그런데 RMSE는 기준이 17408로 가장 작아요. 큰 실수는 모델 쪽이 더 한 거죠."
+  ]
+ ]
+}

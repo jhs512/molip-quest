@@ -1,0 +1,42 @@
+{
+ "hash": "a2619201930f1b36",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 이제 진짜로 나눠요. 입력 날짜와 target_date가 모두 test_start 전인 행이 train_mask, 입력 날짜가 test_start 이상이면 test_mask예요. 그걸로 X_train, X_test, y_train, y_test를 만들어요."
+  ],
+  [
+   "hint",
+   "개념의 네 줄 그대로예요. 같은 마스크로 입력과 정답을 함께 골라야 행이 어긋나지 않아요."
+  ],
+  [
+   "starter",
+   "준비 코드가 frame에 이어 feature_columns 네 열로 입력 X, target_next_close로 정답 y까지 만들어 뒀어요."
+  ],
+  [
+   "code",
+   "test_start=frame.index[-80]\n",
+   "앞 미션 그대로, test_start부터요."
+  ],
+  [
+   "code",
+   "train_mask=(frame.index<test_start)&(frame['target_date']<test_start)\ntest_mask=frame.index>=test_start\n",
+   "train_mask는 조건 둘을 괄호로 감싸 &로 이어요. 입력 날짜도, target_date도 test_start 전. test_mask는 입력 날짜가 test_start 이상이면 돼요."
+  ],
+  [
+   "code",
+   "X_train,X_test=X.loc[train_mask],X.loc[test_mask]\ny_train,y_test=y.loc[train_mask],y.loc[test_mask]\n",
+   "같은 마스크로 X와 y를 같이 골라요. 그래야 입력과 정답의 행이 어긋나지 않거든요."
+  ],
+  [
+   "code",
+   "print(len(X_train),len(X_test))\nprint(frame.loc[train_mask,'target_date'].max(),X_test.index.min())\n",
+   "행 수를 찍고, 훈련 정답의 마지막 날짜와 테스트 첫 날짜도 나란히 찍어 봐요."
+  ],
+  [
+   "output",
+   "315하고 80이에요. 396에서 경계 하루가 빠진 거죠. 둘째 줄은 5월 8일과 5월 11일, 훈련 정답이 테스트 시작보다 앞이에요."
+  ]
+ ]
+}

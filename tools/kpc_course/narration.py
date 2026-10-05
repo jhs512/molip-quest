@@ -5,7 +5,10 @@ tutor would otherwise have to improvise. The app runs them straight away and sho
 
 - Slides: compiled from the deck's presenter script (one line per slide, then finish).
 - Quizzes: compiled from each question's explanation, then the answers are filled and graded.
-- Concepts and coding problems: hand-written in narration_<chapter>.py, keyed by activity id.
+- Concepts and coding problems: one file per mission in narration_cache/<id>.json, written by
+  tools/narrate.py (the Claude CLI) or by hand. The file records a hash of the content it was
+  written for; when the content changes the build refuses until `python tools/narrate.py`
+  rewrites the stale entries (only those). The entry formats:
   * A concept entry is a list of (anchor, line). `anchor` is a fragment of the body text (as
     the student reads it: no backticks or bold); the app scrolls that block into view and
     speaks `line`. `"title"` points at the heading, `"check"` at the check question. The check
@@ -16,17 +19,57 @@ tutor would otherwise have to improvise. The app runs them straight away and sho
     exactly. problem/run/output/submit get default lines when left out.
 
 The rule this module enforces: when a body or a solution changes, its narration changes too.
-A stale anchor or a chunk set that no longer matches the solution fails the build.
+A stale hash, a stale anchor or a chunk set that no longer matches the solution fails the build.
 """
+import hashlib
 import importlib
+import json
 import os
 import pathlib
 import re
 
+# Bump when the narration format or voice rules change, so every entry counts as stale.
+RULES_VERSION = "2"
+CACHE_DIR = pathlib.Path(__file__).parent / "narration_cache"
+
+
+def source_hash(activity, solution=None):
+    """What a narration was written for: the words the student sees and, for a problem, the
+    reference solution. Same hash → the narration still fits."""
+    if activity["kind"] == "concept":
+        parts = [activity["title"], activity["body"], activity["check"]["prompt"], activity["check"]["explanation"]]
+    elif activity["kind"] == "coding":
+        problem = activity["problem"]
+        parts = [activity["title"], problem["content"], problem["starter_code"], solution or ""]
+    else:
+        parts = [activity["title"], json.dumps(activity.get("questions", activity.get("markdown", "")), ensure_ascii=False, sort_keys=True)]
+    return hashlib.sha256(("\n--\n".join([RULES_VERSION, *parts])).encode("utf-8")).hexdigest()[:16]
+
+
+def cache_path(activity_id):
+    return CACHE_DIR / f"{activity_id}.json"
+
+
+def read_cache(activity_id):
+    """{"hash", "entry", "by"} or None."""
+    path = cache_path(activity_id)
+    if not path.exists():
+        return None
+    data = json.loads(path.read_text(encoding="utf-8"))
+    data["entry"] = [tuple(item) for item in data["entry"]]
+    return data
+
+
+def write_cache(activity_id, hash_, entry, by):
+    CACHE_DIR.mkdir(exist_ok=True)
+    data = {"hash": hash_, "by": by, "entry": [list(item) for item in entry]}
+    cache_path(activity_id).write_text(json.dumps(data, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+
 from kpc_course.dsl import split_slides
 
 def load():
-    """Every tools/kpc_course/narration_*.py, merged by activity id."""
+    """Hand-written entries in tools/kpc_course/narration_*.py, merged by activity id (the
+    pre-cache form; tools/narrate.py --import moves them into the cache)."""
     table = {}
     here = pathlib.Path(__file__).parent
     for path in sorted(here.glob("narration_*.py")):
@@ -36,6 +79,17 @@ def load():
                 raise SystemExit(f"narration: '{key}'가 두 모듈에 있습니다.")
             table[key] = value
     return table
+
+
+def entry_for(activity, solution):
+    """The narration entry for a concept or coding mission: the cache file when it is fresh,
+    a module entry otherwise. Returns (entry, status) with status fresh / stale / module / none."""
+    cached = read_cache(activity["id"])
+    if cached is not None:
+        fresh = cached["hash"] == source_hash(activity, solution)
+        return cached["entry"], ("fresh" if fresh else "stale")
+    entry = load().get(activity["id"])
+    return entry, ("module" if entry is not None else "none")
 
 
 FENCE = re.compile(r"```.*?```", re.S)
@@ -225,6 +279,7 @@ def attach(chapters, solutions):
     table = load()
     used = set()
     missing = []
+    stale_entries = []
     for chapter in chapters:
         for unit in chapter["units"]:
             for activity in unit["activities"]:
@@ -235,21 +290,28 @@ def attach(chapters, solutions):
                 elif kind == "quiz":
                     activity["narration"] = compile_quiz(activity)
                 else:
-                    entry = table.get(activity["id"])
-                    if entry is None:
+                    solution = solutions[activity["problem"]["id"]] if kind == "coding" else None
+                    entry, status = entry_for(activity, solution)
+                    if status == "none":
                         if os.environ.get("KPC_LENIENT"):
                             missing.append(where)
                             activity["narration"] = []
                             continue
-                        raise SystemExit(f"{where}: tools/kpc_course/narration_*.py에 해설 스크립트가 없습니다.")
+                        raise SystemExit(f"{where}: 해설이 없습니다. python tools/narrate.py 를 실행하세요.")
+                    if status == "stale":
+                        stale_entries.append(where)
+                        if not os.environ.get("KPC_LENIENT"):
+                            raise SystemExit(f"{where}: 본문이나 정답이 바뀌어 해설이 낡았습니다. python tools/narrate.py 를 실행하세요 (바뀐 미션만 다시 씁니다).")
                     used.add(activity["id"])
                     if kind == "concept":
                         activity["narration"] = compile_concept(activity, entry, where)
                     else:
                         activity["narration"] = compile_coding(activity, entry, solutions[activity["problem"]["id"]], where)
-    stale = sorted(set(table) - used)
-    if stale:
-        raise SystemExit(f"narration: 미션에 없는 해설 항목 {stale}")
+    orphan = sorted(set(table) - used)
+    if orphan:
+        raise SystemExit(f"narration: 미션에 없는 해설 항목 {orphan}")
     if missing:
         print(f"narration: 해설 없는 미션 {len(missing)}개 (lenient): {', '.join(missing[:8])}{' …' if len(missing) > 8 else ''}")
+    if stale_entries:
+        print(f"narration: 낡은 해설 {len(stale_entries)}개 (lenient): {', '.join(stale_entries[:8])}{' …' if len(stale_entries) > 8 else ''}")
     return chapters

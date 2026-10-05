@@ -11,9 +11,19 @@
 - 개념·코딩 미션에 해설 항목이 없으면 빌드 실패 (`KPC_LENIENT=1`이면 경고만).
 - 슬라이드(강사 스크립트)와 퀴즈(문항 해설)는 내용에서 자동으로 컴파일되므로 따로 쓰지 않는다.
 
+## 재작업: `python tools/narrate.py`
+
+개념·코딩 미션의 해설은 `tools/kpc_course/narration_cache/<미션 id>.json`에 있고, 각 파일은 그 해설을 쓸 때의 원본 해시(`hash`)를 기록한다. 본문·정답·힌트·확인 문항이 바뀌면 해시가 달라져 빌드가 "낡았다"며 멈춘다. 그때 "AI 나레이션 재작업" = `python tools/narrate.py`를 돌린다.
+
+- 바뀐 미션과 해설이 없는 미션만 이 컴퓨터의 Claude CLI(`claude -p`)로 다시 쓴다. 바뀐 게 없으면 아무것도 하지 않는다.
+- 코딩 미션은 정답을 실제로 실행한 출력을 함께 주어 "결과" 문장이 실제 값을 말하게 한다.
+- 만든 해설은 빌드와 같은 검사(구절이 본문에 있는가, 코드 조각이 정답과 같은가)를 통과할 때까지 오류를 돌려주며 최대 세 번 다시 쓴다.
+- `--all`은 전부 다시 쓰고, `--ids a b`는 그 미션만, `--check`는 낡은 것만 나열한다. 손으로 고친 캐시 파일도 그대로 쓰인다(`by: hand`).
+- 덱과 퀴즈는 내용에서 자동으로 컴파일되므로 재작업 대상이 아니다.
+
 ## 어디에 쓰나
 
-`tools/kpc_course/narration_*.py` (챕터별 파일). 각 파일은 `NARRATION = {미션 id: 항목}` 하나를 내보낸다. 컴파일러와 검사는 `tools/kpc_course/narration.py`.
+`tools/kpc_course/narration_cache/<미션 id>.json`의 `entry` (아래 형식). 컴파일러와 검사는 `tools/kpc_course/narration.py`, 생성은 `tools/narrate.py`.
 
 ### 개념 (concept): `(구절, 말)` 목록
 

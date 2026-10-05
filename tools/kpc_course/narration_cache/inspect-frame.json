@@ -1,0 +1,32 @@
+{
+ "hash": "d3ef55e0022d2dee",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 첫 미션은 표의 크기와 열 이름 확인이에요. 준비된 orders 표의 행 수, 열 수, 열 이름 리스트를 세 변수에 담아 출력하면 돼요."
+  ],
+  [
+   "starter",
+   "준비 코드가 orders 표를 만들어 뒀어요. 거래 네 건이고, C의 가격이 비어 있다는 점 눈여겨보세요."
+  ],
+  [
+   "code",
+   "n_rows, n_columns = orders.shape\ncolumn_names = list(orders.columns)\n",
+   "orders.shape는 (4, 3) 같은 쌍이라 두 변수에 한 번에 나눠 담아요. 열 이름은 orders.columns를 list로 감싸 리스트로 만들어요."
+  ],
+  [
+   "code",
+   "print(n_rows, n_columns, column_names)\n",
+   "세 값을 쉼표로 이어 한 줄에 출력해요."
+  ],
+  [
+   "output",
+   "4 3 그리고 product, price, quantity가 나왔죠? 4행 3열이에요."
+  ],
+  [
+   "submit",
+   "제출할게요. 검사는 세 변수의 값을 봐요."
+  ]
+ ]
+}

@@ -1,0 +1,46 @@
+{
+ "hash": "d9dc6ae76439c6d2",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 기준 모델과 세 모델을 같은 조건에서 비교해요. models 딕셔너리에 Dummy, Logistic, Tree, Forest를 넣고, 각각 손질기와 Pipeline으로 묶어 학습하고 예측해서 accuracy와 f1을 results 표에 모으면 돼요."
+  ],
+  [
+   "hint",
+   "표 만들기 패턴이에요. 빈 리스트를 두고 반복문 안에서 Pipeline을 새로 만들고 fit, predict, 그리고 딕셔너리 한 줄을 append. 끝나면 DataFrame으로 바꿔요."
+  ],
+  [
+   "starter",
+   "준비 코드가 분리와 make_preprocessor까지 다 해 놓고 모델 네 개와 점수 함수를 불러왔어요. 그대로 둘게요."
+  ],
+  [
+   "code",
+   "models={'Dummy':DummyClassifier(strategy='most_frequent'),'Logistic':LogisticRegression(max_iter=2000),'Tree':DecisionTreeClassifier(max_depth=4,random_state=42),'Forest':RandomForestClassifier(n_estimators=50,max_depth=5,random_state=42)}\n",
+   "models에 이름과 모델을 짝지어 넣어요. Dummy는 기준, Logistic은 반복 2000회, Tree는 깊이 4, Forest는 트리 50개에 깊이 5예요. random_state=42로 누가 돌려도 같게 해요."
+  ],
+  [
+   "code",
+   "rows=[]\nfitted={}\n",
+   "결과 줄을 모을 rows와 학습된 모델을 보관할 fitted를 비워 둬요."
+  ],
+  [
+   "code",
+   "for name,estimator in models.items():\n    model=Pipeline([('prepare',make_preprocessor()),('model',estimator)])\n    model.fit(X_train,y_train)\n    pred=model.predict(X_test)\n    fitted[name]=model\n    rows.append({'model':name,'accuracy':accuracy_score(y_test,pred),'f1':f1_score(y_test,pred,zero_division=0)})\n",
+   "반복문이에요. 모델마다 손질기와 묶은 Pipeline을 새로 만들고, 같은 훈련 자료로 fit, 같은 테스트 자료로 predict해요. 모델은 fitted에 보관하고, 이름과 두 점수를 딕셔너리로 rows에 붙여요. zero_division=0은 Dummy처럼 생존을 하나도 안 맞혀도 오류 대신 0을 주라는 거예요."
+  ],
+  [
+   "code",
+   "results=pd.DataFrame(rows).set_index('model')\nresults\n",
+   "rows를 DataFrame으로 바꾸고 model 열을 인덱스로 세워요. 마지막 줄에 results를 적으면 표로 보여요."
+  ],
+  [
+   "output",
+   "표를 보세요. Dummy는 정확도 0.618에 F1이 0이에요. 앞 미션에서 잰 기준 모델의 점수 그대로죠? Logistic은 0.809, Tree는 0.836, Forest는 0.844예요. 셋 다 기준을 넘었고, F1도 0.74에서 0.78 사이예요."
+  ],
+  [
+   "submit",
+   "제출하면 네 모델 이름과 두 열, Dummy의 점수가 앞 미션의 162 나누기 262와 같은지 확인해요."
+  ]
+ ]
+}

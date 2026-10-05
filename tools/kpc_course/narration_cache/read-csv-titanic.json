@@ -1,0 +1,32 @@
+{
+ "hash": "83097f732e49f57c",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 이제 진짜 파일이에요. 앱이 준비한 data/titanic.csv를 읽어 titanic에 담고, shape를 출력한 뒤 head()로 앞 5행을 봐요."
+  ],
+  [
+   "starter",
+   "준비 코드는 import 한 줄뿐이에요. 그대로 둘게요."
+  ],
+  [
+   "code",
+   "titanic = pd.read_csv('data/titanic.csv')\n",
+   "read_csv에 경로를 따옴표로 감싸 넘겨요. 자료가 data 폴더 안에 있어서 data/를 빼면 파일을 못 찾아요."
+  ],
+  [
+   "code",
+   "print(titanic.shape)\ntitanic.head()\n",
+   "shape를 출력하고 마지막 줄에 head()를 적어요. 앞 5행이 표로 떠요."
+  ],
+  [
+   "output",
+   "(1309, 14), 1309명에 열이 14개예요. 열 이름을 훑어 보세요. 객실등급, 생존, 이름, 성별, 나이, 요금. 이 표가 분류 챕터까지 우리 주인공이에요."
+  ],
+  [
+   "submit",
+   "제출할게요. titanic이 1309행 14열인지 봐요."
+  ]
+ ]
+}

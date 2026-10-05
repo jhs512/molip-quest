@@ -1,0 +1,37 @@
+{
+ "hash": "9443c3d197c2a59d",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 가장 최근 달 상환_9월로 묶어서 타깃의 count와 mean을 pay0_summary에 담아요. 그중 상태 0의 부도율을 rate_0, 상태 2의 부도율을 rate_2에 담아 출력하면 돼요."
+  ],
+  [
+   "starter",
+   "준비 코드는 그대로 둘게요."
+  ],
+  [
+   "code",
+   "pay0_summary = credit.groupby('상환_9월')[target].agg(['count','mean'])\n",
+   "개념에서 본 그 줄이에요. 상환_9월로 묶고 count와 mean을 같이 봐요. 비율만 보면 속으니까 인원을 꼭 붙여요."
+  ],
+  [
+   "code",
+   "rate_0 = pay0_summary.loc[0,'mean']\nrate_2 = pay0_summary.loc[2,'mean']\n",
+   "표에서 한 칸을 꺼낼 땐 loc에 행 이름, 열 이름이에요. 상태 0의 mean, 상태 2의 mean이죠."
+  ],
+  [
+   "code",
+   "print(pay0_summary)\nprint(rate_0, rate_2)\n",
+   "표를 먼저, 두 비율을 그다음에 출력해요."
+  ],
+  [
+   "output",
+   "rate_0은 약 0.128, rate_2는 약 0.691이에요. 2개월 연체면 부도율이 다섯 배가 넘죠? 그런데 상태 7은 78%인데 9명뿐이에요. 분모가 작은 비율은 믿지 말아요."
+  ],
+  [
+   "submit",
+   "제출할게요."
+  ]
+ ]
+}

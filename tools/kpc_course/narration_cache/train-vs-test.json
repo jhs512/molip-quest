@@ -1,0 +1,46 @@
+{
+ "hash": "e90bd99475caef6b",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 외운 모델을 잡아내요. 깊이 제한 없는 DecisionTreeClassifier를 손질기와 묶어 학습하고, 정확도를 두 번 재요. 훈련 자료로 잰 train_accuracy, 테스트 자료로 잰 test_accuracy. 둘을 출력하면 돼요."
+  ],
+  [
+   "hint",
+   "만화를 보세요. 문제집 1,047문제를 전부 외운 모델이 처음 보는 262문제에서 점수가 뚝 떨어지죠? 답을 외운 거지 규칙을 배운 게 아니에요. 그게 과적합이에요."
+  ],
+  [
+   "starter",
+   "준비 코드가 분리와 손질기까지 해 놓고 DecisionTreeClassifier와 accuracy_score를 불러왔어요. 그대로 둘게요."
+  ],
+  [
+   "code",
+   "model = Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(random_state=42))])\n",
+   "손질기 뒤에 결정 트리를 붙여요. max_depth를 안 주니까 질문을 끝없이 늘릴 수 있어요. 외우기 딱 좋은 조건이죠."
+  ],
+  [
+   "code",
+   "model.fit(X_train, y_train)\n",
+   "훈련 자료로 학습해요."
+  ],
+  [
+   "code",
+   "train_accuracy = accuracy_score(y_train, model.predict(X_train))\n",
+   "첫 번째 점수는 훈련 자료로 재요. 배운 자료를 그대로 다시 채점하는 거예요. 문제집 점수죠."
+  ],
+  [
+   "code",
+   "test_accuracy = accuracy_score(y_test, model.predict(X_test))\nprint(train_accuracy, test_accuracy)\n",
+   "두 번째 점수는 테스트 자료로 재요. 모의고사 점수예요. 둘을 나란히 출력해요."
+  ],
+  [
+   "output",
+   "훈련 0.967, 테스트 0.798이에요. 문제집은 97%를 맞히는데 모의고사는 80%죠? 이 차이가 과적합이에요. 실력은 테스트 쪽이 더 가까워요."
+  ],
+  [
+   "submit",
+   "제출하면 훈련 점수가 90%를 넘고 테스트 점수보다 높은지 확인해요."
+  ]
+ ]
+}

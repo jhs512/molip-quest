@@ -1,0 +1,42 @@
+{
+ "hash": "cec0452deb315994",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 앞 단원의 get_dummies를 모델 흐름에 맞는 도구로 바꿔요. OneHotEncoder를 encoder에 만들고, 훈련 성별에 fit_transform, 테스트 성별에 transform한 결과를 train_encoded, test_encoded에 담아 shape를 출력하면 돼요."
+  ],
+  [
+   "starter",
+   "준비 코드가 분리까지 끝내고 OneHotEncoder를 불러왔어요. 그대로 둘게요."
+  ],
+  [
+   "code",
+   "encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)\n",
+   "OneHotEncoder에 인자 둘이에요. handle_unknown='ignore'는 테스트에 처음 보는 값이 나와도 오류 대신 0으로 두라는 뜻, sparse_output=False는 보통 배열로 달라는 뜻이에요."
+  ],
+  [
+   "code",
+   "train_encoded = encoder.fit_transform(X_train[['성별']])\n",
+   "훈련에는 fit_transform. 어떤 값들이 있나, 여성과 남성이구나, 이걸 훈련에서 정하고 바로 바꿔요."
+  ],
+  [
+   "code",
+   "test_encoded = encoder.transform(X_test[['성별']])\n",
+   "테스트에는 transform만. 빈칸 채우기와 똑같은 모양이죠?"
+  ],
+  [
+   "code",
+   "print(train_encoded.shape, test_encoded.shape)\n",
+   "두 결과의 모양을 출력해요."
+  ],
+  [
+   "output",
+   "(1047, 2)와 (262, 2)예요. 여성, 남성이라 열이 둘이죠? 행마다 둘 중 하나만 1이에요."
+  ],
+  [
+   "submit",
+   "제출하면 모양과 encoder가 익힌 값 목록, 행마다 합이 1인지 확인해요."
+  ]
+ ]
+}

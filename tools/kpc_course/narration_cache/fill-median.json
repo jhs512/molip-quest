@@ -1,0 +1,37 @@
+{
+ "hash": "1c3c898538b94e20",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 첫 번째 길, 채우기예요. price의 중앙값을 median_price에 담고, 빈칸을 그 값으로 채운 열을 filled_price에 담아 출력해요. 원본 orders는 건드리지 않아요."
+  ],
+  [
+   "starter",
+   "준비 코드의 orders 표는 그대로 둘게요."
+  ],
+  [
+   "code",
+   "median_price = orders['price'].median()\n",
+   "median()은 빈칸을 빼고 중앙값을 구해요. 10000, 12000, 20000 중 한가운데니까 12000이죠."
+  ],
+  [
+   "code",
+   "filled_price = orders['price'].fillna(median_price)\n",
+   "fillna는 빈칸만 그 값으로 바꾼 새 열을 돌려줘요. 원본은 그대로라서 변수에 받아야 해요."
+  ],
+  [
+   "code",
+   "print(median_price)\nprint(filled_price)\n",
+   "중앙값과 채운 열을 출력해요."
+  ],
+  [
+   "output",
+   "12000.0, 그리고 10000, 20000, 12000, 12000이 나왔죠? 마지막 칸이 중앙값으로 채워졌어요. orders의 빈칸은 그대로예요."
+  ],
+  [
+   "submit",
+   "제출할게요. 검사는 원본 orders에 빈칸이 여전히 하나인지도 봐요."
+  ]
+ ]
+}

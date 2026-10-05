@@ -1,0 +1,47 @@
+{
+ "hash": "d29377595607fef1",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 도전 과제예요. 빵 공장 지난주 요일별 판매량이 sales 딕셔너리에 있어요. 규칙은 판매량의 1.1배를 반올림해 굽기. 1장에서 배운 걸 전부 써서 plans, total_plan, best_day, df 넷을 만들어요."
+  ],
+  [
+   "hint",
+   "sales.items()로 키와 값을 함께 꺼내요. 최댓값은 앞에서 본 highest 패턴 그대로예요."
+  ],
+  [
+   "starter",
+   "준비 코드 네 줄은 그대로 둘게요. plans는 빈 리스트, total_plan은 0으로 시작해요."
+  ],
+  [
+   "code",
+   "best_day = None\nbest_sold = 0\n",
+   "최댓값 찾기용 그릇 둘을 먼저 만들어요. 아직 요일이 없으니 best_day는 None, best_sold는 0이에요."
+  ],
+  [
+   "code",
+   "for day, sold in sales.items():\n    plan = round(sold * 1.1)\n    plans.append({'요일': day, '판매량': sold, '계획': plan})\n",
+   "sales.items()는 키와 값을 쌍으로 꺼내요. 요일이 day, 판매량이 sold예요. 1.1배를 반올림해 plan에, 세 키짜리 딕셔너리를 plans에 append해요. 이 키가 그대로 열 이름이 돼요."
+  ],
+  [
+   "code",
+   "    total_plan += plan\n",
+   "계획 수량을 total_plan에 누적해요. sum()은 금지였죠?"
+  ],
+  [
+   "code",
+   "    if sold > best_sold:\n        best_sold = sold\n        best_day = day\n",
+   "max() 없이 if로요. 지금까지 최고보다 많이 팔렸으면 best_sold와 best_day를 같이 갈아 끼워요. 여덟 칸 들여쓰기 보세요."
+  ],
+  [
+   "code",
+   "df = pd.DataFrame(plans)\nprint(total_plan, best_day)\ndf\n",
+   "반복이 끝나면 plans로 표를 만들어요. 합계와 최고 요일을 찍고, 마지막 줄 df로 표를 띄워요."
+  ],
+  [
+   "output",
+   "3735 토가 찍히고 7행 3열 표가 나왔죠? 토요일 610개가 최고, 계획은 671개예요. 변수, 리스트, 딕셔너리, 반복, 조건, 표를 한 번에 쓴 거예요."
+  ]
+ ]
+}

@@ -1,0 +1,27 @@
+{
+ "hash": "086b33647f70efda",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 실행 입력 한 줄에 가격과 수량이 공백으로 들어와요. 준비 코드가 두 값을 정수 price, quantity로 나눠 담아 둬요. 가격 곱하기 수량을 출력하면 돼요."
+  ],
+  [
+   "examples",
+   "입력 10000 3이면 출력 30000이에요."
+  ],
+  [
+   "starter",
+   "준비 코드가 입력 처리를 다 했어요. map(int, input().split()), 개념에서 본 그 한 줄이죠."
+  ],
+  [
+   "code",
+   "print(price * quantity)\n",
+   "남은 건 price와 quantity를 곱해서 print에 넣는 것뿐이에요."
+  ],
+  [
+   "output",
+   "30000이 나왔어요. 입력을 바꾸면 결과도 따라 바뀌어요."
+  ]
+ ]
+}

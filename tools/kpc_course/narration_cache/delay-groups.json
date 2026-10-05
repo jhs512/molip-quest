@@ -1,0 +1,37 @@
+{
+ "hash": "5bf588997329e4d6",
+ "by": "hand",
+ "entry": [
+  [
+   "problem",
+   "자, 여섯 달 중 한 번이라도 연체한 적이 있는지를 새 열 has_delay로 만들어요. 그걸로 묶어 타깃의 count, sum, mean을 summary에 담으면 돼요."
+  ],
+  [
+   "starter",
+   "준비 코드에 pay_columns가 있어요. 상환_9월부터 상환_4월까지 여섯 열 이름이에요. 그대로 둘게요."
+  ],
+  [
+   "code",
+   "credit['has_delay']=(credit[pay_columns]>=1).any(axis=1)\n",
+   "credit[pay_columns] >= 1은 여섯 열 전부에 참, 거짓을 매긴 표예요. any(axis=1)은 행마다 하나라도 참이면 참. 그걸 새 열에 넣어요."
+  ],
+  [
+   "code",
+   "summary=credit.groupby('has_delay')[target].agg(['count','sum','mean'])\n",
+   "has_delay로 묶고 agg에 세 개를 한 번에 넘겨요. 몇 명 중 몇 명이 부도고 비율은 얼마인지 한 표에 나오거든요."
+  ],
+  [
+   "code",
+   "summary\n",
+   "마지막 줄에 summary만 적으면 표로 보여 줘요."
+  ],
+  [
+   "output",
+   "표를 보세요. 연체 경험 없는 쪽은 19931명 중 부도율 약 11.7%, 있는 쪽은 10069명 중 약 42.7%예요. 네 배 가까이 차이 나죠?"
+  ],
+  [
+   "submit",
+   "제출할게요."
+  ]
+ ]
+}
