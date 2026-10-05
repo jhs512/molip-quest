@@ -246,6 +246,8 @@ function mount(host) {
   const isContinued = i => !!slides[i]?.querySelector('section.continued');
   host.molipSlides = {
     get index() { return index; }, get count() { return slides.length; }, isContinued,
+    // Back to the first slide (a narration script always starts from the top of the deck).
+    first() { if (index !== 0) { index = 0; update(); } },
     sourceIndex(i) { let n = 0; for (let k = 0; k <= i; k++) if (!isContinued(k)) n++; return n; },
     async nextSource(dwell = 1500) {
       if (index >= slides.length - 1) return false;

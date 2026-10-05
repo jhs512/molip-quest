@@ -422,9 +422,12 @@
     replyRun++; stopSpeech();
     cancelled = false; paused = false; running = true;
     prefetch(actions);
-    // A deck script (it ends with finish_slides) is presented full screen, like a class.
+    // A deck script (it ends with finish_slides) is presented full screen, like a class, and
+    // starts from the first slide: its lines and next_slide steps count from the top, so a deck
+    // left on slide 5 would otherwise have the voice a few slides behind the picture.
     if (actions.some(a => a && a.action === 'finish_slides')) {
       const host = document.querySelector('.slides-host');
+      if (host && host.molipSlides && host.molipSlides.first) host.molipSlides.first();
       if (host && host.molipPresent && !host.classList.contains('slides-presenting')) { host.molipPresent(true); await sleep(300); }
     }
     const lines = [];
