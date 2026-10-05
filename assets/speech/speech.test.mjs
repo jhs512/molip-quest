@@ -35,7 +35,7 @@ test('technical terms are pronounced in Korean while code spans stay verbatim', 
 test('file names are read with a spoken dot and extension, in prose and in code spans', () => {
   assert.equal(speech.pronunciationText('여러분의 main.py는 주가 파일을 읽어요'), '여러분의 메인 점 파이는 주가 파일을 읽어요');
   assert.equal(speech.pronunciationText('`main.py` 하나'), 'main 점 파이 하나');
-  assert.equal(speech.pronunciationText("pd.read_csv('data/titanic.csv')"), "pd.리드 씨에스브이('data/타이타닉 점 씨에스브이')");
+  assert.equal(speech.pronunciationText("pd.read_csv('data/titanic.csv')"), "pd.리드 씨에스브이(data/타이타닉 점 씨에스브이)");
   assert.equal(speech.pronunciationText('orders.xlsx와 model.joblib'), 'orders 점 엑셀와 model 점 잡립');
   assert.equal(speech.pronunciationText('버전 1.2.3'), '버전 1.2.3'); // versions stay verbatim
 });
@@ -52,6 +52,12 @@ test('the neural voice is sent the pronounced text, not the written one', async 
   vm.runInNewContext(readFileSync(new URL('../layout/voice.js', import.meta.url), 'utf8'), voiceContext);
   await voiceContext.molipVoice.synthesize('main.py를 실행해요');
   assert.deepEqual(bodies, [{ text: '메인 점 파이를 실행해요', voice: 'ko-KR-SunHiNeural' }]);
+});
+
+test('quotes around a token are not spoken (the Edge voice reads a prime as 분)', () => {
+  assert.equal(speech.pronunciationText("따옴표가 있는 '30000'은 글자예요"), '따옴표가 있는 30000은 글자예요');
+  assert.equal(speech.pronunciationText('"가격 수량"이 한 줄에'), '가격 수량이 한 줄에');
+  assert.equal(speech.pronunciationText("don't"), "don't");
 });
 
 test('numbers and operators read naturally', () => {

@@ -66,11 +66,15 @@
   const extensions = { py: '파이', csv: '씨에스브이', xlsx: '엑셀', xls: '엑셀', html: '에이치티엠엘', json: '제이슨', joblib: '잡립', txt: '텍스트', md: '엠디' };
   const filePattern = /\b([A-Za-z_][\w-]*)\.(py|csv|xlsx|xls|html|json|joblib|txt|md)(?![\w.])/g;
   const fileSpeechText = input => input.replace(filePattern, (_, stem, ext) => stem + ' 점 ' + extensions[ext]);
+  // Quotes around a token are read as a prime by the Edge voice ('30000' → "삼만분"), so the
+  // spoken text drops them: the caption keeps the written form.
+  const quotedToken = /(['"])([^'"\n]{1,60})\1/g;
+  const unquote = input => input.replace(quotedToken, '$2');
   function pronunciationText(text) {
-    return text.split(protectedSpans).map((part, index) => {
+    return unquote(text.split(protectedSpans).map((part, index) => {
       if (index % 2) return fileSpeechText(part.startsWith('`') ? part.slice(1, -1) : part);
       return fileSpeechText(mathSpeechText(part)).replace(termPattern, (_, term) => pronunciations[term]);
-    }).join('');
+    }).join(''));
   }
 
   // ---- Sentences and bounded utterances; offsets stay valid for highlighting. ----
