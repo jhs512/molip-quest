@@ -632,3 +632,14 @@ html.fx-still .victory-fill { transition: none; }
 .table-select tr.picked td { background: #2f5a4e; }
 .table-select th.picked, .table-select td.picked { background: #2f5a4e; }
 .table-select th.picked { box-shadow: inset 0 -3px 0 #62d6b1; }
+
+/* Auto-update: a banner for a release that appeared while the app runs, a modal for the install. */
+.update-banner { position: fixed; top: 14px; left: 50%; transform: translateX(-50%); z-index: 1400; display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 12px; background: #1b2c3a; color: #dce7f1; border: 1px solid #62d6b1; box-shadow: 0 12px 40px #0008; font-size: 14px; }
+.update-banner .update-dot { width: 9px; height: 9px; border-radius: 50%; background: #62d6b1; box-shadow: 0 0 0 4px #62d6b133; }
+.update-banner button { padding: 6px 12px; font-size: 13px; }
+.update-panel { width: min(520px, 100%); }
+.update-title { color: #4b6276; font-size: 13px; margin: -6px 0 12px; }
+.update-track { height: 10px; border-radius: 6px; background: #d6e0e8; overflow: hidden; margin: 12px 0 8px; }
+.update-fill { height: 100%; background: linear-gradient(90deg, #62d6b1, #3fb28c); transition: width .25s ease; }
+.update-line { color: #2f4a63; font-size: 14px; margin: 0; }
+.build-number { color: #7f98ad; font-size: 12px; margin: 4px 0 10px; }

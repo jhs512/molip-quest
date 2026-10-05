@@ -11,6 +11,7 @@ pub mod learning_store;
 pub mod prefs;
 pub mod runner;
 pub mod tts;
+pub mod updater;
 
 #[derive(Clone, Deserialize, Serialize, PartialEq)]
 pub struct Course {

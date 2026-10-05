@@ -12,6 +12,11 @@ on:
 permissions:
   contents: write
 
+# The executables learn their own build number (the release tag's "build.N") so the app can
+# tell when a newer release exists (src/updater.rs).
+env:
+  MOLIP_BUILD: ${{ github.run_number }}
+
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false

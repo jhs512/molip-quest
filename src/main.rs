@@ -1,7 +1,7 @@
 #![cfg_attr(all(windows, not(debug_assertions)), windows_subsystem = "windows")]
 
-mod ui;
 mod collection;
+mod ui;
 use dioxus::prelude::*;
 use molip_quest::Course;
 use ui::Learning;
@@ -42,6 +42,13 @@ fn window_icon() -> Option<dioxus::desktop::tao::window::Icon> {
 #[cfg(not(feature = "desktop"))]
 fn main() {
     dioxus::launch(App);
+}
+
+/// No auto-update on Android: the APK is installed by hand.
+#[cfg(not(feature = "desktop"))]
+#[component]
+fn UpdateGate() -> Element {
+    rsx! {}
 }
 
 #[component]
@@ -185,13 +192,28 @@ fn tts_response(
             .expect("tts response")
     };
     if request.uri().path() != "/tts" {
-        return reply(404, "text/plain; charset=utf-8", "none", b"not found".to_vec());
+        return reply(
+            404,
+            "text/plain; charset=utf-8",
+            "none",
+            b"not found".to_vec(),
+        );
     }
     if request.method() != dioxus::desktop::wry::http::Method::POST {
-        return reply(405, "text/plain; charset=utf-8", "none", b"POST only".to_vec());
+        return reply(
+            405,
+            "text/plain; charset=utf-8",
+            "none",
+            b"POST only".to_vec(),
+        );
     }
     let Ok(body) = serde_json::from_slice::<serde_json::Value>(request.body()) else {
-        return reply(400, "text/plain; charset=utf-8", "none", b"bad json".to_vec());
+        return reply(
+            400,
+            "text/plain; charset=utf-8",
+            "none",
+            b"bad json".to_vec(),
+        );
     };
     let text = body["text"].as_str().unwrap_or_default();
     let voice = body["voice"].as_str().unwrap_or_default();
@@ -209,6 +231,146 @@ enum View {
     Gallery(ui::GalleryKind),
     Avatars,
     Collection,
+}
+
+/// Auto-update (src/updater.rs). On start a newer release is installed without asking: the
+/// panel shows the download, then the app closes and the new build opens. Later, a release that
+/// appears while the app runs is offered in a banner (지금 업데이트 / 나중에). Development
+/// builds never see this.
+#[cfg(feature = "desktop")]
+#[derive(Clone, PartialEq)]
+enum UpdatePhase {
+    Hidden,
+    Offered,
+    Downloading(u64, u64),
+    Installing,
+    Failed(String),
+}
+
+#[cfg(feature = "desktop")]
+#[component]
+fn UpdateGate() -> Element {
+    use molip_quest::updater::{self, Release};
+    let mut release = use_signal(|| None::<Release>);
+    let mut forced = use_signal(|| false);
+    let mut phase = use_signal(|| UpdatePhase::Hidden);
+    // The build the student answered 나중에 to; it is not offered again.
+    let mut dismissed = use_signal(|| 0u64);
+    let install = Callback::new(move |_: ()| {
+        let Some(found) = release() else { return };
+        phase.set(UpdatePhase::Downloading(0, found.size));
+        spawn(async move {
+            let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel::<(u64, u64)>();
+            let target = found.clone();
+            let worker = tokio::task::spawn_blocking(move || {
+                updater::download(&target, |done, total| {
+                    let _ = tx.send((done, total));
+                })
+            });
+            let mut shown = 0u64;
+            while let Some((done, total)) = rx.recv().await {
+                // Repaint on every percent, not every chunk.
+                let percent = if total > 0 { done * 100 / total } else { 0 };
+                if percent != shown || done == total {
+                    shown = percent;
+                    phase.set(UpdatePhase::Downloading(done, total));
+                }
+            }
+            match worker.await.unwrap_or_else(|e| Err(e.to_string())) {
+                Ok(path) => {
+                    phase.set(UpdatePhase::Installing);
+                    // Returns only when the hand-over failed; otherwise the process exits here.
+                    if let Err(e) = updater::install_and_restart(&path) {
+                        phase.set(UpdatePhase::Failed(e));
+                    }
+                }
+                Err(e) => phase.set(UpdatePhase::Failed(e)),
+            }
+        });
+    });
+    // Check on start, then every ten minutes while the app runs.
+    use_future(move || async move {
+        let mut first = true;
+        loop {
+            if updater::enabled() {
+                let found = tokio::task::spawn_blocking(updater::check)
+                    .await
+                    .ok()
+                    .and_then(Result::ok)
+                    .flatten();
+                if let Some(found) = found {
+                    let known = release.peek().as_ref().map(|r| r.build);
+                    let idle = matches!(*phase.peek(), UpdatePhase::Hidden | UpdatePhase::Offered);
+                    if idle && known != Some(found.build) && *dismissed.peek() != found.build {
+                        release.set(Some(found));
+                        phase.set(UpdatePhase::Offered);
+                        if first {
+                            forced.set(true);
+                            install.call(());
+                        }
+                    }
+                }
+            }
+            first = false;
+            tokio::time::sleep(std::time::Duration::from_secs(600)).await;
+        }
+    });
+    let Some(found) = release() else {
+        return rsx! {};
+    };
+    let title = found.title.clone();
+    match phase() {
+        UpdatePhase::Hidden => rsx! {},
+        UpdatePhase::Offered if !forced() => rsx! {
+            div { class:"update-banner", role:"status",
+                span { class:"update-dot" }
+                span { {format!("새 버전이 나왔습니다 · {title}")} }
+                button { class:"primary", onclick: move |_| install.call(()), "지금 업데이트" }
+                button { onclick: move |_| { dismissed.set(found.build); phase.set(UpdatePhase::Hidden); }, "나중에" }
+            }
+        },
+        state => {
+            let (line, percent, failed) = match &state {
+                UpdatePhase::Downloading(done, total) => (
+                    if *total > 0 {
+                        format!(
+                            "설치 파일을 받는 중 · {} / {} MB",
+                            done / 1_048_576,
+                            total / 1_048_576
+                        )
+                    } else {
+                        format!("설치 파일을 받는 중 · {} MB", done / 1_048_576)
+                    },
+                    if *total > 0 {
+                        (done * 100 / total) as usize
+                    } else {
+                        0
+                    },
+                    None,
+                ),
+                UpdatePhase::Installing => {
+                    ("설치하고 다시 시작합니다. 잠시만요.".to_string(), 100, None)
+                }
+                UpdatePhase::Failed(e) => (e.clone(), 0, Some(())),
+                _ => ("새 버전을 설치합니다.".to_string(), 0, None),
+            };
+            rsx! {
+                div { class:"doctor-backdrop update-backdrop", section { class:"doctor-panel update-panel", role:"dialog", aria_modal:"true", aria_label:"업데이트",
+                    h2 { "새 버전 업데이트" }
+                    p { class:"update-title", "{title}" }
+                    p { {if forced() {"시작할 때 새 버전이 있으면 먼저 설치합니다. 작성 중인 코드와 진도는 저장되어 있습니다."} else {"업데이트하면 앱을 닫고 새 버전으로 다시 엽니다. 작성 중인 코드와 진도는 저장되어 있습니다."}} }
+                    div { class:"update-track", div { class:"update-fill", style: format!("width:{percent}%") } }
+                    p { class: if failed.is_some() {"error"} else {"update-line"}, "{line}" }
+                    if failed.is_some() {
+                        div { class:"actions",
+                            button { class:"primary", onclick: move |_| install.call(()), "다시 시도" }
+                            button { onclick: move |_| { phase.set(UpdatePhase::Hidden); forced.set(false); }, "이대로 계속" }
+                        }
+                    }
+                } }
+            }
+        }
+    }
 }
 
 #[component]
@@ -233,7 +395,9 @@ fn Workspace() -> Element {
         }
         Ok(course) => {
             rsx! { div { class: match view() { View::Home => "shell", View::Learning => "shell practice-shell", View::Gallery(_) | View::Avatars | View::Collection => "shell practice-shell gallery-shell" },
+                UpdateGate {}
                 aside { class:"sidebar", div {class:"brand", "몰입 퀘스트"} h3 {"KPC 금융 데이터 분석"} p {"7챕터 · 20단원"}
+                    p {class:"build-number", {let build = molip_quest::updater::current_build(); if build > 0 {format!("빌드 {build} · 새 버전은 자동으로 설치됩니다")} else {"개발 빌드".to_string()}}}
                     if ui::VIEW_ONLY { p {class:"view-only-note","Android 열람 모드 · 모든 단원과 미션이 열려 있습니다. 개념과 퀴즈를 풀고, 코딩 미션은 읽고 넘어갑니다. 코드 실행·채점은 데스크톱 앱에서 하세요."} }
                     ui::DoctorPanel {} }
                 main {

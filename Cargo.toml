@@ -27,6 +27,8 @@ sha2 = "0.10"
 [target.'cfg(not(target_os = "android"))'.dependencies]
 tungstenite = { version = "0.28", features = ["native-tls"] }
 arboard = { version = "3.6.1", default-features = false }
+# Auto-update: the GitHub Releases API and the installer download (src/updater.rs).
+ureq = { version = "3", default-features = false, features = ["native-tls", "json"] }
 
 # build.rs embeds assets/icon/icon.ico into the Windows executable.
 [target.'cfg(windows)'.build-dependencies]
