@@ -54,6 +54,13 @@ def run(chapters):
                     for word in FORBIDDEN:
                         if re.search(rf"(?<![A-Za-z]){re.escape(word)}(?![A-Za-z])", value):
                             problems.append(f"{where} {label}: 수업 밖 용어 {word!r}")
+                    # A fence that still carries the source file's indentation means dedent failed
+                    # (a literal newline inside the Python string, for one): the whole text would
+                    # render as one code block.
+                    if re.search(r"^[ 	]+```", value, re.M):
+                        problems.append(f"{where} {label}: 코드 펜스 앞에 들여쓰기가 남아 있습니다 (본문이 통째로 코드 블록으로 보입니다)")
+                    if value.count("```") % 2:
+                        problems.append(f"{where} {label}: 코드 펜스가 닫히지 않았습니다")
                 if activity["kind"] == "slides" and activity["markdown"].count(NL + "---" + NL) < 2:
                     problems.append(f"{where}: 슬라이드는 3장 이상이어야 합니다")
                 if activity["kind"] == "concept":

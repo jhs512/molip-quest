@@ -270,13 +270,22 @@ def main():
             wanted = False
         # A stale entry keeps the lines whose source block did not change.
         kept = []
+        changed_keys = []
         if status == "stale" and cached is not None and cached.get("sources") and not args.all:
-            _, kept, why = narration.stale_report(activity, cached, solution)
+            changed_keys, kept, why = narration.stale_report(activity, cached, solution)
         else:
             why = ""
         if args.check:
             if status != "fresh":
                 print(f"  {status:6} {unit['id']}/{activity['id']}" + (f"\n         {why}" if why else ""))
+            continue
+        # Every line's block is unchanged and no block vanished (a block no line mentions was
+        # edited, or one was added): nothing to rewrite, so only the hashes are re-recorded.
+        now_keys = sources.index(activity, solution)
+        vanished = any(key in (cached.get("blocks") or {}) and key not in now_keys for key in changed_keys) if cached else False
+        if status == "stale" and kept and len(kept) == len(entry) and not vanished and not args.ids:
+            narration.write_cache(activity["id"], hash_, entry, cached.get("by", "claude"), narration.line_sources(activity, entry, solution), now_keys)
+            print(f"  = {unit['id']}/{activity['id']} (해설 줄이 가리키는 블록은 그대로: 해시만 갱신)")
             continue
         if wanted:
             todo.append((unit, activity, solution, hash_, status, entry if kept else None, kept))

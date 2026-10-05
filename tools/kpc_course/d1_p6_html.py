@@ -129,8 +129,7 @@ UNIT = unit('html', '저장 HTML에서 자료 수집', [
         from selenium.webdriver.common.by import By
         browser = webdriver.Chrome()
         browser.get('https://www.naver.com')
-        browser.find_element(By.ID, 'query').send_keys('삼성전자 주가
-')
+        browser.find_element(By.ID, 'query').send_keys('삼성전자 주가\\n')
         soup = BeautifulSoup(browser.page_source, 'html.parser')   # 여기부터는 다시 같은 네 단계
         browser.quit()
         ```
