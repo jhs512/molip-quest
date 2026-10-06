@@ -107,6 +107,97 @@ async fn find_uv() -> Option<String> {
     None
 }
 
+/// Select a real patch-version directory without following uv's minor-version
+/// junction. Merely querying python.exe through that junction can fail with 448.
+#[cfg(windows)]
+fn direct_windows_python(store: &std::path::Path) -> Option<std::path::PathBuf> {
+    use std::os::windows::fs::MetadataExt;
+    std::fs::read_dir(store)
+        .ok()?
+        .filter_map(Result::ok)
+        .filter_map(|entry| {
+            let name = entry.file_name();
+            let patch = name
+                .to_str()?
+                .strip_prefix("cpython-3.13.")?
+                .strip_suffix("-windows-x86_64-none")?
+                .parse::<u32>()
+                .ok()?;
+            let metadata = std::fs::symlink_metadata(entry.path()).ok()?;
+            if !metadata.is_dir() || metadata.file_attributes() & 0x400 != 0 {
+                return None;
+            }
+            let python = entry.path().join("python.exe");
+            python.is_file().then_some((patch, python))
+        })
+        .max_by_key(|(patch, _)| *patch)
+        .map(|(_, path)| path)
+}
+
+async fn create_learning_venv(
+    report: &tokio::sync::mpsc::UnboundedSender<String>,
+    uv: &str,
+    env_dir: &std::path::Path,
+    store: &std::path::Path,
+) -> Result<(), String> {
+    let env_str = env_dir.to_string_lossy().into_owned();
+    #[cfg(windows)]
+    {
+        if direct_windows_python(store).is_none() {
+            let result = run_logged(
+                report,
+                uv,
+                &[
+                    "python",
+                    "install",
+                    "3.13",
+                    "--no-bin",
+                    "--no-registry",
+                    "--no-config",
+                ],
+                Some(store),
+            )
+            .await;
+            // uv can finish extracting Python and then fail to create the minor
+            // junction. The extracted interpreter is still usable directly.
+            if let Err(error) = result {
+                if direct_windows_python(store).is_none() {
+                    return Err(error);
+                }
+                let _ = report
+                    .send("연결 경로 생성은 실패했지만 실제 Python 파일로 계속합니다.".into());
+            }
+        }
+        let python =
+            direct_windows_python(store).ok_or("실제 Python 3.13 설치 폴더를 찾지 못했습니다.")?;
+        let python_str = python.to_string_lossy().into_owned();
+        let _ = report.send(format!("연결 경로 없이 실행: {python_str}"));
+        return run_logged(
+            report,
+            uv,
+            &[
+                "venv",
+                &env_str,
+                "--python",
+                &python_str,
+                "--no-managed-python",
+                "--no-python-downloads",
+                "--no-config",
+            ],
+            Some(store),
+        )
+        .await;
+    }
+    #[cfg(not(windows))]
+    run_logged(
+        report,
+        uv,
+        &["venv", &env_str, "--python", "3.13", "--managed-python"],
+        Some(store),
+    )
+    .await
+}
+
 /// Run a command, streaming every output line to `report`; Err on a non-zero exit.
 async fn run_logged(
     report: &tokio::sync::mpsc::UnboundedSender<String>,
@@ -222,14 +313,7 @@ pub async fn install(report: tokio::sync::mpsc::UnboundedSender<String>) -> Resu
         std::fs::remove_dir_all(&env_dir)
             .map_err(|e| format!("예전 환경을 지우지 못했습니다: {e}"))?;
     }
-    let env_str = env_dir.to_string_lossy().into_owned();
-    run_logged(
-        &report,
-        &uv,
-        &["venv", &env_str, "--python", "3.13", "--managed-python"],
-        Some(&python_store),
-    )
-    .await?;
+    create_learning_venv(&report, &uv, &env_dir, &python_store).await?;
     let python = env_dir.join(if cfg!(windows) {
         "Scripts/python.exe"
     } else {
@@ -255,6 +339,85 @@ pub async fn install(report: tokio::sync::mpsc::UnboundedSender<String>) -> Resu
 
 #[cfg(test)]
 mod install_tests {
+    /// Confirm the old path used the minor junction, then make that alias unusable
+    /// and verify the new environment uses and runs the real patch interpreter.
+    #[cfg(windows)]
+    #[tokio::test]
+    #[ignore = "requires uv and Python download"]
+    async fn environment_bypasses_unusable_minor_alias() {
+        let uv = super::find_uv().await.expect("uv must be installed");
+        let root = std::env::temp_dir().join(format!(
+            "molip-python-alias-test-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        let store = root.join("python");
+        let (tx, _rx) = tokio::sync::mpsc::unbounded_channel();
+        super::run_logged(
+            &tx,
+            &uv,
+            &[
+                "python",
+                "install",
+                "3.13",
+                "--no-bin",
+                "--no-registry",
+                "--no-config",
+            ],
+            Some(&store),
+        )
+        .await
+        .unwrap();
+        let old_env = root.join("old-env");
+        let old_str = old_env.to_string_lossy();
+        super::run_logged(
+            &tx,
+            &uv,
+            &[
+                "venv",
+                &old_str,
+                "--python",
+                "3.13",
+                "--managed-python",
+                "--no-python-downloads",
+                "--no-config",
+            ],
+            Some(&store),
+        )
+        .await
+        .unwrap();
+        let old_config = std::fs::read_to_string(old_env.join("pyvenv.cfg")).unwrap();
+        assert!(old_config.contains("cpython-3.13-windows-x86_64-none"));
+        let minor = store.join("cpython-3.13-windows-x86_64-none");
+        // remove_dir removes only this test-created junction, never its contents.
+        std::fs::remove_dir(&minor).unwrap();
+        std::fs::create_dir(&minor).unwrap();
+        std::fs::write(minor.join("python.exe"), "unusable minor alias").unwrap();
+        let env = root.join("new-env");
+        super::create_learning_venv(&tx, &uv, &env, &store)
+            .await
+            .unwrap();
+        let python = env.join("Scripts/python.exe");
+        let output = super::probe(
+            &python.to_string_lossy(),
+            &["-c", "import sys; print(sys.version_info[:2])"],
+        )
+        .await
+        .unwrap();
+        assert_eq!(String::from_utf8_lossy(&output).trim(), "(3, 13)");
+        let config = std::fs::read_to_string(env.join("pyvenv.cfg")).unwrap();
+        assert!(!config.contains("cpython-3.13-windows-x86_64-none"));
+        assert!(config.contains("cpython-3.13."));
+        // root is a unique temporary fixture containing no remaining junctions.
+        assert!(std::fs::canonicalize(&root)
+            .unwrap()
+            .starts_with(std::fs::canonicalize(std::env::temp_dir()).unwrap()));
+        std::fs::remove_dir_all(&root).unwrap();
+    }
+
     /// Exercises the real uv subprocess without downloading Python or packages.
     #[tokio::test]
     #[ignore = "requires uv"]
