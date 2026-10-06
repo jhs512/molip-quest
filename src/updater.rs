@@ -12,6 +12,7 @@ use std::path::PathBuf;
 
 pub const REPO: &str = "jhs512/molip-quest";
 const API_LATEST: &str = "https://api.github.com/repos/jhs512/molip-quest/releases/latest";
+const WEB_LATEST: &str = "https://github.com/jhs512/molip-quest/releases/latest";
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Release {
@@ -98,16 +99,83 @@ pub fn check() -> Result<Option<Release>, String> {
     if !enabled() {
         return Ok(None);
     }
-    let mut response = agent()
-        .get(API_LATEST)
-        .header("Accept", "application/vnd.github+json")
-        .call()
-        .map_err(|e| format!("업데이트 확인 실패: {e}"))?;
-    let json: serde_json::Value = response
-        .body_mut()
-        .read_json()
-        .map_err(|e| format!("업데이트 정보를 읽지 못했습니다: {e}"))?;
-    Ok(newer_in(&json, current_build()))
+    check_sources(&agent(), API_LATEST, WEB_LATEST, current_build())
+}
+
+#[cfg(not(target_os = "android"))]
+fn check_sources(
+    client: &ureq::Agent,
+    api: &str,
+    web: &str,
+    current: u64,
+) -> Result<Option<Release>, String> {
+    let primary = (|| {
+        let mut response = client
+            .get(api)
+            .header("Accept", "application/vnd.github+json")
+            .config()
+            .timeout_global(Some(std::time::Duration::from_secs(30)))
+            .build()
+            .call()
+            .map_err(|e| format!("업데이트 확인 실패: {e}"))?;
+        let json: serde_json::Value = response
+            .body_mut()
+            .read_json()
+            .map_err(|e| format!("업데이트 정보를 읽지 못했습니다: {e}"))?;
+        Ok(newer_in(&json, current))
+    })();
+    primary.or_else(|api_error: String| {
+        // Public release redirects do not consume the unauthenticated API quota.
+        // Read Location without downloading the release HTML or following it.
+        let fallback = (|| {
+            let response = client
+                .head(web)
+                .config()
+                .max_redirects(0)
+                .timeout_global(Some(std::time::Duration::from_secs(30)))
+                .build()
+                .call()
+                .map_err(|e| e.to_string())?;
+            if !response.status().is_redirection() {
+                return Err("최신 릴리즈 이동 경로가 없습니다.".into());
+            }
+            let location = response
+                .headers()
+                .get("Location")
+                .and_then(|v| v.to_str().ok())
+                .ok_or("최신 릴리즈 주소가 없습니다.")?;
+            release_from_redirect(location, current)
+        })();
+        fallback.map_err(|error: String| format!("{api_error} · 공개 릴리즈 확인도 실패: {error}"))
+    })
+}
+
+fn release_from_redirect(location: &str, current: u64) -> Result<Option<Release>, String> {
+    let tag = location
+        .strip_prefix("https://github.com/jhs512/molip-quest/releases/tag/")
+        .ok_or("몰입 퀘스트 릴리즈 주소가 아닙니다.")?;
+    if !tag.starts_with('v')
+        || !tag
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || c == '.' || c == '-')
+    {
+        return Err("릴리즈 태그 형식이 잘못되었습니다.".into());
+    }
+    let build = build_of(tag).ok_or("릴리즈 빌드 번호가 없습니다.")?;
+    let Some(wanted) = asset_for_platform() else {
+        return Ok(None);
+    };
+    if build <= current {
+        return Ok(None);
+    }
+    Ok(Some(Release {
+        build,
+        tag: tag.into(),
+        title: tag.into(),
+        asset_name: wanted.into(),
+        asset_url: format!("https://github.com/{REPO}/releases/download/{tag}/{wanted}"),
+        size: 0, // The download response supplies Content-Length.
+    }))
 }
 
 /// Download the release's installer into the app data folder, reporting (done, total) bytes.
@@ -234,6 +302,78 @@ pub fn install_and_restart(installer: &PathBuf) -> Result<(), String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn public_redirect_requires_this_repository_and_a_newer_build() {
+        let url = "https://github.com/jhs512/molip-quest/releases/tag/v0.1.0-build.155";
+        assert!(release_from_redirect(url, 155).unwrap().is_none());
+        assert!(release_from_redirect(url, 156).unwrap().is_none());
+        assert!(
+            release_from_redirect("https://example.com/releases/tag/v0.1.0-build.155", 0).is_err()
+        );
+        assert!(release_from_redirect(&format!("{url}/other"), 0).is_err());
+    }
+
+    #[test]
+    #[ignore = "requires GitHub and installer download"]
+    #[cfg(not(target_os = "android"))]
+    fn public_fallback_downloads_real_installer() {
+        let found = check_sources(&agent(), "http://127.0.0.1:1/api", WEB_LATEST, 0)
+            .unwrap()
+            .expect("published release");
+        assert_eq!(found.size, 0);
+        let mut last = (0, 0);
+        let path = download(&found, |done, total| last = (done, total)).unwrap();
+        assert!(last.0 > 1_000_000 && last.0 == last.1);
+        assert_eq!(std::fs::metadata(&path).unwrap().len(), last.0);
+        std::fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    #[cfg(not(target_os = "android"))]
+    fn api_403_uses_public_latest_redirect() {
+        use std::io::{BufRead, BufReader, Write};
+        let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        let address = listener.local_addr().unwrap();
+        let server = std::thread::spawn(move || {
+            for index in 0..2 {
+                let (mut stream, _) = listener.accept().unwrap();
+                stream
+                    .set_read_timeout(Some(std::time::Duration::from_secs(3)))
+                    .unwrap();
+                let mut reader = BufReader::new(stream.try_clone().unwrap());
+                let mut line = String::new();
+                loop {
+                    line.clear();
+                    reader.read_line(&mut line).unwrap();
+                    if line == "\r\n" || line.is_empty() {
+                        break;
+                    }
+                }
+                let response = if index == 0 {
+                    "HTTP/1.1 403 Forbidden\r\nContent-Length: 0\r\nConnection: close\r\n\r\n"
+                } else {
+                    "HTTP/1.1 302 Found\r\nLocation: https://github.com/jhs512/molip-quest/releases/tag/v0.1.0-build.155\r\nContent-Length: 0\r\nConnection: close\r\n\r\n"
+                };
+                stream.write_all(response.as_bytes()).unwrap();
+            }
+        });
+        let found = check_sources(
+            &agent(),
+            &format!("http://{address}/api"),
+            &format!("http://{address}/latest"),
+            154,
+        )
+        .expect("API 403 must not block an available public release");
+        if asset_for_platform().is_some() {
+            let release = found.unwrap();
+            assert_eq!(release.build, 155);
+            assert!(release
+                .asset_url
+                .contains("/releases/download/v0.1.0-build.155/"));
+        }
+        server.join().unwrap();
+    }
 
     #[cfg(target_os = "windows")]
     #[test]
