@@ -10,8 +10,6 @@
 
 형식 검사(`tools/verify-release-assets.py`)는 EXE 헤더·DMG 트레일러·APK 매니페스트와 arm64 라이브러리만 확인하며 앱 동작·서명을 보증하지 않습니다. Python·수업 패키지는 데스크톱 두 플랫폼 모두 README에 따라 사전 설치하며 설치 파일에 포함하지 않습니다.
 
-## Android 열람 모드
-
 ## Windows 자동 업데이트
 
 업데이트 보조 PowerShell은 `CREATE_NO_WINDOW`로 숨겨 실행하고 기존 앱이 종료된 뒤 설치·재실행합니다. `DETACHED_PROCESS`를 함께 지정하면 Windows PowerShell이 명령을 실행하지 않고 종료하는 문제가 있어 사용하지 않습니다. Windows 릴리즈 검사는 보조 프로세스가 실제로 스크립트를 실행하는지 확인합니다. 로컬에서도 이전 빌드의 업데이트 종료 → 설치 → 새 앱 재실행 후 10초 유지까지 검증했습니다.
