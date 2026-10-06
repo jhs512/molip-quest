@@ -80,7 +80,18 @@ pub fn python_executable() -> String {
 
 /// `<data dir>/ml-env`, created by packaging/macos/install.sh with the course packages.
 fn managed_python() -> Option<String> {
-    let python = crate::data_dir().ok()?.join("ml-env").join(if cfg!(windows) {
+    let environment = crate::data_dir().ok()?.join("ml-env");
+    managed_python_in(&environment)
+}
+
+fn managed_python_in(environment: &std::path::Path) -> Option<String> {
+    if cfg!(windows) {
+        let standalone = environment.join("python.exe");
+        if standalone.is_file() {
+            return Some(standalone.to_string_lossy().into_owned());
+        }
+    }
+    let python = environment.join(if cfg!(windows) {
         "Scripts/python.exe"
     } else {
         "bin/python"
@@ -88,6 +99,22 @@ fn managed_python() -> Option<String> {
     python
         .is_file()
         .then(|| python.to_string_lossy().into_owned())
+}
+
+#[cfg(all(test, windows))]
+mod python_resolution_tests {
+    #[test]
+    fn copied_runtime_wins_and_old_venvs_remain_supported() {
+        let directory = tempfile::tempdir().unwrap();
+        let root = directory.path();
+        std::fs::create_dir(root.join("Scripts")).unwrap();
+        let legacy = root.join("Scripts/python.exe");
+        std::fs::write(&legacy, b"legacy launcher").unwrap();
+        assert_eq!(super::managed_python_in(root), Some(legacy.to_string_lossy().into_owned()));
+        let copied = root.join("python.exe");
+        std::fs::write(&copied, b"copied runtime").unwrap();
+        assert_eq!(super::managed_python_in(root), Some(copied.to_string_lossy().into_owned()));
+    }
 }
 
 #[cfg(not(windows))]

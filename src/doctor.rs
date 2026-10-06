@@ -134,13 +134,38 @@ fn direct_windows_python(store: &std::path::Path) -> Option<std::path::PathBuf> 
         .map(|(_, path)| path)
 }
 
-async fn create_learning_venv(
+#[cfg(windows)]
+fn copy_python_runtime(source: &std::path::Path, target: &std::path::Path) -> Result<(), String> {
+    use std::os::windows::fs::MetadataExt;
+    let metadata = std::fs::symlink_metadata(source).map_err(|e| e.to_string())?;
+    if metadata.file_attributes() & 0x400 != 0 {
+        return Err(format!(
+            "Python 원본에 연결 파일이 있습니다: {}",
+            source.display()
+        ));
+    }
+    if metadata.is_dir() {
+        std::fs::create_dir_all(target).map_err(|e| e.to_string())?;
+        for entry in std::fs::read_dir(source).map_err(|e| e.to_string())? {
+            let entry = entry.map_err(|e| e.to_string())?;
+            // This new copy belongs to the app, not to uv's managed installation.
+            if entry.file_name() == "EXTERNALLY-MANAGED" {
+                continue;
+            }
+            copy_python_runtime(&entry.path(), &target.join(entry.file_name()))?;
+        }
+    } else {
+        std::fs::copy(source, target).map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
+async fn create_learning_environment(
     report: &tokio::sync::mpsc::UnboundedSender<String>,
     uv: &str,
     env_dir: &std::path::Path,
     store: &std::path::Path,
 ) -> Result<(), String> {
-    let env_str = env_dir.to_string_lossy().into_owned();
     #[cfg(windows)]
     {
         if direct_windows_python(store).is_none() {
@@ -172,22 +197,11 @@ async fn create_learning_venv(
             direct_windows_python(store).ok_or("실제 Python 3.13 설치 폴더를 찾지 못했습니다.")?;
         let python_str = python.to_string_lossy().into_owned();
         let _ = report.send(format!("연결 경로 없이 실행: {python_str}"));
-        return run_logged(
-            report,
-            uv,
-            &[
-                "venv",
-                &env_str,
-                "--python",
-                &python_str,
-                "--no-managed-python",
-                "--no-python-downloads",
-                "--no-config",
-            ],
-            Some(store),
-        )
-        .await;
+        let _ = report.send("Python 본체와 라이브러리를 독립된 학습 환경으로 복사합니다 (가상환경 중계 파일 없이 실행).".into());
+        return copy_python_runtime(python.parent().ok_or("Python 폴더가 없습니다.")?, env_dir);
     }
+    #[cfg(not(windows))]
+    let env_str = env_dir.to_string_lossy().into_owned();
     #[cfg(not(windows))]
     run_logged(
         report,
@@ -313,9 +327,9 @@ pub async fn install(report: tokio::sync::mpsc::UnboundedSender<String>) -> Resu
         std::fs::remove_dir_all(&env_dir)
             .map_err(|e| format!("예전 환경을 지우지 못했습니다: {e}"))?;
     }
-    create_learning_venv(&report, &uv, &env_dir, &python_store).await?;
+    create_learning_environment(&report, &uv, &env_dir, &python_store).await?;
     let python = env_dir.join(if cfg!(windows) {
-        "Scripts/python.exe"
+        "python.exe"
     } else {
         "bin/python"
     });
@@ -325,13 +339,18 @@ pub async fn install(report: tokio::sync::mpsc::UnboundedSender<String>) -> Resu
     std::fs::write(&requirements, REQUIREMENTS).map_err(|e| e.to_string())?;
     let python_str = python.to_string_lossy().into_owned();
     let req_str = requirements.to_string_lossy().into_owned();
-    let result = run_logged(
-        &report,
-        &uv,
-        &["pip", "install", "--python", &python_str, "-r", &req_str],
-        Some(&python_store),
-    )
-    .await;
+    let mut package_args = vec!["pip", "install", "--python", &python_str, "-r", &req_str];
+    if cfg!(windows) {
+        package_args.extend([
+            "--system",
+            "--link-mode",
+            "copy",
+            "--no-config",
+            "--no-managed-python",
+            "--no-python-downloads",
+        ]);
+    }
+    let result = run_logged(&report, &uv, &package_args, Some(&python_store)).await;
     let _ = std::fs::remove_file(&requirements);
     result?;
     Ok(format!("설치 완료 · {python_str}"))
@@ -397,20 +416,26 @@ mod install_tests {
         std::fs::create_dir(&minor).unwrap();
         std::fs::write(minor.join("python.exe"), "unusable minor alias").unwrap();
         let env = root.join("new-env");
-        super::create_learning_venv(&tx, &uv, &env, &store)
+        super::create_learning_environment(&tx, &uv, &env, &store)
             .await
             .unwrap();
-        let python = env.join("Scripts/python.exe");
+        // The copied runtime must not depend on the original store or a venv launcher.
+        let canonical_root = std::fs::canonicalize(&root).unwrap();
+        assert!(std::fs::canonicalize(&store)
+            .unwrap()
+            .starts_with(&canonical_root));
+        std::fs::rename(&store, root.join("source-unavailable")).unwrap();
+        let python = env.join("python.exe");
         let output = super::probe(
             &python.to_string_lossy(),
-            &["-c", "import sys; print(sys.version_info[:2])"],
+            &["-c", "import sys,ssl,sqlite3; print(sys.version_info[:2])"],
         )
         .await
         .unwrap();
         assert_eq!(String::from_utf8_lossy(&output).trim(), "(3, 13)");
-        let config = std::fs::read_to_string(env.join("pyvenv.cfg")).unwrap();
-        assert!(!config.contains("cpython-3.13-windows-x86_64-none"));
-        assert!(config.contains("cpython-3.13."));
+        assert!(!env.join("pyvenv.cfg").exists());
+        assert!(!env.join("Scripts/python.exe").exists());
+        assert!(!env.join("Lib/EXTERNALLY-MANAGED").exists());
         // root is a unique temporary fixture containing no remaining junctions.
         assert!(std::fs::canonicalize(&root)
             .unwrap()

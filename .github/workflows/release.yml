@@ -40,6 +40,8 @@ jobs:
           $env:PATH = "$env:USERPROFILE\.local\bin;$env:PATH"
           cargo test --locked --lib doctor::install_tests -- --ignored --nocapture
           if ($LASTEXITCODE -ne 0) { throw 'Learning environment installation failed.' }
+          cargo test --locked --lib runner::python_resolution_tests
+          if ($LASTEXITCODE -ne 0) { throw 'Learning Python selection failed.' }
       - name: Prepare Inno Setup
         shell: pwsh
         run: |
