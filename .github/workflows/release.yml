@@ -33,6 +33,13 @@ jobs:
         run: cargo build --release --locked --bin molip-quest
       - name: Verify Windows update helper
         run: cargo test --locked --lib updater::tests
+      - name: Verify Windows learning environment installation
+        shell: pwsh
+        run: |
+          irm https://astral.sh/uv/install.ps1 | iex
+          $env:PATH = "$env:USERPROFILE\.local\bin;$env:PATH"
+          cargo test --locked --lib doctor::install_tests -- --ignored --nocapture
+          if ($LASTEXITCODE -ne 0) { throw 'Learning environment installation failed.' }
       - name: Prepare Inno Setup
         shell: pwsh
         run: |

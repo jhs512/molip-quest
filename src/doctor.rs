@@ -112,9 +112,15 @@ async fn run_logged(
     report: &tokio::sync::mpsc::UnboundedSender<String>,
     program: &str,
     args: &[&str],
+    python_store: Option<&std::path::Path>,
 ) -> Result<(), String> {
     use tokio::io::{AsyncBufReadExt, BufReader};
     let mut command = Command::new(program);
+    if let Some(store) = python_store {
+        // Keep uv away from the shared Roaming installation: Windows cloud/reparse
+        // filters can reject its interpreter junction with OS error 448.
+        command.env("UV_PYTHON_INSTALL_DIR", store);
+    }
     command
         .args(args)
         .stdin(Stdio::null())
@@ -164,7 +170,9 @@ async fn run_logged(
 /// if it is missing, create a fresh Python 3.13 venv, install the pinned packages. Progress
 /// lines go to `report`; the result names the interpreter.
 pub async fn install(report: tokio::sync::mpsc::UnboundedSender<String>) -> Result<String, String> {
-    let env_dir = crate::data_dir()?.join("ml-env");
+    let data_dir = crate::data_dir()?;
+    let env_dir = data_dir.join("ml-env");
+    let python_store = data_dir.join("python");
     let say = |line: &str| {
         let _ = report.send(line.to_string());
     };
@@ -184,6 +192,7 @@ pub async fn install(report: tokio::sync::mpsc::UnboundedSender<String>) -> Resu
                         "-Command",
                         "irm https://astral.sh/uv/install.ps1 | iex",
                     ],
+                    None,
                 )
                 .await?;
             } else {
@@ -191,6 +200,7 @@ pub async fn install(report: tokio::sync::mpsc::UnboundedSender<String>) -> Resu
                     &report,
                     "sh",
                     &["-c", "curl -LsSf https://astral.sh/uv/install.sh | sh"],
+                    None,
                 )
                 .await?;
             }
@@ -201,6 +211,10 @@ pub async fn install(report: tokio::sync::mpsc::UnboundedSender<String>) -> Resu
     };
     say(&format!("uv: {uv}"));
     say(&format!(
+        "앱 전용 Python 저장 위치: {}",
+        python_store.display()
+    ));
+    say(&format!(
         "[2/3] Python 3.13 환경을 새로 만듭니다: {}",
         env_dir.display()
     ));
@@ -209,7 +223,13 @@ pub async fn install(report: tokio::sync::mpsc::UnboundedSender<String>) -> Resu
             .map_err(|e| format!("예전 환경을 지우지 못했습니다: {e}"))?;
     }
     let env_str = env_dir.to_string_lossy().into_owned();
-    run_logged(&report, &uv, &["venv", &env_str, "--python", "3.13"]).await?;
+    run_logged(
+        &report,
+        &uv,
+        &["venv", &env_str, "--python", "3.13", "--managed-python"],
+        Some(&python_store),
+    )
+    .await?;
     let python = env_dir.join(if cfg!(windows) {
         "Scripts/python.exe"
     } else {
@@ -225,6 +245,7 @@ pub async fn install(report: tokio::sync::mpsc::UnboundedSender<String>) -> Resu
         &report,
         &uv,
         &["pip", "install", "--python", &python_str, "-r", &req_str],
+        Some(&python_store),
     )
     .await;
     let _ = std::fs::remove_file(&requirements);
@@ -234,6 +255,21 @@ pub async fn install(report: tokio::sync::mpsc::UnboundedSender<String>) -> Resu
 
 #[cfg(test)]
 mod install_tests {
+    /// Exercises the real uv subprocess without downloading Python or packages.
+    #[tokio::test]
+    #[ignore = "requires uv"]
+    async fn uv_uses_app_python_store() {
+        let uv = super::find_uv().await.expect("uv must be installed");
+        let store = crate::data_dir().unwrap().join("python");
+        let (tx, mut rx) = tokio::sync::mpsc::unbounded_channel();
+        super::run_logged(&tx, &uv, &["python", "dir"], Some(&store))
+            .await
+            .unwrap();
+        drop(tx);
+        let actual = rx.recv().await.expect("uv must report its Python store");
+        assert_eq!(std::path::PathBuf::from(actual.trim()), store);
+    }
+
     /// Needs the network and a few minutes: `cargo test -- --ignored environment_installs`.
     /// Creates the managed environment in the real app data folder.
     #[tokio::test]
@@ -248,15 +284,25 @@ mod install_tests {
         eprintln!("{done}");
         assert!(done.contains("ml-env"));
         let python = done.trim_start_matches("설치 완료 · ").to_string();
-        let out = super::probe(
-            &python,
-            &[
+        // A cold package import can take longer than the interactive diagnostic
+        // probe's 20 seconds (antivirus scanning and first-use caches on Windows).
+        let mut command = tokio::process::Command::new(&python);
+        command.args([
+                "-I",
                 "-c",
-                "import pandas, sklearn, matplotlib, yfinance; print('ok')",
-            ],
-        )
-        .await
-        .unwrap();
-        assert_eq!(String::from_utf8_lossy(&out).trim(), "ok");
+                "import pandas, sklearn, matplotlib, seaborn, openpyxl, bs4, requests, FinanceDataReader, yfinance; print('ok')",
+            ]).kill_on_drop(true);
+        #[cfg(windows)]
+        command.creation_flags(0x08000000);
+        let output = tokio::time::timeout(std::time::Duration::from_secs(120), command.output())
+            .await
+            .expect("freshly installed packages must import within two minutes")
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        assert_eq!(String::from_utf8_lossy(&output.stdout).trim(), "ok");
     }
 }
