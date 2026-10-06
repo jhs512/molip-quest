@@ -31,6 +31,8 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - name: Build release executable
         run: cargo build --release --locked --bin molip-quest
+      - name: Verify Windows update helper
+        run: cargo test --locked --lib updater::tests
       - name: Prepare Inno Setup
         shell: pwsh
         run: |

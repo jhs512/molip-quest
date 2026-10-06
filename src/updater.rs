@@ -153,7 +153,26 @@ pub fn download(release: &Release, mut progress: impl FnMut(u64, u64)) -> Result
     Ok(path)
 }
 
-/// Hand over to the installer and leave: a detached script waits for this process to exit,
+#[cfg(target_os = "windows")]
+fn windows_update_command(script: &str) -> std::process::Command {
+    use std::os::windows::process::CommandExt;
+    let mut command = std::process::Command::new("powershell");
+    command.args([
+        "-NoProfile",
+        "-NonInteractive",
+        "-WindowStyle",
+        "Hidden",
+        "-Command",
+        script,
+    ]);
+    // Windows PowerShell exits without evaluating -Command when started with
+    // DETACHED_PROCESS. CREATE_NO_WINDOW alone hides it and lets it outlive the app.
+    command.creation_flags(0x0800_0000); // CREATE_NO_WINDOW
+    command.stdin(std::process::Stdio::null());
+    command
+}
+
+/// Hand over to the installer and leave: a background script waits for this process to exit,
 /// installs the new build over the current one and starts it. Returns only on failure.
 #[cfg(not(target_os = "android"))]
 pub fn install_and_restart(installer: &PathBuf) -> Result<(), String> {
@@ -161,7 +180,6 @@ pub fn install_and_restart(installer: &PathBuf) -> Result<(), String> {
     let pid = std::process::id();
     #[cfg(target_os = "windows")]
     {
-        use std::os::windows::process::CommandExt;
         // Silent per-user reinstall into the same folder (Inno remembers it), then relaunch.
         let script = format!(
             "Wait-Process -Id {pid} -ErrorAction SilentlyContinue; \
@@ -170,16 +188,9 @@ pub fn install_and_restart(installer: &PathBuf) -> Result<(), String> {
             installer = installer.display().to_string().replace('\'', "''"),
             exe = exe.display().to_string().replace('\'', "''"),
         );
-        std::process::Command::new("powershell")
-            .args([
-                "-NoProfile",
-                "-NonInteractive",
-                "-WindowStyle",
-                "Hidden",
-                "-Command",
-                &script,
-            ])
-            .creation_flags(0x0800_0000 | 0x0000_0008) // CREATE_NO_WINDOW | DETACHED_PROCESS
+        windows_update_command(&script)
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
             .spawn()
             .map_err(|e| format!("업데이트 스크립트를 시작하지 못했습니다: {e}"))?;
     }
@@ -223,6 +234,20 @@ pub fn install_and_restart(installer: &PathBuf) -> Result<(), String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[cfg(target_os = "windows")]
+    #[test]
+    fn hidden_update_helper_actually_executes_its_script() {
+        let output = windows_update_command("Write-Output 'updater-handoff-ready'")
+            .output()
+            .expect("launch update helper");
+        assert!(output.status.success());
+        assert_eq!(
+            String::from_utf8_lossy(&output.stdout).trim(),
+            "updater-handoff-ready",
+            "PowerShell exited without running the update script"
+        );
+    }
 
     fn latest(tag: &str) -> serde_json::Value {
         serde_json::json!({
