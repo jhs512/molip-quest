@@ -1691,6 +1691,9 @@ pub fn DoctorPanel() -> Element {
     let mut installing = use_signal(|| false);
     let mut install_log = use_signal(Vec::<String>::new);
     let inspect = Callback::new(move |_: ()| {
+        if busy() || installing() {
+            return;
+        }
         spawn(async move {
             busy.set(true);
             checks.set(vec![]);
@@ -1699,7 +1702,7 @@ pub fn DoctorPanel() -> Element {
         });
     });
     let install = Callback::new(move |_: ()| {
-        if installing() {
+        if installing() || busy() {
             return;
         }
         open.set(true);
@@ -1727,12 +1730,12 @@ pub fn DoctorPanel() -> Element {
         });
     });
     rsx! {
-        button { onclick: move |_| { open.set(true); inspect.call(()); }, "환경 진단" }
-        button { title:"uv로 Python 3.13 환경을 새로 만들고 수업 패키지를 설치합니다", onclick: move |_| install.call(()), "환경 설치" }
+        button { disabled: installing() || busy(), onclick: move |_| { open.set(true); inspect.call(()); }, "환경 진단" }
+        button { disabled: installing() || busy(), title:"uv로 Python 3.13 환경을 새로 만들고 수업 패키지를 설치합니다", onclick: move |_| install.call(()), "환경 설치" }
         if open() { div { class:"doctor-backdrop", section { class:"doctor-panel", role:"dialog", aria_label:"학습 환경 진단",
             h2 { "학습 환경" }
             p { "Python과 실습 패키지 설치 상태를 확인합니다. 「환경 설치」는 이 컴퓨터에 맞는 환경을 처음부터 다시 만듭니다." }
-            if busy() { p { role:"status", "검사 중입니다…" } }
+            if busy() { p { role:"status", "검사 중입니다… 설치 직후 첫 검사는 최대 2분 정도 걸릴 수 있습니다." } }
             for check in checks() { div { class:if check.ready {"doctor-check ready"} else {"doctor-check missing"},
                 strong { if check.ready {"✓ "} else {"! "} "{check.name}" } p { "{check.detail}" }
             } }
@@ -1742,7 +1745,7 @@ pub fn DoctorPanel() -> Element {
             }
             div { class:"actions",
                 button { disabled: installing() || busy(), onclick: move |_| inspect.call(()), "다시 검사" }
-                button { disabled: installing(), onclick: move |_| install.call(()), {if installing() {"설치 중…"} else {"환경 설치 (다시)"}} }
+                button { disabled: installing() || busy(), onclick: move |_| install.call(()), {if installing() {"설치 중…"} else {"환경 설치 (다시)"}} }
                 button { onclick:move |_|open.set(false), "닫기" }
             }
         } } }

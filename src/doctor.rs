@@ -11,41 +11,89 @@ pub struct Check {
 }
 
 async fn probe(executable: &str, args: &[&str]) -> Option<Vec<u8>> {
+    probe_with_timeout(executable, args, std::time::Duration::from_secs(20))
+        .await
+        .ok()
+}
+
+async fn probe_with_timeout(
+    executable: &str,
+    args: &[&str],
+    timeout: std::time::Duration,
+) -> Result<Vec<u8>, String> {
     let mut command = Command::new(executable);
     command
         .args(args)
         .stdin(Stdio::null())
         .stdout(Stdio::piped())
-        .stderr(Stdio::null())
+        .stderr(Stdio::piped())
         .kill_on_drop(true);
     #[cfg(windows)]
     command.creation_flags(0x08000000);
-    let child = command.spawn().ok()?;
-    let output = tokio::time::timeout(std::time::Duration::from_secs(20), child.wait_with_output())
+    let child = command.spawn().map_err(|e| e.to_string())?;
+    let output = tokio::time::timeout(timeout, child.wait_with_output())
         .await
-        .ok()?
-        .ok()?;
-    (output.status.success() && output.stdout.len() <= 65536).then_some(output.stdout)
+        .map_err(|_| {
+            "검사 시간 초과 · 설치 여부를 확인하지 못했습니다. 잠시 후 다시 검사하세요.".to_string()
+        })?
+        .map_err(|e| e.to_string())?;
+    if !output.status.success() {
+        return Err(format!(
+            "검사 실행 실패: {}",
+            String::from_utf8_lossy(&output.stderr)
+                .chars()
+                .take(2000)
+                .collect::<String>()
+        ));
+    }
+    if output.stdout.len() > 65536 {
+        return Err("검사 결과가 너무 큽니다.".into());
+    }
+    Ok(output.stdout)
 }
 
 pub async fn inspect() -> Vec<Check> {
-    let mut checks = Vec::new();
     let python = python_executable();
-    let script = "import sys,json,importlib\nresult={'python':sys.version.split()[0]}\nfor name in ['pandas','matplotlib','seaborn','sklearn','openpyxl','bs4','requests','FinanceDataReader','yfinance']:\n try:\n  module=importlib.import_module(name); result[name]=getattr(module,'__version__','설치됨')\n except Exception: result[name]=None\nprint(json.dumps(result))";
-    let result = probe(&python, &["-I", "-X", "utf8", "-c", script])
-        .await
-        .and_then(|out| serde_json::from_slice::<serde_json::Value>(&out).ok());
+    inspect_python(&python, std::time::Duration::from_secs(120)).await
+}
+
+async fn inspect_python(python: &str, package_timeout: std::time::Duration) -> Vec<Check> {
+    let mut checks = Vec::new();
+    let version = probe_with_timeout(
+        python,
+        &[
+            "-I",
+            "-X",
+            "utf8",
+            "-c",
+            "import sys; print(sys.version.split()[0])",
+        ],
+        std::time::Duration::from_secs(20),
+    )
+    .await;
     checks.push(Check {
         name: "Python 실행".into(),
-        ready: result.is_some(),
-        detail: result
+        ready: version.is_ok(),
+        detail: version
             .as_ref()
-            .and_then(|v| v["python"].as_str())
-            .map(|v| format!("버전 {v} · {python}"))
-            .unwrap_or_else(|| {
-                format!("Python을 설치하거나 실행 경로를 설정하세요. (시도한 경로: {python})")
+            .map(|v| format!("버전 {} · {python}", String::from_utf8_lossy(v).trim()))
+            .unwrap_or_else(|error| {
+                format!("Python 실행을 확인하지 못했습니다. {error} (시도한 경로: {python})")
             }),
     });
+    // A first import can build caches and be much slower than Python startup.
+    // Never infer that Python or every package is absent from an import timeout.
+    let script = "import json,importlib\nresult={}\nfor name in ['pandas','matplotlib','seaborn','sklearn','openpyxl','bs4','requests','FinanceDataReader','yfinance']:\n try:\n  module=importlib.import_module(name); result[name]={'version':str(getattr(module,'__version__','설치됨'))}\n except ModuleNotFoundError as e:\n  result[name]={'error':str(e),'missing':e.name==name}\n except Exception as e:\n  result[name]={'error':str(e),'missing':False}\nprint(json.dumps(result))";
+    let result = if version.is_ok() {
+        probe_with_timeout(python, &["-I", "-X", "utf8", "-c", script], package_timeout)
+            .await
+            .and_then(|out| {
+                serde_json::from_slice::<serde_json::Value>(&out)
+                    .map_err(|e| format!("검사 결과를 읽지 못했습니다: {e}"))
+            })
+    } else {
+        Err("Python 실행을 확인한 뒤 패키지를 다시 검사하세요.".into())
+    };
     for (key, name) in [
         ("pandas", "pandas · 표 분석"),
         ("matplotlib", "matplotlib · 그래프"),
@@ -57,13 +105,25 @@ pub async fn inspect() -> Vec<Check> {
         ("FinanceDataReader", "FinanceDataReader · 주가 받기"),
         ("yfinance", "yfinance · 주가 받기 (야후)"),
     ] {
-        let version = result.as_ref().and_then(|v| v[key].as_str());
+        let version = result
+            .as_ref()
+            .ok()
+            .and_then(|v| v[key]["version"].as_str());
         checks.push(Check {
             name: name.into(),
             ready: version.is_some(),
             detail: version
                 .map(|v| format!("버전 {v}"))
-                .unwrap_or_else(|| "선택한 Python 환경에 패키지를 설치하세요.".into()),
+                .unwrap_or_else(|| match &result {
+                    Err(error) => error.clone(),
+                    Ok(value) if value[key]["missing"] == true => {
+                        "선택한 Python 환경에 패키지를 설치하세요.".into()
+                    }
+                    Ok(value) => format!(
+                        "패키지를 불러오지 못했습니다: {}",
+                        value[key]["error"].as_str().unwrap_or("검사 결과 없음")
+                    ),
+                }),
         });
     }
     checks
@@ -472,6 +532,7 @@ mod install_tests {
         eprintln!("{done}");
         assert!(done.contains("ml-env"));
         let python = done.trim_start_matches("설치 완료 · ").to_string();
+        verify_diagnostic(&python).await;
         // A cold package import can take longer than the interactive diagnostic
         // probe's 20 seconds (antivirus scanning and first-use caches on Windows).
         let mut command = tokio::process::Command::new(&python);
@@ -492,5 +553,37 @@ mod install_tests {
             String::from_utf8_lossy(&output.stderr)
         );
         assert_eq!(String::from_utf8_lossy(&output.stdout).trim(), "ok");
+    }
+
+    pub(super) async fn verify_diagnostic(python: &str) {
+        let timed_out = super::inspect_python(python, std::time::Duration::from_nanos(1)).await;
+        assert!(
+            timed_out[0].ready,
+            "An import timeout must not mark Python missing"
+        );
+        assert!(timed_out[1..].iter().all(|check| !check.ready
+            && check.detail.contains("검사 시간 초과")
+            && !check.detail.contains("패키지를 설치하세요")));
+        let checks = super::inspect_python(python, std::time::Duration::from_secs(120)).await;
+        assert_eq!(checks.len(), 10);
+        for check in checks {
+            assert!(check.ready, "{}: {}", check.name, check.detail);
+        }
+    }
+}
+
+#[cfg(test)]
+mod diagnostic_tests {
+    /// Recheck the existing app-owned environment without reinstalling it.
+    #[tokio::test]
+    #[ignore]
+    async fn diagnostic_keeps_python_ready_after_import_timeout() {
+        let environment = crate::data_dir().unwrap().join("ml-env");
+        let python = environment.join(if cfg!(windows) {
+            "python.exe"
+        } else {
+            "bin/python"
+        });
+        super::install_tests::verify_diagnostic(&python.to_string_lossy()).await;
     }
 }

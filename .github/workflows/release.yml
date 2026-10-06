@@ -38,7 +38,7 @@ jobs:
         run: |
           irm https://astral.sh/uv/install.ps1 | iex
           $env:PATH = "$env:USERPROFILE\.local\bin;$env:PATH"
-          cargo test --locked --lib doctor::install_tests -- --ignored --nocapture
+          cargo test --locked --lib doctor::install_tests -- --ignored --nocapture --test-threads=1
           if ($LASTEXITCODE -ne 0) { throw 'Learning environment installation failed.' }
           cargo test --locked --lib runner::python_resolution_tests
           if ($LASTEXITCODE -ne 0) { throw 'Learning Python selection failed.' }
