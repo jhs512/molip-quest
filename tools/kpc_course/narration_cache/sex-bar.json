@@ -1,13 +1,13 @@
 {
  "format": 2,
- "hash": "981f9c4b50df3e2f",
+ "hash": "d1ca8c65c7163d43",
  "by": "claude",
  "blocks": {
   "title": "b51cd11df1d8",
   "problem": "2f51e976d86f",
-  "starter": "5b2bc9914f5c",
+  "starter": "7ba73c64a1c2",
   "example": "e3b0c44298fc",
-  "solution": "e9f92314cf57"
+  "solution": "a7ec889ad511"
  },
  "sources": [
   {
@@ -16,75 +16,75 @@
   },
   {
    "block": "starter",
-   "hash": "5b2bc9914f5c"
+   "hash": "7ba73c64a1c2"
   },
   {
    "block": "solution",
-   "hash": "e9f92314cf57"
+   "hash": "a7ec889ad511"
   },
   {
    "block": "solution",
-   "hash": "e9f92314cf57"
+   "hash": "a7ec889ad511"
   },
   {
    "block": "solution",
-   "hash": "e9f92314cf57"
+   "hash": "a7ec889ad511"
   },
   {
    "block": "solution",
-   "hash": "e9f92314cf57"
+   "hash": "a7ec889ad511"
   },
   {
    "block": "solution",
-   "hash": "e9f92314cf57"
+   "hash": "a7ec889ad511"
   },
   {
    "block": "solution",
-   "hash": "e9f92314cf57"
+   "hash": "a7ec889ad511"
   },
   {
    "block": "solution",
-   "hash": "e9f92314cf57"
+   "hash": "a7ec889ad511"
   },
   {
    "block": "solution",
-   "hash": "e9f92314cf57"
+   "hash": "a7ec889ad511"
   },
   {
    "block": "solution",
-   "hash": "e9f92314cf57"
+   "hash": "a7ec889ad511"
   },
   {
    "block": "solution",
-   "hash": "e9f92314cf57"
+   "hash": "a7ec889ad511"
   },
   {
    "block": "solution",
-   "hash": "e9f92314cf57"
+   "hash": "a7ec889ad511"
   },
   {
    "block": "solution",
-   "hash": "e9f92314cf57"
+   "hash": "a7ec889ad511"
   },
   {
    "block": "solution",
-   "hash": "e9f92314cf57"
+   "hash": "a7ec889ad511"
   },
   {
    "block": "solution",
-   "hash": "e9f92314cf57"
+   "hash": "a7ec889ad511"
   },
   {
    "block": "solution",
-   "hash": "e9f92314cf57"
+   "hash": "a7ec889ad511"
   },
   {
    "block": "solution",
-   "hash": "e9f92314cf57"
+   "hash": "a7ec889ad511"
   },
   {
    "block": "solution",
-   "hash": "e9f92314cf57"
+   "hash": "a7ec889ad511"
   }
  ],
  "entry": [
@@ -94,11 +94,11 @@
   ],
   [
    "starter",
-   "titanic 자료 읽기와 matplotlib, seaborn 불러오기는 준비돼 있어요. 그대로 둘게요."
+   "titanic 자료 읽기와 matplotlib 불러오기는 준비돼 있어요. 그대로 둘게요."
   ],
   [
    "code",
-   "# 성별로 묶어서 생존 열의 평균을 내요. 생존이 0·1이라 평균이 곧 생존율이에요\n# 열 이름은 따옴표 안에 정확히 '성별', '생존'으로 써요\nrates = titanic.groupby('성별')['생존'].mean()\n",
+   "\n# 성별로 묶어서 생존 열의 평균을 내요. 생존은 0과 1이라 평균이 곧 생존율이에요.\n# 열 이름은 한글 그대로 따옴표 안에 써요. 오타 나면 KeyError가 나요.\nrates = titanic.groupby('성별')['생존'].mean()\n",
    "앞 단원과 같아요. 성별로 묶어서 생존 평균을 rates에 담아요."
   ],
   [
@@ -107,7 +107,7 @@
   ],
   [
    "output",
-   "화면에 아무것도 안 나오죠? rates에 담기만 하고 print를 안 했거든요. 오류 없이 조용하면 된 거예요."
+   "화면에 아무것도 안 나오죠? rates에 담기만 하고 print는 안 했거든요. 오류 없이 조용하면 된 거예요."
   ],
   [
    "try",
@@ -120,21 +120,21 @@
   ],
   [
    "output",
-   "NameError가 떴죠? name 'ax' is not defined, ax라는 이름이 아직 없다는 뜻이에요. max 아니냐고 되묻기까지 하네요."
+   "NameError가 떴죠? name 'ax' is not defined, ax라는 이름이 아직 없다는 뜻이에요. Did you mean max냐고 되묻기까지 하네요."
   ],
   [
    "undo",
-   "그래서 도화지부터 펴야 해요. 되돌릴게요."
+   "그래서 그림 칸부터 만들어야 해요. 되돌릴게요."
   ],
   [
    "code",
-   "# 도화지(fig)와 그림 칸(ax)을 하나씩 만들어요. 그리기는 ax에 해요\nfig, ax = plt.subplots()\n",
-   "plt.subplots()로 도화지 fig와 그림 칸 ax를 하나씩 받아요."
+   "# fig는 그림 전체, ax는 막대를 그릴 칸이에요.\nfig, ax = plt.subplots()\n",
+   "plt.subplots()로 그림 전체 fig와 그림 칸 ax를 받아요."
   ],
   [
    "code",
-   "# 막대 그래프예요. x는 묶음 이름(rates.index), 높이는 생존율에 100을 곱한 퍼센트\n# rates는 0~1 사이 숫자라 그대로 그리면 막대가 아주 낮아 보여요\nax.bar(rates.index, rates * 100)\n",
-   "이제 ax.bar예요. x엔 rates의 이름표, 높이엔 rates에 100을 곱한 퍼센트를 줘요."
+   "# rates.index는 성별 이름이고, 막대 아래 글자로 써요.\n# rates는 0~1 사이 비율이라 100을 곱해야 퍼센트가 돼요.\nax.bar(rates.index, rates * 100)\n",
+   "이제 ax.bar예요. x엔 성별 이름, 높이엔 rates에 100을 곱한 값을 줘요."
   ],
   [
    "run",
@@ -142,20 +142,20 @@
   ],
   [
    "output",
-   "이번엔 오류가 없죠? 그런데 창도 안 떠요. plt.show()가 아직 없거든요. 조용히 지나가면 된 거예요."
+   "이번엔 오류가 없죠? 출력도 비어 있어요. 아직 plt.show()가 없어서 창도 안 떠요. 조용하면 된 거예요."
   ],
   [
    "caution",
-   "100을 안 곱하고 rates를 그대로 그리기 쉬운데, 그러면 막대 높이가 0에서 1 사이라 퍼센트로 안 읽히니 조심하세요."
+   "100을 안 곱하고 rates를 그대로 그리기 쉬워요. 그러면 막대 높이가 0에서 1 사이라 퍼센트로 안 읽히니 조심하세요."
   ],
   [
    "code",
-   "# 축 이름과 제목을 한 번에 꾸며요. ylim=(0, 100)으로 y축을 0부터 100까지 고정해요\n# 괄호 안 이름(xlabel, ylabel, ylim, title)은 정해진 철자라 바꾸면 안 돼요\nax.set(xlabel='성별', ylabel='생존율 (%)', ylim=(0, 100), title='성별 생존율')\n",
-   "set 한 줄로 축 이름과 제목을 붙여요. ylim을 0에서 100으로 고정하면 퍼센트가 그대로 읽히거든요."
+   "# 축 이름, 제목, y축 범위를 한 번에 정해요.\n# ylim=(0, 100)으로 고정해야 막대 높이를 퍼센트로 바로 비교할 수 있어요.\nax.set(xlabel='성별', ylabel='생존율 (%)', ylim=(0, 100), title='성별 생존율')\n",
+   "set 한 줄로 축 이름과 제목, y축 범위를 붙여요. 0에서 100으로 고정하면 퍼센트가 바로 읽히거든요."
   ],
   [
    "code",
-   "# 이 줄이 있어야 그래프 창이 실제로 떠요\nplt.show()\n",
+   "# 다 그린 그림을 화면에 띄워요.\nplt.show()\n",
    "마지막에 plt.show()로 띄우면 돼요."
   ],
   [
@@ -164,7 +164,7 @@
   ],
   [
    "output",
-   "글자 출력은 비어 있고 대신 그래프 창이 떠요. 막대 둘을 보세요. 여성 막대가 남성보다 훨씬 높죠? y축 눈금이 0에서 100까지인지도 확인해요."
+   "글자 출력은 비어 있고, 대신 그래프 창이 떠요. 막대 둘의 높이를 비교해 보세요. y축 눈금이 0에서 100까지인지도 확인하고요."
   ],
   [
    "submit",

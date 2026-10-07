@@ -145,7 +145,38 @@ def concept(id, title, body, check, ask=None):
                 ask=list(ask) if ask else default_ask("concept", title, body))
 
 
+IMPORT_LINE = re.compile(r"^(?:import\s+([\w.]+)(?:\s+as\s+(\w+))?|from\s+[\w.]+\s+import\s+([\w, ]+))\s*$")
+
+
+def unused_imports(code, used_in=None):
+    """The import lines of `code` whose names never appear in `used_in` (default: the code itself)
+    outside import lines. `from x import a, b` counts as used when either name is."""
+    reference = used_in if used_in is not None else code
+    body = "\n".join(line for line in reference.split("\n") if not IMPORT_LINE.match(line.strip()))
+    out = []
+    for line in code.split("\n"):
+        match = IMPORT_LINE.match(line.strip())
+        if not match:
+            continue
+        module, alias, names = match.groups()
+        targets = [n.strip().split(" as ")[-1] for n in names.split(",")] if names else [alias or module.split(".")[0]]
+        if not any(re.search(r"\b" + re.escape(t) + r"\b", body) for t in targets if t):
+            out.append(line)
+    return out
+
+
+def drop_unused_imports(starter, solution):
+    """Content rule: no import that the solution never uses, in the starter or the solution.
+    The shared PLOT/PD prefixes bring seaborn or pandas to missions that only use matplotlib or
+    BeautifulSoup; those lines are removed from both texts so the student sees no dead import."""
+    for line in unused_imports(starter, used_in=solution):
+        starter = starter.replace(line + "\n", "", 1)
+        solution = solution.replace(line + "\n", "", 1)
+    return starter, solution
+
+
 def coding(id, title, goal, hint, starter, solution, check=None, tests=None, intro=None, ask=None):
+    starter, solution = drop_unused_imports(starter, solution)
     """A standalone main.py problem. `check` is assertion source over `s` (the student's globals)."""
     content = ""
     if intro:

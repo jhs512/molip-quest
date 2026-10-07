@@ -2402,8 +2402,8 @@
    },
    {
     "key": "starter",
-    "hash": "3435eb31868d",
-    "text": "import pandas as pd from pathlib import…"
+    "hash": "c1beb560f60f",
+    "text": "from pathlib import Path from bs4 impor…"
    },
    {
     "key": "example",
@@ -2412,8 +2412,8 @@
    },
    {
     "key": "solution",
-    "hash": "e5beca78a688",
-    "text": "import pandas as pd from pathlib import…"
+    "hash": "ad3302b7f166",
+    "text": "from pathlib import Path from bs4 impor…"
    }
   ]
  },
@@ -2433,8 +2433,8 @@
    },
    {
     "key": "starter",
-    "hash": "92e831c400b9",
-    "text": "import pandas as pd from pathlib import…"
+    "hash": "778ae5349d70",
+    "text": "from pathlib import Path from bs4 impor…"
    },
    {
     "key": "example",
@@ -2443,8 +2443,8 @@
    },
    {
     "key": "solution",
-    "hash": "54d298622785",
-    "text": "import pandas as pd from pathlib import…"
+    "hash": "a1cd5b0d163a",
+    "text": "from pathlib import Path from bs4 impor…"
    }
   ]
  },
@@ -3527,7 +3527,7 @@
    },
    {
     "key": "starter",
-    "hash": "5b2bc9914f5c",
+    "hash": "7ba73c64a1c2",
     "text": "import pandas as pd titanic = pd.read_c…"
    },
    {
@@ -3537,7 +3537,7 @@
    },
    {
     "key": "solution",
-    "hash": "e9f92314cf57",
+    "hash": "a7ec889ad511",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -3558,7 +3558,7 @@
    },
    {
     "key": "starter",
-    "hash": "5b2bc9914f5c",
+    "hash": "7ba73c64a1c2",
     "text": "import pandas as pd titanic = pd.read_c…"
    },
    {
@@ -3568,7 +3568,7 @@
    },
    {
     "key": "solution",
-    "hash": "4496002fc2f0",
+    "hash": "d903db6d70cb",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -3809,7 +3809,7 @@
    },
    {
     "key": "starter",
-    "hash": "c58d7ce05ca1",
+    "hash": "caca352c790b",
     "text": "import pandas as pd titanic = pd.read_c…"
    },
    {
@@ -3819,7 +3819,7 @@
    },
    {
     "key": "solution",
-    "hash": "bdcaf0d7d12d",
+    "hash": "28d4f2da899e",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -4096,7 +4096,7 @@
    },
    {
     "key": "starter",
-    "hash": "93e2e2ec62b8",
+    "hash": "b8c8df054c47",
     "text": "import pandas as pd titanic = pd.read_c…"
    },
    {
@@ -4106,7 +4106,7 @@
    },
    {
     "key": "solution",
-    "hash": "fe4bb95a2e61",
+    "hash": "fc32def283a9",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -6543,8 +6543,8 @@
    },
    {
     "key": "starter",
-    "hash": "b133c60ea23c",
-    "text": "import pandas as pd import FinanceDataR…"
+    "hash": "ca291226405d",
+    "text": "import FinanceDataReader as fdr # live,…"
    },
    {
     "key": "example",
@@ -6553,8 +6553,8 @@
    },
    {
     "key": "solution",
-    "hash": "fe35c2139020",
-    "text": "import pandas as pd import FinanceDataR…"
+    "hash": "0b16591dfe95",
+    "text": "import FinanceDataReader as fdr # 삼성전자 …"
    }
   ]
  },
@@ -7632,7 +7632,7 @@
    },
    {
     "key": "starter",
-    "hash": "ee95792d26a6",
+    "hash": "fba60ff1e89d",
     "text": "import pandas as pd prices = pd.read_cs…"
    },
    {
@@ -7642,7 +7642,7 @@
    },
    {
     "key": "solution",
-    "hash": "bbad82e0156e",
+    "hash": "443bca962f79",
     "text": "import pandas as pd prices = pd.read_cs…"
    }
   ]

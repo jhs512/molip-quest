@@ -70,6 +70,11 @@ def run(chapters):
                         problems.append(f"{where}: 개념 본문은 2~10문단이어야 합니다 (현재 {len(paragraphs)})")
                     if "```" not in activity["body"]:
                         problems.append(f"{where}: 개념에 코드 예시 블록이 없습니다")
+                if activity["kind"] == "coding":
+                    from kpc_course import dsl as _dsl
+                    dead = _dsl.unused_imports(_dsl.SOLUTIONS[activity["problem"]["id"]])
+                    if dead:
+                        problems.append(f"{where}: 정답이 쓰지 않는 import가 있습니다 → {dead}")
                 if activity["kind"] == "quiz":
                     for q in activity["questions"]:
                         if q["type"] == "choice":

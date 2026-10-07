@@ -102,3 +102,17 @@ def test_chunks_must_join_into_the_solution_with_comments_intact():
     with pytest.raises(SystemExit, match="정답 코드가 되어야"):
         narration.compile_coding(ACTIVITY, entry, SOLUTION, "test")
     assert comments.strip_comments(commented) == comments.strip_comments(SOLUTION)
+
+
+def test_unused_imports_are_dropped_from_starter_and_solution_alike():
+    from kpc_course import dsl
+    starter = "import matplotlib.pyplot as plt\nimport seaborn as sns\n# fig, ax를 만드세요\n"
+    solution = "import matplotlib.pyplot as plt\nimport seaborn as sns\nfig, ax = plt.subplots()\n"
+    new_starter, new_solution = dsl.drop_unused_imports(starter, solution)
+    assert "seaborn" not in new_starter and "seaborn" not in new_solution
+    assert new_starter == "import matplotlib.pyplot as plt\n# fig, ax를 만드세요\n"
+    assert new_solution.startswith("import matplotlib.pyplot as plt\nfig, ax")
+    kept = "import pandas as pd\nfrom bs4 import BeautifulSoup\n"
+    used = kept + "soup = BeautifulSoup(html)\ndf = pd.DataFrame()\n"
+    assert dsl.drop_unused_imports(kept, used) == (kept, used)
+    assert dsl.unused_imports("import time\nfrom sklearn.metrics import accuracy_score, f1_score\nprint(f1_score)\n") == ["import time"]

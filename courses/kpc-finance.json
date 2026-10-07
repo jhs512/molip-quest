@@ -7255,7 +7255,7 @@
                 "id": "select-one",
                 "title": "선택자로 요소 찾기",
                 "content": "### 목표\n\n준비 코드가 HTML을 읽어 `soup`를 만들어 뒀어요. `#prices li`에 맞는 요소가 몇 개인지 `n_items`에 담으세요. 첫 종목의 이름(`.name` 요소의 글자)은 `first_name`에 담고요. 둘 다 출력하세요.\n\n2와 `가상A`가 나오면 맞게 찾은 거예요.\n\n### 힌트\n\n`soup.select('#prices li')`는 맞는 요소를 리스트로 돌려줘요. 그러니 `len()`으로 세면 돼요. 첫 요소 `[0]`에서 `.select_one('.name')`으로 이름 요소를 찾으세요. `.get_text(strip=True)`로 글자만 꺼내고요.",
-                "starter_code": "import pandas as pd\nfrom pathlib import Path\nfrom bs4 import BeautifulSoup\n\nhtml = Path('data/prices.html').read_text(encoding='utf-8')\nsoup = BeautifulSoup(html, 'html.parser')\n# n_items, first_name을 만들고 출력하세요\n",
+                "starter_code": "from pathlib import Path\nfrom bs4 import BeautifulSoup\n\nhtml = Path('data/prices.html').read_text(encoding='utf-8')\nsoup = BeautifulSoup(html, 'html.parser')\n# n_items, first_name을 만들고 출력하세요\n",
                 "checker": "import matplotlib\n\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as _plt\n\n_plt.show = lambda *a, **k: None  # a check opens no window and leaves no 'non-interactive' warning in the result\nimport logging as _lg, warnings as _wn\n_lg.getLogger('matplotlib.font_manager').setLevel(_lg.ERROR)  # no 'findfont' lines in the result\n_wn.filterwarnings('ignore', message='Glyph .* missing from font')\nfrom matplotlib import font_manager as _fm\n_installed = {f.name for f in _fm.fontManager.ttflist}\n_plt.rcParams['font.family'] = [n for n in ['Malgun Gothic', 'Apple SD Gothic Neo', 'AppleGothic', 'NanumGothic', 'Noto Sans KR', 'Noto Sans CJK KR'] if n in _installed] or ['DejaVu Sans']\n_plt.rcParams['axes.unicode_minus'] = False\nimport runpy, sys\n\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['first_name', 'n_items']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['n_items'] == 2 and s['first_name'] == '가상A'\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
                 "prompt": "파이썬 BeautifulSoup. soup 객체가 있어(data/prices.html). CSS 선택자 \"#prices li\"에 해당하는 요소 개수를 n_items에, 첫 요소 안 \".name\"의 텍스트를 first_name에 담고 출력.\nselect와 select_one 써.\n\n---\n코드만 줘",
                 "prompt_why": "- `CSS 선택자 \"#prices li\"` → 선택자를 그대로 주면 AI는 옮겨 적기만 한다.\n- `select`, `select_one` → 여러 개 / 하나 찾기 메서드."
@@ -7273,17 +7273,17 @@
                 },
                 {
                   "action": "set_code",
-                  "code": "import pandas as pd\nfrom pathlib import Path\nfrom bs4 import BeautifulSoup\n\nhtml = Path('data/prices.html').read_text(encoding='utf-8')\nsoup = BeautifulSoup(html, 'html.parser')\n",
+                  "code": "from pathlib import Path\nfrom bs4 import BeautifulSoup\n\nhtml = Path('data/prices.html').read_text(encoding='utf-8')\nsoup = BeautifulSoup(html, 'html.parser')\n",
                   "say": "준비 코드가 HTML 파일을 읽어서 soup까지 만들어 뒀어요. 저는 soup에서 찾기만 하면 돼요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# '#prices li'는 id가 prices인 요소 안의 li를 전부 찾는 선택자예요\n# select()는 맞는 요소를 리스트로 돌려줘요(하나만 찾는 select_one과 달라요)\nitems = soup.select('#prices li')\n",
-                  "say": "soup.select는 맞는 요소를 리스트로 돌려주거든요. 하나만 찾는 select_one과 달라요."
+                  "code": "# '#prices'는 id가 prices인 요소예요. 띄어 쓰고 li를 붙이면 그 안의 li를 모두 찾아요.\n# select는 맞는 요소를 리스트로 돌려줘요. 하나만 있어도 리스트예요.\nitems = soup.select('#prices li')\n",
+                  "say": "soup.select로 prices 안의 li를 전부 찾아요. 결과는 리스트예요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# 리스트니까 len()으로 세면 몇 개인지 나와요\nn_items = len(items)\n",
+                  "code": "# 리스트니까 len()으로 몇 개인지 세면 돼요.\nn_items = len(items)\n",
                   "say": "리스트니까 len으로 세면 개수가 나와요."
                 },
                 {
@@ -7293,7 +7293,7 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "아무것도 안 나오죠? 담기만 했지 아직 print를 안 했거든요."
+                  "text": "화면이 비어 있죠? 변수에 담기만 했지 아직 print를 안 했거든요."
                 },
                 {
                   "action": "type_code",
@@ -7307,21 +7307,26 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "가상B가 나왔죠? 첫 종목이 아니라 둘째예요. 파이썬은 0부터 세거든요."
+                  "text": "가상B가 나왔죠? 첫 종목이 아니라 둘째 종목이에요. 파이썬은 0부터 세거든요."
                 },
                 {
                   "action": "set_code",
-                  "code": "import pandas as pd\nfrom pathlib import Path\nfrom bs4 import BeautifulSoup\n\nhtml = Path('data/prices.html').read_text(encoding='utf-8')\nsoup = BeautifulSoup(html, 'html.parser')\n# '#prices li'는 id가 prices인 요소 안의 li를 전부 찾는 선택자예요\n# select()는 맞는 요소를 리스트로 돌려줘요(하나만 찾는 select_one과 달라요)\nitems = soup.select('#prices li')\n# 리스트니까 len()으로 세면 몇 개인지 나와요\nn_items = len(items)\n",
+                  "code": "from pathlib import Path\nfrom bs4 import BeautifulSoup\n\nhtml = Path('data/prices.html').read_text(encoding='utf-8')\nsoup = BeautifulSoup(html, 'html.parser')\n# '#prices'는 id가 prices인 요소예요. 띄어 쓰고 li를 붙이면 그 안의 li를 모두 찾아요.\n# select는 맞는 요소를 리스트로 돌려줘요. 하나만 있어도 리스트예요.\nitems = soup.select('#prices li')\n# 리스트니까 len()으로 몇 개인지 세면 돼요.\nn_items = len(items)\n",
                   "say": "그래서 첫 요소는 [0]으로 써야 해요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# [0]이 첫 요소예요(1이 아니라 0부터 세요)\n# .select_one('.name')으로 그 안의 이름 요소 하나를 찾고\n# .get_text(strip=True)로 태그 없이 글자만, 앞뒤 공백 지우고 꺼내요\nfirst_name = items[0].select_one('.name').get_text(strip=True)\n",
-                  "say": "첫 요소 [0]에서 select_one으로 .name 요소를 찾고, get_text로 글자만 꺼내요."
+                  "code": "# 첫 종목은 [0]이에요. 파이썬은 0부터 세거든요.\n# '.name'의 점은 class가 name이라는 뜻이에요. 빼먹으면 태그 이름으로 찾아서 None이 나와요.\n# get_text(strip=True)로 앞뒤 공백을 지우고 글자만 꺼내요.\nfirst_name = items[0].select_one('.name').get_text(strip=True)\n",
+                  "say": "첫 요소 [0]에서 .name 요소를 찾고, get_text로 글자만 꺼내요."
+                },
+                {
+                  "action": "say",
+                  "target": "editor",
+                  "text": "'.name'의 점을 빼먹기 쉬워요. 그러면 class가 아니라 태그 이름으로 찾아서 None이 나오니 조심하세요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# 두 값을 한 줄에 같이 출력해요\nprint(n_items, first_name)\n",
+                  "code": "# 개수와 이름을 한 줄에 출력해요. 2 가상A가 나오면 맞아요.\nprint(n_items, first_name)\n",
                   "say": "둘을 한 줄에 출력할게요."
                 },
                 {
@@ -7331,7 +7336,7 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "2 가상A가 나왔죠? 종목이 두 개고 첫 이름이 가상A예요."
+                  "text": "2 가상A가 나왔죠? 종목은 두 개고, 첫 이름은 가상A예요."
                 },
                 {
                   "action": "submit",
@@ -7340,7 +7345,7 @@
               ],
               "tour": [
                 "이번엔 HTML 안에서 원하는 요소만 골라내요.",
-                "하나만 찾는 select_one과 달라요.",
+                "soup.select로 prices 안의 li를 전부 찾아요.",
                 "리스트니까 len으로 세면 개수가 나와요."
               ]
             },
@@ -7352,7 +7357,7 @@
                 "id": "select-prices",
                 "title": "가격만 모두 뽑아 숫자 리스트로",
                 "content": "### 목표\n\n이번에는 두 종목의 가격을 전부 뽑아 숫자 리스트로 만들어요. `#prices li b`로 가격 요소를 모두 찾으세요. 하나씩 글자를 꺼내 쉼표를 지우고 `int()`로 바꿔요. 그 값을 `prices` 리스트에 모으면 돼요.\n\n`prices`가 `[10000, 20000]`이면 맞게 한 거예요. 앞 단원의 `for`와 `append`가 그대로 쓰여요.\n\n### 힌트\n\n`prices = []`로 빈 리스트를 만드세요. `for tag in soup.select('#prices li b'):`로 돌아요. 안에서 `prices.append(int(tag.get_text(strip=True).replace(',', '')))`를 하면 돼요.",
-                "starter_code": "import pandas as pd\nfrom pathlib import Path\nfrom bs4 import BeautifulSoup\n\nhtml = Path('data/prices.html').read_text(encoding='utf-8')\nsoup = BeautifulSoup(html, 'html.parser')\n# prices 리스트를 만들고 출력하세요\n",
+                "starter_code": "from pathlib import Path\nfrom bs4 import BeautifulSoup\n\nhtml = Path('data/prices.html').read_text(encoding='utf-8')\nsoup = BeautifulSoup(html, 'html.parser')\n# prices 리스트를 만들고 출력하세요\n",
                 "checker": "import matplotlib\n\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as _plt\n\n_plt.show = lambda *a, **k: None  # a check opens no window and leaves no 'non-interactive' warning in the result\nimport logging as _lg, warnings as _wn\n_lg.getLogger('matplotlib.font_manager').setLevel(_lg.ERROR)  # no 'findfont' lines in the result\n_wn.filterwarnings('ignore', message='Glyph .* missing from font')\nfrom matplotlib import font_manager as _fm\n_installed = {f.name for f in _fm.fontManager.ttflist}\n_plt.rcParams['font.family'] = [n for n in ['Malgun Gothic', 'Apple SD Gothic Neo', 'AppleGothic', 'NanumGothic', 'Noto Sans KR', 'Noto Sans CJK KR'] if n in _installed] or ['DejaVu Sans']\n_plt.rcParams['axes.unicode_minus'] = False\nimport runpy, sys\n\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['prices']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['prices'] == [10000, 20000]\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
                 "prompt": "파이썬 BeautifulSoup. soup 객체가 있어. \"#prices li b\" 요소들의 텍스트를 꺼내 쉼표 제거 후 int로 바꿔 prices 리스트에 모아 출력. 결과 [10000, 20000].\n\n---\n코드만 줘",
                 "prompt_why": "- `텍스트 → 쉼표 제거 → int → 리스트` → 수집의 네 단계를 순서대로. 하나라도 빠지면 다른 답."
@@ -7370,12 +7375,12 @@
                 },
                 {
                   "action": "set_code",
-                  "code": "import pandas as pd\nfrom pathlib import Path\nfrom bs4 import BeautifulSoup\n\nhtml = Path('data/prices.html').read_text(encoding='utf-8')\nsoup = BeautifulSoup(html, 'html.parser')\n",
-                  "say": "준비 코드는 data/prices.html을 읽어 soup까지 만들어 뒀어요. 그대로 둘게요."
+                  "code": "from pathlib import Path\nfrom bs4 import BeautifulSoup\n\nhtml = Path('data/prices.html').read_text(encoding='utf-8')\nsoup = BeautifulSoup(html, 'html.parser')\n",
+                  "say": "준비 코드가 data/prices.html을 읽어서 soup까지 만들어 뒀어요. 이 부분은 그대로 둘게요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# 가격을 모을 빈 리스트예요. 대괄호 []가 빈 리스트고요.\nprices = []\n",
+                  "code": "# 가격을 모을 빈 리스트예요. 대괄호 두 개면 돼요.\nprices = []\n",
                   "say": "먼저 prices라는 빈 리스트를 만들어요. 여기에 가격을 하나씩 모을 거예요."
                 },
                 {
@@ -7385,7 +7390,7 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "아무것도 안 나오죠? 빈 리스트를 만들기만 하고 print를 안 했거든요."
+                  "text": "화면에 아무것도 안 나오죠? 빈 리스트를 만들기만 했어요. print는 아직 안 했거든요."
                 },
                 {
                   "action": "type_code",
@@ -7399,22 +7404,27 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "ValueError가 났죠? 마지막 줄을 보세요. '10,000'은 쉼표가 있어서 int()가 숫자로 못 바꿔요."
+                  "text": "ValueError가 났죠? 마지막 줄에 '10,000'이 보여요. 쉼표가 있어서 int()가 숫자로 못 바꾼 거예요."
                 },
                 {
                   "action": "set_code",
-                  "code": "import pandas as pd\nfrom pathlib import Path\nfrom bs4 import BeautifulSoup\n\nhtml = Path('data/prices.html').read_text(encoding='utf-8')\nsoup = BeautifulSoup(html, 'html.parser')\n# 가격을 모을 빈 리스트예요. 대괄호 []가 빈 리스트고요.\nprices = []\n",
-                  "say": "그래서 int()에 넣기 전에 쉼표를 먼저 지워야 해요."
+                  "code": "from pathlib import Path\nfrom bs4 import BeautifulSoup\n\nhtml = Path('data/prices.html').read_text(encoding='utf-8')\nsoup = BeautifulSoup(html, 'html.parser')\n# 가격을 모을 빈 리스트예요. 대괄호 두 개면 돼요.\nprices = []\n",
+                  "say": "그래서 int()에 넣기 전에 쉼표부터 지워야 해요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# '#prices li b'로 가격 요소를 모두 찾아요. select는 하나가 아니라 여러 개를 돌려줘요.\n# 따옴표 안 공백도 선택자의 일부라서 그대로 두세요.\nfor tag in soup.select('#prices li b'):\n    # 안쪽부터 읽어요. 글자 꺼내기 → 쉼표 지우기 → int()로 숫자 → append로 모으기.\n    # replace(',', '')의 두 번째 따옴표는 비어 있어요. 쉼표를 없애는 거예요.\n    # 쉼표가 남으면 int('10,000')에서 오류가 나요.\n    prices.append(int(tag.get_text(strip=True).replace(',', '')))\n",
-                  "say": "select로 찾은 가격 요소를 for로 하나씩 돌아요. 글자를 꺼내 replace로 쉼표를 지우고, int()로 바꿔 append해요."
+                  "code": "# select는 맞는 요소를 전부 리스트로 줘요. select_one은 하나만 주니까 조심하세요.\n# '#prices li b'는 id가 prices인 곳 안의 li, 그 안의 b 태그예요.\nfor tag in soup.select('#prices li b'):\n    # get_text(strip=True)로 글자만 꺼내고 앞뒤 공백을 지워요. 이때는 아직 '10,000' 같은 글자예요.\n    # replace(',', '')로 쉼표를 지워야 int()가 돼요. 쉼표가 있으면 오류가 나요.\n    # int()로 숫자로 바꿔서 append로 리스트 끝에 붙여요. 괄호 개수를 잘 맞추세요.\n    prices.append(int(tag.get_text(strip=True).replace(',', '')))\n",
+                  "say": "select로 찾은 가격 요소를 for로 하나씩 돌아요. 글자를 꺼내 replace로 쉼표를 지우고요. int()로 바꿔서 append하면 돼요."
+                },
+                {
+                  "action": "say",
+                  "target": "editor",
+                  "text": "select_one을 쓰기 쉬운데, 그건 하나만 돌려줘요. 전부 모으려면 select를 써야 하니 조심하세요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# [10000, 20000]처럼 따옴표 없는 숫자가 보이면 맞게 한 거예요.\nprint(prices)\n",
-                  "say": "모인 리스트를 print로 찍어 확인해요."
+                  "code": "# 따옴표 없는 숫자 리스트 [10000, 20000]이 나오면 맞아요.\nprint(prices)\n",
+                  "say": "모인 리스트를 print로 찍어서 확인해요."
                 },
                 {
                   "action": "run",
@@ -7423,7 +7433,7 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "[10000, 20000]이 나왔죠? 따옴표 없는 숫자 리스트예요. 두 종목 가격이 다 모였어요."
+                  "text": "만 원, 이만 원이 나왔죠? 따옴표가 없으니 숫자 리스트예요. 두 종목 가격이 다 모였어요."
                 },
                 {
                   "action": "submit",
@@ -12984,7 +12994,7 @@
                 "id": "sex-bar",
                 "title": "성별 생존율을 퍼센트로 그리기",
                 "content": "### 목표\n\n앞 단원의 성별 생존율 표를 그래프로 바꿔요. `rates`에 성별 `생존` 평균을 담으세요. `rates * 100`을 막대로 그리세요. y축 범위는 `ylim = (0, 100)`이에요. x축 이름은 `성별`, y축 이름은 `생존율 (%)`로 하세요. 그리고 `plt.show()`로 띄우세요.\n\n막대 둘이 여성·남성 생존율 퍼센트 높이로 서면 맞게 한 거예요.\n\n### 힌트\n\n`rates = titanic.groupby('성별')['생존'].mean()`은 앞 단원과 같아요. `ax.bar(rates.index, rates * 100)`로 그려요. 그다음 `ax.set(xlabel='성별', ylabel='생존율 (%)', ylim=(0, 100), title='성별 생존율')`로 꾸미세요.",
-                "starter_code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n# rates, fig, ax를 만들고 막대그래프를 그리세요\n",
+                "starter_code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\n# rates, fig, ax를 만들고 막대그래프를 그리세요\n",
                 "checker": "import matplotlib\n\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as _plt\n\n_plt.show = lambda *a, **k: None  # a check opens no window and leaves no 'non-interactive' warning in the result\nimport logging as _lg, warnings as _wn\n_lg.getLogger('matplotlib.font_manager').setLevel(_lg.ERROR)  # no 'findfont' lines in the result\n_wn.filterwarnings('ignore', message='Glyph .* missing from font')\nfrom matplotlib import font_manager as _fm\n_installed = {f.name for f in _fm.fontManager.ttflist}\n_plt.rcParams['font.family'] = [n for n in ['Malgun Gothic', 'Apple SD Gothic Neo', 'AppleGothic', 'NanumGothic', 'Noto Sans KR', 'Noto Sans CJK KR'] if n in _installed] or ['DejaVu Sans']\n_plt.rcParams['axes.unicode_minus'] = False\nimport runpy, sys\n\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['ax']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert len(s['ax'].patches) == 2\n    assert s['ax'].get_ylim() == (0.0, 100.0)\n    assert s['ax'].get_ylabel() == '생존율 (%)'\n    assert s['ax'].get_xlabel() == '성별'\n    heights = {label.get_text(): bar.get_height() for label, bar in zip(s['ax'].get_xticklabels(), s['ax'].patches)}\n    assert set(heights) == {'여성', '남성'}\n    assert abs(heights['여성'] - 339 / 466 * 100) < 1e-8\n    assert abs(heights['남성'] - 161 / 843 * 100) < 1e-8\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
                 "prompt": "pandas + matplotlib. titanic DataFrame. groupby('성별')['생존'].mean()을 rates에 담고, rates*100을 ax.bar로 그려. ylim=(0,100), xlabel '성별', ylabel '생존율 (%)'. fig, ax = plt.subplots() 방식, plt.show().\n\n---\n코드만 줘",
                 "prompt_why": "- `rates*100` + `ylim=(0,100)` → 퍼센트 축은 둘이 한 세트. 하나만 적으면 축과 값이 안 맞는다."
@@ -13002,12 +13012,12 @@
                 },
                 {
                   "action": "set_code",
-                  "code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n",
-                  "say": "titanic 자료 읽기와 matplotlib, seaborn 불러오기는 준비돼 있어요. 그대로 둘게요."
+                  "code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\n",
+                  "say": "titanic 자료 읽기와 matplotlib 불러오기는 준비돼 있어요. 그대로 둘게요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# 성별로 묶어서 생존 열의 평균을 내요. 생존이 0·1이라 평균이 곧 생존율이에요\n# 열 이름은 따옴표 안에 정확히 '성별', '생존'으로 써요\nrates = titanic.groupby('성별')['생존'].mean()\n",
+                  "code": "\n# 성별로 묶어서 생존 열의 평균을 내요. 생존은 0과 1이라 평균이 곧 생존율이에요.\n# 열 이름은 한글 그대로 따옴표 안에 써요. 오타 나면 KeyError가 나요.\nrates = titanic.groupby('성별')['생존'].mean()\n",
                   "say": "앞 단원과 같아요. 성별로 묶어서 생존 평균을 rates에 담아요."
                 },
                 {
@@ -13017,7 +13027,7 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "화면에 아무것도 안 나오죠? rates에 담기만 하고 print를 안 했거든요. 오류 없이 조용하면 된 거예요."
+                  "text": "화면에 아무것도 안 나오죠? rates에 담기만 하고 print는 안 했거든요. 오류 없이 조용하면 된 거예요."
                 },
                 {
                   "action": "type_code",
@@ -13031,22 +13041,22 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "NameError가 떴죠? name 'ax' is not defined, ax라는 이름이 아직 없다는 뜻이에요. max 아니냐고 되묻기까지 하네요."
+                  "text": "NameError가 떴죠? name 'ax' is not defined, ax라는 이름이 아직 없다는 뜻이에요. Did you mean max냐고 되묻기까지 하네요."
                 },
                 {
                   "action": "set_code",
-                  "code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n# 성별로 묶어서 생존 열의 평균을 내요. 생존이 0·1이라 평균이 곧 생존율이에요\n# 열 이름은 따옴표 안에 정확히 '성별', '생존'으로 써요\nrates = titanic.groupby('성별')['생존'].mean()\n",
-                  "say": "그래서 도화지부터 펴야 해요. 되돌릴게요."
+                  "code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\n\n# 성별로 묶어서 생존 열의 평균을 내요. 생존은 0과 1이라 평균이 곧 생존율이에요.\n# 열 이름은 한글 그대로 따옴표 안에 써요. 오타 나면 KeyError가 나요.\nrates = titanic.groupby('성별')['생존'].mean()\n",
+                  "say": "그래서 그림 칸부터 만들어야 해요. 되돌릴게요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# 도화지(fig)와 그림 칸(ax)을 하나씩 만들어요. 그리기는 ax에 해요\nfig, ax = plt.subplots()\n",
-                  "say": "plt.subplots()로 도화지 fig와 그림 칸 ax를 하나씩 받아요."
+                  "code": "# fig는 그림 전체, ax는 막대를 그릴 칸이에요.\nfig, ax = plt.subplots()\n",
+                  "say": "plt.subplots()로 그림 전체 fig와 그림 칸 ax를 받아요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# 막대 그래프예요. x는 묶음 이름(rates.index), 높이는 생존율에 100을 곱한 퍼센트\n# rates는 0~1 사이 숫자라 그대로 그리면 막대가 아주 낮아 보여요\nax.bar(rates.index, rates * 100)\n",
-                  "say": "이제 ax.bar예요. x엔 rates의 이름표, 높이엔 rates에 100을 곱한 퍼센트를 줘요."
+                  "code": "# rates.index는 성별 이름이고, 막대 아래 글자로 써요.\n# rates는 0~1 사이 비율이라 100을 곱해야 퍼센트가 돼요.\nax.bar(rates.index, rates * 100)\n",
+                  "say": "이제 ax.bar예요. x엔 성별 이름, 높이엔 rates에 100을 곱한 값을 줘요."
                 },
                 {
                   "action": "run",
@@ -13055,21 +13065,21 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "이번엔 오류가 없죠? 그런데 창도 안 떠요. plt.show()가 아직 없거든요. 조용히 지나가면 된 거예요."
+                  "text": "이번엔 오류가 없죠? 출력도 비어 있어요. 아직 plt.show()가 없어서 창도 안 떠요. 조용하면 된 거예요."
                 },
                 {
                   "action": "say",
                   "target": "editor",
-                  "text": "100을 안 곱하고 rates를 그대로 그리기 쉬운데, 그러면 막대 높이가 0에서 1 사이라 퍼센트로 안 읽히니 조심하세요."
+                  "text": "100을 안 곱하고 rates를 그대로 그리기 쉬워요. 그러면 막대 높이가 0에서 1 사이라 퍼센트로 안 읽히니 조심하세요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# 축 이름과 제목을 한 번에 꾸며요. ylim=(0, 100)으로 y축을 0부터 100까지 고정해요\n# 괄호 안 이름(xlabel, ylabel, ylim, title)은 정해진 철자라 바꾸면 안 돼요\nax.set(xlabel='성별', ylabel='생존율 (%)', ylim=(0, 100), title='성별 생존율')\n",
-                  "say": "set 한 줄로 축 이름과 제목을 붙여요. ylim을 0에서 100으로 고정하면 퍼센트가 그대로 읽히거든요."
+                  "code": "# 축 이름, 제목, y축 범위를 한 번에 정해요.\n# ylim=(0, 100)으로 고정해야 막대 높이를 퍼센트로 바로 비교할 수 있어요.\nax.set(xlabel='성별', ylabel='생존율 (%)', ylim=(0, 100), title='성별 생존율')\n",
+                  "say": "set 한 줄로 축 이름과 제목, y축 범위를 붙여요. 0에서 100으로 고정하면 퍼센트가 바로 읽히거든요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# 이 줄이 있어야 그래프 창이 실제로 떠요\nplt.show()\n",
+                  "code": "# 다 그린 그림을 화면에 띄워요.\nplt.show()\n",
                   "say": "마지막에 plt.show()로 띄우면 돼요."
                 },
                 {
@@ -13079,7 +13089,7 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "글자 출력은 비어 있고 대신 그래프 창이 떠요. 막대 둘을 보세요. 여성 막대가 남성보다 훨씬 높죠? y축 눈금이 0에서 100까지인지도 확인해요."
+                  "text": "글자 출력은 비어 있고, 대신 그래프 창이 떠요. 막대 둘의 높이를 비교해 보세요. y축 눈금이 0에서 100까지인지도 확인하고요."
                 },
                 {
                   "action": "submit",
@@ -13100,7 +13110,7 @@
                 "id": "pclass-bar",
                 "title": "등급별 생존율 막대그래프",
                 "content": "### 목표\n\n같은 그래프를 객실 등급으로 그려요. `rates`에 등급별 `생존` 평균을 담으세요. `rates * 100`을 막대로 그리세요. y축 범위는 0~100, x축 이름은 `객실등급`, y축 이름은 `생존율 (%)`예요.\n\n막대 세 개가 1등급에서 3등급으로 갈수록 낮아지는지 보세요.\n\n### 힌트\n\n성별 그래프에서 `groupby('성별')`를 `groupby('객실등급')`로 바꾸면 돼요. 등급 1·2·3은 숫자라 x축 간격이 어색할 수 있어요. `ax.bar(rates.index.astype(str), rates * 100)`처럼 글자로 바꿔 넘기세요.",
-                "starter_code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n# rates, fig, ax를 만들고 막대그래프를 그리세요\n",
+                "starter_code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\n# rates, fig, ax를 만들고 막대그래프를 그리세요\n",
                 "checker": "import matplotlib\n\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as _plt\n\n_plt.show = lambda *a, **k: None  # a check opens no window and leaves no 'non-interactive' warning in the result\nimport logging as _lg, warnings as _wn\n_lg.getLogger('matplotlib.font_manager').setLevel(_lg.ERROR)  # no 'findfont' lines in the result\n_wn.filterwarnings('ignore', message='Glyph .* missing from font')\nfrom matplotlib import font_manager as _fm\n_installed = {f.name for f in _fm.fontManager.ttflist}\n_plt.rcParams['font.family'] = [n for n in ['Malgun Gothic', 'Apple SD Gothic Neo', 'AppleGothic', 'NanumGothic', 'Noto Sans KR', 'Noto Sans CJK KR'] if n in _installed] or ['DejaVu Sans']\n_plt.rcParams['axes.unicode_minus'] = False\nimport runpy, sys\n\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['ax']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert len(s['ax'].patches) == 3\n    assert s['ax'].get_ylim() == (0.0, 100.0) and s['ax'].get_xlabel() == '객실등급'\n    heights = sorted(p.get_height() for p in s['ax'].patches)\n    assert abs(heights[0] - 181 / 709 * 100) < 1e-8 and abs(heights[2] - 200 / 323 * 100) < 1e-8\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
                 "prompt": "pandas + matplotlib. titanic DataFrame. groupby('객실등급')['생존'].mean()을 rates에 담고 rates*100을 ax.bar로. ylim=(0,100), xlabel '객실등급', ylabel '생존율 (%)'. fig, ax 방식, plt.show().\n\n---\n코드만 줘",
                 "prompt_why": "- 앞 프롬프트에서 열 이름과 축 이름만 바꿈."
@@ -13123,8 +13133,8 @@
                 },
                 {
                   "action": "set_code",
-                  "code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n",
-                  "say": "titanic 표를 읽는 줄과 plt, sns 가져오기는 준비돼 있어요. 그대로 둘게요."
+                  "code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\n",
+                  "say": "titanic 표를 읽는 줄과 plt 가져오기는 준비돼 있어요. 그대로 둘게요."
                 },
                 {
                   "action": "type_code",
@@ -13138,17 +13148,17 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "빨간 글자가 잔뜩 나오죠? 맨 아랫줄을 보세요. KeyError: 객실 등급이에요. 표에 그런 열이 없다는 뜻이거든요. 열 이름은 붙여서 객실등급이에요."
+                  "text": "빨간 글자가 길게 나오죠? 맨 아랫줄만 보세요. KeyError: '객실 등급'이에요. 표에 그런 이름의 열이 없다는 뜻이죠."
                 },
                 {
                   "action": "set_code",
-                  "code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n",
-                  "say": "그래서 열 이름은 표에 있는 글자 그대로 써요."
+                  "code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\n",
+                  "say": "그래서 열 이름은 표에 있는 글자 그대로, 붙여서 객실등급으로 써요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# 객실등급별로 묶어서 생존 열의 평균을 내요. 열 이름은 따옴표 안에 정확히 써야 해요.\n# 생존이 0과 1이라 평균이 곧 생존율이에요. 1등급·2등급·3등급 값 세 개가 나와요.\nrates = titanic.groupby('객실등급')['생존'].mean()\n",
-                  "say": "성별 그래프와 똑같은데, groupby 안의 열 이름만 객실등급으로 바꿔요. 등급마다 생존 평균이 나오죠?"
+                  "code": "\n# 객실등급별로 묶고 생존 열의 평균을 내요\n# 생존은 0과 1이라서 평균이 곧 생존 비율이에요\nrates = titanic.groupby('객실등급')['생존'].mean()\n",
+                  "say": "성별 그래프와 똑같아요. groupby 안의 열 이름만 객실등급으로 바꿨죠."
                 },
                 {
                   "action": "run",
@@ -13157,12 +13167,12 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "이번엔 아무것도 안 나오죠? 에러 없이 조용하면 성공이에요. rates에 담기만 했거든요."
+                  "text": "이번엔 아무것도 안 나오죠? 에러가 없으니 성공이에요. rates에 담기만 했거든요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# 빈 그림(fig)과 그 안의 축(ax)을 하나 만들어요. 그래프는 ax에 그려요.\nfig, ax = plt.subplots()\n# 등급 1·2·3은 숫자라 그대로 넘기면 x축 간격이 어색해요. astype(str)로 글자로 바꿔요.\n# rates * 100은 0.63 같은 비율을 63처럼 퍼센트로 바꿔요.\nax.bar(rates.index.astype(str), rates * 100)\n",
-                  "say": "그림판을 만들고 막대를 그려요. rates.index.astype(str)로 등급을 글자로 바꿔야 x축 간격이 고르게 나와요. 높이는 rates * 100이에요."
+                  "code": "# 그림판(fig)과 그래프 칸(ax)을 하나 만들어요\nfig, ax = plt.subplots()\n# 등급 1·2·3은 숫자라 astype(str)로 글자로 바꿔 넘겨요\n# 그래야 x축에 막대 세 개가 나란히 깔끔하게 놓여요\n# rates는 0~1 비율이라 100을 곱해 퍼센트로 바꿔요\nax.bar(rates.index.astype(str), rates * 100)\n",
+                  "say": "그림판을 만들고 막대를 그려요. 등급을 글자로 바꿔야 x축이 고르게 나와요. 높이는 rates * 100이에요."
                 },
                 {
                   "action": "run",
@@ -13171,12 +13181,12 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "아직 화면엔 아무것도 없죠? 그려 두기만 하고 띄우진 않았거든요."
+                  "text": "이번에도 출력이 없고 에러도 없죠? 그려 두기만 하고 아직 띄우진 않았거든요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# 축 이름, y축 범위(0~100), 제목을 한 번에 정해요. ylim은 괄호 안에 (아래, 위) 순서예요.\nax.set(xlabel='객실등급', ylabel='생존율 (%)', ylim=(0, 100), title='Survival by class')\n# 그린 그래프를 화면에 띄워요. 이 줄이 없으면 그림이 안 보여요.\nplt.show()\n",
-                  "say": "축 이름과 y축 범위 0~100을 한 번에 정하고 보여 줘요. 범위를 고정해야 성별 그래프와 나란히 비교되거든요."
+                  "code": "# 축 이름과 y축 범위를 한 번에 정해요\n# ylim은 (0, 100)처럼 괄호로 묶은 두 숫자로 넘겨요\nax.set(xlabel='객실등급', ylabel='생존율 (%)', ylim=(0, 100), title='Survival by class')\n# 다 그렸으면 화면에 띄워요\nplt.show()\n",
+                  "say": "축 이름과 y축 범위 0~100을 한 번에 정하고 띄워요. 범위를 고정해야 성별 그래프와 나란히 비교되거든요."
                 },
                 {
                   "action": "run",
@@ -13185,7 +13195,7 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "글자 출력은 없고 그림이 떠요. 막대 세 개가 보이죠? 1등급에서 3등급으로 갈수록 막대가 낮아지는지 보세요."
+                  "text": "글자 출력은 없고 그림이 떠요. 막대 세 개가 보이죠? 1등급에서 3등급으로 갈수록 낮아지는지 보세요."
                 },
                 {
                   "action": "submit",
@@ -13194,7 +13204,7 @@
               ],
               "tour": [
                 "성별로 그렸던 생존율 그래프를 이번엔 객실 등급으로 그려요.",
-                "성별 그래프와 똑같은데, groupby 안의 열 이름만 객실등급으로 바꿔요.",
+                "성별 그래프와 똑같아요.",
                 "그림판을 만들고 막대를 그려요."
               ]
             },
@@ -14272,7 +14282,7 @@
                 "id": "fare-scatter",
                 "title": "나이와 요금은 같이 움직일까",
                 "content": "### 목표\n\n자, 승객 한 명을 점 하나로 찍어 봐요. 나이와 요금이 모두 기록된 승객만 `known`에 담으세요. `ax.scatter(known['나이'], known['요금'])`로 산점도를 그려요. x축 이름 `나이`, y축 이름 `요금`을 붙이고 띄우세요.\n\n1045명이 점으로 찍혀요. 점들이 어떤 모양을 이루는지, 아니면 아무 모양도 없는지 보세요.\n\n### 힌트\n\n`known = titanic.dropna(subset=['나이', '요금'])`처럼 `subset`에 열 두 개를 넣어요. 그러면 둘 다 값이 있는 행만 남아요. 점이 많이 겹치면 `ax.scatter(..., alpha=0.4)`로 반투명하게 그려 보세요. 겹친 데가 진하게 보여요.",
-                "starter_code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n# known, fig, ax를 준비하세요\n",
+                "starter_code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\n# known, fig, ax를 준비하세요\n",
                 "checker": "import matplotlib\n\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as _plt\n\n_plt.show = lambda *a, **k: None  # a check opens no window and leaves no 'non-interactive' warning in the result\nimport logging as _lg, warnings as _wn\n_lg.getLogger('matplotlib.font_manager').setLevel(_lg.ERROR)  # no 'findfont' lines in the result\n_wn.filterwarnings('ignore', message='Glyph .* missing from font')\nfrom matplotlib import font_manager as _fm\n_installed = {f.name for f in _fm.fontManager.ttflist}\n_plt.rcParams['font.family'] = [n for n in ['Malgun Gothic', 'Apple SD Gothic Neo', 'AppleGothic', 'NanumGothic', 'Noto Sans KR', 'Noto Sans CJK KR'] if n in _installed] or ['DejaVu Sans']\n_plt.rcParams['axes.unicode_minus'] = False\nimport runpy, sys\n\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['ax', 'known']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert len(s['known']) == 1045\n    assert len(s['ax'].collections) >= 1 and len(s['ax'].collections[0].get_offsets()) == 1045\n    assert s['ax'].get_xlabel() == '나이' and s['ax'].get_ylabel() == '요금'\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
                 "prompt": "pandas + matplotlib. titanic DataFrame. 나이와 요금 둘 다 결측이 아닌 행만 known에 담고, fig, ax 만든 뒤 ax.scatter(known['나이'], known['요금']). xlabel '나이', ylabel '요금'. plt.show().\n\n---\n코드만 줘",
                 "prompt_why": "- `둘 다 결측이 아닌 행만` → 산점도의 전제.\n- `scatter(known['나이'], known['요금'])` → x, y 순서 고정."
@@ -14295,12 +14305,12 @@
                 },
                 {
                   "action": "set_code",
-                  "code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n",
-                  "say": "titanic 표를 읽고 plt와 sns를 가져오는 준비 코드는 그대로 둘게요."
+                  "code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\n",
+                  "say": "titanic 표를 읽고 plt를 가져오는 준비 코드는 그대로 둘게요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# 나이와 요금이 둘 다 기록된 승객만 남겨요. subset에 열 이름 두 개를 리스트로 넣어요\n# 둘 중 하나라도 빈칸이면 그 행은 빠져요. 열 이름은 따옴표로 감싸요\nknown = titanic.dropna(subset=['나이', '요금'])\n",
+                  "code": "# 나이와 요금이 둘 다 있는 승객만 남겨요.\n# subset에 열 두 개를 리스트로 넣어요. 대괄호를 빼먹기 쉬우니 조심하세요.\n# 둘 중 하나라도 빈칸이면 그 행은 빠져요.\nknown = titanic.dropna(subset=['나이', '요금'])\n",
                   "say": "subset에 나이와 요금을 넣어요. 둘 다 값이 있는 행만 known에 남거든요."
                 },
                 {
@@ -14329,21 +14339,21 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "NameError가 나죠? ax라는 이름이 없대요. 도화지도 안 만들고 그리려 한 거예요."
+                  "text": "NameError가 나죠? ax라는 이름이 없대요. max 아니냐고 되묻기까지 해요. 그래프 칸을 안 만들고 그리려 한 거예요."
                 },
                 {
                   "action": "set_code",
-                  "code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n# 나이와 요금이 둘 다 기록된 승객만 남겨요. subset에 열 이름 두 개를 리스트로 넣어요\n# 둘 중 하나라도 빈칸이면 그 행은 빠져요. 열 이름은 따옴표로 감싸요\nknown = titanic.dropna(subset=['나이', '요금'])\n",
-                  "say": "그래서 이 줄은 지우고 도화지부터 만들어요."
+                  "code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\n# 나이와 요금이 둘 다 있는 승객만 남겨요.\n# subset에 열 두 개를 리스트로 넣어요. 대괄호를 빼먹기 쉬우니 조심하세요.\n# 둘 중 하나라도 빈칸이면 그 행은 빠져요.\nknown = titanic.dropna(subset=['나이', '요금'])\n",
+                  "say": "그래서 이 줄은 지우고 그림판부터 만들어요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# 도화지(fig)와 그릴 칸(ax)을 만들어요. 그림은 ax에 그려요\nfig, ax = plt.subplots()\n",
-                  "say": "도화지 fig와 그릴 자리 ax를 하나 만들어요."
+                  "code": "# 그림판(fig)과 그 위의 그래프 한 칸(ax)을 만들어요.\nfig, ax = plt.subplots()\n",
+                  "say": "그림판 fig와 그래프 칸 ax를 하나 만들어요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# 승객 한 명이 점 하나예요. 첫 번째가 x축(나이), 두 번째가 y축(요금)이에요\n# alpha=0.4는 점을 반투명하게 해요. 점이 겹친 데가 진하게 보여요\nax.scatter(known['나이'], known['요금'], alpha=0.4)\n",
+                  "code": "# 승객 한 명이 점 하나예요. x는 나이, y는 요금이고요.\n# 열 이름은 따옴표 안에 글자 그대로 써야 해요. 오타가 나면 KeyError가 나요.\n# alpha=0.4로 점을 반투명하게 그려요. 겹친 데일수록 진하게 보이죠.\nax.scatter(known['나이'], known['요금'], alpha=0.4)\n",
                   "say": "x에 나이, y에 요금을 주고 점을 찍어요. alpha 0.4면 겹친 데가 진하게 보여요."
                 },
                 {
@@ -14357,12 +14367,12 @@
                 },
                 {
                   "action": "type_code",
-                  "code": "# 축 이름과 제목을 한 번에 붙여요. xlabel은 가로축, ylabel은 세로축이에요\nax.set(xlabel='나이', ylabel='요금', title='Age vs fare')\n",
+                  "code": "# 축 이름과 제목을 한 번에 붙여요. xlabel은 가로축, ylabel은 세로축이에요.\nax.set(xlabel='나이', ylabel='요금', title='Age vs fare')\n",
                   "say": "x축 이름 나이, y축 이름 요금을 붙여요. 제목도 같이 적으면 돼요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# 이 줄이 있어야 그림이 화면에 떠요\nplt.show()\n",
+                  "code": "# 그린 그래프를 화면에 띄워요.\nplt.show()\n",
                   "say": "마지막에 plt.show로 띄워요."
                 },
                 {
@@ -14372,7 +14382,7 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "그림이 떴죠? 가로가 나이, 세로가 요금이에요. 점들이 어디에 몰려 있는지 보세요."
+                  "text": "글자 출력은 없고 오류도 없죠? 그림 창에서 가로 나이, 세로 요금을 보세요. 점이 어디 몰렸는지도요."
                 },
                 {
                   "action": "submit",
@@ -14382,7 +14392,7 @@
               "tour": [
                 "승객 한 명을 점 하나로 찍어 봐요.",
                 "subset에 나이와 요금을 넣어요.",
-                "도화지 fig와 그릴 자리 ax를 하나 만들어요."
+                "그림판 fig와 그래프 칸 ax를 하나 만들어요."
               ]
             },
             {
@@ -15173,7 +15183,7 @@
                 "id": "combined-groups",
                 "title": "성별과 등급을 한 그래프에",
                 "content": "### 목표\n\n방금 만든 넓은 표를 그래프로 바꿔요. `grouped`와 `wide`를 다시 만들되, 이번엔 `wide`에 100을 곱해 퍼센트로 두세요. `ax = wide.plot.bar(ylim=(0, 100), rot=0)`으로 그리세요. 성별마다 등급 막대 세 개가 묶여요. y축 이름과 제목을 붙여 띄우세요.\n\n막대 여섯 개가 보이면 맞게 한 거예요. 등급을 나눈 뒤에도 성별 차이가 남아 있나요? 그 차이가 등급마다 비슷한지도 읽어 보세요.\n\n### 힌트\n\n`wide = grouped['mean'].unstack('객실등급') * 100`까지는 앞 미션과 같아요. `ax = wide.plot.bar(ylim=(0, 100), rot=0)`이 그래프 영역을 돌려줘요. 그 `ax`에 `ax.set(ylabel='생존율 (%)', title='성별·객실등급별 생존율 (%)')`를 붙이세요. 그리고 `plt.show()`로 띄우세요.",
-                "starter_code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n# grouped, wide, ax를 만드세요\n",
+                "starter_code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\n# grouped, wide, ax를 만드세요\n",
                 "checker": "import matplotlib\n\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as _plt\n\n_plt.show = lambda *a, **k: None  # a check opens no window and leaves no 'non-interactive' warning in the result\nimport logging as _lg, warnings as _wn\n_lg.getLogger('matplotlib.font_manager').setLevel(_lg.ERROR)  # no 'findfont' lines in the result\n_wn.filterwarnings('ignore', message='Glyph .* missing from font')\nfrom matplotlib import font_manager as _fm\n_installed = {f.name for f in _fm.fontManager.ttflist}\n_plt.rcParams['font.family'] = [n for n in ['Malgun Gothic', 'Apple SD Gothic Neo', 'AppleGothic', 'NanumGothic', 'Noto Sans KR', 'Noto Sans CJK KR'] if n in _installed] or ['DejaVu Sans']\n_plt.rcParams['axes.unicode_minus'] = False\nimport runpy, sys\n\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['ax', 'grouped', 'wide']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['grouped'].shape == (6, 2) and s['grouped']['count'].sum() == 1309\n    assert s['wide'].shape == (2, 3)\n    assert len(s['ax'].patches) == 6 and s['ax'].get_ylim() == (0.0, 100.0)\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
                 "prompt": "pandas + matplotlib. titanic DataFrame. ['성별','객실등급'] groupby 생존 agg(['count','mean'])을 grouped에, grouped['mean'].unstack('객실등급')*100을 wide에. ax = wide.plot.bar(ylim=(0,100), rot=0)로 그리고 ylabel과 title 붙여 plt.show().\n\n---\n코드만 줘",
                 "prompt_why": "- `wide.plot.bar(...)` → 표에서 바로 묶음 막대. 반환값을 `ax`에 담아야 검사기가 읽는다.\n- `rot=0` → x축 글자 안 눕히기."
@@ -15191,12 +15201,12 @@
                 },
                 {
                   "action": "set_code",
-                  "code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n",
-                  "say": "pandas와 titanic 표, matplotlib의 plt, seaborn은 준비돼 있어요. 그대로 둘게요."
+                  "code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\n",
+                  "say": "pandas와 titanic 표, matplotlib의 plt가 준비돼 있어요. 그대로 둘게요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# 성별과 객실등급 두 열로 묶어요. 대괄호 안에 열 이름 두 개를 리스트로 넣어요.\n# ['생존']으로 생존 열만 골라서 count(사람 수)와 mean(생존율)을 같이 구해요.\ngrouped = titanic.groupby(['성별', '객실등급'])['생존'].agg(['count', 'mean'])\n",
+                  "code": "\n# 성별과 객실등급, 두 열로 묶어요. 리스트라서 대괄호를 두 겹 써요\n# '생존' 열로 사람 수(count)와 생존율(mean)을 같이 구해요\ngrouped = titanic.groupby(['성별', '객실등급'])['생존'].agg(['count', 'mean'])\n",
                   "say": "앞 미션과 같아요. 성별과 객실등급으로 묶어서 count와 mean을 같이 구해요."
                 },
                 {
@@ -15206,7 +15216,7 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "아무것도 안 나오죠? grouped에 담기만 하고 print를 안 했거든요."
+                  "text": "아무것도 안 나오죠? grouped에 담기만 하고 print는 안 했거든요."
                 },
                 {
                   "action": "type_code",
@@ -15220,22 +15230,22 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "빨간 글자가 길게 나오죠? 맨 아래 줄을 보세요. KeyError, Level 객실 등급 not found예요. 띄어 쓴 객실 등급이라는 열이 없다는 뜻이에요. 표에는 붙여 쓴 객실등급만 있거든요."
+                  "text": "빨간 글자가 길게 나오죠? 맨 아래 줄을 보세요. KeyError, Level 객실 등급 not found예요. 띄어 쓴 객실 등급이라는 단계가 없다는 뜻이에요. 표에는 붙여 쓴 객실등급만 있거든요."
                 },
                 {
                   "action": "set_code",
-                  "code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n# 성별과 객실등급 두 열로 묶어요. 대괄호 안에 열 이름 두 개를 리스트로 넣어요.\n# ['생존']으로 생존 열만 골라서 count(사람 수)와 mean(생존율)을 같이 구해요.\ngrouped = titanic.groupby(['성별', '객실등급'])['생존'].agg(['count', 'mean'])\n",
+                  "code": "import pandas as pd\ntitanic = pd.read_csv('data/titanic.csv')\nimport matplotlib.pyplot as plt\n\n# 성별과 객실등급, 두 열로 묶어요. 리스트라서 대괄호를 두 겹 써요\n# '생존' 열로 사람 수(count)와 생존율(mean)을 같이 구해요\ngrouped = titanic.groupby(['성별', '객실등급'])['생존'].agg(['count', 'mean'])\n",
                   "say": "그래서 열 이름은 표에 있는 글자 그대로 붙여 써요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# 생존율(mean)만 꺼내서 객실등급을 열로 펼쳐요. 성별이 행, 등급이 열인 넓은 표가 돼요.\n# 끝에 * 100을 붙여 0~1 비율을 퍼센트로 바꿔요.\nwide = grouped['mean'].unstack('객실등급') * 100\n",
-                  "say": "mean만 꺼내 객실등급을 열로 펼치고, 100을 곱해 퍼센트로 만들어요."
+                  "code": "# 'mean' 열만 꺼내 객실등급을 옆으로 펼쳐요. 행은 성별, 열은 등급이 돼요\n# 생존이 0과 1이라 평균이 곧 비율이에요. 100을 곱하면 퍼센트가 되죠\nwide = grouped['mean'].unstack('객실등급') * 100\n",
+                  "say": "mean만 꺼내 객실등급을 열로 펼쳐요. 100을 곱해 퍼센트로 만들고요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# 넓은 표를 막대그래프로 그려요. 행(성별)마다 등급 막대 세 개가 묶여요.\n# ylim=(0, 100)은 y축을 0부터 100까지로 고정하고, rot=0은 x축 글자를 안 눕혀요.\nax = wide.plot.bar(ylim=(0, 100), rot=0)\n",
-                  "say": "wide.plot.bar가 막대 그래프를 그려요. ylim은 y축을 0에서 100으로 고정하고, rot=0은 x축 글자를 눕히지 않아요. 돌려받은 ax가 그래프 영역이에요."
+                  "code": "# 행(성별)마다 막대가 묶이고, 열(등급)마다 막대 하나씩 서요\n# ylim=(0, 100)으로 y축을 0~100%로 고정해요. 막대 길이를 공정하게 비교하려고요\n# rot=0은 x축 글자를 눕히지 않고 똑바로 세워요\nax = wide.plot.bar(ylim=(0, 100), rot=0)\n",
+                  "say": "wide.plot.bar가 막대그래프를 그려요. ylim은 y축을 0에서 100으로 고정하고, rot=0은 x축 글자를 세워 둬요. 돌려받은 ax가 그래프 영역이에요."
                 },
                 {
                   "action": "run",
@@ -15244,7 +15254,7 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "이번에도 아무것도 안 나오죠? 그래프를 그려 두기만 했지 아직 띄우진 않았거든요."
+                  "text": "이번에도 아무것도 안 나오죠? 에러는 없어요. 그래프를 그려 두기만 했지 아직 띄우진 않았거든요."
                 },
                 {
                   "action": "say",
@@ -15253,8 +15263,8 @@
                 },
                 {
                   "action": "type_code",
-                  "code": "# 돌려받은 ax에 y축 이름과 제목을 붙여요. 따옴표 안이 화면에 그대로 보여요.\nax.set(ylabel='생존율 (%)', title='성별·객실등급별 생존율 (%)')\n# 그래프를 화면에 띄워요. 이 줄이 없으면 그림이 안 보일 수 있어요.\nplt.show()\n",
-                  "say": "그 ax에 set으로 y축 이름과 제목을 한 번에 붙이고, plt.show()로 띄워요."
+                  "code": "# 돌려받은 ax에 y축 이름과 제목을 붙여요. 단위가 %라는 걸 적어 두세요\nax.set(ylabel='생존율 (%)', title='성별·객실등급별 생존율 (%)')\n# 이 줄이 있어야 그래프가 화면에 떠요\nplt.show()\n",
+                  "say": "그 ax에 set으로 y축 이름과 제목을 한 번에 붙여요. 그리고 plt.show()로 띄워요."
                 },
                 {
                   "action": "run",
@@ -15263,7 +15273,7 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "글자는 안 나오고 그래프가 떠요. 막대 여섯 개가 보이죠? 성별 두 묶음에 등급 막대가 셋씩이에요. 등급을 나눈 뒤에도 여자 쪽이 높은지, 그 차이가 등급마다 비슷한지 읽어 보세요."
+                  "text": "글자는 안 나오고 그래프가 떠요. 막대 여섯 개가 보이죠? 성별 두 묶음에 등급 막대가 셋씩이에요. 등급을 나눈 뒤에도 성별 차이가 남는지 읽어 보세요."
                 },
                 {
                   "action": "submit",
@@ -24601,7 +24611,7 @@
                 "id": "live-prices",
                 "title": "진짜 웹에서: 지금 이 순간의 삼성전자 주가",
                 "content": "### 문제에서 필요한 설명\n\n인터넷이 필요한 미션이에요. 저장 파일이 아니라 **지금** 시세를 받아 봐요. `FinanceDataReader`로 삼성전자(`005930`)를 올해 1월 1일부터 받으면 날짜가 인덱스인 표가 와요. 열은 `Open`, `High`, `Low`, `Close`, `Volume`, `Change`예요.\n\n### 목표\n\n`fdr.DataReader('005930', '2026-01-01')`로 받은 표를 날짜순으로 정렬해 `live`에 두세요. 마지막 종가를 정수로 `latest_close`에, 최근 5거래일 종가 평균을 `ma5`에 담으세요. 표 끝부분과 마지막 날짜, 두 값을 출력하세요.\n\n받는 날에 따라 숫자가 달라요. 그래서 검사는 값이 아니라 모양을 봐요. 날짜 인덱스, 20행 이상, 마지막 날짜가 2주 안, 그리고 두 값이 표와 맞는지요.\n\n### 힌트\n\n`live = fdr.DataReader('005930', '2026-01-01').sort_index()`. 마지막 종가는 `live['Close'].iloc[-1]`, 5일 평균은 `live['Close'].rolling(5).mean().iloc[-1]`이에요. yfinance를 쓰고 싶으면 `yf.download('005930.KS', start='2026-01-01', auto_adjust=True, multi_level_index=False)`로 받으면 열 이름이 같은 모양이 돼요.",
-                "starter_code": "import pandas as pd\nimport FinanceDataReader as fdr\n# live, latest_close, ma5를 만드세요\n",
+                "starter_code": "import FinanceDataReader as fdr\n# live, latest_close, ma5를 만드세요\n",
                 "checker": "import matplotlib\n\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as _plt\n\n_plt.show = lambda *a, **k: None  # a check opens no window and leaves no 'non-interactive' warning in the result\nimport logging as _lg, warnings as _wn\n_lg.getLogger('matplotlib.font_manager').setLevel(_lg.ERROR)  # no 'findfont' lines in the result\n_wn.filterwarnings('ignore', message='Glyph .* missing from font')\nfrom matplotlib import font_manager as _fm\n_installed = {f.name for f in _fm.fontManager.ttflist}\n_plt.rcParams['font.family'] = [n for n in ['Malgun Gothic', 'Apple SD Gothic Neo', 'AppleGothic', 'NanumGothic', 'Noto Sans KR', 'Noto Sans CJK KR'] if n in _installed] or ['DejaVu Sans']\n_plt.rcParams['axes.unicode_minus'] = False\nimport runpy, sys\n\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['latest_close', 'live', 'ma5']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    import pandas as pd\n    \n    assert isinstance(s['live'].index, pd.DatetimeIndex) and len(s['live']) >= 20\n    assert 'Close' in s['live'].columns and (s['live']['Close'] > 0).all()\n    assert s['live'].index.is_monotonic_increasing\n    assert (pd.Timestamp.today() - s['live'].index.max()).days <= 14\n    assert s['latest_close'] == int(s['live']['Close'].iloc[-1])\n    assert abs(s['ma5'] - float(s['live']['Close'].rolling(5).mean().iloc[-1])) < 1e-6\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
                 "prompt": "파이썬. FinanceDataReader로 삼성전자 005930을 2026-01-01부터 받아 날짜순 정렬한 live.\n마지막 Close를 int로 latest_close, Close의 5일 rolling 평균 마지막 값을 ma5에. tail과 마지막 날짜, 두 값 출력.\n\n---\n코드만 줘",
                 "prompt_why": "- `FinanceDataReader` → 국내 종목 코드를 그대로 쓰는 쪽. yfinance면 '005930.KS'와 multi_level_index=False가 필요하다.\n- `날짜순 정렬` → 받은 순서를 믿지 않는다. 시간 자료의 첫 습관.\n- `5일 rolling 평균` → 뒤 단원에서 입력으로 쓰는 ma5와 같은 계산이다."
@@ -24619,18 +24629,18 @@
                 },
                 {
                   "action": "set_code",
-                  "code": "import pandas as pd\nimport FinanceDataReader as fdr\n",
-                  "say": "pandas와 FinanceDataReader를 fdr로 불러오는 두 줄은 그대로 둘게요."
+                  "code": "import FinanceDataReader as fdr\n",
+                  "say": "FinanceDataReader를 fdr로 불러오는 줄은 그대로 둘게요."
                 },
                 {
                   "action": "type_code",
-                  "code": "\n# 삼성전자 종목 코드는 숫자지만 글자('005930')로 줘야 해요. 앞의 0이 날아가거든요.\n# 받은 표는 날짜가 인덱스라서 sort_index()로 날짜순을 맞춰 둬요.\nlive = fdr.DataReader('005930', '2026-01-01').sort_index()\n",
-                  "say": "fdr.DataReader에 종목 코드 005930과 시작일을 주면 날짜가 인덱스인 표가 와요. sort_index로 날짜순을 맞춰 live에 담아요."
+                  "code": "\n# 삼성전자 종목 코드는 '005930'이에요. 숫자가 아니라 따옴표로 감싼 글자로 넣어야 해요.\n# 숫자 005930으로 쓰면 앞의 0이 사라지거나 오류가 나요.\n# 두 번째 값 '2026-01-01'은 시작 날짜예요. 이날부터 오늘까지 받아요.\n# sort_index()로 날짜 인덱스를 오래된 날부터 최근 날 순서로 정렬해요.\n# 이렇게 해 두면 맨 끝 행이 항상 가장 최근 거래일이에요.\nlive = fdr.DataReader('005930', '2026-01-01').sort_index()\n",
+                  "say": "fdr.DataReader에 종목 코드와 시작일을 줘요. 날짜가 인덱스인 표가 오면 sort_index로 날짜순을 맞춰 live에 담아요."
                 },
                 {
                   "action": "say",
                   "target": "editor",
-                  "text": "종목 코드를 따옴표 없이 숫자 5930으로 쓰기 쉬운데, 앞의 0이 날아가 다른 종목이 되니 조심하세요."
+                  "text": "종목 코드를 따옴표 없이 005930으로 쓰기 쉬워요. 그러면 앞의 0 때문에 오류가 나니 조심하세요."
                 },
                 {
                   "action": "run",
@@ -24639,7 +24649,7 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "아무것도 안 나오죠? 받아서 live에 넣기만 했거든요. 출력은 없지만 표는 live 안에 들어 있어요."
+                  "text": "아무것도 안 나오죠? 받아서 live에 넣기만 했거든요. 오류가 없으니 표는 live에 잘 들어왔어요."
                 },
                 {
                   "action": "type_code",
@@ -24657,22 +24667,22 @@
                 },
                 {
                   "action": "set_code",
-                  "code": "import pandas as pd\nimport FinanceDataReader as fdr\n\n# 삼성전자 종목 코드는 숫자지만 글자('005930')로 줘야 해요. 앞의 0이 날아가거든요.\n# 받은 표는 날짜가 인덱스라서 sort_index()로 날짜순을 맞춰 둬요.\nlive = fdr.DataReader('005930', '2026-01-01').sort_index()\n",
+                  "code": "import FinanceDataReader as fdr\n\n# 삼성전자 종목 코드는 '005930'이에요. 숫자가 아니라 따옴표로 감싼 글자로 넣어야 해요.\n# 숫자 005930으로 쓰면 앞의 0이 사라지거나 오류가 나요.\n# 두 번째 값 '2026-01-01'은 시작 날짜예요. 이날부터 오늘까지 받아요.\n# sort_index()로 날짜 인덱스를 오래된 날부터 최근 날 순서로 정렬해요.\n# 이렇게 해 두면 맨 끝 행이 항상 가장 최근 거래일이에요.\nlive = fdr.DataReader('005930', '2026-01-01').sort_index()\n",
                   "say": "그래서 열 이름은 대문자 그대로 Close로 써요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# iloc[-1]은 맨 마지막 줄이에요. 종가는 소수가 섞일 수 있어서 int()로 정수로 만들어요.\nlatest_close = int(live['Close'].iloc[-1])\n",
+                  "code": "\n# 열 이름 'Close'는 대문자 C예요. 'close'라고 쓰면 KeyError가 나요.\n# iloc[-1]은 위치로 센 맨 마지막 행이에요. 0부터 세니까 -1이 끝이죠.\n# 값이 numpy 숫자로 오니까 int()로 감싸서 보통 정수로 바꿔요.\nlatest_close = int(live['Close'].iloc[-1])\n",
                   "say": "Close 열의 마지막 값이 최근 종가죠? 정수로 바꿔 latest_close에 둬요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# rolling(5).mean()은 5거래일씩 묶은 평균이에요. 그 마지막 값이 최근 5일 평균이죠.\nma5 = float(live['Close'].rolling(5).mean().iloc[-1])\n",
-                  "say": "rolling(5)로 5거래일 평균을 만들고, 그 마지막 값을 ma5에 담아요."
+                  "code": "\n# rolling(5).mean()은 5칸씩 묶어 가며 평균을 내요. 처음 4칸은 NaN이 돼요.\n# 그래서 맨 끝 iloc[-1]을 꺼내야 최근 5거래일 평균이 나와요.\n# 달력 5일이 아니라 거래한 날 5일이에요. 주말·휴일은 표에 없거든요.\nma5 = float(live['Close'].rolling(5).mean().iloc[-1])\n",
+                  "say": "rolling(5)로 5거래일 평균을 만들어요. 그 마지막 값을 ma5에 담아요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# tail()은 표 끝 5줄이에요. 열 이름과 최근 날짜가 맞는지 눈으로 확인해요.\nprint(live.tail())\n",
+                  "code": "\n# tail()은 표의 마지막 5행을 보여 줘요. 최근 시세를 눈으로 확인해요.\nprint(live.tail())\n",
                   "say": "표 끝부분을 먼저 보여 줄게요. 열 이름과 날짜가 맞는지 눈으로 확인하는 거예요."
                 },
                 {
@@ -24682,11 +24692,11 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "9월 28일부터 10월 2일까지 다섯 줄이 보이죠? 날짜가 인덱스고 Open, High, Low, Close, Volume, Change 열이 있어요. 마지막 줄 Close가 276000이에요."
+                  "text": "9월 30일부터 10월 7일까지 다섯 줄이 보이죠? 10월 2일 다음이 바로 6일이에요. 쉬는 날은 표에 없거든요. 마지막 줄 Close는 279000이에요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# index.max()가 마지막 날짜예요. .date()로 시간을 떼고, ma5는 round로 보기 좋게 반올림해요.\nprint(live.index.max().date(), latest_close, round(ma5))\n",
+                  "code": "# index.max()는 가장 늦은 날짜예요. .date()로 시각 없이 날짜만 남겨요.\n# round(ma5)는 화면에만 반올림해서 보여 줘요. ma5 변수 값은 그대로예요.\nprint(live.index.max().date(), latest_close, round(ma5))\n",
                   "say": "마지막 날짜와 두 값을 한 줄로 출력하면 돼요. ma5는 round로 반올림해서 보기 좋게요."
                 },
                 {
@@ -24696,7 +24706,7 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "표 아래 마지막 줄을 보세요. 2026-10-02, 종가 276000, 5일 평균 273000이 나왔어요. 받는 날에 따라 숫자는 달라져요."
+                  "text": "표 아래 마지막 줄을 보세요. 2026-10-07, 종가 279000, 5일 평균 274400이 나왔어요. 받는 날에 따라 숫자는 달라져요."
                 },
                 {
                   "action": "submit",
@@ -24705,7 +24715,7 @@
               ],
               "tour": [
                 "이번엔 저장 파일이 아니라 지금 이 순간의 삼성전자 시세를 받아요.",
-                "fdr.DataReader에 종목 코드 005930과 시작일을 주면 날짜가 인덱스인 표가 와요.",
+                "fdr.DataReader에 종목 코드와 시작일을 줘요.",
                 "마지막 종가를 보고 싶어요."
               ]
             },
@@ -28549,7 +28559,7 @@
                 "id": "forecast-plot",
                 "title": "정답 날짜 위에 실제와 예측을 겹쳐 그리기",
                 "content": "### 목표\n\n마지막 그래프예요. 릿지 파이프라인을 학습해 `prediction`을 구하세요. 그다음 `target_date`를 인덱스로 `comparison` 표를 만드세요. 열은 `actual`(실제 다음 종가)과 `prediction` 둘이에요. `fig, ax`에 두 선을 같은 날짜 축에 그리세요. x축 이름은 `정답 날짜`, 범례도 표시하고요.\n\nx축이 입력 날짜가 아니라 **정답 날짜**인 이유를 생각해 보세요. 예측이 실제를 얼마나 따라가는지, 어느 구간에서 벌어지는지 보세요.\n\n### 힌트\n\n표는 `comparison = pd.DataFrame({'actual': y_test.to_numpy(), 'prediction': prediction}, index=pd.DatetimeIndex(frame.loc[test_mask, 'target_date']))`로 만들어요. 실제 선은 `ax.plot(comparison.index, comparison['actual'], label='Actual next close')`로 그려요. 예측 선도 하나 더요. 마무리는 `ax.set(xlabel='정답 날짜', ...)`, `ax.legend()`, `plt.show()`.",
-                "starter_code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\nframe = pd.DataFrame(index=prices.index)\nframe['close'] = prices['종가']\nframe['return_1'] = prices['종가'].pct_change()\nframe['ma5'] = prices['종가'].rolling(5).mean()\nframe['lag_close_1'] = prices['종가'].shift(1)\nframe['target_next_close'] = prices['종가'].shift(-1)\nframe['target_date'] = pd.Series(prices.index, index=prices.index).shift(-1)\nframe = frame.dropna().copy()\nfeature_columns = ['close', 'return_1', 'ma5', 'lag_close_1']\nX = frame[feature_columns]\ny = frame['target_next_close']\ntest_start = frame.index[-80]\ntrain_mask = (frame.index < test_start) & (frame['target_date'] < test_start)\ntest_mask = frame.index >= test_start\nX_train, X_test = X.loc[train_mask], X.loc[test_mask]\ny_train, y_test = y.loc[train_mask], y.loc[test_mask]\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression, Ridge, Lasso\nfrom sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n# model, prediction, comparison, fig, ax를 만드세요\n",
+                "starter_code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\nframe = pd.DataFrame(index=prices.index)\nframe['close'] = prices['종가']\nframe['return_1'] = prices['종가'].pct_change()\nframe['ma5'] = prices['종가'].rolling(5).mean()\nframe['lag_close_1'] = prices['종가'].shift(1)\nframe['target_next_close'] = prices['종가'].shift(-1)\nframe['target_date'] = pd.Series(prices.index, index=prices.index).shift(-1)\nframe = frame.dropna().copy()\nfeature_columns = ['close', 'return_1', 'ma5', 'lag_close_1']\nX = frame[feature_columns]\ny = frame['target_next_close']\ntest_start = frame.index[-80]\ntrain_mask = (frame.index < test_start) & (frame['target_date'] < test_start)\ntest_mask = frame.index >= test_start\nX_train, X_test = X.loc[train_mask], X.loc[test_mask]\ny_train, y_test = y.loc[train_mask], y.loc[test_mask]\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression, Ridge, Lasso\nimport matplotlib.pyplot as plt\n# model, prediction, comparison, fig, ax를 만드세요\n",
                 "checker": "import matplotlib\n\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as _plt\n\n_plt.show = lambda *a, **k: None  # a check opens no window and leaves no 'non-interactive' warning in the result\nimport logging as _lg, warnings as _wn\n_lg.getLogger('matplotlib.font_manager').setLevel(_lg.ERROR)  # no 'findfont' lines in the result\n_wn.filterwarnings('ignore', message='Glyph .* missing from font')\nfrom matplotlib import font_manager as _fm\n_installed = {f.name for f in _fm.fontManager.ttflist}\n_plt.rcParams['font.family'] = [n for n in ['Malgun Gothic', 'Apple SD Gothic Neo', 'AppleGothic', 'NanumGothic', 'Noto Sans KR', 'Noto Sans CJK KR'] if n in _installed] or ['DejaVu Sans']\n_plt.rcParams['axes.unicode_minus'] = False\nimport runpy, sys\n\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\nassert set(['ax', 'comparison', 'frame', 'test_mask']).issubset(s), '문제에서 요청한 결과 변수를 준비하세요.'\ntry:\n    assert s['comparison'].shape == (80, 2) and list(s['comparison'].columns) == ['actual', 'prediction']\n    assert list(s['comparison'].index) == list(s['frame'].loc[s['test_mask'], 'target_date'])\n    assert len(s['ax'].lines) == 2 and s['ax'].get_xlabel() == '정답 날짜'\n    assert s['ax'].get_legend() is not None\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n    raise AssertionError('결과 변수의 값과 자료형을 확인하세요.') from error\nprint('미션 검사 통과')\n",
                 "prompt": "scikit-learn + matplotlib. frame, X_train, X_test, y_train, y_test, test_mask(temporal split). Pipeline(StandardScaler, Ridge(alpha=1))을 fit해 prediction을 구하고, frame.loc[test_mask, 'target_date']를 인덱스로 actual(y_test 값)과 prediction 두 열인 comparison DataFrame을 만들어. fig, ax에 두 선을 그리고 xlabel '정답 날짜', 범례 표시, plt.show().\n\n---\n코드만 줘",
                 "prompt_why": "- `target_date를 인덱스로` → x축은 정답 날짜. 입력 날짜로 그리면 예측이 하루 앞당겨 보인다."
@@ -28567,12 +28577,12 @@
                 },
                 {
                   "action": "set_code",
-                  "code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\nframe = pd.DataFrame(index=prices.index)\nframe['close'] = prices['종가']\nframe['return_1'] = prices['종가'].pct_change()\nframe['ma5'] = prices['종가'].rolling(5).mean()\nframe['lag_close_1'] = prices['종가'].shift(1)\nframe['target_next_close'] = prices['종가'].shift(-1)\nframe['target_date'] = pd.Series(prices.index, index=prices.index).shift(-1)\nframe = frame.dropna().copy()\nfeature_columns = ['close', 'return_1', 'ma5', 'lag_close_1']\nX = frame[feature_columns]\ny = frame['target_next_close']\ntest_start = frame.index[-80]\ntrain_mask = (frame.index < test_start) & (frame['target_date'] < test_start)\ntest_mask = frame.index >= test_start\nX_train, X_test = X.loc[train_mask], X.loc[test_mask]\ny_train, y_test = y.loc[train_mask], y.loc[test_mask]\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression, Ridge, Lasso\nfrom sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n",
-                  "say": "준비 코드엔 특징 네 개, 정답 target_next_close, 그리고 정답 날짜 target_date까지 다 들어 있어요. 시간 순으로 나눈 훈련 자료와 테스트 자료도 그대로 둘게요."
+                  "code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\nframe = pd.DataFrame(index=prices.index)\nframe['close'] = prices['종가']\nframe['return_1'] = prices['종가'].pct_change()\nframe['ma5'] = prices['종가'].rolling(5).mean()\nframe['lag_close_1'] = prices['종가'].shift(1)\nframe['target_next_close'] = prices['종가'].shift(-1)\nframe['target_date'] = pd.Series(prices.index, index=prices.index).shift(-1)\nframe = frame.dropna().copy()\nfeature_columns = ['close', 'return_1', 'ma5', 'lag_close_1']\nX = frame[feature_columns]\ny = frame['target_next_close']\ntest_start = frame.index[-80]\ntrain_mask = (frame.index < test_start) & (frame['target_date'] < test_start)\ntest_mask = frame.index >= test_start\nX_train, X_test = X.loc[train_mask], X.loc[test_mask]\ny_train, y_test = y.loc[train_mask], y.loc[test_mask]\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression, Ridge, Lasso\nimport matplotlib.pyplot as plt\n",
+                  "say": "준비 코드에 특징 네 개와 정답 target_next_close가 있어요. 정답 날짜 target_date도 있고요. 시간 순으로 나눈 훈련 자료와 테스트 자료, 필요한 import도 그대로 둘게요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# 표준화 → 릿지 순서로 묶은 파이프라인이에요. alpha=1은 규제 세기고요\nmodel = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))])\n# 학습은 훈련 자료로만 해요. 테스트 자료를 넣으면 누수예요\nmodel.fit(X_train, y_train)\n",
+                  "code": "# 크기를 맞추는 단계와 릿지 모델을 한 줄로 묶어요\n# 단계 이름('scale', 'model')은 따옴표 안의 글자예요\nmodel = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))])\n# 학습은 훈련 자료로만 해요. 테스트 자료를 넣으면 시험지에 답을 보는 셈이에요\nmodel.fit(X_train, y_train)\n",
                   "say": "스케일 맞추기와 릿지를 파이프라인으로 묶어요. 그리고 훈련 자료로만 학습해요."
                 },
                 {
@@ -28582,17 +28592,17 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "아무것도 안 나오죠? 학습만 했지 아직 꺼내 본 게 없거든요."
+                  "text": "아무것도 안 나오죠? 학습만 했지, 아직 꺼내 본 게 없거든요."
                 },
                 {
                   "action": "say",
                   "target": "editor",
-                  "text": "여기서 X_test, y_test로 학습하기 쉬운데, 그러면 시험지에 답을 적어 주는 누수가 되니 조심하세요."
+                  "text": "여기서 X_test, y_test로 학습하기 쉬워요. 그러면 시험지에 답을 적어 주는 누수가 되니 조심하세요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# 테스트 자료의 다음 종가를 예측해요. 결과는 numpy 배열이에요\nprediction = model.predict(X_test)\n# 실제(actual)와 예측(prediction)을 한 표에 나란히 둬요\n# y_test는 .to_numpy()로 인덱스를 떼야 prediction과 길이만 맞춰 붙어요\n# 인덱스는 입력 날짜가 아니라 정답 날짜(target_date)예요. 그래야 \"그날의 실제 vs 예측\"이 돼요\ncomparison = pd.DataFrame({'actual': y_test.to_numpy(), 'prediction': prediction}, index=pd.DatetimeIndex(frame.loc[test_mask, 'target_date']))\n",
-                  "say": "테스트 자료로 예측해서 prediction에 담아요. 실제 값 actual과 나란히 한 표로 만들고요. 인덱스는 target_date, 정답이 생긴 날짜예요."
+                  "code": "# 남겨 둔 테스트 자료로 다음 종가를 예측해요\nprediction = model.predict(X_test)\n# 실제와 예측을 한 표에 나란히 둬요\n# y_test는 입력 날짜가 인덱스라서 .to_numpy()로 값만 꺼내요\n# 그래야 새 인덱스(정답 날짜)에 그대로 붙어요\n# 인덱스는 정답 날짜예요. 예측한 값은 '다음 거래일' 종가니까요\ncomparison = pd.DataFrame({'actual': y_test.to_numpy(), 'prediction': prediction}, index=pd.DatetimeIndex(frame.loc[test_mask, 'target_date']))\n",
+                  "say": "테스트 자료로 예측해서 prediction에 담아요. 실제 값 actual과 나란히 한 표로 만들고요. 인덱스는 정답 날짜 target_date예요."
                 },
                 {
                   "action": "run",
@@ -28605,8 +28615,8 @@
                 },
                 {
                   "action": "type_code",
-                  "code": "# 그림(fig) 하나, 그 안의 축(ax) 하나를 만들어요\nfig, ax = plt.subplots()\n",
-                  "say": "도화지 fig와 축 ax를 하나 만들어요."
+                  "code": "# 그림판(fig)과 그 위의 축(ax)을 하나 만들어요\nfig, ax = plt.subplots()\n",
+                  "say": "그림판 fig와 축 ax를 하나 만들어요."
                 },
                 {
                   "action": "run",
@@ -28615,7 +28625,7 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "화면엔 아직 아무것도 안 떠요. 도화지만 만들고 보여 주진 않았거든요. 이제 선을 올리면 돼요."
+                  "text": "출력은 비어 있어요. 그림판만 만들고 아직 띄우진 않았거든요."
                 },
                 {
                   "action": "type_code",
@@ -28629,16 +28639,16 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "NameError가 나죠? name 'actual' is not defined, actual이라는 변수가 없다는 뜻이에요. 열 이름은 글자라서 따옴표가 필요해요."
+                  "text": "NameError가 나죠? name 'actual' is not defined, actual이라는 변수가 없대요. 열 이름은 글자라서 따옴표가 필요해요."
                 },
                 {
                   "action": "set_code",
-                  "code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\nframe = pd.DataFrame(index=prices.index)\nframe['close'] = prices['종가']\nframe['return_1'] = prices['종가'].pct_change()\nframe['ma5'] = prices['종가'].rolling(5).mean()\nframe['lag_close_1'] = prices['종가'].shift(1)\nframe['target_next_close'] = prices['종가'].shift(-1)\nframe['target_date'] = pd.Series(prices.index, index=prices.index).shift(-1)\nframe = frame.dropna().copy()\nfeature_columns = ['close', 'return_1', 'ma5', 'lag_close_1']\nX = frame[feature_columns]\ny = frame['target_next_close']\ntest_start = frame.index[-80]\ntrain_mask = (frame.index < test_start) & (frame['target_date'] < test_start)\ntest_mask = frame.index >= test_start\nX_train, X_test = X.loc[train_mask], X.loc[test_mask]\ny_train, y_test = y.loc[train_mask], y.loc[test_mask]\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression, Ridge, Lasso\nfrom sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score\nimport matplotlib.pyplot as plt\nimport seaborn as sns\n# 표준화 → 릿지 순서로 묶은 파이프라인이에요. alpha=1은 규제 세기고요\nmodel = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))])\n# 학습은 훈련 자료로만 해요. 테스트 자료를 넣으면 누수예요\nmodel.fit(X_train, y_train)\n# 테스트 자료의 다음 종가를 예측해요. 결과는 numpy 배열이에요\nprediction = model.predict(X_test)\n# 실제(actual)와 예측(prediction)을 한 표에 나란히 둬요\n# y_test는 .to_numpy()로 인덱스를 떼야 prediction과 길이만 맞춰 붙어요\n# 인덱스는 입력 날짜가 아니라 정답 날짜(target_date)예요. 그래야 \"그날의 실제 vs 예측\"이 돼요\ncomparison = pd.DataFrame({'actual': y_test.to_numpy(), 'prediction': prediction}, index=pd.DatetimeIndex(frame.loc[test_mask, 'target_date']))\n# 그림(fig) 하나, 그 안의 축(ax) 하나를 만들어요\nfig, ax = plt.subplots()\n",
+                  "code": "import pandas as pd\nprices = pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()\nframe = pd.DataFrame(index=prices.index)\nframe['close'] = prices['종가']\nframe['return_1'] = prices['종가'].pct_change()\nframe['ma5'] = prices['종가'].rolling(5).mean()\nframe['lag_close_1'] = prices['종가'].shift(1)\nframe['target_next_close'] = prices['종가'].shift(-1)\nframe['target_date'] = pd.Series(prices.index, index=prices.index).shift(-1)\nframe = frame.dropna().copy()\nfeature_columns = ['close', 'return_1', 'ma5', 'lag_close_1']\nX = frame[feature_columns]\ny = frame['target_next_close']\ntest_start = frame.index[-80]\ntrain_mask = (frame.index < test_start) & (frame['target_date'] < test_start)\ntest_mask = frame.index >= test_start\nX_train, X_test = X.loc[train_mask], X.loc[test_mask]\ny_train, y_test = y.loc[train_mask], y.loc[test_mask]\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression, Ridge, Lasso\nimport matplotlib.pyplot as plt\n# 크기를 맞추는 단계와 릿지 모델을 한 줄로 묶어요\n# 단계 이름('scale', 'model')은 따옴표 안의 글자예요\nmodel = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))])\n# 학습은 훈련 자료로만 해요. 테스트 자료를 넣으면 시험지에 답을 보는 셈이에요\nmodel.fit(X_train, y_train)\n# 남겨 둔 테스트 자료로 다음 종가를 예측해요\nprediction = model.predict(X_test)\n# 실제와 예측을 한 표에 나란히 둬요\n# y_test는 입력 날짜가 인덱스라서 .to_numpy()로 값만 꺼내요\n# 그래야 새 인덱스(정답 날짜)에 그대로 붙어요\n# 인덱스는 정답 날짜예요. 예측한 값은 '다음 거래일' 종가니까요\ncomparison = pd.DataFrame({'actual': y_test.to_numpy(), 'prediction': prediction}, index=pd.DatetimeIndex(frame.loc[test_mask, 'target_date']))\n# 그림판(fig)과 그 위의 축(ax)을 하나 만들어요\nfig, ax = plt.subplots()\n",
                   "say": "그래서 따옴표를 꼭 붙여요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# 실제 선. x는 날짜 인덱스, y는 'actual' 열. 열 이름은 따옴표로요\nax.plot(comparison.index, comparison['actual'], label='Actual next close')\n",
+                  "code": "# 실제 다음 종가 선이에요. label은 범례에 나올 이름이고요\nax.plot(comparison.index, comparison['actual'], label='Actual next close')\n",
                   "say": "실제 선 먼저요. x는 정답 날짜, y는 actual 열이에요."
                 },
                 {
@@ -28648,12 +28658,12 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "이번엔 에러가 없죠? 출력은 비어 있어요. 아직 그림을 띄우지 않아서 그래요. 선은 축 위에 올라가 있어요."
+                  "text": "이번엔 에러가 없죠? 출력은 비어 있어요. 선은 축에 올라갔고, 아직 안 띄웠을 뿐이에요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# 예측 선도 같은 날짜 축에 겹쳐 그려요. label은 범례에 뜨는 이름이에요\nax.plot(comparison.index, comparison['prediction'], label='Ridge')\n",
-                  "say": "예측 선을 같은 축에 하나 더 겹쳐요. label은 범례 이름이고요."
+                  "code": "# 예측 선도 같은 날짜 축에 겹쳐 그려요\nax.plot(comparison.index, comparison['prediction'], label='Ridge')\n",
+                  "say": "예측 선을 같은 축에 하나 더 겹쳐요."
                 },
                 {
                   "action": "run",
@@ -28662,11 +28672,11 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "역시 조용히 지나가요. 선이 둘 올라갔지만 아직 화면엔 안 보여요."
+                  "text": "역시 조용히 지나가요. 선이 둘 올라갔지만 화면엔 아직 안 보여요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# 축 이름과 제목을 한 번에 정해요. x축은 '정답 날짜'로 꼭 맞춰요\nax.set(xlabel='정답 날짜', ylabel='Price', title='Held-out next trading day')\n# 범례를 켜야 어느 선이 실제고 어느 선이 예측인지 보여요\nax.legend()\n",
+                  "code": "# x축 이름은 꼭 '정답 날짜'로. 입력 날짜로 그리면 하루씩 밀려 보여요\nax.set(xlabel='정답 날짜', ylabel='Price', title='Held-out next trading day')\n# label을 달아도 legend()를 부르지 않으면 범례가 안 나와요\nax.legend()\n",
                   "say": "x축 이름을 정답 날짜로 적고 제목도 달아요. 범례도 켜고요."
                 },
                 {
@@ -28676,11 +28686,11 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "출력은 아직 비어 있어요. 축 이름과 범례는 다 준비됐고, 보여 주기만 남았어요."
+                  "text": "출력은 아직 비어 있어요. 축 이름과 범례는 준비됐고, 띄우기만 남았어요."
                 },
                 {
                   "action": "type_code",
-                  "code": "# 그림을 화면에 띄워요\nplt.show()\n# 표의 앞 다섯 줄로 값이 제대로 들어갔는지 확인해요\ncomparison.head()\n",
+                  "code": "# 그래프를 화면에 띄워요\nplt.show()\n# 표 앞부분으로 실제와 예측 값을 직접 비교해 봐요\ncomparison.head()\n",
                   "say": "그래프를 띄우고, 표 첫 다섯 줄도 같이 봐요."
                 },
                 {
@@ -28690,7 +28700,7 @@
                 {
                   "action": "say",
                   "target": "output",
-                  "text": "글자 출력은 비어 있죠? 그래프는 창으로 따로 떠요. 표는 마지막 줄에 그냥 적으면 안 찍혀요. print로 감싸야 보여요. 그래프에서 예측 선이 실제 선을 어디까지 따라가고 어느 구간에서 벌어지는지 보세요. x축이 정답 날짜인 것도 확인하고요."
+                  "text": "글자 출력은 비어 있죠? 그래프는 따로 그림으로 떠요. 표는 마지막 줄에 적기만 하면 안 찍혀요. print로 감싸야 보이거든요. 그래프에선 예측 선이 실제 선을 얼마나 따라가는지 보세요. 어느 구간에서 벌어지는지도요."
                 },
                 {
                   "action": "submit",

@@ -1,13 +1,13 @@
 {
  "format": 2,
- "hash": "df6b370e8d274b48",
+ "hash": "6e35dbfa77600c55",
  "by": "claude",
  "blocks": {
   "title": "5cd87e4dcd82",
   "problem": "ef009444ad38",
-  "starter": "92e831c400b9",
+  "starter": "778ae5349d70",
   "example": "e3b0c44298fc",
-  "solution": "54d298622785"
+  "solution": "a1cd5b0d163a"
  },
  "sources": [
   {
@@ -16,55 +16,59 @@
   },
   {
    "block": "starter",
-   "hash": "92e831c400b9"
+   "hash": "778ae5349d70"
   },
   {
    "block": "solution",
-   "hash": "54d298622785"
+   "hash": "a1cd5b0d163a"
   },
   {
    "block": "solution",
-   "hash": "54d298622785"
+   "hash": "a1cd5b0d163a"
   },
   {
    "block": "solution",
-   "hash": "54d298622785"
+   "hash": "a1cd5b0d163a"
   },
   {
    "block": "solution",
-   "hash": "54d298622785"
+   "hash": "a1cd5b0d163a"
   },
   {
    "block": "solution",
-   "hash": "54d298622785"
+   "hash": "a1cd5b0d163a"
   },
   {
    "block": "solution",
-   "hash": "54d298622785"
+   "hash": "a1cd5b0d163a"
   },
   {
    "block": "solution",
-   "hash": "54d298622785"
+   "hash": "a1cd5b0d163a"
   },
   {
    "block": "solution",
-   "hash": "54d298622785"
+   "hash": "a1cd5b0d163a"
   },
   {
    "block": "solution",
-   "hash": "54d298622785"
+   "hash": "a1cd5b0d163a"
   },
   {
    "block": "solution",
-   "hash": "54d298622785"
+   "hash": "a1cd5b0d163a"
   },
   {
    "block": "solution",
-   "hash": "54d298622785"
+   "hash": "a1cd5b0d163a"
   },
   {
    "block": "solution",
-   "hash": "54d298622785"
+   "hash": "a1cd5b0d163a"
+  },
+  {
+   "block": "solution",
+   "hash": "a1cd5b0d163a"
   }
  ],
  "entry": [
@@ -74,11 +78,11 @@
   ],
   [
    "starter",
-   "준비 코드는 data/prices.html을 읽어 soup까지 만들어 뒀어요. 그대로 둘게요."
+   "준비 코드가 data/prices.html을 읽어서 soup까지 만들어 뒀어요. 이 부분은 그대로 둘게요."
   ],
   [
    "code",
-   "# 가격을 모을 빈 리스트예요. 대괄호 []가 빈 리스트고요.\nprices = []\n",
+   "# 가격을 모을 빈 리스트예요. 대괄호 두 개면 돼요.\nprices = []\n",
    "먼저 prices라는 빈 리스트를 만들어요. 여기에 가격을 하나씩 모을 거예요."
   ],
   [
@@ -87,7 +91,7 @@
   ],
   [
    "output",
-   "아무것도 안 나오죠? 빈 리스트를 만들기만 하고 print를 안 했거든요."
+   "화면에 아무것도 안 나오죠? 빈 리스트를 만들기만 했어요. print는 아직 안 했거든요."
   ],
   [
    "try",
@@ -100,21 +104,25 @@
   ],
   [
    "output",
-   "ValueError가 났죠? 마지막 줄을 보세요. '10,000'은 쉼표가 있어서 int()가 숫자로 못 바꿔요."
+   "ValueError가 났죠? 마지막 줄에 '10,000'이 보여요. 쉼표가 있어서 int()가 숫자로 못 바꾼 거예요."
   ],
   [
    "undo",
-   "그래서 int()에 넣기 전에 쉼표를 먼저 지워야 해요."
+   "그래서 int()에 넣기 전에 쉼표부터 지워야 해요."
   ],
   [
    "code",
-   "# '#prices li b'로 가격 요소를 모두 찾아요. select는 하나가 아니라 여러 개를 돌려줘요.\n# 따옴표 안 공백도 선택자의 일부라서 그대로 두세요.\nfor tag in soup.select('#prices li b'):\n    # 안쪽부터 읽어요. 글자 꺼내기 → 쉼표 지우기 → int()로 숫자 → append로 모으기.\n    # replace(',', '')의 두 번째 따옴표는 비어 있어요. 쉼표를 없애는 거예요.\n    # 쉼표가 남으면 int('10,000')에서 오류가 나요.\n    prices.append(int(tag.get_text(strip=True).replace(',', '')))\n",
-   "select로 찾은 가격 요소를 for로 하나씩 돌아요. 글자를 꺼내 replace로 쉼표를 지우고, int()로 바꿔 append해요."
+   "# select는 맞는 요소를 전부 리스트로 줘요. select_one은 하나만 주니까 조심하세요.\n# '#prices li b'는 id가 prices인 곳 안의 li, 그 안의 b 태그예요.\nfor tag in soup.select('#prices li b'):\n    # get_text(strip=True)로 글자만 꺼내고 앞뒤 공백을 지워요. 이때는 아직 '10,000' 같은 글자예요.\n    # replace(',', '')로 쉼표를 지워야 int()가 돼요. 쉼표가 있으면 오류가 나요.\n    # int()로 숫자로 바꿔서 append로 리스트 끝에 붙여요. 괄호 개수를 잘 맞추세요.\n    prices.append(int(tag.get_text(strip=True).replace(',', '')))\n",
+   "select로 찾은 가격 요소를 for로 하나씩 돌아요. 글자를 꺼내 replace로 쉼표를 지우고요. int()로 바꿔서 append하면 돼요."
+  ],
+  [
+   "caution",
+   "select_one을 쓰기 쉬운데, 그건 하나만 돌려줘요. 전부 모으려면 select를 써야 하니 조심하세요."
   ],
   [
    "code",
-   "# [10000, 20000]처럼 따옴표 없는 숫자가 보이면 맞게 한 거예요.\nprint(prices)\n",
-   "모인 리스트를 print로 찍어 확인해요."
+   "# 따옴표 없는 숫자 리스트 [10000, 20000]이 나오면 맞아요.\nprint(prices)\n",
+   "모인 리스트를 print로 찍어서 확인해요."
   ],
   [
    "run",
@@ -122,7 +130,7 @@
   ],
   [
    "output",
-   "[10000, 20000]이 나왔죠? 따옴표 없는 숫자 리스트예요. 두 종목 가격이 다 모였어요."
+   "만 원, 이만 원이 나왔죠? 따옴표가 없으니 숫자 리스트예요. 두 종목 가격이 다 모였어요."
   ],
   [
    "submit",

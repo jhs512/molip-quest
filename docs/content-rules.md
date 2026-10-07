@@ -22,6 +22,11 @@
 - 주석은 코드를 바꾸지 않는다. 주석을 지우면 원래 코드와 줄 단위로 같아야 하고, 준비 코드 부분은 글자 그대로 둔다. 도구: `python tools/annotate.py`(캐시 `tools/kpc_course/solution_comments/`, 원본 코드 해시로 신선도 관리).
 - 도전 과제의 정답·해설은 강사 자료(암호화, `site/data/instructor.json`)에 있다. `python tools/practice-materials.py`가 같은 규칙으로 주석과 해설을 만들어 이 컴퓨터의 비밀번호 파일로 암호화한다(평문과 비밀번호는 `target/course-guide-authoring/`, Git 제외). `--verify`는 게시된 자료를 복호화해 재생·실행 검사만 한다.
 
-## 4. 파생물은 원본에 묶인다
+## 4. 쓰지 않는 import는 없다
+
+- 준비 코드와 정답에 정답이 쓰지 않는 import를 두지 않는다. 그래프 미션에 `import seaborn as sns`가 있는데 matplotlib만 쓴다면 그 줄은 없어야 한다.
+- 빌드가 처리한다: 준비 코드의 import 중 정답이 쓰지 않는 줄은 준비 코드와 정답에서 함께 뺀다(`dsl.drop_unused_imports`). 정답 본문에 남은 쓰지 않는 import는 빌드 실패.
+
+## 5. 파생물은 원본에 묶인다
 
 - 학생이 보는 글은 블록 단위로 키·해시가 있고(`courses/kpc-finance.sources.json`), AI가 쓴 해설·주석은 어느 원본에 쓴 것인지 기록한다. 원본이 바뀌면 빌드가 거부하고 바뀐 부분만 다시 만든다. 자세한 것은 `docs/agents/narration.md`.
