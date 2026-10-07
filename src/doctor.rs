@@ -54,7 +54,26 @@ async fn probe_with_timeout(
 
 pub async fn inspect() -> Vec<Check> {
     let python = python_executable();
-    inspect_python(&python, std::time::Duration::from_secs(120)).await
+    let mut checks = inspect_python(&python, std::time::Duration::from_secs(120)).await;
+    checks.push(inspect_voice().await);
+    checks
+}
+
+/// The narration's neural voice (Edge Read Aloud over the network): one short clip, so a
+/// classroom without that network learns here, not mid-lesson, that the device voice will read.
+async fn inspect_voice() -> Check {
+    let result = tokio::time::timeout(
+        std::time::Duration::from_secs(25),
+        tokio::task::spawn_blocking(|| crate::tts::synthesize(&crate::tts::default_voice(), "안녕하세요")),
+    )
+    .await;
+    let (ready, detail) = match result {
+        Ok(Ok(Ok((bytes, engine)))) => (true, format!("인터넷 음성 연결됨 ({engine}, {} KB)", bytes.len() / 1024)),
+        Ok(Ok(Err(error))) => (false, format!("인터넷 음성에 연결하지 못했습니다. 해설은 이 컴퓨터의 한국어 음성으로 읽고, 그것도 없으면 자막만 보입니다. ({error})")),
+        Ok(Err(error)) => (false, format!("음성 검사가 실패했습니다: {error}")),
+        Err(_) => (false, "인터넷 음성 서버가 25초 안에 답하지 않았습니다. 해설은 이 컴퓨터의 음성으로 읽습니다.".into()),
+    };
+    Check { name: "해설 음성 · 인터넷(Edge)".into(), ready, detail }
 }
 
 async fn inspect_python(python: &str, package_timeout: std::time::Duration) -> Vec<Check> {

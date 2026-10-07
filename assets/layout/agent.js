@@ -275,6 +275,14 @@
     return speakWithSystemVoice(sentence);
   }
   let lastSpeech = '';
+  // Told once per session: the neural voice gave up, or this device has no Korean voice.
+  let toldFallback = false, toldNoKorean = false;
+  window.addEventListener('molip:voice-fallback', event => {
+    if (toldFallback) return;
+    toldFallback = true;
+    const reason = String(event.detail || '').slice(0, 80);
+    if (globalThis.molipToast) molipToast('인터넷 음성에 연결하지 못해 이 컴퓨터의 음성으로 읽어요. (' + reason + ')', 'warn');
+  });
   function speakWithSystemVoice(sentence) {
     const length = String(sentence).length;
     if (!voice || !('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
@@ -291,6 +299,10 @@
         utterance.lang = 'ko-KR';
         const korean = helpers && helpers.koreanVoice ? helpers.koreanVoice(synth.getVoices()) : null;
         if (korean) utterance.voice = korean;
+        else if (!toldNoKorean && synth.getVoices().length) {
+          toldNoKorean = true;
+          if (globalThis.molipToast) molipToast('이 컴퓨터에 한국어 음성이 없어 자막으로만 보여 줘요. Windows 설정 → 시간 및 언어 → 언어 및 지역에서 한국어 음성 팩을 추가하면 소리가 나요.', 'warn');
+        }
         let rate = 1;
         try { const saved = Number(localStorage.getItem('molip:tts-rate')); if (saved >= 0.5 && saved <= 2) rate = saved; } catch {}
         utterance.rate = rate;

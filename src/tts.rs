@@ -108,6 +108,7 @@ pub fn ssml(voice: &str, text: &str) -> String {
 /// binary frames until `turn.end`.
 #[cfg(not(target_os = "android"))]
 fn edge_native(voice: &str, text: &str) -> Result<Vec<u8>, String> {
+    use std::net::ToSocketAddrs;
     use tungstenite::client::IntoClientRequest;
     use tungstenite::Message;
     let url = format!(
@@ -127,7 +128,20 @@ fn edge_native(voice: &str, text: &str) -> Result<Vec<u8>, String> {
     headers.insert("Accept-Encoding", header("gzip, deflate, br, zstd"));
     headers.insert("Accept-Language", header("en-US,en;q=0.9"));
     headers.insert("Cookie", header(&format!("muid={};", connection_id().to_uppercase())));
-    let (mut socket, _response) = tungstenite::connect(request).map_err(|e| format!("음성 서버 연결 실패: {e}"))?;
+    // A blocked or absent network must fail in seconds, not hang the narration: connect with a
+    // timeout and give the socket read/write deadlines before the TLS handshake.
+    let stream = std::net::TcpStream::connect_timeout(
+        &("speech.platform.bing.com", 443)
+            .to_socket_addrs()
+            .map_err(|e| format!("음성 서버 주소를 찾지 못했습니다: {e}"))?
+            .next()
+            .ok_or("음성 서버 주소를 찾지 못했습니다.")?,
+        std::time::Duration::from_secs(6),
+    )
+    .map_err(|e| format!("음성 서버 연결 실패: {e}"))?;
+    stream.set_read_timeout(Some(std::time::Duration::from_secs(15))).map_err(|e| e.to_string())?;
+    stream.set_write_timeout(Some(std::time::Duration::from_secs(15))).map_err(|e| e.to_string())?;
+    let (mut socket, _response) = tungstenite::client_tls(request, stream).map_err(|e| format!("음성 서버 연결 실패: {e}"))?;
     let stamp = js_date_string(now_unix() as u64);
     socket
         .send(Message::text(format!(
@@ -303,6 +317,18 @@ mod tests {
     }
 
     /// `cargo test --lib tts -- --ignored` talks to the real service.
+    /// A never-cached phrase, so the connection path itself (timeouts included) is exercised.
+    #[test]
+    #[ignore]
+    fn a_fresh_clip_downloads_within_the_timeouts() {
+        let phrase = format!("지금 시각은 {}초예요", now_unix() as u64 % 100000);
+        let started = std::time::Instant::now();
+        let (bytes, engine) = synthesize(&default_voice(), &phrase).unwrap();
+        assert!(!bytes.is_empty());
+        assert_ne!(engine, "cache");
+        assert!(started.elapsed() < std::time::Duration::from_secs(30), "{:?}", started.elapsed());
+    }
+
     #[test]
     #[ignore]
     fn the_service_answers_with_mp3() {
