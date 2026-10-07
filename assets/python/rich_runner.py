@@ -8,6 +8,7 @@ import os
 import runpy
 import sys
 import traceback
+import warnings
 
 os.environ['MPLBACKEND'] = 'Agg'
 artifacts = []
@@ -69,8 +70,17 @@ try:
         import matplotlib.pyplot as plt
         plt.ioff()
         plt.show = capture_plots
-        # Data columns and category values are Korean; fall back through the common system fonts.
-        plt.rcParams['font.family'] = ['Malgun Gothic', 'Apple SD Gothic Neo', 'AppleGothic', 'NanumGothic', 'Noto Sans KR', 'Noto Sans CJK KR', 'DejaVu Sans']
+        # Data columns and category values are Korean: use the first of the common system fonts
+        # that is actually installed. Listing missing ones would make matplotlib print a
+        # "findfont: Font family ... not found" line for every label drawn.
+        import logging
+        from matplotlib import font_manager
+        logging.getLogger('matplotlib.font_manager').setLevel(logging.ERROR)
+        warnings.filterwarnings('ignore', message='Glyph .* missing from font')
+        warnings.filterwarnings('ignore', message='findfont')
+        installed = {font.name for font in font_manager.fontManager.ttflist}
+        preferred = ['Malgun Gothic', 'Apple SD Gothic Neo', 'AppleGothic', 'NanumGothic', 'Noto Sans KR', 'Noto Sans CJK KR']
+        plt.rcParams['font.family'] = [name for name in preferred if name in installed] or ['DejaVu Sans']
         plt.rcParams['axes.unicode_minus'] = False
     tree = ast.parse(source, filename='main.py')
     # Like a notebook, a final expression may produce a table.

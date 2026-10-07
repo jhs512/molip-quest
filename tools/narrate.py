@@ -58,7 +58,7 @@ def run_solution(problem, solution):
         # As in the app's runner (assets/python/rich_runner.py): no windows, Korean fonts.
         env = dict(os.environ, MPLBACKEND="Agg")
         prelude = ("import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as _plt; "
-                   "_plt.rcParams['font.family'] = ['Malgun Gothic', 'Apple SD Gothic Neo', 'AppleGothic', 'NanumGothic', 'Noto Sans KR', 'Noto Sans CJK KR', 'DejaVu Sans']; "
+                   "import logging as _lg; _lg.getLogger('matplotlib.font_manager').setLevel(_lg.ERROR); from matplotlib import font_manager as _fm; _installed = {f.name for f in _fm.fontManager.ttflist}; _plt.rcParams['font.family'] = [n for n in ['Malgun Gothic', 'Apple SD Gothic Neo', 'AppleGothic', 'NanumGothic', 'Noto Sans KR', 'Noto Sans CJK KR'] if n in _installed] or ['DejaVu Sans']; "
                    "_plt.rcParams['axes.unicode_minus'] = False\n")
         result = subprocess.run([python_executable(), "-X", "utf8", "-c", prelude + solution], input=stdin, capture_output=True,
                                 text=True, encoding="utf-8", timeout=120, cwd=os.environ.get("MOLIP_RUN_CWD", str(ROOT / "courses")), env=env)

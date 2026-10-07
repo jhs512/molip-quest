@@ -27,7 +27,7 @@ TIME_SPLIT = "feature_columns = ['close', 'return_1', 'ma5', 'lag_close_1']\nX =
 REG = "from sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import StandardScaler\nfrom sklearn.linear_model import LinearRegression, Ridge, Lasso\nfrom sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score\n"
 
 CHECKER_HEAD = (
-    "import matplotlib\n\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as _plt\n\n_plt.show = lambda *a, **k: None  # a check opens no window and leaves no 'non-interactive' warning in the result\nimport runpy, sys\n\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\n"
+    "import matplotlib\n\nmatplotlib.use('Agg')\nimport matplotlib.pyplot as _plt\n\n_plt.show = lambda *a, **k: None  # a check opens no window and leaves no 'non-interactive' warning in the result\nimport logging as _lg, warnings as _wn\n_lg.getLogger('matplotlib.font_manager').setLevel(_lg.ERROR)  # no 'findfont' lines in the result\n_wn.filterwarnings('ignore', message='Glyph .* missing from font')\nfrom matplotlib import font_manager as _fm\n_installed = {f.name for f in _fm.fontManager.ttflist}\n_plt.rcParams['font.family'] = [n for n in ['Malgun Gothic', 'Apple SD Gothic Neo', 'AppleGothic', 'NanumGothic', 'Noto Sans KR', 'Noto Sans CJK KR'] if n in _installed] or ['DejaVu Sans']\n_plt.rcParams['axes.unicode_minus'] = False\nimport runpy, sys\n\ntry:\n    s = runpy.run_path(sys.argv[1])\nexcept Exception as error:\n    raise AssertionError('작성한 코드가 실행되지 않았습니다. 실행 결과를 확인하세요.') from error\n"
 )
 CHECKER_TAIL = (
     "\nexcept (KeyError,TypeError,AttributeError,ValueError,IndexError) as error:\n"
