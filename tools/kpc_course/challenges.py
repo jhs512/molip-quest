@@ -17,7 +17,7 @@ CHALLENGES = {
         1. `for`로 요일을 하나씩 돌아요. 요일마다 `{'요일': ..., '판매량': ..., '계획': round(판매량 * 1.1)}` 딕셔너리를 만들어요. 그걸 `plans` 리스트에 모으세요.
         2. 계획 수량의 합계를 `total_plan`에 누적하세요. `sum()`은 금지예요. 반복문 안에서 누적해요.
         3. `max()` 없이 `if`로 판매량이 가장 많은 요일을 찾아요. 그 요일을 `best_day`에 담으세요.
-        4. `plans`로 `DataFrame`을 만들어 `df`에 담으세요. 마지막 줄에 `df`를 적으면 표가 떠요.
+        4. `plans`로 `DataFrame`을 만들어 `df`에 담으세요. `print(df)`로 표를 출력하세요.
 
         7행 3열 표가 나오고 `best_day`가 `토`면 맞게 한 거예요.
         """,
@@ -25,7 +25,7 @@ CHALLENGES = {
         `for day, sold in sales.items():`로 키와 값을 함께 꺼내요. 최댓값 찾기는 앞에서 본 `highest` 패턴 그대로예요. 반복 안에서 `best_day = day`도 같이 갱신하면 돼요.
         """,
         starter="import pandas as pd\n\nsales = {'월': 412, '화': 388, '수': 455, '목': 430, '금': 520, '토': 610, '일': 580}\nplans = []\ntotal_plan = 0\n# plans, total_plan, best_day, df를 만드세요\n",
-        solution="import pandas as pd\n\nsales = {'월': 412, '화': 388, '수': 455, '목': 430, '금': 520, '토': 610, '일': 580}\nplans = []\ntotal_plan = 0\nbest_day = None\nbest_sold = 0\nfor day, sold in sales.items():\n    plan = round(sold * 1.1)\n    plans.append({'요일': day, '판매량': sold, '계획': plan})\n    total_plan += plan\n    if sold > best_sold:\n        best_sold = sold\n        best_day = day\ndf = pd.DataFrame(plans)\nprint(total_plan, best_day)\ndf\n",
+        solution="import pandas as pd\n\nsales = {'월': 412, '화': 388, '수': 455, '목': 430, '금': 520, '토': 610, '일': 580}\nplans = []\ntotal_plan = 0\nbest_day = None\nbest_sold = 0\nfor day, sold in sales.items():\n    plan = round(sold * 1.1)\n    plans.append({'요일': day, '판매량': sold, '계획': plan})\n    total_plan += plan\n    if sold > best_sold:\n        best_sold = sold\n        best_day = day\ndf = pd.DataFrame(plans)\nprint(total_plan, best_day)\nprint(df)\n",
         check="assert [p['요일'] for p in s['plans']] == ['월', '화', '수', '목', '금', '토', '일']\nassert [p['계획'] for p in s['plans']] == [round(v * 1.1) for v in s['sales'].values()]\nassert s['total_plan'] == sum(round(v * 1.1) for v in s['sales'].values())\nassert s['best_day'] == '토'\nassert s['df'].shape == (7, 3) and list(s['df'].columns) == ['요일', '판매량', '계획']"),
 
     "pandas": challenge('croissant-clean', '크루아상 판매 기록 정리',
@@ -55,7 +55,7 @@ CHALLENGES = {
         goal="""
         1. `형제배우자 + 부모자녀`가 1 이상이면 `True`인 열 `가족동반`을 `titanic`에 추가하세요.
         2. `가족동반`으로 `생존`을 묶어요. `count`, `sum`, `mean`을 `family_summary`에 담으세요.
-        3. `객실등급`과 `가족동반`으로 묶어 생존율을 구하세요. `unstack('가족동반')`으로 펼치면 3행 2열 표예요. `by_class`에 담아 마지막 줄에 적으세요.
+        3. `객실등급`과 `가족동반`으로 묶어 생존율을 구하세요. `unstack('가족동반')`으로 펼치면 3행 2열 표예요. `by_class`에 담아 `print(by_class)`로 출력하세요.
 
         `family_summary`의 `count` 합이 1309이고 `by_class`가 3행 2열이면 맞게 한 거예요. 가족과 함께 탄 쪽의 생존율이 등급마다 어떻게 다른지 읽어 보세요.
         """,
@@ -63,7 +63,7 @@ CHALLENGES = {
         새 열은 `titanic['가족동반'] = (titanic['형제배우자'] + titanic['부모자녀']) >= 1`이에요. 두 열로 묶기는 `groupby(['객실등급', '가족동반'])['생존'].mean()` 뒤에 `unstack`이에요.
         """,
         starter=TI + "# 가족동반 열, family_summary, by_class를 만드세요\n",
-        solution=TI + "titanic['가족동반'] = (titanic['형제배우자'] + titanic['부모자녀']) >= 1\nfamily_summary = titanic.groupby('가족동반')['생존'].agg(['count', 'sum', 'mean'])\nby_class = titanic.groupby(['객실등급', '가족동반'])['생존'].mean().unstack('가족동반')\nprint(family_summary)\nby_class\n",
+        solution=TI + "titanic['가족동반'] = (titanic['형제배우자'] + titanic['부모자녀']) >= 1\nfamily_summary = titanic.groupby('가족동반')['생존'].agg(['count', 'sum', 'mean'])\nby_class = titanic.groupby(['객실등급', '가족동반'])['생존'].mean().unstack('가족동반')\nprint(family_summary)\nprint(by_class)\n",
         check="assert s['titanic']['가족동반'].dtype == bool and s['titanic']['가족동반'].sum() == int(((s['titanic']['형제배우자'] + s['titanic']['부모자녀']) >= 1).sum())\nassert list(s['family_summary'].columns) == ['count', 'sum', 'mean'] and s['family_summary']['count'].sum() == 1309 and s['family_summary']['sum'].sum() == 500\nassert s['by_class'].shape == (3, 2) and list(s['by_class'].index) == [1, 2, 3]\nimport numpy as np\n\nassert np.allclose(s['by_class'].to_numpy(), s['titanic'].groupby(['객실등급', '가족동반'])['생존'].mean().unstack('가족동반').to_numpy())"),
 
     "visualization": challenge('two-charts', '한 장에 두 그림',
@@ -103,7 +103,7 @@ CHALLENGES = {
         앞 단원의 `make_preprocessor()`를 떠올리세요. 수치형은 `['객실등급', '나이', '형제배우자', '부모자녀', '요금']`이에요. 범주형은 `['성별', '탑승항구']`고요. `Pipeline`은 모델마다 새로 만들어야 해요. `preprocessor`는 같은 걸 다시 써도 돼요. 매번 같은 훈련 자료로 다시 `fit`되거든요. 마지막은 `best_model = results['f1'].idxmax()`예요.
         """,
         starter="import pandas as pd\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.compose import ColumnTransformer\nfrom sklearn.impute import SimpleImputer\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import OneHotEncoder, StandardScaler\nfrom sklearn.dummy import DummyClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.tree import DecisionTreeClassifier\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import accuracy_score, f1_score\n# X, y, 분할, preprocessor, models, results, best_model을 만드세요\n",
-        solution="import pandas as pd\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.compose import ColumnTransformer\nfrom sklearn.impute import SimpleImputer\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import OneHotEncoder, StandardScaler\nfrom sklearn.dummy import DummyClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.tree import DecisionTreeClassifier\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import accuracy_score, f1_score\n\ntitanic = pd.read_csv('data/titanic.csv')\nfeatures = ['객실등급', '성별', '나이', '형제배우자', '부모자녀', '요금', '탑승항구']\nX = titanic[features].copy()\ny = titanic['생존'].astype(int)\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)\npreprocessor = ColumnTransformer(\n    [\n        ('numeric', Pipeline([('fill', SimpleImputer(strategy='median')), ('scale', StandardScaler())]), ['객실등급', '나이', '형제배우자', '부모자녀', '요금']),\n        ('category', Pipeline([('fill', SimpleImputer(strategy='most_frequent')), ('encode', OneHotEncoder(handle_unknown='ignore'))]), ['성별', '탑승항구']),\n    ]\n)\nmodels = {\n    'Dummy': DummyClassifier(strategy='most_frequent'),\n    'Logistic': LogisticRegression(max_iter=2000),\n    'Tree': DecisionTreeClassifier(max_depth=5, random_state=42),\n    'Forest': RandomForestClassifier(n_estimators=50, max_depth=5, random_state=42),\n}\nrows = {}\nfor name, model in models.items():\n    pipeline = Pipeline([('prepare', preprocessor), ('model', model)])\n    pipeline.fit(X_train, y_train)\n    pred = pipeline.predict(X_test)\n    rows[name] = {'accuracy': accuracy_score(y_test, pred), 'f1': f1_score(y_test, pred)}\nresults = pd.DataFrame(rows).T\nbest_model = results['f1'].idxmax()\nprint(best_model)\nresults\n",
+        solution="import pandas as pd\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.compose import ColumnTransformer\nfrom sklearn.impute import SimpleImputer\nfrom sklearn.pipeline import Pipeline\nfrom sklearn.preprocessing import OneHotEncoder, StandardScaler\nfrom sklearn.dummy import DummyClassifier\nfrom sklearn.linear_model import LogisticRegression\nfrom sklearn.tree import DecisionTreeClassifier\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import accuracy_score, f1_score\n\ntitanic = pd.read_csv('data/titanic.csv')\nfeatures = ['객실등급', '성별', '나이', '형제배우자', '부모자녀', '요금', '탑승항구']\nX = titanic[features].copy()\ny = titanic['생존'].astype(int)\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)\npreprocessor = ColumnTransformer(\n    [\n        ('numeric', Pipeline([('fill', SimpleImputer(strategy='median')), ('scale', StandardScaler())]), ['객실등급', '나이', '형제배우자', '부모자녀', '요금']),\n        ('category', Pipeline([('fill', SimpleImputer(strategy='most_frequent')), ('encode', OneHotEncoder(handle_unknown='ignore'))]), ['성별', '탑승항구']),\n    ]\n)\nmodels = {\n    'Dummy': DummyClassifier(strategy='most_frequent'),\n    'Logistic': LogisticRegression(max_iter=2000),\n    'Tree': DecisionTreeClassifier(max_depth=5, random_state=42),\n    'Forest': RandomForestClassifier(n_estimators=50, max_depth=5, random_state=42),\n}\nrows = {}\nfor name, model in models.items():\n    pipeline = Pipeline([('prepare', preprocessor), ('model', model)])\n    pipeline.fit(X_train, y_train)\n    pred = pipeline.predict(X_test)\n    rows[name] = {'accuracy': accuracy_score(y_test, pred), 'f1': f1_score(y_test, pred)}\nresults = pd.DataFrame(rows).T\nbest_model = results['f1'].idxmax()\nprint(best_model)\nprint(results)\n",
         check="assert s['X'].shape == (1309, 7) and int(s['y'].sum()) == 500\nassert len(s['X_train']) == 1047 and len(s['X_test']) == 262 and abs(s['y_train'].mean() - s['y_test'].mean()) < 0.02\nassert set(s['results'].index) == {'Dummy', 'Logistic', 'Tree', 'Forest'} and list(s['results'].columns) == ['accuracy', 'f1']\nassert abs(s['results'].loc['Dummy', 'accuracy'] - 162 / 262) < 1e-9 and s['results'].loc['Dummy', 'f1'] == 0\nassert s['best_model'] != 'Dummy' and s['best_model'] == s['results']['f1'].idxmax()\nassert (s['results'].loc[['Logistic', 'Tree', 'Forest'], 'accuracy'] > 162 / 262).all()"),
 
     "credit": challenge('threshold-cost', '기준값과 비용',
@@ -146,11 +146,11 @@ CHALLENGES = {
 }
 
 PROMPTS.update({
-    'week-plan': ("파이썬. sales = {'월': 412, ..., '일': 580} 딕셔너리. for로 요일마다 {'요일','판매량','계획': round(판매량*1.1)} 딕셔너리를 plans에 모으고, 계획 합계는 total_plan에 누적(sum 금지), 판매량 최대 요일은 if로 best_day에(max 금지). plans로 DataFrame df 만들어 마지막 줄에 df." + TAIL,
-                  "- `sum 금지`, `max 금지` → 1장에서 배운 반복·조건을 쓰게 하는 제약.\n- `{'요일', '판매량', '계획'}` → 딕셔너리 키가 그대로 열 이름이 된다.\n- `마지막 줄에 df` → 앱이 표로 보여 준다."),
+    'week-plan': ("파이썬. sales = {'월': 412, ..., '일': 580} 딕셔너리. for로 요일마다 {'요일','판매량','계획': round(판매량*1.1)} 딕셔너리를 plans에 모으고, 계획 합계는 total_plan에 누적(sum 금지), 판매량 최대 요일은 if로 best_day에(max 금지). plans로 DataFrame df 만들어 print(df)로 출력." + TAIL,
+                  "- `sum 금지`, `max 금지` → 1장에서 배운 반복·조건을 쓰게 하는 제약.\n- `{'요일', '판매량', '계획'}` → 딕셔너리 키가 그대로 열 이름이 된다.\n- `print(df)` → 표의 값을 실행 결과로 확인한다."),
     'croissant-clean': ("pandas. data/croissant.csv(날짜·요일·날씨·기온·판매량). 판매량 결측 개수를 int로 n_missing, 결측을 중앙값으로 채운 새 표를 filled(원본 sales는 그대로), 날씨가 '비'인 행을 rainy, 요일이 토·일인 행의 판매량 평균을 weekend_mean, filled를 croissant_clean.csv(index=False)로 저장 후 다시 읽어 saved." + TAIL,
                         "- `원본 sales는 그대로` → inplace 금지. 검사기가 원본을 본다.\n- `isin` 대신 `토·일` → 조건을 말로 적어도 AI가 isin을 고른다.\n- `index=False` → 행 번호 열 방지."),
-    'family-survival': ("pandas. titanic DataFrame. (형제배우자 + 부모자녀) >= 1 이면 True인 열 가족동반을 추가. 가족동반으로 groupby한 생존의 agg(['count','sum','mean'])을 family_summary에, ['객실등급','가족동반'] groupby 생존 mean을 unstack('가족동반')해서 by_class에. 마지막 줄에 by_class." + TAIL,
+    'family-survival': ("pandas. titanic DataFrame. (형제배우자 + 부모자녀) >= 1 이면 True인 열 가족동반을 추가. 가족동반으로 groupby한 생존의 agg(['count','sum','mean'])을 family_summary에, ['객실등급','가족동반'] groupby 생존 mean을 unstack('가족동반')해서 by_class에. print(by_class)로 출력." + TAIL,
                         "- `>= 1 이면 True` → 새 열의 규칙을 식으로.\n- `count·sum·mean` → 분모를 함께.\n- `unstack('가족동반')` → 3행 2열 교차표."),
     'two-charts': ("pandas + matplotlib + seaborn. fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4)). ax1: 객실등급×성별 생존율 unstack('성별')*100을 wide에 담아 wide.plot.bar(ax=ax1, ylim=(0,100), rot=0), ylabel '생존율 (%)'. ax2: 나이 결측 제외 후 sns.histplot(x='나이', bins=20, ax=ax2). 둘 다 제목 붙이고 plt.show()." + TAIL,
                    "- `subplots(1, 2)` → 종이 하나에 영역 둘.\n- `ax=ax1`, `ax=ax2` → 어느 영역에 그릴지. 빠지면 엉뚱한 곳에 그린다.\n- `ylim = (0, 100)`과 `*100` → 퍼센트 축 한 세트."),

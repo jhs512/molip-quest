@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "acd64cd2512b522c",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "9ff65660cb0c",
   "problem": "1602accaff25",
@@ -21,38 +21,6 @@
   {
    "block": "starter",
    "hash": "f5a6bf00c4a4"
-  },
-  {
-   "block": "solution",
-   "hash": "18062da905ad"
-  },
-  {
-   "block": "solution",
-   "hash": "18062da905ad"
-  },
-  {
-   "block": "solution",
-   "hash": "18062da905ad"
-  },
-  {
-   "block": "solution",
-   "hash": "18062da905ad"
-  },
-  {
-   "block": "solution",
-   "hash": "18062da905ad"
-  },
-  {
-   "block": "solution",
-   "hash": "18062da905ad"
-  },
-  {
-   "block": "solution",
-   "hash": "18062da905ad"
-  },
-  {
-   "block": "solution",
-   "hash": "18062da905ad"
   },
   {
    "block": "solution",
@@ -102,42 +70,9 @@
    "두 번째 종목은 위치가 1이에요. holdings[1]로 딕셔너리를 꺼내고, 바로 ['name']을 붙여서 이름을 second_name에 넣어요. 주석에 적었듯 0부터 세니까 1이에요."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 변수에 넣기만 했지 아직 print를 안 했거든요."
-  ],
-  [
-   "try",
-   "print(holdings[2]['name'])\n",
-   "두 번째니까 2를 쓰고 싶죠? 이렇게 해 볼까요?"
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "C가 나왔죠? 두 번째 종목이 아니라 세 번째 종목 이름이에요. 자리 2는 세 번째거든요. 리스트는 0부터 세요."
-  ],
-  [
-   "undo",
-   "그래서 두 번째는 1이에요. 이 줄은 지울게요."
-  ],
-  [
    "code",
    "\n# 세 번째 종목은 자리 2예요. 이번엔 'price' 키로 가격을 꺼내요.\n# 가격은 숫자라서 따옴표가 없어요. 15000이 그대로 나와요.\nthird_price = holdings[2]['price']\n",
    "세 번째는 자리가 2죠? 같은 방식으로 ['price']를 붙여서 third_price에 넣어요."
-  ],
-  [
-   "run",
-   "또 실행해 볼게요."
-  ],
-  [
-   "output",
-   "여전히 아무것도 안 나와요. 아직 print가 없으니까요."
   ],
   [
    "caution",

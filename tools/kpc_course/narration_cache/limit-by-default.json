@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "4cc111786001f6c2",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "84401f771d95",
   "problem": "7f17247ebab3",
@@ -41,30 +41,6 @@
   {
    "block": "solution",
    "hash": "9bfc15c722c2"
-  },
-  {
-   "block": "solution",
-   "hash": "9bfc15c722c2"
-  },
-  {
-   "block": "solution",
-   "hash": "9bfc15c722c2"
-  },
-  {
-   "block": "solution",
-   "hash": "9bfc15c722c2"
-  },
-  {
-   "block": "solution",
-   "hash": "9bfc15c722c2"
-  },
-  {
-   "block": "solution",
-   "hash": "9bfc15c722c2"
-  },
-  {
-   "block": "solution",
-   "hash": "9bfc15c722c2"
   }
  ],
  "entry": [
@@ -81,34 +57,9 @@
    "준비 코드엔 pandas 불러오기, credit 읽기, 그리고 target에 타깃 열 이름이 들어 있어요."
   ],
   [
-   "try",
-   "limit_by_default = credit.groupby('target')['신용한도'].mean()\n",
-   "이렇게 해 볼까요? target에 따옴표를 붙이기 쉽거든요."
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "빨간 글이 길게 나오죠? 맨 아래 줄만 보세요. KeyError: 'target'이에요. 'target'이라는 열은 없거든요. target은 변수라서 따옴표를 빼야 해요."
-  ],
-  [
-   "undo",
-   "그래서 따옴표를 떼고 다시 써요."
-  ],
-  [
    "code",
    "# 타깃(다음달 부도)으로 묶고, 그룹마다 신용한도의 평균을 구해요\n# 타이타닉의 groupby('성별')['생존'].mean()과 같은 모양이죠\n# target은 변수라서 따옴표 없이, '신용한도'는 열 이름이라 따옴표 안에 써요\nlimit_by_default = credit.groupby(target)['신용한도'].mean()\n",
    "target으로 묶고 신용한도 열만 골라서 mean을 불러요. 결과는 limit_by_default에 담아요."
-  ],
-  [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 담기만 했지 아직 꺼내지 않았거든요."
   ],
   [
    "code",
@@ -117,7 +68,7 @@
   ],
   [
    "run",
-   "다시 실행해요."
+   "실행해 볼게요."
   ],
   [
    "output",

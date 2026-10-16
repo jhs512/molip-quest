@@ -1,13 +1,13 @@
 {
  "format": 2,
- "hash": "6f041467af121b4d",
- "by": "claude",
+ "hash": "92b89d026a39736b",
+ "by": "hand",
  "blocks": {
   "title": "126115c21fb9",
   "problem": "aa38379e9329",
   "starter": "0da270e07db9",
   "example": "e3b0c44298fc",
-  "solution": "098e3dbb9458"
+  "solution": "fc1e6c7f5d27"
  },
  "sources": [
   {
@@ -24,99 +24,59 @@
   },
   {
    "block": "solution",
-   "hash": "098e3dbb9458"
+   "hash": "fc1e6c7f5d27"
   },
   {
    "block": "solution",
-   "hash": "098e3dbb9458"
+   "hash": "fc1e6c7f5d27"
   },
   {
    "block": "solution",
-   "hash": "098e3dbb9458"
+   "hash": "fc1e6c7f5d27"
   },
   {
    "block": "solution",
-   "hash": "098e3dbb9458"
+   "hash": "fc1e6c7f5d27"
   },
   {
    "block": "solution",
-   "hash": "098e3dbb9458"
+   "hash": "fc1e6c7f5d27"
   },
   {
    "block": "solution",
-   "hash": "098e3dbb9458"
+   "hash": "fc1e6c7f5d27"
   },
   {
    "block": "solution",
-   "hash": "098e3dbb9458"
+   "hash": "fc1e6c7f5d27"
   },
   {
    "block": "solution",
-   "hash": "098e3dbb9458"
+   "hash": "fc1e6c7f5d27"
   },
   {
    "block": "solution",
-   "hash": "098e3dbb9458"
+   "hash": "fc1e6c7f5d27"
   },
   {
    "block": "solution",
-   "hash": "098e3dbb9458"
+   "hash": "fc1e6c7f5d27"
   },
   {
    "block": "solution",
-   "hash": "098e3dbb9458"
+   "hash": "fc1e6c7f5d27"
   },
   {
    "block": "solution",
-   "hash": "098e3dbb9458"
+   "hash": "fc1e6c7f5d27"
   },
   {
    "block": "solution",
-   "hash": "098e3dbb9458"
+   "hash": "fc1e6c7f5d27"
   },
   {
    "block": "solution",
-   "hash": "098e3dbb9458"
-  },
-  {
-   "block": "solution",
-   "hash": "098e3dbb9458"
-  },
-  {
-   "block": "solution",
-   "hash": "098e3dbb9458"
-  },
-  {
-   "block": "solution",
-   "hash": "098e3dbb9458"
-  },
-  {
-   "block": "solution",
-   "hash": "098e3dbb9458"
-  },
-  {
-   "block": "solution",
-   "hash": "098e3dbb9458"
-  },
-  {
-   "block": "solution",
-   "hash": "098e3dbb9458"
-  },
-  {
-   "block": "solution",
-   "hash": "098e3dbb9458"
-  },
-  {
-   "block": "solution",
-   "hash": "098e3dbb9458"
-  },
-  {
-   "block": "solution",
-   "hash": "098e3dbb9458"
-  },
-  {
-   "block": "solution",
-   "hash": "098e3dbb9458"
+   "hash": "fc1e6c7f5d27"
   }
  ],
  "entry": [
@@ -138,34 +98,9 @@
    "먼저 자료를 읽어요. 일곱 열을 골라 copy()로 떼어 둔 게 입력 X예요."
   ],
   [
-   "try",
-   "y = titanic['Survived'].astype(int)\n",
-   "정답 y는 이렇게 해 볼까요? 영어 이름이 익숙해서 이렇게 치기 쉬워요."
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "긴 빨간 글이 쏟아지죠? 맨 아랫줄만 보세요. KeyError: 'Survived'예요. 이 자료엔 Survived라는 열이 없다는 뜻이에요. 열 이름이 한글 생존이거든요."
-  ],
-  [
-   "undo",
-   "그래서 열 이름은 자료에 적힌 그대로 써요."
-  ],
-  [
    "code",
    "# 정답 y는 생존 열이에요. astype(int)로 0과 1 정수로 맞춰요.\ny = titanic['생존'].astype(int)\n",
    "생존 열을 정수로 바꿔 y에 담아요."
-  ],
-  [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "이번엔 아무것도 안 나오죠? 오류 없이 X와 y가 만들어진 거예요."
   ],
   [
    "code",
@@ -185,14 +120,6 @@
    "code",
    "        # 글자 열: 빈칸은 가장 흔한 값으로 채우고, One-hot으로 숫자 칸을 만들어요.\n        # handle_unknown='ignore'는 테스트에만 있는 낯선 값을 만나도 멈추지 않게 해요.\n        ('category', Pipeline([('fill', SimpleImputer(strategy='most_frequent')), ('encode', OneHotEncoder(handle_unknown='ignore'))]), ['성별', '탑승항구']),\n    ]\n)\n",
    "글자 열 둘은 최빈값으로 채우고 One-hot이에요. handle_unknown='ignore'로 못 본 값도 넘겨요."
-  ],
-  [
-   "run",
-   "여기서 한 번 실행해요."
-  ],
-  [
-   "output",
-   "조용하죠? 괄호가 다 닫혔다는 뜻이에요. 손질기는 아직 fit 전이라 보여 줄 게 없어요."
   ],
   [
    "code",
@@ -215,25 +142,17 @@
    "테스트 자료로 예측하고, 정확도와 F1을 모델 이름 아래 적어 둬요."
   ],
   [
+   "code",
+   "# 사전을 표로 바꿔요. .T로 뒤집어야 모델이 행, 점수가 열이 돼요.\nresults = pd.DataFrame(rows).T\n# idxmax()는 가장 큰 값의 행 이름을 줘요. 값이 아니라 모델 이름이에요.\nbest_model = results['f1'].idxmax()\nprint(best_model)\nprint(results)\n",
+   "사전을 표로 바꾸고 뒤집어요. F1이 가장 높은 줄의 이름이 best_model이에요."
+  ],
+  [
    "run",
    "실행해 볼게요."
   ],
   [
    "output",
-   "아직도 조용하죠? 네 모델이 다 학습됐는데 print를 안 했거든요. 경고도 안 떴으니 수렴은 잘 된 거예요."
-  ],
-  [
-   "code",
-   "# 사전을 표로 바꿔요. .T로 뒤집어야 모델이 행, 점수가 열이 돼요.\nresults = pd.DataFrame(rows).T\n# idxmax()는 가장 큰 값의 행 이름을 줘요. 값이 아니라 모델 이름이에요.\nbest_model = results['f1'].idxmax()\nprint(best_model)\nresults\n",
-   "사전을 표로 바꾸고 뒤집어요. F1이 가장 높은 줄의 이름이 best_model이에요."
-  ],
-  [
-   "run",
-   "다시 실행해요."
-  ],
-  [
-   "output",
-   "Forest 한 줄만 찍히죠? print한 best_model이에요. F1이 가장 높은 모델이 숲이라는 뜻이에요. 마지막 줄 results는 print가 아니라서 표가 안 보여요. 표가 궁금하면 print로 감싸서 보세요."
+   "맨 위에 Forest가 찍혔죠? F1이 0.78로 가장 높은 숲이에요. 아래 표에서 Dummy를 보세요. 정확도는 0.62인데 F1은 0이거든요. 나머지 세 모델은 모두 기준 모델을 넉넉히 이겼고요."
   ],
   [
    "submit",

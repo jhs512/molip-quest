@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "7ee8f6ac86fd4cee",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "4f4b9086ab06",
   "problem": "516bc14f8b93",
@@ -17,30 +17,6 @@
   {
    "block": "starter",
    "hash": "8e525b4c134a"
-  },
-  {
-   "block": "solution",
-   "hash": "98b9874c4c29"
-  },
-  {
-   "block": "solution",
-   "hash": "98b9874c4c29"
-  },
-  {
-   "block": "solution",
-   "hash": "98b9874c4c29"
-  },
-  {
-   "block": "solution",
-   "hash": "98b9874c4c29"
-  },
-  {
-   "block": "solution",
-   "hash": "98b9874c4c29"
-  },
-  {
-   "block": "solution",
-   "hash": "98b9874c4c29"
   },
   {
    "block": "solution",
@@ -94,31 +70,6 @@
    "자, 대괄호 한 겹이에요. 열 이름을 글자로 넣어서 price 열 하나를 price_series에 담아요."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 담기만 했지 아직 print를 안 했거든요."
-  ],
-  [
-   "try",
-   "print(orders[price])\n",
-   "이렇게 해 볼까요? 열 이름을 따옴표 없이 넣기 쉽거든요."
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "NameError가 나요. name 'price' is not defined, 따옴표가 없으니 파이썬이 price라는 변수를 찾다가 못 찾은 거예요."
-  ],
-  [
-   "undo",
-   "그래서 열 이름은 꼭 따옴표로 감싸요. 되돌릴게요."
-  ],
-  [
    "code",
    "# 대괄호 두 겹: 안쪽 [ ]는 열 이름 리스트예요. 열이 하나라도 \"표(DataFrame)를 달라\"는 뜻이에요.\nprice_frame = orders[['price']]\n",
    "이번엔 두 겹이에요. 안쪽 대괄호가 열 이름 리스트라서 열이 하나여도 표로 나와요."
@@ -143,7 +94,7 @@
   ],
   [
    "run",
-   "다시 실행해요."
+   "실행해 볼게요."
   ],
   [
    "output",

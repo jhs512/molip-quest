@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "cbc4d79b0cd2abef",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "9719bd8b85bf",
   "problem": "f185ed2abe21",
@@ -21,22 +21,6 @@
   {
    "block": "starter",
    "hash": "a56d8f5c2d5a"
-  },
-  {
-   "block": "solution",
-   "hash": "077b5e0a4b96"
-  },
-  {
-   "block": "solution",
-   "hash": "077b5e0a4b96"
-  },
-  {
-   "block": "solution",
-   "hash": "077b5e0a4b96"
-  },
-  {
-   "block": "solution",
-   "hash": "077b5e0a4b96"
   },
   {
    "block": "solution",
@@ -104,28 +88,11 @@
   ],
   [
    "run",
-   "일단 여기까지 실행해 볼게요."
+   "실행해 볼게요."
   ],
   [
    "output",
    "기준 이상, 이 한 줄이 나왔죠? 입력이 10000 이상이라 들여쓴 print가 돌았어요."
-  ],
-  [
-   "try",
-   "else\n    print('기준 미만')\n",
-   "아니면 쪽은 else예요. 이렇게 써 볼까요?"
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "SyntaxError: expected ':'가 나요. else 바로 아래에 화살표가 찍혔죠? 콜론이 빠졌다는 뜻이에요."
-  ],
-  [
-   "undo",
-   "그래서 else 뒤에도 콜론을 꼭 찍어요."
   ],
   [
    "code",
@@ -134,7 +101,7 @@
   ],
   [
    "run",
-   "다시 실행해요."
+   "실행해 볼게요."
   ],
   [
    "output",

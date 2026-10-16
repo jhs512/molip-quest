@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "81dd88f3c3633ec1",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "f94270c450ef",
   "problem": "50321baf1c81",
@@ -41,30 +41,6 @@
   {
    "block": "solution",
    "hash": "43fb684dc348"
-  },
-  {
-   "block": "solution",
-   "hash": "43fb684dc348"
-  },
-  {
-   "block": "solution",
-   "hash": "43fb684dc348"
-  },
-  {
-   "block": "solution",
-   "hash": "43fb684dc348"
-  },
-  {
-   "block": "solution",
-   "hash": "43fb684dc348"
-  },
-  {
-   "block": "solution",
-   "hash": "43fb684dc348"
-  },
-  {
-   "block": "solution",
-   "hash": "43fb684dc348"
   }
  ],
  "entry": [
@@ -80,31 +56,6 @@
    "code",
    "# 뒤에서 80번째 날짜예요. 음수 인덱스는 끝에서 세요. -1이 마지막, -80이 뒤에서 80번째죠\n# 날짜순으로 정렬돼 있으니 여기부터 끝까지가 마지막 80행이에요\ntest_start = frame.index[-80]\n",
    "frame.index[-80]이 뒤에서 80번째 날짜예요. 음수는 끝에서 세거든요. 이걸 test_start에 담아요."
-  ],
-  [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 변수에 담기만 했거든요."
-  ],
-  [
-   "try",
-   "print(frame.index[80])\n",
-   "이렇게 해 볼까요? 80을 그냥 넣기 쉬운데요."
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "2025년 5월 21일이 나왔죠? 앞에서 0부터 센 거라 뒤에서 80번째가 아니에요. 한참 이른 날짜예요."
-  ],
-  [
-   "undo",
-   "그래서 뒤에서 세려면 -80이에요. 지울게요."
   ],
   [
    "code",

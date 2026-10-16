@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "6bfdae2c5f740b3b",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "2e5481c75b45",
   "problem": "83c0bdfaef0c",
@@ -17,30 +17,6 @@
   {
    "block": "starter",
    "hash": "d3bcfe099f41"
-  },
-  {
-   "block": "solution",
-   "hash": "a1f45f9c74f0"
-  },
-  {
-   "block": "solution",
-   "hash": "a1f45f9c74f0"
-  },
-  {
-   "block": "solution",
-   "hash": "a1f45f9c74f0"
-  },
-  {
-   "block": "solution",
-   "hash": "a1f45f9c74f0"
-  },
-  {
-   "block": "solution",
-   "hash": "a1f45f9c74f0"
-  },
-  {
-   "block": "solution",
-   "hash": "a1f45f9c74f0"
   },
   {
    "block": "solution",
@@ -94,14 +70,6 @@
    "앞 단원과 같아요. shape가 (행 수, 열 수)를 주니까 둘을 한 번에 받아요."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 변수에 담기만 했지 아직 print를 안 했거든요."
-  ],
-  [
    "code",
    "# titanic.columns는 열 이름 묶음이에요. list()로 감싸야 평범한 리스트가 돼요.\ncolumns = list(titanic.columns)\n",
    "titanic.columns를 list로 감싸면 열 이름 리스트가 돼요."
@@ -120,30 +88,13 @@
    "1309 14가 나왔죠? 행이 천삼백구 개, 열이 열네 개예요."
   ],
   [
-   "try",
-   "print(column)\n",
-   "이제 열 이름을 찍어 볼까요? 이렇게 해 보죠."
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "column이라는 이름은 없다고 NameError가 나요. 밑에 columns 아니냐고 되묻기까지 하죠?"
-  ],
-  [
-   "undo",
-   "변수 이름은 한 글자만 달라도 못 찾아요. 그래서 지우고 다시 써요."
-  ],
-  [
    "code",
    "# 열 이름 리스트를 찍어요. '생존'이 보이면 맞게 읽은 거예요.\nprint(columns)\n",
    "columns, s까지 붙여서 찍어요."
   ],
   [
    "run",
-   "다시 실행해요."
+   "실행해 볼게요."
   ],
   [
    "output",

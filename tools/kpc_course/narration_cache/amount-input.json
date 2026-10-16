@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "92ddff9a4ed698b4",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "2361a179d968",
   "problem": "37dee2937819",
@@ -37,22 +37,6 @@
   {
    "block": "solution",
    "hash": "eac374c0f494"
-  },
-  {
-   "block": "solution",
-   "hash": "eac374c0f494"
-  },
-  {
-   "block": "solution",
-   "hash": "eac374c0f494"
-  },
-  {
-   "block": "solution",
-   "hash": "eac374c0f494"
-  },
-  {
-   "block": "solution",
-   "hash": "eac374c0f494"
   }
  ],
  "entry": [
@@ -67,23 +51,6 @@
   [
    "starter",
    "준비 코드가 입력을 나눠서 정수 price, quantity에 담아 뒀어요. 그대로 둘게요."
-  ],
-  [
-   "try",
-   "print('price * quantity')\n",
-   "이렇게 해 볼까요? 따옴표로 감싸서 출력해요."
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "price * quantity라는 글자가 그대로 나왔죠? 따옴표를 치면 계산이 아니라 글자예요. 곱셈은 안 됐어요."
-  ],
-  [
-   "undo",
-   "그래서 따옴표를 빼고 변수 이름 그대로 써요."
   ],
   [
    "code",

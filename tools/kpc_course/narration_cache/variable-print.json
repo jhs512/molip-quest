@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "6b0ad6900cf07895",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "7d766c3116f6",
   "problem": "602160333398",
@@ -21,30 +21,6 @@
   {
    "block": "starter",
    "hash": "4327382305a2"
-  },
-  {
-   "block": "solution",
-   "hash": "f149db9b2b30"
-  },
-  {
-   "block": "solution",
-   "hash": "f149db9b2b30"
-  },
-  {
-   "block": "solution",
-   "hash": "f149db9b2b30"
-  },
-  {
-   "block": "solution",
-   "hash": "f149db9b2b30"
-  },
-  {
-   "block": "solution",
-   "hash": "f149db9b2b30"
-  },
-  {
-   "block": "solution",
-   "hash": "f149db9b2b30"
   },
   {
    "block": "solution",
@@ -86,38 +62,13 @@
    "오른쪽 price 곱하기 quantity를 먼저 계산해요. 그 값이 amount에 들어가거든요."
   ],
   [
-   "run",
-   "일단 여기서 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? amount에 넣기만 했지 아직 꺼내지 않았거든요."
-  ],
-  [
-   "try",
-   "print('amount')\n",
-   "이렇게 해 볼까요? 따옴표를 붙여서 출력해 봐요."
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "숫자 대신 글자 amount가 그대로 찍혔죠? 따옴표를 쓰면 변수가 아니라 글자거든요."
-  ],
-  [
-   "undo",
-   "그래서 변수 이름에는 따옴표를 안 써요. 지우고 다시 쓸게요."
-  ],
-  [
    "code",
    "# 변수 이름 amount에는 따옴표를 안 써요. 따옴표를 쓰면 글자 amount가 찍혀요.\nprint(amount)\n",
    "그다음 줄에서 amount를 꺼내 출력하면 돼요."
   ],
   [
    "run",
-   "다시 실행해 볼게요."
+   "실행해 볼게요."
   ],
   [
    "output",

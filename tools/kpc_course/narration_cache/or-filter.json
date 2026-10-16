@@ -1,18 +1,18 @@
 {
  "format": 2,
- "hash": "b68e7086a6d2e028",
+ "hash": "bc099d432e0bdf9c",
  "by": "claude",
  "blocks": {
   "title": "0c68c321ce76",
-  "problem": "ebd19dfac51a",
+  "problem": "f11d416a7466",
   "starter": "c9df3b1a6595",
   "example": "e3b0c44298fc",
-  "solution": "e7aabd8fb920"
+  "solution": "f024d67a280f"
  },
  "sources": [
   {
    "block": "problem",
-   "hash": "ebd19dfac51a"
+   "hash": "f11d416a7466"
   },
   {
    "block": "starter",
@@ -20,57 +20,33 @@
   },
   {
    "block": "problem",
-   "hash": "ebd19dfac51a"
+   "hash": "f11d416a7466"
   },
   {
    "block": "solution",
-   "hash": "e7aabd8fb920"
+   "hash": "f024d67a280f"
   },
   {
    "block": "solution",
-   "hash": "e7aabd8fb920"
+   "hash": "f024d67a280f"
   },
   {
    "block": "solution",
-   "hash": "e7aabd8fb920"
+   "hash": "f024d67a280f"
   },
   {
    "block": "solution",
-   "hash": "e7aabd8fb920"
+   "hash": "f024d67a280f"
   },
   {
    "block": "solution",
-   "hash": "e7aabd8fb920"
-  },
-  {
-   "block": "solution",
-   "hash": "e7aabd8fb920"
-  },
-  {
-   "block": "solution",
-   "hash": "e7aabd8fb920"
-  },
-  {
-   "block": "solution",
-   "hash": "e7aabd8fb920"
-  },
-  {
-   "block": "solution",
-   "hash": "e7aabd8fb920"
-  },
-  {
-   "block": "solution",
-   "hash": "e7aabd8fb920"
-  },
-  {
-   "block": "solution",
-   "hash": "e7aabd8fb920"
+   "hash": "f024d67a280f"
   }
  ],
  "entry": [
   [
    "problem",
-   "자, 이번엔 \"또는\"이에요. 제품이 A이거나 수량이 1인 거래를 either에 담으면 돼요."
+   "자, 이번엔 \"또는\"이에요. 제품이 A이거나 수량이 1인 거래를 either에 담으세요. print로 찍어서 A, A, C 세 건이 남으면 맞아요."
   ],
   [
    "starter",
@@ -78,24 +54,7 @@
   ],
   [
    "hint",
-   "&가 \"그리고\", |가 \"또는\"이에요. 조건마다 괄호를 꼭 쳐야 오류가 안 나거든요."
-  ],
-  [
-   "try",
-   "either = orders.loc[orders['product'] == 'A' | orders['quantity'] == 1]\n",
-   "괄호 없이 이렇게 해 볼까요? 이렇게 쓰기 쉽거든요."
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "긴 오류가 쏟아지죠? 아래쪽 TypeError를 보세요. 'A' | orders['quantity'] 밑에 표시가 있어요. 파이썬이 그걸 먼저 계산하려다 막힌 거예요."
-  ],
-  [
-   "undo",
-   "그래서 조건마다 괄호를 꼭 쳐요."
+   "&가 \"그리고\", |가 \"또는\"이에요. 조건마다 괄호를 꼭 치세요. 없으면 'A' | orders['quantity']를 먼저 계산하려다 오류가 나거든요."
   ],
   [
    "code",
@@ -103,25 +62,17 @@
    "조건 두 개를 각각 괄호로 감싸고, 가운데를 |로 이어요. 둘 중 하나만 맞아도 골라 와요."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 보이죠? either에 담기만 했지 꺼내지 않았거든요."
-  ],
-  [
    "code",
-   "# 마지막 줄에 이름만 적으면 표가 화면에 나와요. A, A, C 세 건이면 성공이에요.\neither\n",
-   "마지막 줄에 either만 적으면 표가 보여요."
+   "# print로 표를 출력해 값을 확인해요.\nprint(either)\n",
+   "print로 표를 출력해 값을 확인해요."
   ],
   [
    "run",
-   "다시 실행해요."
+   "실행해 볼게요."
   ],
   [
    "output",
-   "출력창은 그대로 비어 있죠? 이름만 적는 건 여기선 안 찍혀요. 그래도 either엔 A, A, C 세 건이 담겼어요. C는 수량이 1이라 들어왔거든요. 제출하면 검사가 그걸 봐요."
+   "표에 0번, 2번, 3번 세 건이 나왔죠? 0번과 2번은 제품이 A라서 골라졌어요. 3번은 제품이 C인데 수량이 1이라 들어왔고요. 하나만 맞아도 고른 거죠. 이제 제출하면 돼요."
   ],
   [
    "submit",

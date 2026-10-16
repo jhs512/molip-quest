@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "4c97b471bf2c1026",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "b63584a9dd54",
   "problem": "232368e51e0a",
@@ -17,38 +17,6 @@
   {
    "block": "starter",
    "hash": "46fecd0647e9"
-  },
-  {
-   "block": "solution",
-   "hash": "f6eb534a3f6e"
-  },
-  {
-   "block": "solution",
-   "hash": "f6eb534a3f6e"
-  },
-  {
-   "block": "solution",
-   "hash": "f6eb534a3f6e"
-  },
-  {
-   "block": "solution",
-   "hash": "f6eb534a3f6e"
-  },
-  {
-   "block": "solution",
-   "hash": "f6eb534a3f6e"
-  },
-  {
-   "block": "solution",
-   "hash": "f6eb534a3f6e"
-  },
-  {
-   "block": "solution",
-   "hash": "f6eb534a3f6e"
-  },
-  {
-   "block": "solution",
-   "hash": "f6eb534a3f6e"
   },
   {
    "block": "solution",
@@ -110,31 +78,6 @@
    "predict_proba는 열이 두 개 나오죠? 뒤 열이 부도 확률이라 [:, 1]로 그 열만 꺼내요."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 담기만 했거든요. 오류가 없으니 확률은 잘 들어간 거예요."
-  ],
-  [
-   "try",
-   "print(model.predict(X_test)[:, 1])\n",
-   "predict로 하면 어떨까요? 이렇게 쓰기 쉽거든요."
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "IndexError가 나죠? too many indices, 1차원인데 2차원으로 골랐다고 해요. predict는 0과 1을 한 줄로만 주거든요. 열이 하나뿐이라 [:, 1]을 못 골라요."
-  ],
-  [
-   "undo",
-   "그래서 확률이 필요할 땐 predict_proba예요. 이 줄은 지울게요."
-  ],
-  [
    "code",
    "# 확률 >= 0.5면 True, 아니면 False. astype(int)로 1/0 숫자로 바꿔요\n# labels=[0, 1]을 적어야 행·열 순서가 항상 0, 1로 고정돼요\ncm_05 = confusion_matrix(y_test, (probabilities >= 0.5).astype(int), labels=[0, 1])\n",
    "확률이 0.5 이상이면 1, 아니면 0으로 예측을 만들어요. 그 예측과 정답 y_test로 혼동행렬을 만드는 거예요."
@@ -143,14 +86,6 @@
    "code",
    "# 기준값을 0.3으로 내리면 부도라고 경고하는 사람이 늘어나요\ncm_03 = confusion_matrix(y_test, (probabilities >= 0.3).astype(int), labels=[0, 1])\n",
    "0.3도 똑같이요. 기준이 낮으니 더 많이 경고하겠죠?"
-  ],
-  [
-   "run",
-   "여기서 한 번 실행해요."
-  ],
-  [
-   "output",
-   "역시 조용하죠? 혼동행렬 두 개가 변수에 담겼어요. 오류 없이 넘어가면 된 거예요."
   ],
   [
    "caution",
@@ -164,7 +99,7 @@
   [
    "code",
    "# 0.3도 같은 식이에요. 행렬 이름만 cm_03으로 바뀌어요\ncost_03 = int(cm_03[1, 0]) * 1_000_000 + int(cm_03[0, 1]) * 50_000\n",
-   "0.3은 행렬 이름만 cm_03으로 바꾸면 돼요."
+   "print로 표를 출력해 값을 확인해요."
   ],
   [
    "code",

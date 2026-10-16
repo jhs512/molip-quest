@@ -1,22 +1,22 @@
 {
  "format": 2,
- "hash": "cc9d9ab399e8d1c3",
- "by": "claude",
+ "hash": "9eff533987a126f4",
+ "by": "hand",
  "blocks": {
   "title": "0d8c877fe770",
-  "problem": "0982c55ca0dc",
+  "problem": "56ca9cebf6cc",
   "starter": "682b1b726995",
   "example": "e3b0c44298fc",
-  "solution": "b21c02cb0a6c"
+  "solution": "99424f5825a3"
  },
  "sources": [
   {
    "block": "problem",
-   "hash": "0982c55ca0dc"
+   "hash": "56ca9cebf6cc"
   },
   {
    "block": "problem",
-   "hash": "0982c55ca0dc"
+   "hash": "56ca9cebf6cc"
   },
   {
    "block": "starter",
@@ -24,83 +24,51 @@
   },
   {
    "block": "solution",
-   "hash": "b21c02cb0a6c"
+   "hash": "99424f5825a3"
   },
   {
    "block": "solution",
-   "hash": "b21c02cb0a6c"
+   "hash": "99424f5825a3"
   },
   {
    "block": "solution",
-   "hash": "b21c02cb0a6c"
+   "hash": "99424f5825a3"
   },
   {
    "block": "solution",
-   "hash": "b21c02cb0a6c"
+   "hash": "99424f5825a3"
   },
   {
    "block": "solution",
-   "hash": "b21c02cb0a6c"
+   "hash": "99424f5825a3"
   },
   {
    "block": "solution",
-   "hash": "b21c02cb0a6c"
+   "hash": "99424f5825a3"
   },
   {
    "block": "solution",
-   "hash": "b21c02cb0a6c"
+   "hash": "99424f5825a3"
   },
   {
    "block": "solution",
-   "hash": "b21c02cb0a6c"
+   "hash": "99424f5825a3"
   },
   {
    "block": "solution",
-   "hash": "b21c02cb0a6c"
+   "hash": "99424f5825a3"
   },
   {
    "block": "solution",
-   "hash": "b21c02cb0a6c"
+   "hash": "99424f5825a3"
   },
   {
    "block": "solution",
-   "hash": "b21c02cb0a6c"
+   "hash": "99424f5825a3"
   },
   {
    "block": "solution",
-   "hash": "b21c02cb0a6c"
-  },
-  {
-   "block": "solution",
-   "hash": "b21c02cb0a6c"
-  },
-  {
-   "block": "solution",
-   "hash": "b21c02cb0a6c"
-  },
-  {
-   "block": "solution",
-   "hash": "b21c02cb0a6c"
-  },
-  {
-   "block": "solution",
-   "hash": "b21c02cb0a6c"
-  },
-  {
-   "block": "solution",
-   "hash": "b21c02cb0a6c"
-  },
-  {
-   "block": "solution",
-   "hash": "b21c02cb0a6c"
-  },
-  {
-   "block": "solution",
-   "hash": "b21c02cb0a6c"
-  },
-  {
-   "block": "solution",
-   "hash": "b21c02cb0a6c"
+   "hash": "99424f5825a3"
   }
  ],
  "entry": [
@@ -122,31 +90,6 @@
    "가장 많이 팔린 요일을 기억할 자리를 먼저 만들어요. 아직 없으니 None과 0으로 시작해요."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 자리만 만들고 아직 print를 안 했거든요."
-  ],
-  [
-   "try",
-   "for day, sold in sales:\n    print(day, sold)\n",
-   "이렇게 해 볼까요? 딕셔너리를 바로 돌려요."
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "ValueError가 나요. 둘을 기대했는데 하나만 왔대요. 딕셔너리를 바로 돌면 요일 글자만 나와서 day와 sold로 못 나누거든요."
-  ],
-  [
-   "undo",
-   "그래서 .items()를 붙여야 요일과 판매량이 같이 나와요."
-  ],
-  [
    "code",
    "# .items()로 키(요일)와 값(판매량)을 한 번에 꺼내요. day는 글자, sold는 숫자예요.\nfor day, sold in sales.items():\n    # 공장 규칙: 판매량의 1.1배를 반올림. round()가 정수로 만들어 줘요.\n    plan = round(sold * 1.1)\n",
    "요일마다 판매량의 1.1배를 반올림해 계획을 잡아요. round()가 정수로 만들어 줘요."
@@ -155,14 +98,6 @@
    "code",
    "    # 요일 하나당 딕셔너리 하나. 열 이름은 따옴표 안의 글자 그대로 표의 제목이 돼요.\n    plans.append({'요일': day, '판매량': sold, '계획': plan})\n    # sum() 대신 반복마다 조금씩 더해서 누적해요. += 는 \"지금 값에 더하기\"예요.\n    total_plan += plan\n",
    "딕셔너리 하나로 묶어 plans에 넣어요. sum()은 금지죠? 반복 안에서 total_plan에 더해 쌓아요."
-  ],
-  [
-   "run",
-   "여기서 한 번 실행해요."
-  ],
-  [
-   "output",
-   "여전히 아무것도 안 떠요. 에러 없이 조용하면 잘 모이고 있는 거예요."
   ],
   [
    "code",
@@ -188,12 +123,12 @@
   ],
   [
    "code",
-   "# 마지막 줄에 변수 이름만 적으면 표가 떠요. print는 안 써도 돼요.\ndf\n",
-   "마지막 줄에 df를 적어야 표가 떠요. print는 안 써도 돼요."
+   "# print로 표를 출력해 값을 확인해요.\nprint(df)\n",
+   "print로 표를 출력해 값을 확인해요."
   ],
   [
    "run",
-   "다시 실행해요."
+   "실행해 볼게요."
   ],
   [
    "output",

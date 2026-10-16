@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "de8046146fca759a",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "88a737ae9c88",
   "problem": "785c0e8ae60d",
@@ -17,30 +17,6 @@
   {
    "block": "starter",
    "hash": "ee8843f95fb0"
-  },
-  {
-   "block": "solution",
-   "hash": "b992fdd35a91"
-  },
-  {
-   "block": "solution",
-   "hash": "b992fdd35a91"
-  },
-  {
-   "block": "solution",
-   "hash": "b992fdd35a91"
-  },
-  {
-   "block": "solution",
-   "hash": "b992fdd35a91"
-  },
-  {
-   "block": "solution",
-   "hash": "b992fdd35a91"
-  },
-  {
-   "block": "solution",
-   "hash": "b992fdd35a91"
   },
   {
    "block": "solution",
@@ -98,31 +74,6 @@
    "생존 열에 value_counts()를 붙이면 값마다 몇 번 나오는지 세어 줘요. 그걸 counts에 넣어요."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? counts에 담기만 하고 출력은 안 했거든요. 아래에서 꺼내 볼게요."
-  ],
-  [
-   "try",
-   "n_dead = int(counts['0'])\n",
-   "이렇게 해 볼까요? 0에 따옴표를 붙여서요."
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "빨간 글이 길게 나오죠? 맨 끝을 보세요. KeyError: '0'이에요. 생존 열의 값은 글자 '0'이 아니라 숫자 0이라서 못 찾은 거예요."
-  ],
-  [
-   "undo",
-   "그래서 따옴표 없이 숫자 0으로 찾아요."
-  ],
-  [
    "code",
    "# counts[0]은 0(사망)의 개수예요. 자리가 아니라 값 0으로 찾는 거예요\n# int()로 감싸야 평범한 정수로 저장돼요\nn_dead = int(counts[0])\n",
    "counts[0]이 값 0의 개수, 그러니까 사망 인원이에요. int()로 감싸서 정수로 담아요."
@@ -139,7 +90,7 @@
   ],
   [
    "run",
-   "실행해요."
+   "실행해 볼게요."
   ],
   [
    "output",
@@ -152,7 +103,7 @@
   ],
   [
    "run",
-   "다시 실행해요."
+   "실행해 볼게요."
   ],
   [
    "output",

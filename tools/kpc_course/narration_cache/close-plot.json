@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "b3b86c240915010e",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "b6184a8f316d",
   "problem": "b7d1680a5a83",
@@ -21,30 +21,6 @@
   {
    "block": "starter",
    "hash": "b155e6cb2218"
-  },
-  {
-   "block": "solution",
-   "hash": "949f0014e384"
-  },
-  {
-   "block": "solution",
-   "hash": "949f0014e384"
-  },
-  {
-   "block": "solution",
-   "hash": "949f0014e384"
-  },
-  {
-   "block": "solution",
-   "hash": "949f0014e384"
-  },
-  {
-   "block": "solution",
-   "hash": "949f0014e384"
-  },
-  {
-   "block": "solution",
-   "hash": "949f0014e384"
   },
   {
    "block": "solution",
@@ -98,34 +74,9 @@
    "먼저 plt.subplots()로 도화지 fig와 그릴 칸 ax를 만들어요. 그래프는 ax에 그리거든요."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 뜨죠? 도화지만 만들었고 아직 show()를 안 했거든요."
-  ],
-  [
-   "try",
-   "ax.plot(prices.index, prices[종가])\n",
-   "이렇게 해 볼까요? 열 이름을 따옴표 없이 적어 봤어요."
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "NameError: name '종가' is not defined가 나요. 따옴표가 없으면 파이썬이 종가를 변수 이름으로 찾거든요."
-  ],
-  [
-   "undo",
-   "그래서 열 이름엔 따옴표를 꼭 써요. 되돌릴게요."
-  ],
-  [
    "code",
    "# 선그래프는 plot이에요. 막대(bar)와 자리는 같아요.\n# x는 날짜 인덱스 prices.index, y는 '종가' 열이에요. 열 이름엔 따옴표를 꼭 써요.\nax.plot(prices.index, prices['종가'])\n",
-   "ax.plot에 x로 날짜 인덱스 prices.index, y로 prices['종가']를 넣어요. 막대와 자리는 같고 이름만 plot이죠."
+   "print로 표를 출력해 값을 확인해요."
   ],
   [
    "code",
@@ -139,11 +90,11 @@
   ],
   [
    "run",
-   "이제 실행해 볼게요."
+   "실행해 볼게요."
   ],
   [
    "output",
-   "글자 출력은 없고 그래프 창이 떠요. 종가 선이 날짜를 따라 어떻게 오르내리는지 보세요."
+   "그래프 창이 떠요. 종가 선이 날짜를 따라 어떻게 오르내리는지 보세요."
   ],
   [
    "caution",

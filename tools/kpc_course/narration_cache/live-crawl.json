@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "6ebf98fe9e17ae38",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "bf4e24def6be",
   "problem": "0fd36d2a1f13",
@@ -17,38 +17,6 @@
   {
    "block": "starter",
    "hash": "7da7acbf2b02"
-  },
-  {
-   "block": "solution",
-   "hash": "4b2ba339d4f0"
-  },
-  {
-   "block": "solution",
-   "hash": "4b2ba339d4f0"
-  },
-  {
-   "block": "solution",
-   "hash": "4b2ba339d4f0"
-  },
-  {
-   "block": "solution",
-   "hash": "4b2ba339d4f0"
-  },
-  {
-   "block": "solution",
-   "hash": "4b2ba339d4f0"
-  },
-  {
-   "block": "solution",
-   "hash": "4b2ba339d4f0"
-  },
-  {
-   "block": "solution",
-   "hash": "4b2ba339d4f0"
-  },
-  {
-   "block": "solution",
-   "hash": "4b2ba339d4f0"
   },
   {
    "block": "solution",
@@ -106,14 +74,6 @@
    "wikitable이 여러 개라서, 글자에 Closing level이 든 표만 골라 첫 번째를 table에 둬요."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 표를 골라 table에 담기만 했거든요. 오류가 없으면 페이지는 잘 받아 온 거예요."
-  ],
-  [
    "caution",
    "Closing level 철자나 대소문자를 틀리기 쉬운데, 그러면 리스트가 비어서 [0]에서 IndexError가 나니 조심하세요."
   ],
@@ -128,34 +88,9 @@
    "칸이 네 개 미만이거나 넷째 칸인 등락률이 비어 있으면 건너뛰어요. 제목 행이나 빈 행이 걸러지죠."
   ],
   [
-   "try",
-   "    rows.append({'연도': int(cells[0]), '종가': float(cells[1].replace(',', '')), '변화율': float(cells[3])})\n",
-   "이렇게 해 볼까요? 변화율은 쉼표가 없으니 바로 float로 바꿔요."
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "ValueError가 나요. −1.76을 float가 못 읽어요. 위키의 음수 기호가 보통 -가 아니라 유니코드 −거든요."
-  ],
-  [
-   "undo",
-   "그래서 −를 -로 바꾼 뒤에 float로 만들어요."
-  ],
-  [
    "code",
    "    # 글자를 숫자로 바꿔요. 종가는 '1,234.56'처럼 쉼표가 있어서 지우고 float로\n    # 변화율의 '−'는 위키의 유니코드 기호라서 '-'로 바꿔야 float가 읽어요\n    rows.append({'연도': int(cells[0]), '종가': float(cells[1].replace(',', '')), '변화율': float(cells[3].replace('−', '-'))})\n",
    "연도는 int, 종가는 쉼표를 지우고 float이에요. 변화율은 −를 -로 바꾼 뒤 float로 만들어 rows에 쌓아요."
-  ],
-  [
-   "run",
-   "다시 실행해요."
-  ],
-  [
-   "output",
-   "이번엔 오류 없이 돌죠? 출력은 없지만 rows에 연도별 행이 쌓였어요."
   ],
   [
    "code",
@@ -169,7 +104,7 @@
   ],
   [
    "run",
-   "실행해 볼게요. 인터넷에서 받아 오니 잠깐 걸려요."
+   "실행해 볼게요."
   ],
   [
    "output",

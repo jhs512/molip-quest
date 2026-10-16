@@ -21,12 +21,14 @@ tutor would otherwise have to improvise. The app runs them straight away and sho
 The rule this module enforces: when a body or a solution changes, its narration changes too.
 A stale hash, a stale anchor or a chunk set that no longer matches the solution fails the build.
 """
+import ast
 import hashlib
 import importlib
 import json
 import os
 import pathlib
 import re
+import textwrap
 
 # Bump when the narration format or voice rules change, so every entry counts as stale.
 RULES_VERSION = "2"
@@ -357,6 +359,24 @@ def _default_problem_line(problem):
 CODING_STEPS = {"problem", "examples", "hint", "starter", "code", "try", "undo", "run", "input", "output", "caution", "submit"}
 
 
+def has_visible_output(code):
+    """A checkpoint must print a value or draw data, rather than run assignments alone.
+
+    Plotting is captured by the app without plt.show(); an empty subplots() isn't a result.
+    Chunks may be the indented continuation of a loop, so dedent before inspecting them.
+    """
+    plot_calls = {"plot", "bar", "barh", "hist", "scatter", "heatmap", "boxplot", "imshow", "pie", "show", "savefig", "lineplot", "histplot", "countplot", "regplot"}
+    try:
+        tree = ast.parse(textwrap.dedent(code))
+    except SyntaxError:
+        # A continuation may include an else clause belonging to an earlier chunk.
+        return bool(re.search(r"(?m)^[^#\n]*\bprint\s*\(", code))
+    return any(isinstance(n, ast.Call) and (
+        isinstance(n.func, ast.Name) and n.func.id in {"print", "display"}
+        or isinstance(n.func, ast.Attribute) and n.func.attr in plot_calls
+    ) for n in ast.walk(tree))
+
+
 def coding_states(entry, prefix):
     """The editor's text after each step of a coding entry, following the agent: `code` and
     `try` append a chunk, `undo` puts the text back to what it was before the last `try`.
@@ -381,15 +401,23 @@ def coding_states(entry, prefix):
 
 
 def compile_coding(activity, entry, solution, where):
-    """A coding 해설 builds the program a little at a time: code → run → read the output, again
-    and again, with a tempting mistake tried and taken back (try/undo) or a spoken caution on
-    the way. The build refuses a script that types everything and runs once at the end."""
+    """Build correct code incrementally and run only at visible output checkpoints."""
     if not isinstance(entry, (list, tuple)) or not entry:
         raise SystemExit(f"{where}: 코딩 해설은 단계 목록이어야 합니다.")
     problem = activity["problem"]
     solution = solution.rstrip("\n") + "\n"
+    for node in ast.parse(solution).body:
+        if not isinstance(node, ast.Expr):
+            continue
+        value = node.value
+        preview = (isinstance(value, ast.Call) and isinstance(value.func, ast.Attribute)
+                   and value.func.attr in {"head", "tail", "describe"})
+        if preview or not isinstance(value, (ast.Call, ast.Constant)):
+            raise SystemExit(f"{where}: 변수나 표를 이름만 적지 말고 print로 출력하세요: {ast.get_source_segment(solution, node)}")
     prefix = _starter_prefix(problem, solution)
     for step in entry:
+        if step and step[0] in ("try", "undo"):
+            raise SystemExit(f"{where}: 일부러 틀리는 try/undo 시연은 쓰지 않습니다. 처음부터 올바른 코드를 쓰세요.")
         if not step or step[0] not in CODING_STEPS:
             raise SystemExit(f"{where}: 모르는 해설 단계 {step!r} (가능: {', '.join(sorted(CODING_STEPS))})")
         if step[0] in ("code", "try") and len(step) != 3:
@@ -414,16 +442,23 @@ def compile_coding(activity, entry, solution, where):
     # The rule: a run (with its output read) after the chunks, not one run at the very end.
     kinds = [step[0] for step in entry]
     runs = kinds.count("run")
-    if len(chunks) >= 2 and runs < 2:
+    # Several drawing calls (plot, labels, show) can form one graph checkpoint.
+    if sum(bool(re.search(r"(?m)^[^#\n]*\bprint\s*\(", step[1])) for step in chunks) >= 2 and runs < 2:
         raise SystemExit(f"{where}: 코드를 조금 쓰고 실행해 보는 걸 반복해야 합니다 (조각 {len(chunks)}개에 실행 {runs}번). 조각 사이에 run과 output을 넣으세요.")
     typed_since_run = False
-    for kind in kinds:
+    checkpoint_code = ""
+    for step in entry:
+        kind = step[0]
         if kind in ("code", "try", "undo"):
             typed_since_run = True
+            checkpoint_code += step[1] + "\n"
         elif kind == "run":
             if not typed_since_run:
                 raise SystemExit(f"{where}: 코드를 더 쓰지 않고 run을 반복했습니다.")
             typed_since_run = False
+            if not has_visible_output(checkpoint_code):
+                raise SystemExit(f"{where}: 출력 없는 실행입니다. print나 그래프를 작성한 뒤 실행하세요.")
+            checkpoint_code = ""
     if typed_since_run:
         raise SystemExit(f"{where}: 마지막 조각 뒤에 run과 output이 있어야 제출할 수 있습니다.")
     for i, kind in enumerate(kinds):
@@ -431,8 +466,6 @@ def compile_coding(activity, entry, solution, where):
             raise SystemExit(f"{where}: output은 run 바로 뒤에 옵니다.")
         if kind == "run" and (i + 1 >= len(kinds) or kinds[i + 1] != "output"):
             raise SystemExit(f"{where}: run 뒤에는 output(결과 읽기)이 와야 합니다.")
-    if "try" not in kinds and "caution" not in kinds:
-        raise SystemExit(f"{where}: 「이렇게 하기 쉬운데 … 조심하세요」가 하나는 있어야 합니다 (try/undo 또는 caution).")
     if kinds[-1] != "submit":
         raise SystemExit(f"{where}: 마지막 단계는 submit이어야 합니다.")
     actions = [_say("problem", steps["problem"][1] if "problem" in steps else _default_problem_line(problem))]

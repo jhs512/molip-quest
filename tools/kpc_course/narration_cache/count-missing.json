@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "e2a80f8de3bcda05",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "8d86980553f5",
   "problem": "559be7fe8f7e",
@@ -17,30 +17,6 @@
   {
    "block": "starter",
    "hash": "4c599ad117c7"
-  },
-  {
-   "block": "solution",
-   "hash": "de4a34cf2ddb"
-  },
-  {
-   "block": "solution",
-   "hash": "de4a34cf2ddb"
-  },
-  {
-   "block": "solution",
-   "hash": "de4a34cf2ddb"
-  },
-  {
-   "block": "solution",
-   "hash": "de4a34cf2ddb"
-  },
-  {
-   "block": "solution",
-   "hash": "de4a34cf2ddb"
-  },
-  {
-   "block": "solution",
-   "hash": "de4a34cf2ddb"
   },
   {
    "block": "solution",
@@ -98,31 +74,6 @@
    "한 줄 띄우고 시작할게요. isna()가 빈칸을 True로 표시하고, sum()이 열마다 True를 세요. 그 Series가 missing_counts에 들어가요."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "화면에 아무것도 안 나오죠? 변수에 담기만 했지 아직 print를 안 했거든요."
-  ],
-  [
-   "try",
-   "print(missing_counts[price])\n",
-   "가격 열 값을 꺼내 볼까요? 이렇게 해 볼게요."
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "NameError가 나죠? name 'price' is not defined이에요. price라는 변수는 없거든요. 열 이름은 글자라서 따옴표가 필요해요."
-  ],
-  [
-   "undo",
-   "그래서 따옴표를 꼭 붙여요."
-  ],
-  [
    "code",
    "# 열 이름 'price'로 가격 열의 결측 개수만 꺼내요. 따옴표 잊지 마세요\n# int()로 감싸야 파이썬의 정수가 돼요. 그냥 두면 numpy 숫자예요\nn_missing_price = int(missing_counts['price'])\n",
    "따옴표를 붙여 missing_counts['price']로 꺼내요. int()로 감싸서 정수로 만들면 돼요."
@@ -151,7 +102,7 @@
   ],
   [
    "run",
-   "다시 실행해요."
+   "실행해 볼게요."
   ],
   [
    "output",

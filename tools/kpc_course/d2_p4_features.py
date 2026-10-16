@@ -164,7 +164,7 @@ UNIT = unit('features', '입력과 정답 분리', [
         세 줄이면 돼요. 먼저 `features = ['객실등급', '성별', '나이', '형제배우자', '부모자녀', '요금', '탑승항구']`예요. 그다음 `X = titanic[features].copy()`를 적어요. 마지막으로 `y = titanic['생존'].astype(int)`예요. `.copy()`는 뒤에서 `X`를 고쳐도 원본 표가 안 바뀌게 해요.
         """,
         starter=TI + "# features, X, y를 만드세요\n",
-        solution=TI + FEATURES + "print(X.shape, y.shape)\nX.head()\n",
+        solution=TI + FEATURES + "print(X.shape, y.shape)\nprint(X.head())\n",
         check="assert list(s['X'].columns) == ['객실등급', '성별', '나이', '형제배우자', '부모자녀', '요금', '탑승항구']\nassert s['X'].shape == (1309, 7) and len(s['y']) == 1309\nassert int(s['y'].sum()) == 500"),
     coding('column-types', '숫자 열과 글자 열 나누기',
         goal="""
@@ -204,7 +204,7 @@ UNIT = unit('features', '입력과 정답 분리', [
               - {화자: 모델, 상대: 민지, 내용: "그게 One-hot이야. 이제 숫자니까 먹을 수 있어."}
         ```
 
-        모델은 `여성`, `남성` 같은 글자를 못 받아요. 흔한 방법은 값마다 열을 하나씩 만드는 거예요. 해당하면 1, 아니면 0을 적어요. 이걸 One-hot 인코딩이라고 해요. `pd.get_dummies(titanic[['성별']])`로 `성별` 열을 바꿔 `encoded`에 담으세요. 마지막 줄에는 `encoded.head()`를 적으세요.
+        모델은 `여성`, `남성` 같은 글자를 못 받아요. 흔한 방법은 값마다 열을 하나씩 만드는 거예요. 해당하면 1, 아니면 0을 적어요. 이걸 One-hot 인코딩이라고 해요. `pd.get_dummies(titanic[['성별']])`로 `성별` 열을 바꿔 `encoded`에 담으세요. `print(encoded.head())`로 출력하세요.
 
         `성별_여성`, `성별_남성` 두 열이 생겨야 해요. 각 행에서 둘 중 하나만 1이면 맞게 한 거예요.
         """,
@@ -212,7 +212,7 @@ UNIT = unit('features', '입력과 정답 분리', [
         `pd.get_dummies(표)`가 글자 열의 값마다 새 열을 만들어요. `titanic[['성별']]`처럼 대괄호 두 겹으로 표를 넘기세요. 다음 단원의 `OneHotEncoder`가 같은 일을 모델 흐름 안에서 해요.
         """,
         starter=TI + "# encoded를 만들고 head()를 확인하세요\n",
-        solution=TI + "encoded = pd.get_dummies(titanic[['성별']])\nprint(encoded.shape)\nencoded.head()\n",
+        solution=TI + "encoded = pd.get_dummies(titanic[['성별']])\nprint(encoded.shape)\nprint(encoded.head())\n",
         check="assert sorted(s['encoded'].columns) == ['성별_남성', '성별_여성'] and s['encoded'].shape == (1309, 2)\nassert (s['encoded'].astype(int).sum(axis=1) == 1).all()"),
     quiz('features-check', '단원 점검',
         choice('생존/사망처럼 몇 가지 중 하나를 고르는 예측은 무엇이라고 하나요?',
@@ -242,7 +242,7 @@ UNIT = unit('features', '입력과 정답 분리', [
 - 「생존 빼고 전부」: 구명보트·시신번호가 들어가서 누수예요.
 - 「열은 알아서」: 같은 이유로 위험해요."""),
         choice("""**프롬프트 고르기** · `성별` 글자 열을 숫자로 바꿔야 해요. AI가 `map({'남성': 0, '여성': 1})`을 제안했어요. 그런데 표준 방법을 받고 싶어요. 어떤 프롬프트가 맞을까요?""",
-               ["""pandas. titanic[['성별']]을 pd.get_dummies로 One-hot 인코딩해 encoded에 담고 마지막 줄에 encoded.head(). 성별_여성, 성별_남성 두 열이 나와야 해. 코드만""", """성별을 숫자로 바꿔 줘""", """여성은 1, 남성은 0으로 바꿔 줘""", """글자 열 처리하는 코드 줘"""], 0,
+               ["""pandas. titanic[['성별']]을 pd.get_dummies로 One-hot 인코딩해 encoded에 담고 print(encoded.head())로 출력. 성별_여성, 성별_남성 두 열이 나와야 해. 코드만""", """성별을 숫자로 바꿔 줘""", """여성은 1, 남성은 0으로 바꿔 줘""", """글자 열 처리하는 코드 줘"""], 0,
                """정답은 "One-hot 인코딩"이라는 표준 용어를 썼어요. 함수 이름과 나와야 할 열 이름까지 적었고요. 용어를 쓰면 AI가 임의 코드 대신 표준 변환을 줘요.
 
 **다른 보기는 왜 아닌가**

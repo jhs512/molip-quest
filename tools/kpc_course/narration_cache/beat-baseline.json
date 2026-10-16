@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "73ba2b2cd151d0b9",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "601bb656db5e",
   "problem": "3bebe8af9095",
@@ -21,38 +21,6 @@
   {
    "block": "starter",
    "hash": "d62216d3e977"
-  },
-  {
-   "block": "solution",
-   "hash": "35cba93e080b"
-  },
-  {
-   "block": "solution",
-   "hash": "35cba93e080b"
-  },
-  {
-   "block": "solution",
-   "hash": "35cba93e080b"
-  },
-  {
-   "block": "solution",
-   "hash": "35cba93e080b"
-  },
-  {
-   "block": "solution",
-   "hash": "35cba93e080b"
-  },
-  {
-   "block": "solution",
-   "hash": "35cba93e080b"
-  },
-  {
-   "block": "solution",
-   "hash": "35cba93e080b"
-  },
-  {
-   "block": "solution",
-   "hash": "35cba93e080b"
   },
   {
    "block": "solution",
@@ -110,47 +78,14 @@
    "기준 모델부터 구해요. 오늘 종가를 내일 종가로 내는 예측이니까 모델 없이 X_test의 close를 정답 y_test와 비교하면 돼요."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 변수에 넣기만 했거든요. 오류가 없으면 된 거예요."
-  ],
-  [
    "code",
    "# 파이프라인은 (이름, 단계) 튜플의 리스트예요. 괄호가 두 겹인 게 맞아요\n# 'scale'로 열마다 크기를 맞춘 다음 'model'인 릿지가 학습해요\n# alpha=1은 규제의 세기. 숫자라서 따옴표 없이 써요\nridge = Pipeline([('scale', StandardScaler()), ('model', Ridge(alpha=1))])\n",
    "릿지는 표준화와 Ridge(alpha=1)을 파이프라인으로 묶어요. 괄호가 두 겹인 게 맞아요."
   ],
   [
-   "try",
-   "ridge_mae = mean_absolute_error(y_test, ridge.predict(X_test))\n",
-   "이렇게 바로 예측해 볼까요? 만들었으니 쓸 수 있을 것 같죠?"
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "NotFittedError가 나죠? 마지막 줄을 보세요. fit을 먼저 부르라고 해요. 학습을 안 한 모델은 예측을 못 하거든요."
-  ],
-  [
-   "undo",
-   "그래서 fit을 먼저 해요. 이 줄은 지울게요."
-  ],
-  [
    "code",
    "# 학습은 훈련 자료로만. 테스트 자료가 들어가면 누수예요\nridge.fit(X_train, y_train)\n",
    "훈련 자료로만 fit 해요. 테스트 자료가 들어가면 누수예요."
-  ],
-  [
-   "run",
-   "실행해 볼게요."
-  ],
-  [
-   "output",
-   "이번에도 아무것도 안 나와요. fit은 조용히 끝나거든요. 오류가 없으면 학습이 된 거예요."
   ],
   [
    "code",

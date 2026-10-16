@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "e4cf571ba5d42226",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "e0c94a855202",
   "problem": "df7bb87d8447",
@@ -21,30 +21,6 @@
   {
    "block": "starter",
    "hash": "89fe41377bcc"
-  },
-  {
-   "block": "solution",
-   "hash": "a86a0a61dd3d"
-  },
-  {
-   "block": "solution",
-   "hash": "a86a0a61dd3d"
-  },
-  {
-   "block": "solution",
-   "hash": "a86a0a61dd3d"
-  },
-  {
-   "block": "solution",
-   "hash": "a86a0a61dd3d"
-  },
-  {
-   "block": "solution",
-   "hash": "a86a0a61dd3d"
-  },
-  {
-   "block": "solution",
-   "hash": "a86a0a61dd3d"
   },
   {
    "block": "solution",
@@ -102,14 +78,6 @@
    "표준화 뒤에 선형 회귀가 오도록 Pipeline으로 묶어 model에 담아요. 그리고 훈련 자료로만 fit을 하죠."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 학습만 했지 아직 print가 없거든요. 오류 없이 조용하면 잘 된 거예요."
-  ],
-  [
    "caution",
    "fit에 X_test, y_test를 넣기 쉬운데, 그러면 시험지를 미리 보여 준 셈이라 누수예요. 학습은 꼭 훈련 자료로만 하세요."
   ],
@@ -127,30 +95,13 @@
    "13520.95 정도 나왔죠? 평균 만삼천오백 원쯤 틀린다는 뜻이에요. 앞 단원의 기준 MAE와 비교해 보세요."
   ],
   [
-   "try",
-   "print(model.coef_)\n",
-   "이제 가중치요. 이렇게 해 볼까요?"
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "MAE 아래에 AttributeError가 났죠? Pipeline에는 coef_가 없대요. model은 Pipeline이라 가중치를 직접 안 갖고 있거든요. 가중치는 그 안의 회귀 모델이 갖고 있어요."
-  ],
-  [
-   "undo",
-   "그래서 파이프라인 안에서 모델을 먼저 꺼내야 해요."
-  ],
-  [
    "code",
    "# named_steps['model']로 파이프라인 안의 회귀 모델을 꺼내요.\n# coef_는 가중치 네 개예요. feature_columns 순서와 같아요.\nprint(model.named_steps['model'].coef_)\n",
    "named_steps에 아까 붙인 이름 'model'을 넣어 꺼내요. 그 coef_가 입력 네 열의 가중치예요."
   ],
   [
    "run",
-   "다시 실행해요."
+   "실행해 볼게요."
   ],
   [
    "output",

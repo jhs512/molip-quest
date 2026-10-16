@@ -1216,12 +1216,12 @@
    },
    {
     "key": "p5",
-    "hash": "c400f68da5c3",
+    "hash": "c80d231008d3",
     "text": "python import pandas as pd df = pd.Data…"
    },
    {
     "key": "p6",
-    "hash": "36b3fe33781b",
+    "hash": "2853e93d9d68",
     "text": "첫 줄 `import pandas as pd`는 이런 선언이에요. \"p…"
    },
    {
@@ -1247,7 +1247,7 @@
    },
    {
     "key": "problem",
-    "hash": "dc1c8959c789",
+    "hash": "6631a28d8148",
     "text": "### 목표 금액까지 들어 있는 `holdings`를 `DataFram…"
    },
    {
@@ -1262,7 +1262,7 @@
    },
    {
     "key": "solution",
-    "hash": "23424a20c232",
+    "hash": "b2f2e4d4c95f",
     "text": "import pandas as pd holdings = [{'name'…"
    }
   ]
@@ -1472,8 +1472,8 @@
    },
    {
     "key": "q6",
-    "hash": "7af6a307c339",
-    "text": "{\"correct\": 2, \"explanation\": \"마지막 줄에 `…"
+    "hash": "581e7c23bd50",
+    "text": "{\"correct\": 2, \"explanation\": \"`print(d…"
    },
    {
     "key": "q7",
@@ -1503,7 +1503,7 @@
    },
    {
     "key": "problem",
-    "hash": "0982c55ca0dc",
+    "hash": "56ca9cebf6cc",
     "text": "### 문제에서 필요한 설명 자, 파리바게뜨 공장의 지난주 요일별 크루…"
    },
    {
@@ -1518,7 +1518,7 @@
    },
    {
     "key": "solution",
-    "hash": "b21c02cb0a6c",
+    "hash": "99424f5825a3",
     "text": "import pandas as pd sales = {'월': 412, …"
    }
   ]
@@ -1657,7 +1657,7 @@
    },
    {
     "key": "problem",
-    "hash": "e133342a4c7e",
+    "hash": "858a4055d59d",
     "text": "### 목표 `orders`를 `orders.csv`라는 파일로 저장하…"
    },
    {
@@ -1672,7 +1672,7 @@
    },
    {
     "key": "solution",
-    "hash": "e218ebc5d8af",
+    "hash": "634ceddb57ef",
     "text": "import pandas as pd orders = pd.DataFra…"
    }
   ]
@@ -1703,7 +1703,7 @@
    },
    {
     "key": "solution",
-    "hash": "3db8b4f1276c",
+    "hash": "685f852d47d4",
     "text": "import pandas as pd orders = pd.DataFra…"
    }
   ]
@@ -1765,7 +1765,7 @@
    },
    {
     "key": "solution",
-    "hash": "17d416e99980",
+    "hash": "22ba47efa839",
     "text": "import pandas as pd orders = pd.DataFra…"
    }
   ]
@@ -1781,7 +1781,7 @@
    },
    {
     "key": "problem",
-    "hash": "873efe3082b7",
+    "hash": "d2d75c24a6a3",
     "text": "### 목표 자리 번호가 아니라 **조건**으로 행을 골라요. 수량이 …"
    },
    {
@@ -1796,7 +1796,7 @@
    },
    {
     "key": "solution",
-    "hash": "8407453de062",
+    "hash": "89beaf5de76d",
     "text": "import pandas as pd orders = pd.DataFra…"
    }
   ]
@@ -1812,7 +1812,7 @@
    },
    {
     "key": "problem",
-    "hash": "5c51102a5633",
+    "hash": "5dba873f44c9",
     "text": "### 목표 이제 진짜 파일이에요. 앱이 준비해 둔 `data/tita…"
    },
    {
@@ -1827,7 +1827,7 @@
    },
    {
     "key": "solution",
-    "hash": "172fc076805b",
+    "hash": "4ce0e54842b5",
     "text": "import pandas as pd # 'data/titanic.csv…"
    }
   ]
@@ -2089,7 +2089,7 @@
    },
    {
     "key": "problem",
-    "hash": "02882ffa0ba9",
+    "hash": "e59019c4b9d5",
     "text": "### 목표 두 번째 길, 빼기예요. 가격이 빈 행을 뺀 표를 `dro…"
    },
    {
@@ -2104,7 +2104,7 @@
    },
    {
     "key": "solution",
-    "hash": "d0b8259e895e",
+    "hash": "5372f0d058da",
     "text": "import pandas as pd orders = pd.DataFra…"
    }
   ]
@@ -2135,7 +2135,7 @@
    },
    {
     "key": "solution",
-    "hash": "35a36a3d8077",
+    "hash": "0751399db286",
     "text": "import pandas as pd orders = pd.DataFra…"
    }
   ]
@@ -2151,7 +2151,7 @@
    },
    {
     "key": "problem",
-    "hash": "ebd19dfac51a",
+    "hash": "f11d416a7466",
     "text": "### 목표 이번에는 \"또는\"이에요. 제품이 A**이거나** 수량이 1…"
    },
    {
@@ -2166,7 +2166,7 @@
    },
    {
     "key": "solution",
-    "hash": "e7aabd8fb920",
+    "hash": "f024d67a280f",
     "text": "import pandas as pd orders = pd.DataFra…"
    }
   ]
@@ -2197,7 +2197,7 @@
    },
    {
     "key": "solution",
-    "hash": "36f96673a08b",
+    "hash": "ab57c3420aa9",
     "text": "import pandas as pd orders = pd.DataFra…"
    }
   ]
@@ -2474,7 +2474,7 @@
    },
    {
     "key": "solution",
-    "hash": "68747d687816",
+    "hash": "9292a76279cb",
     "text": "import pandas as pd from pathlib import…"
    }
   ]
@@ -3183,7 +3183,7 @@
    },
    {
     "key": "problem",
-    "hash": "396768403750",
+    "hash": "ec19967d8aff",
     "text": "### 목표 인원과 비율을 따로 구하지 말고 한 표로 봐요. 성별로 묶…"
    },
    {
@@ -3198,7 +3198,7 @@
    },
    {
     "key": "solution",
-    "hash": "0d34b6aaf82c",
+    "hash": "32b7ab618a13",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -3229,7 +3229,7 @@
    },
    {
     "key": "solution",
-    "hash": "dbe438778c1a",
+    "hash": "c8568534778c",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -3260,7 +3260,7 @@
    },
    {
     "key": "solution",
-    "hash": "6944e1cd33e5",
+    "hash": "de91a79617a4",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -3327,7 +3327,7 @@
    },
    {
     "key": "problem",
-    "hash": "f9984eb20608",
+    "hash": "f978db09892e",
     "text": "### 문제에서 필요한 설명 표에 없는 열을 직접 만들어 집계해 봐요.…"
    },
    {
@@ -3342,7 +3342,7 @@
    },
    {
     "key": "solution",
-    "hash": "858129323c14",
+    "hash": "12b21610804b",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -4029,7 +4029,7 @@
    },
    {
     "key": "problem",
-    "hash": "d1cf501b1e16",
+    "hash": "ca5af1b55bf3",
     "text": "### 목표 앞서 배운 `groupby`를 한 번 더 손에 익혀요. 탑…"
    },
    {
@@ -4044,7 +4044,7 @@
    },
    {
     "key": "solution",
-    "hash": "dd8854b83538",
+    "hash": "99c42492ecdf",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -4060,7 +4060,7 @@
    },
    {
     "key": "problem",
-    "hash": "1c480b18ba8b",
+    "hash": "4dcdf2026f78",
     "text": "### 목표 자, 두 조건으로 나눠요. `성별`과 `객실등급`으로 묶은…"
    },
    {
@@ -4075,7 +4075,7 @@
    },
    {
     "key": "solution",
-    "hash": "3de2c2094d8a",
+    "hash": "7631ca21d8eb",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -4152,7 +4152,7 @@
    },
    {
     "key": "q7",
-    "hash": "5d1ea3762686",
+    "hash": "9d8f3eae9e5b",
     "text": "{\"correct\": 3, \"explanation\": \"정답은 두 열로…"
    },
    {
@@ -4480,7 +4480,7 @@
    },
    {
     "key": "solution",
-    "hash": "5deca5ff9581",
+    "hash": "18798bdad351",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -4527,7 +4527,7 @@
    },
    {
     "key": "problem",
-    "hash": "8309d3297233",
+    "hash": "ecdabd77ce46",
     "text": "### 목표 ```comic-gen 제목: 글자는 못 먹어요 등장인물:…"
    },
    {
@@ -4542,7 +4542,7 @@
    },
    {
     "key": "solution",
-    "hash": "e47027755d0b",
+    "hash": "b2aa8b2f536d",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -4593,7 +4593,7 @@
    },
    {
     "key": "q8",
-    "hash": "2db6682dcb80",
+    "hash": "9cecc5872d48",
     "text": "{\"correct\": 2, \"explanation\": \"정답은 \\\"On…"
    }
   ]
@@ -5229,7 +5229,7 @@
    },
    {
     "key": "solution",
-    "hash": "a12b618ab6d2",
+    "hash": "773855ab1b13",
     "text": "import pandas as pd titanic = pd.read_c…"
    }
   ]
@@ -5614,7 +5614,7 @@
    },
    {
     "key": "solution",
-    "hash": "098e3dbb9458",
+    "hash": "fc1e6c7f5d27",
     "text": "import pandas as pd from sklearn.model_…"
    }
   ]
@@ -5912,7 +5912,7 @@
    },
    {
     "key": "solution",
-    "hash": "6335163cf323",
+    "hash": "610e00381cab",
     "text": "import pandas as pd credit = pd.read_cs…"
    }
   ]
@@ -6174,7 +6174,7 @@
    },
    {
     "key": "solution",
-    "hash": "47508c0c4522",
+    "hash": "82f8b3652665",
     "text": "import pandas as pd credit = pd.read_cs…"
    }
   ]
@@ -6584,7 +6584,7 @@
    },
    {
     "key": "solution",
-    "hash": "90275d70afd8",
+    "hash": "4eea38a754dc",
     "text": "import pandas as pd # 주가 파일을 읽어요. parse…"
    }
   ]
@@ -6866,7 +6866,7 @@
    },
    {
     "key": "solution",
-    "hash": "0c8eefcb52d5",
+    "hash": "0fdcdec26007",
     "text": "import pandas as pd prices = pd.read_cs…"
    }
   ]
@@ -6897,7 +6897,7 @@
    },
    {
     "key": "solution",
-    "hash": "3c48b6790491",
+    "hash": "059188b2ba09",
     "text": "import pandas as pd prices = pd.read_cs…"
    }
   ]
@@ -6928,7 +6928,7 @@
    },
    {
     "key": "solution",
-    "hash": "48c07ae4571a",
+    "hash": "03807bf9f990",
     "text": "import pandas as pd prices = pd.read_cs…"
    }
   ]
@@ -6959,7 +6959,7 @@
    },
    {
     "key": "solution",
-    "hash": "fe60488f212d",
+    "hash": "099a4fc1b0f5",
     "text": "import pandas as pd prices = pd.read_cs…"
    }
   ]
@@ -7559,7 +7559,7 @@
    },
    {
     "key": "solution",
-    "hash": "23c9d124ebf7",
+    "hash": "ca0bb9536113",
     "text": "import pandas as pd prices = pd.read_cs…"
    }
   ]
@@ -7642,7 +7642,7 @@
    },
    {
     "key": "solution",
-    "hash": "443bca962f79",
+    "hash": "95beced48289",
     "text": "import pandas as pd prices = pd.read_cs…"
    }
   ]

@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "f4ae8bf3b91ab189",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "fb792ff607fd",
   "problem": "0f673bee6311",
@@ -21,38 +21,6 @@
   {
    "block": "starter",
    "hash": "32ef9e3a97c8"
-  },
-  {
-   "block": "solution",
-   "hash": "5dae69d8815f"
-  },
-  {
-   "block": "solution",
-   "hash": "5dae69d8815f"
-  },
-  {
-   "block": "solution",
-   "hash": "5dae69d8815f"
-  },
-  {
-   "block": "solution",
-   "hash": "5dae69d8815f"
-  },
-  {
-   "block": "solution",
-   "hash": "5dae69d8815f"
-  },
-  {
-   "block": "solution",
-   "hash": "5dae69d8815f"
-  },
-  {
-   "block": "solution",
-   "hash": "5dae69d8815f"
-  },
-  {
-   "block": "solution",
-   "hash": "5dae69d8815f"
   },
   {
    "block": "solution",
@@ -98,42 +66,9 @@
    "숫자 열만 남긴 표의 .columns를 list()로 감싸서 numeric_columns에 담아요."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 리스트에 담기만 했지 아직 print를 안 했거든요."
-  ],
-  [
-   "try",
-   "category_columns = list(X.select_dtypes(exclude=number).columns)\n",
-   "이번엔 글자 열이요. 이렇게 해 볼까요?"
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "NameError가 나죠? name 'number' is not defined, number라는 변수가 없대요. 따옴표를 빼서 파이썬이 변수 이름으로 읽은 거예요."
-  ],
-  [
-   "undo",
-   "그래서 따옴표를 꼭 붙여요."
-  ],
-  [
    "code",
    "# exclude='number'는 \"숫자 빼고 나머지\"예요. 성별, 탑승항구처럼 글자 열이 남아요.\n# 'number'는 글자니까 따옴표를 꼭 붙여요. 빼면 이름 없는 변수라고 오류가 나요.\ncategory_columns = list(X.select_dtypes(exclude='number').columns)\n",
    "exclude='number'로 숫자 빼고 나머지 열만 남겨서 category_columns에 담아요."
-  ],
-  [
-   "run",
-   "다시 실행해요."
-  ],
-  [
-   "output",
-   "이번엔 오류 없이 조용히 지나가죠? 두 리스트가 다 만들어진 거예요."
   ],
   [
    "code",

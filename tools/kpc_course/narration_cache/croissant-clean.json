@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "06e24712bb1737ef",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "60ca4cd15800",
   "problem": "99002bbbc79d",
@@ -17,46 +17,6 @@
   {
    "block": "starter",
    "hash": "4493f17b4927"
-  },
-  {
-   "block": "solution",
-   "hash": "02e79b13d2e4"
-  },
-  {
-   "block": "solution",
-   "hash": "02e79b13d2e4"
-  },
-  {
-   "block": "solution",
-   "hash": "02e79b13d2e4"
-  },
-  {
-   "block": "solution",
-   "hash": "02e79b13d2e4"
-  },
-  {
-   "block": "solution",
-   "hash": "02e79b13d2e4"
-  },
-  {
-   "block": "solution",
-   "hash": "02e79b13d2e4"
-  },
-  {
-   "block": "solution",
-   "hash": "02e79b13d2e4"
-  },
-  {
-   "block": "solution",
-   "hash": "02e79b13d2e4"
-  },
-  {
-   "block": "solution",
-   "hash": "02e79b13d2e4"
-  },
-  {
-   "block": "solution",
-   "hash": "02e79b13d2e4"
   },
   {
    "block": "solution",
@@ -122,14 +82,6 @@
    "먼저 판매량 열의 결측을 세요. isna()로 참·거짓을 만들고 sum()으로 더해요. int로 감싸야 파이썬 정수가 되고요."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "화면에 아무것도 안 나오죠? print를 안 했으니 당연해요. 오류 없이 지나갔으면 n_missing에 잘 담긴 거예요."
-  ],
-  [
    "code",
    "# 원본 sales는 건드리지 않게 복사본을 만들어요\nfilled = sales.copy()\n",
    "원본 sales는 그대로 두고 copy()로 새 표 filled를 만들어요."
@@ -144,31 +96,6 @@
    "fillna만 부르고 담지 않기 쉬운데, 그러면 filled는 하나도 안 바뀌니 조심하세요."
   ],
   [
-   "run",
-   "여기까지 실행해요."
-  ],
-  [
-   "output",
-   "역시 빈 화면이죠? 빨간 글자가 없으면 채우기까지 잘 된 거예요."
-  ],
-  [
-   "try",
-   "rainy = filled[filled['날씨'] == 비]\n",
-   "이제 비 온 날을 골라요. 이렇게 해 볼까요?"
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "NameError가 나요. name '비' is not defined, 비라는 이름이 없다는 거예요. 따옴표가 없으니 파이썬이 글자가 아니라 비라는 변수를 찾거든요."
-  ],
-  [
-   "undo",
-   "그래서 글자는 꼭 따옴표로 감싸요."
-  ],
-  [
    "code",
    "# 날씨가 '비'인 행만 골라요. 따옴표 잊으면 비라는 변수를 찾다 오류예요\nrainy = filled[filled['날씨'] == '비']\n",
    "날씨가 비인 행은 등호 두 개 마스크로 골라요. 이번엔 따옴표를 붙였죠."
@@ -177,14 +104,6 @@
    "code",
    "# 요일이 토나 일인 행을 isin으로 고르고, 그 판매량 평균만 구해요\nweekend_mean = filled[filled['요일'].isin(['토', '일'])]['판매량'].mean()\n",
    "요일이 토나 일인 행은 isin으로 골라요. 그 판매량 열만 꺼내 평균을 내요."
-  ],
-  [
-   "run",
-   "실행해 볼게요."
-  ],
-  [
-   "output",
-   "아직 찍는 게 없어서 빈 화면이에요. 오류만 없으면 돼요."
   ],
   [
    "code",

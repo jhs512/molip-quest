@@ -1,6 +1,6 @@
 {
  "format": 2,
- "hash": "fd7c12c0e8677a81",
+ "hash": "84b239b25eb1bae0",
  "by": "claude",
  "blocks": {
   "title": "85c7ca78fc70",
@@ -8,8 +8,8 @@
   "p2": "2a1ce19d77e9",
   "p3": "c056cc78f91c",
   "p4": "78fc3f7a3bda",
-  "p5": "c400f68da5c3",
-  "p6": "36b3fe33781b",
+  "p5": "c80d231008d3",
+  "p6": "2853e93d9d68",
   "p7": "d1eed1e0e892",
   "check": "79c7ccb17d2d"
  },
@@ -32,11 +32,11 @@
   },
   {
    "block": "p5",
-   "hash": "c400f68da5c3"
+   "hash": "c80d231008d3"
   },
   {
    "block": "p6",
-   "hash": "36b3fe33781b"
+   "hash": "2853e93d9d68"
   },
   {
    "block": "p7",
@@ -66,11 +66,11 @@
   ],
   [
    "df = pd.DataFrame(holdings)",
-   "리스트에 든 딕셔너리들을 pd.DataFrame에 넘기면 바로 표가 돼요. df.shape를 찍으면 (3, 4), 3행 4열이죠."
+   "리스트에 든 딕셔너리들을 pd.DataFrame에 넘기면 바로 표가 돼요. 그다음 print(df)로 표를 찍어 보는 거죠."
   ],
   [
    "첫 줄 import pandas as pd는 이런 선언이에요",
-   "import pandas as pd는 pandas를 짧게 pd라고 부르겠다는 선언이에요. 그리고 마지막 줄에 df만 적으면 이 앱이 표를 그려 주니 그 방식을 쓰세요."
+   "import pandas as pd는 pandas를 짧게 pd라고 부르겠다는 선언이에요. df.shape는 (행 수, 열 수)고, 인덱스는 열 수에 안 들어가요."
   ],
   [
    "한 열 전체를 더하는 일은 반복문 없이",

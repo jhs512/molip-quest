@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "f67af8acb593cbdd",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "0d7674472c26",
   "problem": "4ccd8ce5ded6",
@@ -17,46 +17,6 @@
   {
    "block": "starter",
    "hash": "2332418c6b2d"
-  },
-  {
-   "block": "solution",
-   "hash": "e7d42e01b5e5"
-  },
-  {
-   "block": "solution",
-   "hash": "e7d42e01b5e5"
-  },
-  {
-   "block": "solution",
-   "hash": "e7d42e01b5e5"
-  },
-  {
-   "block": "solution",
-   "hash": "e7d42e01b5e5"
-  },
-  {
-   "block": "solution",
-   "hash": "e7d42e01b5e5"
-  },
-  {
-   "block": "solution",
-   "hash": "e7d42e01b5e5"
-  },
-  {
-   "block": "solution",
-   "hash": "e7d42e01b5e5"
-  },
-  {
-   "block": "solution",
-   "hash": "e7d42e01b5e5"
-  },
-  {
-   "block": "solution",
-   "hash": "e7d42e01b5e5"
-  },
-  {
-   "block": "solution",
-   "hash": "e7d42e01b5e5"
   },
   {
    "block": "solution",
@@ -115,14 +75,6 @@
    "그걸 훈련 자료로 fit해요. 테스트 자료는 여기 넣지 않아요."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 학습만 하고 출력은 안 했거든요."
-  ],
-  [
    "caution",
    "여기서 X_test, y_test로 fit하기 쉬운데, 그러면 시험지에 답을 보여 주는 셈이니 조심하세요."
   ],
@@ -132,42 +84,9 @@
    "joblib.dump가 학습한 model을 titanic_model.joblib 파일로 저장해요. 손질기까지 통째로 들어가요."
   ],
   [
-   "run",
-   "실행해요."
-  ],
-  [
-   "output",
-   "화면엔 역시 아무것도 없어요. 대신 titanic_model.joblib 파일이 생겼어요."
-  ],
-  [
-   "try",
-   "loaded = joblib.load(titanic_model.joblib)\n",
-   "이제 불러올게요. 이렇게 해 볼까요?"
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "NameError가 나죠? titanic_model이 정의되지 않았대요. 따옴표가 없어서 파이썬이 변수 이름으로 봤거든요."
-  ],
-  [
-   "undo",
-   "그래서 파일 이름은 꼭 따옴표로 감싸요."
-  ],
-  [
    "code",
    "# 방금 저장한 파일을 다시 읽어 와요. 학습은 다시 하지 않아요.\nloaded = joblib.load('titanic_model.joblib')\n",
    "joblib.load로 그 파일을 다시 읽어 loaded에 담아요. 저장과 불러오기 사이에 학습은 없어요."
-  ],
-  [
-   "run",
-   "다시 실행해요."
-  ],
-  [
-   "output",
-   "이번엔 에러 없이 조용하죠? 불러오기만 했거든요."
   ],
   [
    "code",

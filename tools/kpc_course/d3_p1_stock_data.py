@@ -137,7 +137,7 @@ UNIT = unit('stock-data', '주가 파일과 시점', [
         개념의 한 줄을 그대로 쓰면 돼요. `pd.read_csv('data/stock.csv', parse_dates=['날짜']).set_index('날짜').sort_index()`예요. 날짜 범위는 `prices.index.min()`과 `prices.index.max()`로 구해요.
         """,
         starter='import pandas as pd\n# prices, n_rows, n_columns를 만드세요\n',
-        solution=ST + "n_rows, n_columns = prices.shape\nprint(n_rows, n_columns)\nprint(prices.index.min(), prices.index.max())\nprices.head()\n",
+        solution=ST + "n_rows, n_columns = prices.shape\nprint(n_rows, n_columns)\nprint(prices.index.min(), prices.index.max())\nprint(prices.head())\n",
         check="assert s['prices'].shape == (401, 6) and s['n_rows'] == 401 and s['n_columns'] == 6\nassert s['prices'].index.is_monotonic_increasing and not s['prices'].index.has_duplicates\nassert s['prices']['종가'].iloc[0] == 54100"),
     coding('close-plot', '종가를 선으로 그리기',
         goal="""

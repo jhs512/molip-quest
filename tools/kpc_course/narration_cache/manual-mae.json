@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "e0a86a5c81241dd3",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "c16fc072d713",
   "problem": "2485b1c6a9c5",
@@ -41,30 +41,6 @@
   {
    "block": "solution",
    "hash": "6bebc246987d"
-  },
-  {
-   "block": "solution",
-   "hash": "6bebc246987d"
-  },
-  {
-   "block": "solution",
-   "hash": "6bebc246987d"
-  },
-  {
-   "block": "solution",
-   "hash": "6bebc246987d"
-  },
-  {
-   "block": "solution",
-   "hash": "6bebc246987d"
-  },
-  {
-   "block": "solution",
-   "hash": "6bebc246987d"
-  },
-  {
-   "block": "solution",
-   "hash": "6bebc246987d"
   }
  ],
  "entry": [
@@ -77,34 +53,9 @@
    "준비 코드는 그대로 둘게요. X_test와 y_test까지 나눠져 있거든요."
   ],
   [
-   "try",
-   "errors = (y_test - X_test[close]).abs()\n",
-   "이렇게 해 볼까요? 열 이름을 따옴표 없이 적어 봤어요."
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "NameError가 나죠? name 'close' is not defined, close라는 변수가 없다는 거예요. 열 이름은 글자라서 따옴표가 꼭 필요해요."
-  ],
-  [
-   "undo",
-   "그래서 'close'처럼 따옴표를 붙여요."
-  ],
-  [
    "code",
    "# 기준 예측은 \"내일 종가 = 오늘 종가\". 그래서 예측값이 X_test['close']예요.\n# 열 이름은 따옴표 안에 'close'. 큰따옴표든 작은따옴표든 되지만, 안 붙이면 오류예요.\n# 정답 y_test에서 예측을 빼면 날마다 +도 나오고 -도 나와요. 그대로 평균 내면 서로 지워져 0에 가까워져요.\n# 그래서 .abs()로 부호를 떼요. 괄호 ()를 빼먹으면 함수가 아니라 함수 \"이름\"만 남으니 조심하세요.\nerrors = (y_test - X_test['close']).abs()\n",
    "정답 y_test에서 예측값 X_test의 close를 빼요. .abs()로 부호를 떼면 하루하루 빗나간 크기만 남죠?"
-  ],
-  [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? errors에 담기만 했지 출력을 안 했거든요."
   ],
   [
    "caution",
@@ -117,7 +68,7 @@
   ],
   [
    "run",
-   "다시 실행해 볼게요."
+   "실행해 볼게요."
   ],
   [
    "output",

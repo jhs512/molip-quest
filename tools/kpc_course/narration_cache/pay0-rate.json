@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "91b877f3b0101ebe",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "d288d791d756",
   "problem": "02863d9693c4",
@@ -17,30 +17,6 @@
   {
    "block": "starter",
    "hash": "1eeef0273c47"
-  },
-  {
-   "block": "solution",
-   "hash": "9e5835270ca9"
-  },
-  {
-   "block": "solution",
-   "hash": "9e5835270ca9"
-  },
-  {
-   "block": "solution",
-   "hash": "9e5835270ca9"
-  },
-  {
-   "block": "solution",
-   "hash": "9e5835270ca9"
-  },
-  {
-   "block": "solution",
-   "hash": "9e5835270ca9"
-  },
-  {
-   "block": "solution",
-   "hash": "9e5835270ca9"
   },
   {
    "block": "solution",
@@ -94,31 +70,6 @@
    "상환_9월로 묶고 타깃의 count와 mean을 한 번에 구해요. agg에 이름 목록을 주면 두 열이 나란히 나오거든요."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 표를 pay0_summary에 담기만 했거든요. 이제 한 칸씩 꺼내 볼게요."
-  ],
-  [
-   "try",
-   "rate_0 = pay0_summary.loc['0', 'mean']\n",
-   "상태 0을 이렇게 '0'이라고 따옴표로 써 볼까요? 열 이름처럼 쓰기 쉽거든요."
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "빨간 글씨가 길게 나오죠? 맨 아랫줄만 보세요. KeyError: '0'이에요. 행 이름이 숫자 0이라서 글자 '0'은 못 찾거든요."
-  ],
-  [
-   "undo",
-   "그래서 상태값은 따옴표 없이 숫자로 써요. 열 이름 'mean'만 따옴표예요."
-  ],
-  [
    "code",
    "# 표에서 한 칸은 loc[행, 열]로 꺼내요. 행 0은 상태 0(최소 금액 상환)이에요.\n# 상태값은 숫자라서 따옴표 없이 0이라고 써요. '0'이라고 쓰면 못 찾아요.\nrate_0 = pay0_summary.loc[0, 'mean']\n# 상태 2(2개월 연체)의 부도율이에요. 'mean'은 열 이름이라 따옴표가 필요해요.\nrate_2 = pay0_summary.loc[2, 'mean']\n",
    "loc에 행 이름과 열 이름을 같이 줘서 한 칸을 꺼내요. 상태 0의 mean은 rate_0, 상태 2의 mean은 rate_2예요."
@@ -143,7 +94,7 @@
   ],
   [
    "run",
-   "다시 실행해요."
+   "실행해 볼게요."
   ],
   [
    "output",

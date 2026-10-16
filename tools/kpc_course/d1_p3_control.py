@@ -188,10 +188,10 @@ UNIT = unit('control', '조건·반복과 표', [
 
         df = pd.DataFrame(holdings)
         print(df.shape)  # (3, 4) → 3행 4열
-        df
+        print(df)
         ```
 
-        첫 줄 `import pandas as pd`는 이런 선언이에요. "pandas를 가져와서 짧게 `pd`라고 부르겠다." 그래서 표를 쓰는 모든 코드의 맨 위에 오죠. `df.shape`는 (행 수, 열 수)예요. 행 번호인 인덱스는 열 수에 들어가지 않아요. 그리고 코드 **마지막 줄에 `df`만 적으면** 이 앱이 표를 그려서 보여 줘요. `print(df)`도 되지만 글자로만 나와요. 그러니 마지막 줄 방식을 쓰세요.
+        첫 줄 `import pandas as pd`는 이런 선언이에요. "pandas를 가져와서 짧게 `pd`라고 부르겠다." 그래서 표를 쓰는 모든 코드의 맨 위에 오죠. `df.shape`는 (행 수, 열 수)예요. 행 번호인 인덱스는 열 수에 들어가지 않아요. 그리고 `print(df)`로 표를 출력해요. 행과 열의 값을 실행 결과에서 확인하세요.
 
         한 열 전체를 더하는 일은 반복문 없이 `df['amount'].sum()` 한 줄이에요. 앞 미션에서 반복문으로 했던 일이 어떻게 한 줄로 줄어들까요? 다음 두 미션에서 직접 봐요.
         """,
@@ -207,15 +207,15 @@ UNIT = unit('control', '조건·반복과 표', [
                     '`DataFrame`이에요. `pandas`의 표 자료구조죠. `df`는 그 표를 담은 변수 이름일 뿐이에요. `pd`는 `pandas`를 짧게 부르는 별칭이고요.')),
     coding('holdings-frame', '세 종목을 표로 보기',
         goal="""
-        금액까지 들어 있는 `holdings`를 `DataFrame`으로 만들어 `df`에 저장하세요. 마지막 줄에 `df`를 적어 표를 띄워 보세요.
+        금액까지 들어 있는 `holdings`를 `DataFrame`으로 만들어 `df`에 저장하세요. `print(df)`로 표를 출력하세요.
 
         3행 4열이면 맞게 한 거예요. 열 이름은 `name`, `price`, `quantity`, `amount` 순이고요.
         """,
         hint="""
-        `df = pd.DataFrame(holdings)` 한 줄이면 돼요. 그다음 줄에 `df`만 적으세요. `print()`나 합계는 필요 없어요.
+        `df = pd.DataFrame(holdings)` 한 줄이면 돼요. 그다음 줄에 `print(df)`로 표를 출력하세요. 합계는 필요 없어요.
         """,
         starter="import pandas as pd\n" + HOLDINGS_WITH_AMOUNT + "# df를 만들고 표를 표시하세요\n",
-        solution="import pandas as pd\n" + HOLDINGS_WITH_AMOUNT + "df = pd.DataFrame(holdings)\ndf\n",
+        solution="import pandas as pd\n" + HOLDINGS_WITH_AMOUNT + "df = pd.DataFrame(holdings)\nprint(df)\n",
         check="assert s['df'].shape == (3, 4)\nassert list(s['df'].columns) == ['name', 'price', 'quantity', 'amount']\nassert s['df']['name'].tolist() == ['A', 'B', 'C']\nassert s['df']['amount'].tolist() == [30000, 40000, 60000]"),
     coding('frame-column-sum', '표의 한 열을 합산하기',
         goal="""
@@ -309,9 +309,9 @@ UNIT = unit('control', '조건·반복과 표', [
               '`+=`예요. "지금 값에 더해서 다시 저장해라"라는 뜻이에요. 반복문 안에서 누적할 때 늘 써요.'),
         short('3행 4열 표의 `df.shape`는 무엇인가요?', ['(3,4)', '3,4', '(3, 4)'],
               '(3, 4)예요. `shape`는 (행 수, 열 수) 순서거든요. 행 번호인 인덱스는 열 수에 들어가지 않아요.'),
-        choice('표를 앱 화면에 그려서 보려면 코드 마지막 줄에 무엇을 적나요?',
-               ['`df`', "`print('df')`", '`df.sum()`'], 0,
-               "마지막 줄에 `df`만 적으면 앱이 표로 그려 줘요." "\n\n**다른 보기는 왜 아닌가**\n\n- 「print('df')」: 따옴표 안 글자 df 두 글자가 출력돼요.\n- 「df.sum()」: 열별 합계만 나와요. 표 전체는 안 보여요."),
+        choice('표 df의 값을 실행 결과에 출력하려면 무엇을 적나요?',
+               ['`print(df)`', "`print('df')`", '`df.sum()`'], 0,
+               "`print(df)`로 표의 값을 출력해요." "\n\n**다른 보기는 왜 아닌가**\n\n- 「print('df')」: 따옴표 안 글자 df 두 글자가 출력돼요.\n- 「df.sum()」: 열별 합계만 나와요. 표 전체는 안 보여요."),
         choice('표 계산이 반복문보다 빠른 진짜 이유는 무엇인가요?',
                ['`pandas`가 C로 짜인 NumPy 배열을 한 덩어리로 한 번에 계산해서', 'Python 반복문은 원래 쓰면 안 되는 문법이라서', '표가 화면에 예쁘게 그려져서'], 0,
                '넘파이가 덩어리째 계산해서예요. 같은 종류의 숫자를 메모리 한 덩어리에 둬요. 그걸 C 코드가 한 번에, 코어 여러 개가 나눠서 계산해요. 반복문은 값마다 종류를 확인하며 한 줄씩 가고요.' "\n\n**다른 보기는 왜 아닌가**\n\n- 「반복문은 쓰면 안 되는 문법」: 반복문은 멀쩡한 문법이에요. 값이 몇 개면 차이도 없고요.\n- 「예쁘게 그려져서」: 보기 좋은 것과 빠른 것은 다른 이야기예요."),

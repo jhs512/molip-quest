@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "f481722cf9b27760",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "ccba69c45ae3",
   "problem": "d5bc1530f021",
@@ -17,30 +17,6 @@
   {
    "block": "starter",
    "hash": "38f106619668"
-  },
-  {
-   "block": "solution",
-   "hash": "52125ff6eaf5"
-  },
-  {
-   "block": "solution",
-   "hash": "52125ff6eaf5"
-  },
-  {
-   "block": "solution",
-   "hash": "52125ff6eaf5"
-  },
-  {
-   "block": "solution",
-   "hash": "52125ff6eaf5"
-  },
-  {
-   "block": "solution",
-   "hash": "52125ff6eaf5"
-  },
-  {
-   "block": "solution",
-   "hash": "52125ff6eaf5"
   },
   {
    "block": "solution",
@@ -116,31 +92,6 @@
    "끝난 시각에서 start를 빼면 걸린 초가 나와요. 그게 loop_seconds예요."
   ],
   [
-   "run",
-   "여기까지 한번 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 시간을 재서 loop_seconds에 담기만 했지 아직 print를 안 했거든요."
-  ],
-  [
-   "try",
-   "numpy_total = array.sum()\nnumpy_seconds = time.perf_counter() - start\nprint(f'{loop_seconds:.4f} {numpy_seconds:.4f}')\n",
-   "이렇게 해 볼까요? start를 그대로 두고 넘파이 시간을 바로 재는 거예요."
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "0.0419와 0.0424, 거의 똑같이 나왔죠? start가 반복문 시작 시각이라 넘파이 쪽에 반복문 시간까지 얹힌 거예요."
-  ],
-  [
-   "undo",
-   "이렇게 하기 쉬운데, 그러면 넘파이가 느려 보여요. 넘파이 전에 start를 다시 찍어야 해요."
-  ],
-  [
    "code",
    "# 시계를 다시 켜요. start를 새로 덮어써야 넘파이 시간만 재요\nstart = time.perf_counter()\n# 반복문 없이 한 줄로 합계. 넘파이가 안에서 한 번에 더해요\nnumpy_total = array.sum()\n# 넘파이가 걸린 초. 위에서 다시 잰 start를 빼요\nnumpy_seconds = time.perf_counter() - start\n",
    "start를 새로 찍고 array.sum() 구간을 감싸요. 한 줄로 합계를 끝내는 거죠?"
@@ -165,7 +116,7 @@
   ],
   [
    "run",
-   "다시 실행해요."
+   "실행해 볼게요."
   ],
   [
    "output",

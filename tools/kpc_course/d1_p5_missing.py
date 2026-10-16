@@ -103,7 +103,7 @@ UNIT = unit('missing', '조건 필터와 결측', [
         check="assert s['median_price'] == 12000\nassert s['filled_price'].tolist() == [10000, 20000, 12000, 12000]\nassert s['orders']['price'].isna().sum() == 1"),
     coding('drop-missing', '결측 행 제외하기',
         goal="""
-        두 번째 길, 빼기예요. 가격이 빈 행을 뺀 표를 `dropped`에 담으세요. 남은 행 수는 `n_left`에 담아 출력하세요. 마지막 줄에 `dropped`를 적어 표도 확인하세요.
+        두 번째 길, 빼기예요. 가격이 빈 행을 뺀 표를 `dropped`에 담으세요. 남은 행 수는 `n_left`에 담아 출력하세요. `print(dropped)`로 출력해 표도 확인하세요.
 
         3행이 남으면 맞게 한 거예요.
         """,
@@ -111,7 +111,7 @@ UNIT = unit('missing', '조건 필터와 결측', [
         `orders.dropna(subset=['price'])`는 `price`가 빈 행만 빼요. `subset`을 빼고 `orders.dropna()`라고 쓰면요? 어느 열이든 빈 행을 전부 빼요. 이 표에서는 결과가 같아요. 열이 많은 표에서는 크게 달라지고요.
         """,
         starter=ORDERS + "# dropped, n_left를 만들고 출력하세요\n",
-        solution=ORDERS + "dropped = orders.dropna(subset=['price'])\nn_left = len(dropped)\nprint(n_left)\ndropped\n",
+        solution=ORDERS + "dropped = orders.dropna(subset=['price'])\nn_left = len(dropped)\nprint(n_left)\nprint(dropped)\n",
         check="assert len(s['dropped']) == 3 and s['n_left'] == 3\nassert s['dropped']['product'].tolist() == ['A', 'B', 'A']"),
     coding('filter-orders', '두 조건을 모두 만족하는 거래',
         goal="""
@@ -123,11 +123,11 @@ UNIT = unit('missing', '조건 필터와 결측', [
         각 조건을 괄호로 감싸고 `&`로 이으세요. `loc`의 쉼표 뒤에 열 이름 리스트를 넣으면 행과 열을 한 번에 골라요. `orders.loc[조건, ['product', 'price', 'quantity']].copy()`처럼요.
         """,
         starter=ORDERS + "# selected를 만드세요\n",
-        solution=ORDERS + "selected = orders.loc[(orders['price'] >= 12000) & (orders['quantity'] >= 2), ['product', 'price', 'quantity']].copy()\nselected\n",
+        solution=ORDERS + "selected = orders.loc[(orders['price'] >= 12000) & (orders['quantity'] >= 2), ['product', 'price', 'quantity']].copy()\nprint(selected)\n",
         check="assert s['selected']['product'].tolist() == ['B', 'A'] and s['selected']['quantity'].tolist() == [2, 4]"),
     coding('or-filter', '둘 중 하나만 만족해도 고르기',
         goal="""
-        이번에는 "또는"이에요. 제품이 A**이거나** 수량이 1인 거래를 `either`에 담으세요. 마지막 줄에 `either`를 적어 확인하세요.
+        이번에는 "또는"이에요. 제품이 A**이거나** 수량이 1인 거래를 `either`에 담으세요. `print(either)`로 출력해 확인하세요.
 
         A, A, C 세 건이 남으면 맞게 한 거예요.
         """,
@@ -135,7 +135,7 @@ UNIT = unit('missing', '조건 필터와 결측', [
         `&`가 "그리고", `|`가 "또는"이에요. 조건마다 괄호를 꼭 치세요. `(orders['product'] == 'A') | (orders['quantity'] == 1)`처럼요. 괄호가 없으면 파이썬이 `'A' | orders['quantity']`를 먼저 계산하려고 해요. 그래서 오류가 나요.
         """,
         starter=ORDERS + "# either를 만들고 표를 표시하세요\n",
-        solution=ORDERS + "either = orders.loc[(orders['product'] == 'A') | (orders['quantity'] == 1)]\neither\n",
+        solution=ORDERS + "either = orders.loc[(orders['product'] == 'A') | (orders['quantity'] == 1)]\nprint(either)\n",
         check="assert s['either']['product'].tolist() == ['A', 'A', 'C']"),
     coding('missing-totals', '채우기와 빼기, 합계는 얼마나 달라질까',
         goal="""
@@ -147,7 +147,7 @@ UNIT = unit('missing', '조건 필터와 결측', [
         `filled = orders.copy()`를 먼저 만드세요. `filled['price'] = filled['price'].fillna(filled['price'].median())`로 채워요. 뺀 표는 `dropped = orders.dropna(subset=['price']).copy()`예요. 두 표 각각 `amount` 열을 가격 × 수량으로 만들어요. `filled['amount'] = filled['price'] * filled['quantity']`처럼요. 합계는 `filled['amount'].sum()`처럼 구해요.
         """,
         starter=ORDERS + "# 두 처리 방법과 합계를 비교하세요\n",
-        solution=ORDERS + "filled = orders.copy()\nfilled['price'] = filled['price'].fillna(filled['price'].median())\nfilled['amount'] = filled['price'] * filled['quantity']\ndropped = orders.dropna(subset=['price']).copy()\ndropped['amount'] = dropped['price'] * dropped['quantity']\nfilled_total = filled['amount'].sum()\ndropped_total = dropped['amount'].sum()\nprint(filled_total, dropped_total)\nfilled\n",
+        solution=ORDERS + "filled = orders.copy()\nfilled['price'] = filled['price'].fillna(filled['price'].median())\nfilled['amount'] = filled['price'] * filled['quantity']\ndropped = orders.dropna(subset=['price']).copy()\ndropped['amount'] = dropped['price'] * dropped['quantity']\nfilled_total = filled['amount'].sum()\ndropped_total = dropped['amount'].sum()\nprint(filled_total, dropped_total)\nprint(filled)\n",
         check="assert s['filled_total'] == 130000 and s['dropped_total'] == 118000\nassert len(s['filled']) == 4 and len(s['dropped']) == 3"),
     quiz('missing-check', '단원 점검',
         choice('가격이 비어 있는 칸을 0으로 채우면 무슨 일이 생기나요?',

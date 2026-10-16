@@ -1,13 +1,13 @@
 {
  "format": 2,
- "hash": "6c327645e1b62566",
- "by": "claude",
+ "hash": "b681ef2343268318",
+ "by": "hand",
  "blocks": {
   "title": "0b6d14473e80",
   "problem": "6ac8ddd775b5",
   "starter": "5057c5f6a1e2",
   "example": "e3b0c44298fc",
-  "solution": "fe60488f212d"
+  "solution": "099a4fc1b0f5"
  },
  "sources": [
   {
@@ -20,83 +20,51 @@
   },
   {
    "block": "solution",
-   "hash": "fe60488f212d"
+   "hash": "099a4fc1b0f5"
   },
   {
    "block": "solution",
-   "hash": "fe60488f212d"
+   "hash": "099a4fc1b0f5"
   },
   {
    "block": "solution",
-   "hash": "fe60488f212d"
+   "hash": "099a4fc1b0f5"
   },
   {
    "block": "solution",
-   "hash": "fe60488f212d"
+   "hash": "099a4fc1b0f5"
   },
   {
    "block": "solution",
-   "hash": "fe60488f212d"
+   "hash": "099a4fc1b0f5"
   },
   {
    "block": "solution",
-   "hash": "fe60488f212d"
+   "hash": "099a4fc1b0f5"
   },
   {
    "block": "solution",
-   "hash": "fe60488f212d"
+   "hash": "099a4fc1b0f5"
   },
   {
    "block": "solution",
-   "hash": "fe60488f212d"
+   "hash": "099a4fc1b0f5"
   },
   {
    "block": "solution",
-   "hash": "fe60488f212d"
+   "hash": "099a4fc1b0f5"
   },
   {
    "block": "solution",
-   "hash": "fe60488f212d"
+   "hash": "099a4fc1b0f5"
   },
   {
    "block": "solution",
-   "hash": "fe60488f212d"
+   "hash": "099a4fc1b0f5"
   },
   {
    "block": "solution",
-   "hash": "fe60488f212d"
-  },
-  {
-   "block": "solution",
-   "hash": "fe60488f212d"
-  },
-  {
-   "block": "solution",
-   "hash": "fe60488f212d"
-  },
-  {
-   "block": "solution",
-   "hash": "fe60488f212d"
-  },
-  {
-   "block": "solution",
-   "hash": "fe60488f212d"
-  },
-  {
-   "block": "solution",
-   "hash": "fe60488f212d"
-  },
-  {
-   "block": "solution",
-   "hash": "fe60488f212d"
-  },
-  {
-   "block": "solution",
-   "hash": "fe60488f212d"
-  },
-  {
-   "block": "solution",
-   "hash": "fe60488f212d"
+   "hash": "099a4fc1b0f5"
   }
  ],
  "entry": [
@@ -119,14 +87,6 @@
    "이동평균과 어제 종가도 넣어요. 이러면 입력 네 열이 다 찼어요."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "화면이 비어 있죠? 열만 넣었지 아직 꺼내 보지 않았거든요. 오류가 안 떴으면 된 거예요."
-  ],
-  [
    "code",
    "# shift(-1)은 위로 당겨요. 오늘 자리에 내일 종가가 와서 우리가 맞힐 정답이 돼요.\nframe['target_next_close'] = prices['종가'].shift(-1)\n",
    "정답 y예요. shift(-1)로 내일 종가를 오늘 행에 끌어와요."
@@ -136,34 +96,9 @@
    "여기서 shift(1)로 쓰기 쉬운데, 그러면 어제 종가가 정답이 되니 조심하세요. 정답은 마이너스 1이에요."
   ],
   [
-   "try",
-   "frame['target_date'] = prices.index.shift(-1)\n",
-   "정답의 날짜도 같은 식으로요. 인덱스를 바로 shift(-1)하면 될까요?"
-  ],
-  [
-   "run",
-   "실행해 볼게요."
-  ],
-  [
-   "output",
-   "빨간 오류가 나죠? 맨 아래 줄을 보세요. NullFrequencyError, Cannot shift with no freq예요. 날짜 인덱스는 간격 정보가 없어서 그냥은 못 밀어요."
-  ],
-  [
-   "undo",
-   "그래서 인덱스를 Series로 먼저 바꿔요."
-  ],
-  [
    "code",
    "# 날짜 인덱스를 Series로 바꿔야 shift가 돼요. 그걸 -1로 당기면 정답의 날짜예요.\nframe['target_date'] = pd.Series(prices.index, index=prices.index).shift(-1)\n",
    "pd.Series로 날짜를 열로 만들고, 똑같이 shift(-1)하면 돼요."
-  ],
-  [
-   "run",
-   "다시 실행해요."
-  ],
-  [
-   "output",
-   "이번엔 조용히 지나가죠? 오류 없이 비어 있으면 여섯 열이 다 들어간 거예요."
   ],
   [
    "code",
@@ -180,12 +115,12 @@
   ],
   [
    "code",
-   "# 앞 다섯 행을 봐요. target_date가 인덱스 날짜보다 뒤인지 확인하세요.\nframe.head()\n",
+   "# 앞 다섯 행을 봐요. target_date가 인덱스 날짜보다 뒤인지 확인하세요.\nprint(frame.head())\n",
    "마지막으로 앞 다섯 행을 눈으로 봐요."
   ],
   [
    "run",
-   "실행할게요."
+   "실행해 볼게요."
   ],
   [
    "output",

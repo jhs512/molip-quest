@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "850a3387585f7475",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "9c5790a0eea9",
   "problem": "878e9409a61e",
@@ -17,30 +17,6 @@
   {
    "block": "starter",
    "hash": "807e41ce95ab"
-  },
-  {
-   "block": "solution",
-   "hash": "9b7163561f1f"
-  },
-  {
-   "block": "solution",
-   "hash": "9b7163561f1f"
-  },
-  {
-   "block": "solution",
-   "hash": "9b7163561f1f"
-  },
-  {
-   "block": "solution",
-   "hash": "9b7163561f1f"
-  },
-  {
-   "block": "solution",
-   "hash": "9b7163561f1f"
-  },
-  {
-   "block": "solution",
-   "hash": "9b7163561f1f"
   },
   {
    "block": "solution",
@@ -102,14 +78,6 @@
    "인덱스가 날짜죠? 그 min과 max가 양 끝 날짜예요. 정렬해 뒀으니 첫 행과 마지막 행이기도 하고요."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 변수에 담기만 했지 아직 print를 안 했거든요."
-  ],
-  [
    "code",
    "# '종가' 열의 .max()는 값이에요. 열 이름은 따옴표로 감싸야 해요\nmax_close = prices['종가'].max()\n",
    "종가 열의 max는 가장 큰 값이에요. 열 이름은 따옴표로 감싸요."
@@ -117,23 +85,6 @@
   [
    "caution",
    "따옴표를 빼고 prices[종가]라고 쓰기 쉬운데, 그러면 종가라는 변수를 찾다 NameError가 나니 조심하세요."
-  ],
-  [
-   "try",
-   "max_date = prices['종가'].max()\nprint(max_date)\n",
-   "날짜도 max로 꺼내 볼까요? 이렇게 하기 쉽거든요."
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "362500이 나왔죠? 우리는 날짜를 원했는데 값이 나왔어요. max는 가장 큰 값만 주지, 그게 어느 행인지는 안 알려 주거든요."
-  ],
-  [
-   "undo",
-   "그래서 이 줄은 지우고, 행 이름을 주는 idxmax를 써요."
   ],
   [
    "code",
@@ -160,7 +111,7 @@
   ],
   [
    "run",
-   "다시 실행해요."
+   "실행해 볼게요."
   ],
   [
    "output",

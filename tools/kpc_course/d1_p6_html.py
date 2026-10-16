@@ -102,7 +102,7 @@ UNIT = unit('html', '저장 HTML에서 자료 수집', [
         `soup = BeautifulSoup(html, 'html.parser')`로 시작해요. `for item in soup.select('#prices li'):` 안에서 세 값을 꺼내요. 코드는 `item['data-code']`예요. 이름은 `item.select_one('.name').get_text(strip=True)`고요. 가격은 `int(item.select_one('b').get_text(strip=True).replace(',', ''))`예요. 셋을 `{'code': ..., 'name': ..., 'price': ...}` 딕셔너리로 묶으세요. 그걸 `rows`에 `append`하고요. 마지막에 `df = pd.DataFrame(rows)`로 표를 만들어요.
         """,
         starter=PD + "from pathlib import Path\nfrom bs4 import BeautifulSoup\n\nhtml = Path('data/prices.html').read_text(encoding='utf-8')\n# soup, rows, df를 만드세요\n",
-        solution=PD + "from pathlib import Path\nfrom bs4 import BeautifulSoup\n\nhtml = Path('data/prices.html').read_text(encoding='utf-8')\nsoup = BeautifulSoup(html, 'html.parser')\nrows = []\nfor item in soup.select('#prices li'):\n    rows.append({'code': item['data-code'], 'name': item.select_one('.name').get_text(strip=True), 'price': int(item.select_one('b').get_text(strip=True).replace(',', ''))})\ndf = pd.DataFrame(rows)\ndf\n",
+        solution=PD + "from pathlib import Path\nfrom bs4 import BeautifulSoup\n\nhtml = Path('data/prices.html').read_text(encoding='utf-8')\nsoup = BeautifulSoup(html, 'html.parser')\nrows = []\nfor item in soup.select('#prices li'):\n    rows.append({'code': item['data-code'], 'name': item.select_one('.name').get_text(strip=True), 'price': int(item.select_one('b').get_text(strip=True).replace(',', ''))})\ndf = pd.DataFrame(rows)\nprint(df)\n",
         check="assert s['df']['code'].tolist() == ['A', 'B']\nassert s['df']['price'].tolist() == [10000, 20000]\nassert s['df']['name'].tolist() == ['가상A', '가상B']"),
     concept('live-web', '진짜 웹에서 받으려면: requests, 그리고 Selenium',
         body="""

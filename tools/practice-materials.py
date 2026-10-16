@@ -13,13 +13,14 @@ base64, the GCM tag appended to the ciphertext.
 
 Each problem is treated as a coding mission: tools/annotate.py adds the comments (checked to
 strip back to the bare code and to still print the expected output), tools/narrate.py writes the
-incremental 해설 (code → run → output, try/undo or caution, real outputs at every run), and
+incremental 해설 (correct code → visible output → run, no intentional errors), and
 kpc_course.narration.compile_coding turns it into the agent actions the app plays. The code is
 stored with "cafe-sales.xlsx" (the web practice page's layout); the app maps it to
 data/cafe-sales.xlsx itself.
 """
 import argparse
 import base64
+import concurrent.futures
 import importlib.util
 import json
 import os
@@ -129,27 +130,33 @@ def build(units, source, jobs):
     work = sandbox()
     os.environ["MOLIP_RUN_CWD"] = str(work)
     materials = {}
+    def make(item):
+        unit_id, unit = item
+        activity = activity_for(unit)
+        bare = source[unit_id]["code"].replace(WEB_PATH, APP_PATH)
+        prefix = narration._starter_prefix(activity["problem"], bare)
+        print(f"  {unit_id}: 주석 달기", flush=True)
+        commented = annotate.generate(activity, bare)
+        error = comments.check(bare, commented, prefix)
+        if error:
+            raise SystemExit(f"{unit_id}: {error}")
+        print(f"  {unit_id}: 해설 쓰기", flush=True)
+        entry = narrate.generate(activity, commented)
+        actions = narration.compile_coding(activity, entry, commented, unit_id)
+        assert replay(actions).rstrip("\n") == commented.rstrip("\n"), f"{unit_id}: replay != code"
+        # Stored in the web page's layout; the app maps the file name to data/ itself.
+        for action in actions:
+            if "code" in action:
+                action["code"] = action["code"].replace(APP_PATH, WEB_PATH)
+        material = {"code": commented.replace(APP_PATH, WEB_PATH), "explanation": source[unit_id]["explanation"], "narration": actions}
+        runs = sum(1 for a in actions if a["action"] == "run")
+        print(f"  ✓ {unit_id}: 주석 {commented.count('#')}개, 해설 {len(actions)}단계, 실행 {runs}번", flush=True)
+        return unit_id, material
+
     try:
-        for unit_id, unit in units.items():
-            activity = activity_for(unit)
-            bare = source[unit_id]["code"].replace(WEB_PATH, APP_PATH)
-            prefix = narration._starter_prefix(activity["problem"], bare)
-            print(f"  {unit_id}: 주석 달기", flush=True)
-            commented = annotate.generate(activity, bare)
-            error = comments.check(bare, commented, prefix)
-            if error:
-                raise SystemExit(f"{unit_id}: {error}")
-            print(f"  {unit_id}: 해설 쓰기", flush=True)
-            entry = narrate.generate(activity, commented)
-            actions = narration.compile_coding(activity, entry, commented, unit_id)
-            assert replay(actions).rstrip("\n") == commented.rstrip("\n"), f"{unit_id}: replay != code"
-            # Stored in the web page's layout; the app maps the file name to data/ itself.
-            for action in actions:
-                if "code" in action:
-                    action["code"] = action["code"].replace(APP_PATH, WEB_PATH)
-            materials[unit_id] = {"code": commented.replace(APP_PATH, WEB_PATH), "explanation": source[unit_id]["explanation"], "narration": actions}
-            runs = sum(1 for a in actions if a["action"] == "run")
-            print(f"  ✓ {unit_id}: 주석 {commented.count('#')}개, 해설 {len(actions)}단계, 실행 {runs}번", flush=True)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=jobs) as pool:
+            for unit_id, material in pool.map(make, units.items()):
+                materials[unit_id] = material
     finally:
         shutil.rmtree(work, ignore_errors=True)
     return materials
@@ -173,8 +180,22 @@ def verify(materials, units):
             if comments.strip_comments(code) is None or code.count("#") < 2:
                 problems_found.append(f"{unit_id}: 주석이 없습니다")
             kinds = [a["action"] for a in material["narration"]]
-            if kinds.count("run") < 2 or not any(a["action"] == "say" and a.get("target") == "editor" for a in material["narration"]) and "set_code" not in kinds[2:]:
-                problems_found.append(f"{unit_id}: 살짝 코딩→실행 반복이나 「조심하세요」가 없습니다")
+            if not kinds.count("run"):
+                problems_found.append(f"{unit_id}: 실행 단계가 없습니다")
+            pending = ""
+            for i, action in enumerate(material["narration"]):
+                if action["action"] == "set_code" and "type_code" in kinds[:i]:
+                    problems_found.append(f"{unit_id}: 입력한 코드를 되돌리는 시연이 있습니다")
+                if action["action"] == "type_code":
+                    pending += action["code"] + "\n"
+                if action["action"] == "run":
+                    if not narration.has_visible_output(pending):
+                        problems_found.append(f"{unit_id}: 출력문 없이 실행하는 단계가 있습니다")
+                    checkpoint = replay(material["narration"][:i]).replace(WEB_PATH, APP_PATH)
+                    output = narrate.run_solution(activity_for(unit)["problem"], checkpoint)
+                    if "Traceback" in output or output.startswith("(실행 실패:") or not output.strip():
+                        problems_found.append(f"{unit_id}: 중간 실행이 실패하거나 출력이 없습니다")
+                    pending = ""
             out = narrate.run_solution(activity_for(unit)["problem"], code)
             expected = (unit.get("tests") or [{}])[0].get("expected", "").strip()
             if expected and out.strip() != expected:

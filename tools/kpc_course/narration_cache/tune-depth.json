@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "8f7365e997d91f9a",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "473cc869f7c9",
   "problem": "514d66feac1b",
@@ -21,38 +21,6 @@
   {
    "block": "starter",
    "hash": "a078b39cb7c5"
-  },
-  {
-   "block": "solution",
-   "hash": "62907087dd4a"
-  },
-  {
-   "block": "solution",
-   "hash": "62907087dd4a"
-  },
-  {
-   "block": "solution",
-   "hash": "62907087dd4a"
-  },
-  {
-   "block": "solution",
-   "hash": "62907087dd4a"
-  },
-  {
-   "block": "solution",
-   "hash": "62907087dd4a"
-  },
-  {
-   "block": "solution",
-   "hash": "62907087dd4a"
-  },
-  {
-   "block": "solution",
-   "hash": "62907087dd4a"
-  },
-  {
-   "block": "solution",
-   "hash": "62907087dd4a"
   },
   {
    "block": "solution",
@@ -119,31 +87,6 @@
    "cross_val_score로 훈련 자료만 다섯 조각으로 채점해요. 평균을 cv_scores에 담고요."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 점수를 cv_scores에 담기만 하고 print는 안 했거든요."
-  ],
-  [
-   "try",
-   "best_depth = max(cv_scores)\nprint(best_depth)\n",
-   "이렇게 해 볼까요? 가장 큰 걸 고르면 되니까요."
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "12가 나와요. 후보 중 제일 깊은 12를 고른 거예요. max가 점수가 아니라 키인 깊이를 비교했거든요."
-  ],
-  [
-   "undo",
-   "그래서 max에 key를 줘야 해요."
-  ],
-  [
    "code",
    "# 값(점수)이 가장 큰 키(깊이)를 골라요. max(cv_scores)만 쓰면 점수가 아니라 가장 큰 깊이가 나와요\nbest_depth = max(cv_scores, key=cv_scores.get)\n",
    "key에 cv_scores.get을 주면 값이 큰 키를 돌려주죠?"
@@ -156,14 +99,6 @@
    "code",
    "# 고른 깊이로 모델을 새로 만들어요. 반복문 안의 model은 마지막 후보(12)라서 그대로 쓰면 안 돼요\nmodel = Pipeline([('prepare', make_preprocessor()), ('model', DecisionTreeClassifier(max_depth=best_depth, random_state=42))])\n# 훈련 자료 전체로 다시 학습해요\nmodel.fit(X_train, y_train)\n",
    "고른 깊이 best_depth로 모델을 새로 만들어요. 훈련 자료 전체로 다시 학습하고요."
-  ],
-  [
-   "run",
-   "여기서 한 번 돌려 볼게요."
-  ],
-  [
-   "output",
-   "아직 아무것도 안 찍혀요. 오류 없이 학습만 끝난 거예요."
   ],
   [
    "code",

@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "ce28bb4cd10e245f",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "857acef9c21c",
   "problem": "ca7355d60b80",
@@ -21,38 +21,6 @@
   {
    "block": "starter",
    "hash": "c16d26afe67f"
-  },
-  {
-   "block": "solution",
-   "hash": "7fbcf38b3026"
-  },
-  {
-   "block": "solution",
-   "hash": "7fbcf38b3026"
-  },
-  {
-   "block": "solution",
-   "hash": "7fbcf38b3026"
-  },
-  {
-   "block": "solution",
-   "hash": "7fbcf38b3026"
-  },
-  {
-   "block": "solution",
-   "hash": "7fbcf38b3026"
-  },
-  {
-   "block": "solution",
-   "hash": "7fbcf38b3026"
-  },
-  {
-   "block": "solution",
-   "hash": "7fbcf38b3026"
-  },
-  {
-   "block": "solution",
-   "hash": "7fbcf38b3026"
   },
   {
    "block": "solution",
@@ -114,31 +82,6 @@
    "isna()로 빈칸을 참·거짓으로 바꾸고, sum()으로 열마다 세서 missing에 넣어요."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? missing에 담기만 했고 아직 찍지 않았거든요."
-  ],
-  [
-   "try",
-   "print(missing[나이])\n",
-   "나이 열을 꺼내 볼까요? 이렇게 쓰기 쉬워요."
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "NameError가 나요. name '나이' is not defined, 따옴표가 없으니 나이를 변수 이름으로 찾은 거예요."
-  ],
-  [
-   "undo",
-   "그래서 열 이름은 꼭 따옴표로 감싸요. 되돌릴게요."
-  ],
-  [
    "code",
    "# missing은 열 이름으로 꺼내는 Series예요. 열 이름은 따옴표로 감싸요\n# int()로 바꿔야 평범한 정수가 돼요\nage_missing = int(missing['나이'])\n",
    "따옴표로 감싼 열 이름으로 꺼내고, int()로 감싸서 정수로 담아요."
@@ -149,21 +92,13 @@
    "요금도 똑같이 해요. 열 이름 오타만 조심하세요."
   ],
   [
-   "run",
-   "실행해 볼게요."
-  ],
-  [
-   "output",
-   "아직 화면에 아무것도 없죠? 두 숫자를 변수에 담기만 했거든요."
-  ],
-  [
    "code",
    "# 열마다 빈칸이 몇 개인지 한눈에 봐요. 생존은 0이어야 해요\nprint(missing)\n",
    "표 전체를 한 번 찍어 볼게요."
   ],
   [
    "run",
-   "실행해요."
+   "실행해 볼게요."
   ],
   [
    "output",
@@ -176,7 +111,7 @@
   ],
   [
    "run",
-   "다시 실행해요."
+   "실행해 볼게요."
   ],
   [
    "output",

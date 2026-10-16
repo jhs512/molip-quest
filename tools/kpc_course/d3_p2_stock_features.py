@@ -85,7 +85,7 @@ UNIT = unit('stock-features', '수익률·이동평균·lag', [
         대괄호에 새 이름을 적어 넣으면 새 열이 생겨요. 왼쪽은 `prices['return_1']`이에요. 오른쪽엔 목표에 적힌 `prices['종가'].pct_change()`를 넣어요. `pct_change()`가 (오늘 − 어제) / 어제를 행마다 계산해요.
         """,
         starter=ST + "# return_1 열을 만들고 head()를 확인하세요\n",
-        solution=ST + "prices['return_1'] = prices['종가'].pct_change()\nprices.head()\n",
+        solution=ST + "prices['return_1'] = prices['종가'].pct_change()\nprint(prices.head())\n",
         check="import pandas as pd\n\nassert pd.isna(s['prices']['return_1'].iloc[0])\nassert abs(s['prices']['return_1'].iloc[1] - (53900 / 54100 - 1)) < 1e-12"),
     coding('moving-average', '최근 5거래일 평균',
         goal="""
@@ -97,7 +97,7 @@ UNIT = unit('stock-features', '수익률·이동평균·lag', [
         `rolling(5)`가 "오늘 포함 최근 5행"이라는 창을 만들어요. `.mean()`이 그 평균을 내고요. 창이 다 안 찬 앞쪽 네 행은 빈칸(`NaN`)이에요.
         """,
         starter=ST + "# ma5 열을 만들고 head(6)을 확인하세요\n",
-        solution=ST + "prices['ma5'] = prices['종가'].rolling(5).mean()\nprices.head(6)\n",
+        solution=ST + "prices['ma5'] = prices['종가'].rolling(5).mean()\nprint(prices.head(6))\n",
         check="assert s['prices']['ma5'].iloc[:4].isna().all()\nassert s['prices']['ma5'].iloc[4] == 53940\nassert s['prices']['ma5'].isna().sum() == 4"),
     coding('lag-next', '어제 종가와 내일 종가',
         goal="""
@@ -109,7 +109,7 @@ UNIT = unit('stock-features', '수익률·이동평균·lag', [
         `shift(1)`은 아래로 한 칸, 어제 값이에요. `shift(-1)`은 위로 한 칸, 내일 값이고요. 개념의 표를 옆에 두세요. `prices.head()`와 `prices.tail()`로 양 끝을 확인해 보세요.
         """,
         starter=ST + "# 두 열을 만드세요\n",
-        solution=ST + "prices['lag_close_1'] = prices['종가'].shift(1)\nprices['target_next_close'] = prices['종가'].shift(-1)\nprices.head()\n",
+        solution=ST + "prices['lag_close_1'] = prices['종가'].shift(1)\nprices['target_next_close'] = prices['종가'].shift(-1)\nprint(prices.head())\n",
         check="assert __import__('pandas').isna(s['prices']['lag_close_1'].iloc[0])\nassert s['prices']['lag_close_1'].iloc[1] == 54100\nassert s['prices']['target_next_close'].iloc[0] == 53900\nassert __import__('pandas').isna(s['prices']['target_next_close'].iloc[-1])"),
     coding('stock-frame', '입력 네 열과 정답, 그리고 정답 날짜',
         goal="""
@@ -130,7 +130,7 @@ UNIT = unit('stock-features', '수익률·이동평균·lag', [
         마지막에 `frame = frame.dropna().copy()`로 정리하세요.
         """,
         starter=ST + "frame = pd.DataFrame(index=prices.index)\n# 여섯 열을 만들고 불완전한 행을 제외하세요\n",
-        solution=ST_FRAME + "print(frame.shape)\nframe.head()\n",
+        solution=ST_FRAME + "print(frame.shape)\nprint(frame.head())\n",
         check="assert s['frame'].shape == (396, 6)\nassert s['frame'].notna().all().all()\nassert (s['frame']['target_date'] > s['frame'].index).all()\nassert s['frame']['ma5'].iloc[0] == s['prices']['종가'].iloc[:5].mean()"),
     quiz('feature-time-check', '단원 점검',
         choice('`target_next_close`를 입력 `X`에도 넣으면 어떻게 되나요?',

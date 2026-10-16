@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "eeb58a11cf345b74",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "2de80085a050",
   "problem": "9b0848b05d94",
@@ -49,38 +49,6 @@
   {
    "block": "solution",
    "hash": "6e4d4a817aae"
-  },
-  {
-   "block": "solution",
-   "hash": "6e4d4a817aae"
-  },
-  {
-   "block": "solution",
-   "hash": "6e4d4a817aae"
-  },
-  {
-   "block": "solution",
-   "hash": "6e4d4a817aae"
-  },
-  {
-   "block": "solution",
-   "hash": "6e4d4a817aae"
-  },
-  {
-   "block": "solution",
-   "hash": "6e4d4a817aae"
-  },
-  {
-   "block": "solution",
-   "hash": "6e4d4a817aae"
-  },
-  {
-   "block": "solution",
-   "hash": "6e4d4a817aae"
-  },
-  {
-   "block": "solution",
-   "hash": "6e4d4a817aae"
   }
  ],
  "entry": [
@@ -93,34 +61,9 @@
    "준비 코드엔 자료 읽기와 특징, 시간순 나누기, 그리고 models 딕셔너리까지 들어 있어요. 그대로 둘게요."
   ],
   [
-   "try",
-   "baseline_mae = mean_absolute_error(y_test, X_test[close])\n",
-   "기준 MAE부터요. 오늘 종가를 그대로 내일 예측으로 쓰면 얼마나 틀리는지죠. 이렇게 해 볼까요?"
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "NameError가 나죠? close라는 변수는 없거든요. 열 이름은 글자라서 따옴표가 있어야 해요."
-  ],
-  [
-   "undo",
-   "그래서 X_test['close']처럼 따옴표를 꼭 써요."
-  ],
-  [
    "code",
    "# 기준 모델: \"내일 종가 = 오늘 종가\"예요. 테스트 자료의 close 열을 예측값으로 써요\n# 정답 y_test와 비교해 MAE(평균 절대 오차)를 재요. 이게 넘어야 할 선이에요\nbaseline_mae = mean_absolute_error(y_test, X_test['close'])\n# 모델 이름 → 테스트 MAE를 모을 빈 딕셔너리예요\nmaes = {}\n",
    "기준 MAE를 재요. 이게 모델이 넘어야 할 선이에요. 점수를 모을 빈 딕셔너리 maes도 만들어요."
-  ],
-  [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 아직 print가 없거든요. 오류 없이 돌았다는 게 중요해요."
   ],
   [
    "code",
@@ -135,14 +78,6 @@
    "code",
    "# key=maes.get: 값(MAE)이 가장 작은 키(모델 이름)를 골라요. min(maes)만 쓰면 이름 순이라 틀려요\nbest_model = min(maes, key=maes.get)\n# 보고에 들어갈 숫자 다섯 개. 키 이름은 문제에 적힌 그대로 따옴표로 써요\n# len(X_test)는 테스트 거래일 수, bool()로 감싸 numpy 참/거짓을 파이썬 True/False로 바꿔요\nreport = {'test_days': len(X_test), 'baseline_mae': baseline_mae, 'best_model': best_model, 'best_mae': maes[best_model], 'improved': bool(maes[best_model] < baseline_mae)}\n",
    "min에 key=maes.get을 주면 MAE가 가장 작은 이름이 나와요. key를 빼면 이름 순이라 틀리니 조심하세요. 그걸로 다섯 키짜리 report를 만들어요."
-  ],
-  [
-   "run",
-   "여기까지 실행해요."
-  ],
-  [
-   "output",
-   "여전히 조용하죠? 숫자는 다 계산됐어요. 이제 보고만 찍으면 돼요."
   ],
   [
    "code",

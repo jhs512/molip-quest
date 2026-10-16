@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "094ca5503fafad51",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "691105b24d31",
   "problem": "e94df3075c07",
@@ -17,38 +17,6 @@
   {
    "block": "starter",
    "hash": "830e69b6f044"
-  },
-  {
-   "block": "solution",
-   "hash": "48843a53ab24"
-  },
-  {
-   "block": "solution",
-   "hash": "48843a53ab24"
-  },
-  {
-   "block": "solution",
-   "hash": "48843a53ab24"
-  },
-  {
-   "block": "solution",
-   "hash": "48843a53ab24"
-  },
-  {
-   "block": "solution",
-   "hash": "48843a53ab24"
-  },
-  {
-   "block": "solution",
-   "hash": "48843a53ab24"
-  },
-  {
-   "block": "solution",
-   "hash": "48843a53ab24"
-  },
-  {
-   "block": "solution",
-   "hash": "48843a53ab24"
   },
   {
    "block": "solution",
@@ -103,42 +71,9 @@
    "같은 열의 평균을 내면 1의 비율이에요. 그게 바로 부도율이거든요."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 두 값을 변수에 담기만 했지 print를 안 했거든요."
-  ],
-  [
-   "try",
-   "X = credit.drop(columns=['고객번호', 'target'])\n",
-   "이제 입력 표요. 이렇게 target에도 따옴표를 붙여 볼까요?"
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "KeyError가 나요. 마지막 줄을 보세요. 'target' not found in axis, 그런 이름의 열이 없대요. target은 변수라 따옴표 없이 써야 해요."
-  ],
-  [
-   "undo",
-   "그래서 따옴표를 떼고 다시 쓸게요."
-  ],
-  [
    "code",
    "# 고객번호는 그냥 번호라 입력이 못 되고, 타깃은 정답이라 빼야 해요\n# columns=[...] 리스트 안에 열 이름을 따옴표로 적어요. target은 변수라 따옴표 없이요\nX = credit.drop(columns=['고객번호', target])\n",
    "고객번호는 그냥 번호라 빼고, 타깃은 정답이라 빼요. drop에 두 열 이름을 리스트로 넘기면 돼요."
-  ],
-  [
-   "run",
-   "실행해 볼게요."
-  ],
-  [
-   "output",
-   "이번엔 오류 없이 조용하죠? 두 열을 빼고 X가 잘 만들어진 거예요."
   ],
   [
    "code",
@@ -147,7 +82,7 @@
   ],
   [
    "run",
-   "다시 실행해요."
+   "실행해 볼게요."
   ],
   [
    "output",

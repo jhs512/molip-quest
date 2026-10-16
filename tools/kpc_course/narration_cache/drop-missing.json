@@ -1,18 +1,18 @@
 {
  "format": 2,
- "hash": "e91c621fd8bc6cb2",
+ "hash": "cfa11c823b975449",
  "by": "claude",
  "blocks": {
   "title": "e662ce28ac9e",
-  "problem": "02882ffa0ba9",
+  "problem": "e59019c4b9d5",
   "starter": "2d44aba23313",
   "example": "e3b0c44298fc",
-  "solution": "d0b8259e895e"
+  "solution": "5372f0d058da"
  },
  "sources": [
   {
    "block": "problem",
-   "hash": "02882ffa0ba9"
+   "hash": "e59019c4b9d5"
   },
   {
    "block": "starter",
@@ -20,65 +20,41 @@
   },
   {
    "block": "solution",
-   "hash": "d0b8259e895e"
+   "hash": "5372f0d058da"
   },
   {
    "block": "solution",
-   "hash": "d0b8259e895e"
+   "hash": "5372f0d058da"
   },
   {
    "block": "solution",
-   "hash": "d0b8259e895e"
+   "hash": "5372f0d058da"
   },
   {
    "block": "solution",
-   "hash": "d0b8259e895e"
+   "hash": "5372f0d058da"
   },
   {
    "block": "solution",
-   "hash": "d0b8259e895e"
+   "hash": "5372f0d058da"
   },
   {
    "block": "solution",
-   "hash": "d0b8259e895e"
+   "hash": "5372f0d058da"
   },
   {
    "block": "solution",
-   "hash": "d0b8259e895e"
+   "hash": "5372f0d058da"
   },
   {
    "block": "solution",
-   "hash": "d0b8259e895e"
-  },
-  {
-   "block": "solution",
-   "hash": "d0b8259e895e"
-  },
-  {
-   "block": "solution",
-   "hash": "d0b8259e895e"
-  },
-  {
-   "block": "solution",
-   "hash": "d0b8259e895e"
-  },
-  {
-   "block": "solution",
-   "hash": "d0b8259e895e"
-  },
-  {
-   "block": "solution",
-   "hash": "d0b8259e895e"
-  },
-  {
-   "block": "solution",
-   "hash": "d0b8259e895e"
+   "hash": "5372f0d058da"
   }
  ],
  "entry": [
   [
    "problem",
-   "자, 두 번째 길, 빼기예요. 가격이 빈 행을 뺀 표를 dropped에 담고, 남은 행 수를 n_left에 담아 출력해요."
+   "자, 두 번째 길, 빼기예요. 가격이 빈 행을 뺀 표를 dropped에 담아요. 남은 행 수는 n_left에 담아 출력하고, 표도 print로 확인해요."
   ],
   [
    "starter",
@@ -88,31 +64,6 @@
    "code",
    "\n# price가 빈 행만 빼요. subset에는 열 이름을 리스트로 넣어요.\n# subset을 빼면 어느 열이든 빈 행을 전부 빼니 조심하세요.\ndropped = orders.dropna(subset=['price'])\n",
    "dropna에 subset으로 price를 주면, price가 빈 행만 빼요. 그 결과를 dropped에 담아요."
-  ],
-  [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 표를 만들어 담기만 했거든요."
-  ],
-  [
-   "try",
-   "print(len(orders.dropna()))\n",
-   "subset 없이 이렇게 해 볼까요?"
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "3이 나와요. 이 표에선 같지만, 열이 많으면 다른 열의 빈칸 때문에 멀쩡한 행까지 빠져요."
-  ],
-  [
-   "undo",
-   "그래서 subset으로 어느 열을 볼지 꼭 정해요."
   ],
   [
    "code",
@@ -129,16 +80,16 @@
   ],
   [
    "code",
-   "# 마지막 줄에 이름만 적으면 표가 화면에 나와요.\ndropped\n",
+   "# print로 표를 출력해 값을 확인해요.\nprint(dropped)\n",
    "마지막 줄에 dropped를 적으면 표가 그대로 보여요."
   ],
   [
    "run",
-   "다시 실행해요."
+   "실행해 볼게요."
   ],
   [
    "output",
-   "3만 나오죠? 여기선 이름만 적어도 표가 안 보여요. 표를 보려면 print(dropped)로 감싸야 해요."
+   "3 밑에 표가 나왔죠? A, B, A 세 행만 남았어요. price 열에 빈칸이 하나도 없고요."
   ],
   [
    "submit",

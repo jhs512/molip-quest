@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "b109e127e3056f7e",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "fd9d6d7b2d90",
   "problem": "acf5cad043e8",
@@ -17,30 +17,6 @@
   {
    "block": "starter",
    "hash": "a3d53cf74b0f"
-  },
-  {
-   "block": "solution",
-   "hash": "b24b9b232072"
-  },
-  {
-   "block": "solution",
-   "hash": "b24b9b232072"
-  },
-  {
-   "block": "solution",
-   "hash": "b24b9b232072"
-  },
-  {
-   "block": "solution",
-   "hash": "b24b9b232072"
-  },
-  {
-   "block": "solution",
-   "hash": "b24b9b232072"
-  },
-  {
-   "block": "solution",
-   "hash": "b24b9b232072"
   },
   {
    "block": "solution",
@@ -90,33 +66,8 @@
    "predict_proba는 행마다 정상 확률과 부도 확률 두 열을 줘요. [:, 1]로 부도 확률만 골라 probabilities에 담아요."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? probabilities에 담기만 했지 print를 안 했거든요."
-  ],
-  [
    "caution",
    "[:, 0]을 쓰기 쉬운데, 그건 정상 확률이에요. 0부터 세니까 부도 확률은 1번이에요. 조심하세요."
-  ],
-  [
-   "try",
-   "n_positive_05 = int(probabilities >= 0.5.sum())\n",
-   "이렇게 해 볼까요? 괄호를 하나만 쓰면 편할 것 같죠?"
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "AttributeError가 나요. float object has no attribute sum이라고요. 0.5라는 숫자에 .sum()을 붙인 셈이거든요. 비교한 배열에 붙여야 해요."
-  ],
-  [
-   "undo",
-   "그래서 비교식을 괄호로 먼저 감싸요."
   ],
   [
    "code",
@@ -135,7 +86,7 @@
   ],
   [
    "run",
-   "다시 실행해 볼게요."
+   "실행해 볼게요."
   ],
   [
    "output",

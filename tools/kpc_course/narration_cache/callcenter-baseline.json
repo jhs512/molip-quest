@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "4cf0a2597ced1f4e",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "e49185d268e5",
   "problem": "199f9f5bb0d6",
@@ -53,30 +53,6 @@
   {
    "block": "solution",
    "hash": "1f7a024770e2"
-  },
-  {
-   "block": "solution",
-   "hash": "1f7a024770e2"
-  },
-  {
-   "block": "solution",
-   "hash": "1f7a024770e2"
-  },
-  {
-   "block": "solution",
-   "hash": "1f7a024770e2"
-  },
-  {
-   "block": "solution",
-   "hash": "1f7a024770e2"
-  },
-  {
-   "block": "solution",
-   "hash": "1f7a024770e2"
-  },
-  {
-   "block": "solution",
-   "hash": "1f7a024770e2"
   }
  ],
  "entry": [
@@ -89,23 +65,6 @@
    "준비 코드에 2주치 일별 통화량 calls와 mean_absolute_error가 있어요. 그대로 둘게요."
   ],
   [
-   "try",
-   "\nlast_week = calls[calls['week'] = 1]['calls'].to_numpy()\n",
-   "1주차 줄만 고를게요. week가 1인 줄, 이렇게 해 볼까요?"
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "SyntaxError가 나죠? 파이썬이 '=' 대신 '=='를 쓰려던 거냐고 물어요. 등호 하나는 대입이라 비교엔 못 쓰거든요."
-  ],
-  [
-   "undo",
-   "그래서 ==로 고쳐요."
-  ],
-  [
    "code",
    "\n# week 열이 1인 줄만 골라요. 비교는 ==, 등호 하나(=)는 대입이라 안 돼요\n# 'calls' 열만 꺼내 to_numpy()로 배열로 바꿔요. 월~일 7개가 순서대로 들어가요\nlast_week = calls[calls['week'] == 1]['calls'].to_numpy()\n",
    "week가 1인 줄만 골라 calls 열을 배열로 꺼내요. 월부터 일까지 7개가 순서대로 들어가요."
@@ -114,14 +73,6 @@
    "code",
    "# 2주차도 같은 모양으로 꺼내요. 이게 우리가 맞히고 싶은 정답이에요\nthis_week = calls[calls['week'] == 2]['calls'].to_numpy()\n",
    "2주차도 같은 모양이죠? 이게 우리가 맞히고 싶은 정답이에요."
-  ],
-  [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 변수에 담기만 했지 print를 안 했거든요."
   ],
   [
    "code",
@@ -144,7 +95,7 @@
   ],
   [
    "run",
-   "다시 실행해요."
+   "실행해 볼게요."
   ],
   [
    "output",

@@ -22,17 +22,10 @@ ACTIVITY = {
 GOOD = [
     ("problem", "같은 계산을 이름표로 해요."),
     ("starter", "준비 코드 두 줄은 그대로 둘게요."),
-    ("code", "amount = price * quantity\n", "오른쪽을 먼저 계산해서 amount에 넣어요."),
-    ("run", "일단 실행해 볼게요."),
-    ("output", "아무것도 안 나오죠? 넣기만 했거든요."),
-    ("try", "print(amount\n", "이렇게 해 볼까요?"),
-    ("run", "실행하면요."),
-    ("output", "SyntaxError가 나요. 괄호를 안 닫았거든요."),
-    ("undo", "그래서 괄호를 꼭 닫아요."),
-    ("code", "print(amount)\n", "그다음 줄에서 꺼내 써요."),
-    ("run", "다시 실행해요."),
+    ("code", "amount = price * quantity\n", "가격과 수량을 곱해요."),
+    ("code", "print(amount)\n", "print로 금액을 출력해요."),
+    ("run", "실행해요."),
     ("output", "30000이 나왔죠?"),
-    ("caution", "숫자 30000을 직접 적기 쉬운데, 가격이 바뀌면 틀리니 조심하세요."),
     ("submit", "제출할게요."),
 ]
 
@@ -41,64 +34,103 @@ def compile_(entry):
     return narration.compile_coding(ACTIVITY, entry, SOLUTION, "test")
 
 
-def test_incremental_entry_compiles_to_typed_runs_and_an_undo_that_restores_the_code():
+def test_short_solution_waits_for_print_and_runs_once():
     actions = compile_(GOOD)
-    kinds = [a["action"] for a in actions]
-    assert kinds.count("run") == 3 and kinds[-1] == "submit"
-    assert actions[0]["target"] == "problem"
-    typed = [a for a in actions if a["action"] == "type_code"]
-    assert [t["code"] for t in typed] == ["amount = price * quantity\n", "print(amount\n", "print(amount)\n"]
-    undo = next(a for a in actions if a["action"] == "set_code" and a["say"].startswith("그래서"))
-    assert undo["code"] == "price = 10000\nquantity = 3\namount = price * quantity\n"
-    caution = next(a for a in actions if a["action"] == "say" and a["target"] == "editor")
-    assert "조심하세요" in caution["text"]
-    # Replayed like the agent, the editor ends as the solution.
-    states = narration.coding_states([s for s in GOOD if s[0] in ("code", "try", "undo")], "price = 10000\nquantity = 3\n")
-    assert states[-1][1] == SOLUTION
+    assert [a["action"] for a in actions].count("run") == 1
+    assert actions[-1]["action"] == "submit"
+    typed = "".join(a["code"] for a in actions if a["action"] == "type_code")
+    assert "price = 10000\nquantity = 3\n" + typed == SOLUTION
 
 
-def test_one_run_at_the_end_is_refused():
-    entry = [s for s in GOOD if s[0] not in ("run", "output", "try", "undo")]
-    entry.insert(-1, ("run", "실행해요."))
-    entry.insert(-1, ("output", "30000이에요."))
+def test_assignment_only_checkpoint_is_rejected():
+    entry = list(GOOD)
+    entry[3:3] = [("run", "실행해요."), ("output", "아무것도 안 나와요.")]
+    with pytest.raises(SystemExit, match="출력 없는 실행"):
+        compile_(entry)
+
+
+@pytest.mark.parametrize("kind", ["try", "undo"])
+def test_intentional_error_steps_are_rejected(kind):
+    entry = list(GOOD)
+    entry.insert(2, (kind, "print(amount\n", "틀려 봐요.") if kind == "try" else (kind, "되돌려요."))
+    with pytest.raises(SystemExit, match="일부러 틀리는"):
+        compile_(entry)
+
+
+def test_multiple_visible_checkpoints_must_be_executed_incrementally():
+    solution = SOLUTION + "print(amount * 2)\n"
+    entry = GOOD[:-1] + [("code", "print(amount * 2)\n", "두 배를 출력해요."),
+                         ("run", "실행해요."), ("output", "60000이에요."), GOOD[-1]]
+    assert len([a for a in narration.compile_coding(ACTIVITY, entry, solution, "test") if a["action"] == "run"]) == 2
+    once = [s for i, s in enumerate(entry) if i not in (4, 5)]
     with pytest.raises(SystemExit, match="반복"):
-        compile_(entry)
+        narration.compile_coding(ACTIVITY, once, solution, "test")
 
 
-def test_a_try_must_be_undone_and_an_undo_needs_a_try():
-    entry = [s for s in GOOD if s[0] != "undo"]
-    with pytest.raises(SystemExit, match="undo"):
-        compile_(entry)
-    entry = [s for s in GOOD if s[0] != "try"]
-    with pytest.raises(SystemExit, match="try"):
-        compile_(entry)
-
-
-def test_a_caution_or_a_try_is_required_and_output_follows_run():
-    entry = [
-        ("problem", "말"), ("starter", "말"),
-        ("code", "amount = price * quantity\n", "말"), ("run", "말"), ("output", "말"),
-        ("code", "print(amount)\n", "말"), ("run", "말"), ("output", "말"), ("submit", "말"),
-    ]
-    with pytest.raises(SystemExit, match="조심하세요"):
-        compile_(entry)
+def test_output_must_immediately_follow_run():
     entry = list(GOOD)
     entry.insert(4, ("output", "run 없이 나온 output"))
     with pytest.raises(SystemExit, match="output은 run 바로 뒤"):
         compile_(entry)
 
 
+def test_clean_entry_removes_empty_runs_and_error_demonstration_without_changing_solution():
+    from kpc_course.clean_narration import clean_entry
+    old = GOOD[:3] + [("run", "실행해요."), ("output", "아무것도 없어요."),
+                     ("try", "print('amount')\n", "틀려 봐요."), ("run", "실행해요."),
+                     ("output", "amount 글자예요."), ("undo", "되돌려요.")] + GOOD[3:]
+    cleaned = clean_entry(old)
+    assert not {"try", "undo"}.intersection(s[0] for s in cleaned)
+    assert sum(s[0] == "run" for s in cleaned) == 1
+    assert compile_(cleaned)
+
+
+def test_notebook_expressions_and_their_comments_become_prints():
+    from kpc_course.clean_narration import explicit_prints
+    code = "df = {'a': 1}\n# 마지막 줄에 변수 이름만 쓰면 보여요.\ndf\n"
+    fixed = explicit_prints(code)
+    assert fixed.endswith("print(df)\n")
+    assert "이름만" not in fixed
+    assert "df = {'a': 1}" in fixed
+    assert explicit_prints("df.head()\n") == "print(df.head())\n"
+
+
+def test_runtime_verification_rejects_empty_output_but_accepts_a_captured_graph():
+    import narrate
+    entry = [("code", "print('')\n", "출력해요."), ("run", "실행해요.")]
+    assert narrate.run_errors(entry, [""])
+    assert not narrate.run_errors(entry, ["(그래프 출력)"])
+
+
+def test_execution_errors_cannot_hide_behind_long_stdout(monkeypatch):
+    import narrate
+    from types import SimpleNamespace
+    monkeypatch.setattr(narrate.subprocess, "run", lambda *args, **kwargs:
+                        SimpleNamespace(returncode=1, stdout="x" * 2000, stderr="Traceback: NameError"))
+    out = narrate.run_solution({}, "print('x')")
+    assert out.startswith("(실행 실패:")
+    assert "NameError" in out
+
+
+def test_empty_canvas_is_not_an_output_checkpoint():
+    assert not narration.has_visible_output("fig, ax = plt.subplots()\n")
+    assert narration.has_visible_output("ax.plot([1, 2], [3, 4])\n")
+    assert not narration.has_visible_output("# print(amount)\namount = 3\n")
+
+
+def test_final_notebook_only_expression_is_rejected_even_after_an_earlier_print():
+    solution = SOLUTION + "amount\n"
+    with pytest.raises(SystemExit, match="print로 출력"):
+        narration.compile_coding(ACTIVITY, GOOD, solution, "test")
+
+
 def test_chunks_must_join_into_the_solution_with_comments_intact():
-    commented = "price = 10000\nquantity = 3\n# 가격 × 수량\namount = price * quantity  # 금액\nprint(amount)  # 출력\n"
-    entry = [
-        ("problem", "말"), ("starter", "말"),
-        ("code", "# 가격 × 수량\namount = price * quantity  # 금액\n", "말"), ("run", "말"), ("output", "말"),
-        ("caution", "조심하세요."),
-        ("code", "print(amount)  # 출력\n", "말"), ("run", "말"), ("output", "말"), ("submit", "말"),
-    ]
+    commented = "price = 10000\nquantity = 3\n# 금액을 계산해요.\namount = price * quantity\nprint(amount)  # 출력\n"
+    entry = [GOOD[0], GOOD[1],
+             ("code", "# 금액을 계산해요.\namount = price * quantity\nprint(amount)  # 출력\n", "금액을 출력해요."),
+             *GOOD[4:]]
     actions = narration.compile_coding(ACTIVITY, entry, commented, "test")
-    typed = "".join(a["code"] for a in actions if a["action"] == "type_code")
-    assert "price = 10000\nquantity = 3\n" + typed == commented
+    assert "price = 10000\nquantity = 3\n" + "".join(a["code"] for a in actions if a["action"] == "type_code") == commented
     with pytest.raises(SystemExit, match="정답 코드가 되어야"):
         narration.compile_coding(ACTIVITY, entry, SOLUTION, "test")
     assert comments.strip_comments(commented) == comments.strip_comments(SOLUTION)

@@ -137,12 +137,12 @@ for로 합계를 total에 누적(sum 금지), 평균을 average에, 평균의 1.
 - `결과 130000` → 답을 알면 적는다. AI가 quantity를 더하는 실수를 스스로 거른다.
 """),
     "holdings-frame": p("""
-pandas. holdings(딕셔너리 리스트, 키 name·price·quantity·amount)를 DataFrame으로 만들어 df에 담고 마지막 줄에 df.
+pandas. holdings(딕셔너리 리스트, 키 name·price·quantity·amount)를 DataFrame으로 만들어 df에 담고 print(df)로 출력.
 열 순서 name, price, quantity, amount.
 """, """
 - `pandas`, `DataFrame` → 이제 도구가 바뀐다고 선언.
 - `열 순서` → 검사기가 순서를 본다.
-- `마지막 줄에 df` → 이 앱은 마지막 표현식을 표로 보여 준다.
+- `print(df)` → 표의 값을 실행 결과로 확인한다.
 """),
     "frame-column-sum": p("""
 pandas. df(열 name·price·quantity·amount)에서 amount 열의 합을 .sum()으로 구해 total_amount에 담고 출력.
@@ -167,7 +167,7 @@ shape와 columns 써.
 - `열 이름 리스트` → `list(df.columns)`. Index 그대로면 검사 실패.
 """),
     "to-csv": p("""
-pandas. orders DataFrame을 orders.csv로 저장(index=False)하고 다시 read_csv로 읽어 saved에 담아. 마지막 줄에 saved.
+pandas. orders DataFrame을 orders.csv로 저장(index=False)하고 다시 read_csv로 읽어 saved에 담아. print(saved)로 출력.
 """, """
 - `index=False` → 없으면 행 번호가 열로 끼어들어 4열이 된다.
 """),
@@ -189,12 +189,12 @@ pandas. orders DataFrame에서 product, price 두 열만 고른 표를 selected�
 - `iloc으로` → 자리 번호로 행 고르기. 안 적으면 `head(2)`를 준다.
 """),
     "loc-condition": p("""
-pandas. orders DataFrame에서 quantity가 3 이상인 행만 불리언 마스크로 골라 many에 담고 마지막 줄에 many.
+pandas. orders DataFrame에서 quantity가 3 이상인 행만 불리언 마스크로 골라 many에 담고 print(many)로 출력.
 """, """
 - `불리언 마스크` → 참·거짓 마스크. 행마다 참·거짓을 매겨 참인 행만 남긴다: `orders[orders['quantity'] >= 3]`.
 """),
     "read-csv-titanic": p("""
-pandas. data/titanic.csv를 read_csv로 읽어 titanic에 담고, titanic.shape 출력, 마지막 줄에 titanic.head().
+pandas. data/titanic.csv를 read_csv로 읽어 titanic에 담고, titanic.shape 출력, print(titanic.head())로 출력.
 """, """
 - `data/titanic.csv` → 경로를 그대로. 안 적으면 AI가 URL이나 다른 경로를 가정한다.
 - `shape`, `head()` → 새 자료를 받으면 처음 보는 두 가지.
@@ -214,7 +214,7 @@ pandas. orders['price']에 결측 1개. 중앙값을 median_price에, 결측을 
 - `원본은 바꾸지 마` → `inplace=True`를 막는다. 검사기가 원본을 본다.
 """),
     "drop-missing": p("""
-pandas. orders DataFrame에서 price가 결측인 행을 dropna로 빼서 dropped에 담고, 남은 행 수를 int로 n_left에. 둘 다 출력, 마지막 줄에 dropped.
+pandas. orders DataFrame에서 price가 결측인 행을 dropna로 빼서 dropped에 담고, 남은 행 수를 int로 n_left에. 둘 다 출력, print(dropped)로 출력.
 """, """
 - `dropna로 빼서` → 채우기의 반대편 길을 메서드 이름으로.
 """),
@@ -226,7 +226,7 @@ pandas. orders에서 price >= 12000 이고 quantity >= 2 인 행만 골라 selec
 - `.copy()` → 뒤에서 고쳐도 원본이 안 바뀌게. 검사기가 본다.
 """),
     "or-filter": p("""
-pandas. orders에서 product == 'A' 이거나 quantity == 1 인 행을 | 로 골라 either에 담고 마지막 줄에 either.
+pandas. orders에서 product == 'A' 이거나 quantity == 1 인 행을 | 로 골라 either에 담고 print(either)로 출력.
 """, """
 - `| 로` → pandas의 "또는". 파이썬 `or`를 쓰면 오류.
 """),
@@ -353,12 +353,12 @@ pandas + seaborn. titanic DataFrame. columns=['객실등급','나이','형제배
 """),
     # ----
     "embarked-rate": p("""
-pandas. titanic DataFrame. 탑승항구로 groupby한 생존의 agg(['count','mean'])을 by_port에 담고 마지막 줄에 by_port.
+pandas. titanic DataFrame. 탑승항구로 groupby한 생존의 agg(['count','mean'])을 by_port에 담고 print(by_port)로 출력.
 """, """
 - `count`를 같이 → 항구별 인원이 다르면 비율의 신뢰도도 다르다.
 """),
     "sex-pclass-table": p("""
-pandas. titanic DataFrame. ['성별','객실등급']로 groupby한 생존의 agg(['count','mean'])을 grouped에, grouped['mean'].unstack('객실등급')를 wide에 담고 마지막 줄에 wide.
+pandas. titanic DataFrame. ['성별','객실등급']로 groupby한 생존의 agg(['count','mean'])을 grouped에, grouped['mean'].unstack('객실등급')를 wide에 담고 print(wide)로 출력.
 """, """
 - `['성별','객실등급']로 groupby` → 두 조건으로 묶기.
 - `unstack('객실등급')` → 긴 표를 행×열 교차표로 펼치는 메서드.
@@ -389,7 +389,7 @@ pandas. X DataFrame(열 객실등급, 성별, 나이, 형제배우자, 부모자
 - `select_dtypes` → 자료형으로 열을 가르는 메서드.
 """),
     "get-dummies": p("""
-pandas. titanic DataFrame. pd.get_dummies(titanic[['성별']])로 성별 열을 One-hot 인코딩해 encoded에 담고 마지막 줄에 encoded.head(). 성별_여성, 성별_남성 두 열이 나와야 해.
+pandas. titanic DataFrame. pd.get_dummies(titanic[['성별']])로 성별 열을 One-hot 인코딩해 encoded에 담고 print(encoded.head())로 출력. 성별_여성, 성별_남성 두 열이 나와야 해.
 """, """
 - `One-hot 인코딩` → 글자 열을 0/1 열로 바꾸는 표준 용어. `map({'남성':0})` 같은 임의 코드를 막는다.
 """),

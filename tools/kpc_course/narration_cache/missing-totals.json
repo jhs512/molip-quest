@@ -1,13 +1,13 @@
 {
  "format": 2,
- "hash": "ad2f5c37a487d14d",
- "by": "claude",
+ "hash": "a17b51e6f355e634",
+ "by": "hand",
  "blocks": {
   "title": "23cf2a7a8681",
   "problem": "bff09333157f",
   "starter": "0987e023d76f",
   "example": "e3b0c44298fc",
-  "solution": "36f96673a08b"
+  "solution": "ab57c3420aa9"
  },
  "sources": [
   {
@@ -20,67 +20,43 @@
   },
   {
    "block": "solution",
-   "hash": "36f96673a08b"
+   "hash": "ab57c3420aa9"
   },
   {
    "block": "solution",
-   "hash": "36f96673a08b"
+   "hash": "ab57c3420aa9"
   },
   {
    "block": "solution",
-   "hash": "36f96673a08b"
+   "hash": "ab57c3420aa9"
   },
   {
    "block": "solution",
-   "hash": "36f96673a08b"
+   "hash": "ab57c3420aa9"
   },
   {
    "block": "solution",
-   "hash": "36f96673a08b"
+   "hash": "ab57c3420aa9"
   },
   {
    "block": "solution",
-   "hash": "36f96673a08b"
+   "hash": "ab57c3420aa9"
   },
   {
    "block": "solution",
-   "hash": "36f96673a08b"
+   "hash": "ab57c3420aa9"
   },
   {
    "block": "solution",
-   "hash": "36f96673a08b"
+   "hash": "ab57c3420aa9"
   },
   {
    "block": "solution",
-   "hash": "36f96673a08b"
+   "hash": "ab57c3420aa9"
   },
   {
    "block": "solution",
-   "hash": "36f96673a08b"
-  },
-  {
-   "block": "solution",
-   "hash": "36f96673a08b"
-  },
-  {
-   "block": "solution",
-   "hash": "36f96673a08b"
-  },
-  {
-   "block": "solution",
-   "hash": "36f96673a08b"
-  },
-  {
-   "block": "solution",
-   "hash": "36f96673a08b"
-  },
-  {
-   "block": "solution",
-   "hash": "36f96673a08b"
-  },
-  {
-   "block": "solution",
-   "hash": "36f96673a08b"
+   "hash": "ab57c3420aa9"
   }
  ],
  "entry": [
@@ -98,23 +74,6 @@
    "먼저 copy로 복사본 filled를 만들어요. 원본 orders는 건드리지 않으려고요."
   ],
   [
-   "try",
-   "filled['price'].fillna(filled['price'].median())\n",
-   "이렇게 해 볼까요? price의 빈칸을 fillna로 중앙값으로 채우는 거예요."
-  ],
-  [
-   "run",
-   "실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 채운 결과를 어디에도 안 넣었거든요. 출력도 안 했고요. 그러니 filled 표는 그대로예요."
-  ],
-  [
-   "undo",
-   "그래서 채운 결과를 filled['price']에 다시 넣어 줘야 해요."
-  ],
-  [
    "code",
    "# 가격 빈칸(결측)을 가격의 중앙값으로 채워요. 'price'는 따옴표 붙인 열 이름이에요\nfilled['price'] = filled['price'].fillna(filled['price'].median())\n",
    "같은 코드를 왼쪽에 filled['price'] =를 붙여 써요. 이제 표가 진짜로 바뀌어요."
@@ -123,14 +82,6 @@
    "code",
    "# 가격 × 수량으로 금액 열 amount를 새로 만들어요. 열끼리 곱하면 행마다 계산돼요\nfilled['amount'] = filled['price'] * filled['quantity']\n",
    "채운 표에 amount 열을 만들어요. 가격 곱하기 수량이죠?"
-  ],
-  [
-   "run",
-   "여기서 한번 실행해요."
-  ],
-  [
-   "output",
-   "이번에도 아무것도 안 나오죠? 열을 만들기만 하고 꺼내지 않았거든요. 오류가 없으면 된 거예요."
   ],
   [
    "code",
@@ -148,12 +99,12 @@
   ],
   [
    "code",
-   "# 두 합계를 나란히 출력해요. 빈칸 하나를 어떻게 다루느냐에 따라 답이 달라져요\nprint(filled_total, dropped_total)\n# 마지막 줄에 변수 이름만 쓰면 채운 표가 화면에 나와요\nfilled\n",
+   "# 두 합계를 나란히 출력해요. 빈칸 하나를 어떻게 다루느냐에 따라 답이 달라져요\nprint(filled_total, dropped_total)\n# print로 표를 출력해 값을 확인해요.\nprint(filled)\n",
    "두 합계를 나란히 출력하고, 채운 표 filled도 마지막에 보여 줄게요."
   ],
   [
    "run",
-   "다시 실행해요."
+   "실행해 볼게요."
   ],
   [
    "output",

@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "59ddfa061cd789d6",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "16008491a534",
   "problem": "0299c7b8a8df",
@@ -49,30 +49,6 @@
   {
    "block": "solution",
    "hash": "74c9e389c6f3"
-  },
-  {
-   "block": "solution",
-   "hash": "74c9e389c6f3"
-  },
-  {
-   "block": "solution",
-   "hash": "74c9e389c6f3"
-  },
-  {
-   "block": "solution",
-   "hash": "74c9e389c6f3"
-  },
-  {
-   "block": "solution",
-   "hash": "74c9e389c6f3"
-  },
-  {
-   "block": "solution",
-   "hash": "74c9e389c6f3"
-  },
-  {
-   "block": "solution",
-   "hash": "74c9e389c6f3"
   }
  ],
  "entry": [
@@ -89,34 +65,9 @@
    "준비 코드엔 holding 딕셔너리가 있어요. 수량이 아직 3이죠? 이건 그대로 둘게요."
   ],
   [
-   "try",
-   "holding['amount'] = holding['price'] * holding['quantity']\nprint(holding['amount'])\n",
-   "이렇게 해 볼까요? 곱하기부터 먼저 해 보는 거예요."
-  ],
-  [
-   "run",
-   "실행해 볼게요."
-  ],
-  [
-   "output",
-   "30000이 나오죠? 만 원 곱하기 3이에요. 수량이 아직 3이라서 50000이 아니에요."
-  ],
-  [
-   "undo",
-   "그래서 지우고, 수량부터 먼저 바꿔요."
-  ],
-  [
    "code",
    "\n# 'quantity' 키에 5를 넣어요. 있던 키라서 3이 5로 바뀌어요\nholding['quantity'] = 5\n",
    "있던 키에 새 값을 넣으면 바뀌어요. 수량이 3에서 5가 됐어요."
-  ],
-  [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 값만 바꿨지 print를 안 했거든요."
   ],
   [
    "code",
@@ -134,7 +85,7 @@
   ],
   [
    "run",
-   "다시 실행해요."
+   "실행해 볼게요."
   ],
   [
    "output",

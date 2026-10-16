@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "513bf2f017f36eda",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "3697f99b847b",
   "problem": "c78faf80947e",
@@ -21,30 +21,6 @@
   {
    "block": "starter",
    "hash": "2ba11d145f18"
-  },
-  {
-   "block": "solution",
-   "hash": "705eb068327b"
-  },
-  {
-   "block": "solution",
-   "hash": "705eb068327b"
-  },
-  {
-   "block": "solution",
-   "hash": "705eb068327b"
-  },
-  {
-   "block": "solution",
-   "hash": "705eb068327b"
-  },
-  {
-   "block": "solution",
-   "hash": "705eb068327b"
-  },
-  {
-   "block": "solution",
-   "hash": "705eb068327b"
   },
   {
    "block": "solution",
@@ -90,34 +66,9 @@
    "자, 반복 전에 total_amount를 0으로 만들어요. 여기에 쌓아 갈 거거든요."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 0을 담기만 했지 아직 print를 안 썼거든요."
-  ],
-  [
    "code",
    "# holdings 안의 딕셔너리를 하나씩 holding에 꺼내요.\nfor holding in holdings:\n    # 'amount' 열의 값만 꺼내 누적해요. 키는 따옴표로 감싼 글자예요.\n    # += 는 total_amount = total_amount + ... 와 같아요.\n    total_amount += holding['amount']\n",
    "종목을 하나씩 꺼내서 holding['amount']를 total_amount에 더해요. += 가 누적이죠?"
-  ],
-  [
-   "try",
-   "    print(total_amount)\n",
-   "출력을 반복 안에 두면 어떻게 될까요? 이렇게 해 볼까요?"
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "30000, 70000, 130000이 세 줄로 찍혔죠? 한 종목 더할 때마다 한 번씩 출력된 거예요. 마지막 줄만 합계고 앞 두 줄은 중간값이거든요."
-  ],
-  [
-   "undo",
-   "우리가 보고 싶은 건 마지막 합계 하나예요. 들여쓰기 안의 print는 지울게요."
   ],
   [
    "code",
@@ -126,7 +77,7 @@
   ],
   [
    "run",
-   "다시 실행해 볼게요."
+   "실행해 볼게요."
   ],
   [
    "output",

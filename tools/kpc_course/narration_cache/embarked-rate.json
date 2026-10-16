@@ -1,22 +1,22 @@
 {
  "format": 2,
- "hash": "5c54e7bc4a962b51",
+ "hash": "3106bbad8a3805c8",
  "by": "claude",
  "blocks": {
   "title": "1d6e33eaef58",
-  "problem": "d1cf501b1e16",
+  "problem": "ca5af1b55bf3",
   "starter": "324740498ced",
   "example": "e3b0c44298fc",
-  "solution": "dd8854b83538"
+  "solution": "99c42492ecdf"
  },
  "sources": [
   {
    "block": "problem",
-   "hash": "d1cf501b1e16"
+   "hash": "ca5af1b55bf3"
   },
   {
    "block": "problem",
-   "hash": "d1cf501b1e16"
+   "hash": "ca5af1b55bf3"
   },
   {
    "block": "starter",
@@ -24,57 +24,33 @@
   },
   {
    "block": "solution",
-   "hash": "dd8854b83538"
+   "hash": "99c42492ecdf"
   },
   {
    "block": "solution",
-   "hash": "dd8854b83538"
+   "hash": "99c42492ecdf"
   },
   {
    "block": "solution",
-   "hash": "dd8854b83538"
+   "hash": "99c42492ecdf"
   },
   {
    "block": "solution",
-   "hash": "dd8854b83538"
+   "hash": "99c42492ecdf"
   },
   {
    "block": "solution",
-   "hash": "dd8854b83538"
-  },
-  {
-   "block": "solution",
-   "hash": "dd8854b83538"
-  },
-  {
-   "block": "solution",
-   "hash": "dd8854b83538"
-  },
-  {
-   "block": "solution",
-   "hash": "dd8854b83538"
-  },
-  {
-   "block": "solution",
-   "hash": "dd8854b83538"
-  },
-  {
-   "block": "solution",
-   "hash": "dd8854b83538"
-  },
-  {
-   "block": "solution",
-   "hash": "dd8854b83538"
+   "hash": "99c42492ecdf"
   }
  ],
  "entry": [
   [
    "problem",
-   "자, groupby를 한 번 더 손에 익혀요. 탑승항구별로 생존의 count와 mean을 구해서 by_port에 담으면 돼요."
+   "자, groupby를 한 번 더 손에 익혀요. 탑승항구별로 생존의 count와 mean을 구해서 by_port에 담으면 돼요. 세 항구의 count를 더하면 1307이에요. 두 명이 왜 빠질까요?"
   ],
   [
    "hint",
-   "힌트에 식이 거의 다 있죠? groupby 뒤에 열을 고르고 agg에 두 이름을 목록으로 주면 돼요."
+   "힌트에 식이 거의 다 있죠? groupby 뒤에 열을 고르고 agg에 두 이름을 목록으로 주면 돼요. 탑승항구가 빈 두 명은 어느 그룹에도 안 들어가고요."
   ],
   [
    "starter",
@@ -86,42 +62,17 @@
    "탑승항구로 묶고, 생존 열만 골라서, agg에 count와 mean을 목록으로 줘요. 결과를 by_port에 담아요."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? by_port에 넣기만 했지 아직 꺼내 보지 않았거든요."
-  ],
-  [
-   "try",
-   "titanic.groupby('탑승항구')['생존'].agg([count, mean])\n",
-   "agg 안에 따옴표 없이 count, mean이라고 쓰기 쉬운데, 이렇게 해 볼까요?"
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "NameError가 떠요. count라는 이름이 없다고 하죠? 따옴표가 없으니 파이썬은 count를 변수로 찾다가 못 찾은 거예요. 심지어 round를 말한 거냐고 되묻기까지 해요."
-  ],
-  [
-   "undo",
-   "그래서 'count', 'mean'처럼 따옴표를 꼭 붙여요. 지우고 돌아갈게요."
-  ],
-  [
    "code",
-   "# 마지막 줄에 변수 이름만 적으면 표가 화면에 나와요\n# count를 다 더하면 1307이에요. 탑승항구가 비어 있는 두 명은 어느 그룹에도 안 들어가거든요\nby_port\n",
-   "마지막 줄에 by_port만 적으면 표가 화면에 나와요."
+   "# print로 표를 출력해 값을 확인해요.\n# count를 다 더하면 1307이에요. 탑승항구가 비어 있는 두 명은 어느 그룹에도 안 들어가거든요\nprint(by_port)\n",
+   "print로 표를 출력해 값을 확인해요."
   ],
   [
    "run",
-   "다시 실행해요."
+   "실행해 볼게요."
   ],
   [
    "output",
-   "어? 여기서는 아무것도 안 나오죠? 이 실행 창은 마지막 줄의 값을 알아서 보여 주지 않아요. 표를 보려면 print(by_port)로 감싸야 해요. 그렇게 찍어 보면 항구마다 count와 mean 두 열이 있을 거예요. count 셋을 더하면 1309가 아니라 1307이에요. 탑승항구가 비어 있는 두 명은 어느 그룹에도 안 들어가거든요."
+   "표가 나왔죠? C는 270명에 생존율이 56%쯤이에요. Q는 123명에 36%쯤, S는 914명에 33%쯤이고요. count 셋을 더하면 1307이에요. 탑승항구가 비어 있는 두 명은 어느 그룹에도 안 들어가거든요."
   ],
   [
    "submit",

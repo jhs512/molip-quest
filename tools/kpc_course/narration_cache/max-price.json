@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "e0dd7cde8f44560d",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "23be3ae0a930",
   "problem": "f44c32513b37",
@@ -17,30 +17,6 @@
   {
    "block": "starter",
    "hash": "076cc451c810"
-  },
-  {
-   "block": "solution",
-   "hash": "45a8188a9316"
-  },
-  {
-   "block": "solution",
-   "hash": "45a8188a9316"
-  },
-  {
-   "block": "solution",
-   "hash": "45a8188a9316"
-  },
-  {
-   "block": "solution",
-   "hash": "45a8188a9316"
-  },
-  {
-   "block": "solution",
-   "hash": "45a8188a9316"
-  },
-  {
-   "block": "solution",
-   "hash": "45a8188a9316"
   },
   {
    "block": "solution",
@@ -86,34 +62,9 @@
    "가격을 하나씩 꺼내면서, 지금까지의 최고보다 큰지 확인해요."
   ],
   [
-   "try",
-   "    highest = price\n",
-   "참일 때 갈아 끼우는 줄, 이렇게 해 볼까요?"
-  ],
-  [
-   "run",
-   "실행해 볼게요."
-  ],
-  [
-   "output",
-   "IndentationError가 나요. 7번 줄 if 뒤에 들여쓴 블록이 와야 하는데, highest = price가 if와 같은 깊이에 있거든요."
-  ],
-  [
-   "undo",
-   "그래서 if 안쪽 줄은 들여쓰기를 두 번 해요."
-  ],
-  [
    "code",
    "        # 더 크면 최고를 이 값으로 갈아 끼워요 (들여쓰기 두 번 조심)\n        highest = price\n",
    "참일 때만 highest를 그 가격으로 갈아 끼우는 거거든요."
-  ],
-  [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "화면에 아무것도 안 나와요. highest에 넣기만 했지 아직 print로 꺼내지 않았거든요."
   ],
   [
    "caution",
@@ -126,7 +77,7 @@
   ],
   [
    "run",
-   "다시 실행해 볼게요."
+   "실행해 볼게요."
   ],
   [
    "output",

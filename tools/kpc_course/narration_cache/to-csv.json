@@ -1,22 +1,22 @@
 {
  "format": 2,
- "hash": "4d9914c87355b7ec",
+ "hash": "5c6a81673f101a0d",
  "by": "claude",
  "blocks": {
   "title": "96c6bf492f42",
-  "problem": "e133342a4c7e",
+  "problem": "858a4055d59d",
   "starter": "b7e114f0ee06",
   "example": "e3b0c44298fc",
-  "solution": "e218ebc5d8af"
+  "solution": "634ceddb57ef"
  },
  "sources": [
   {
    "block": "problem",
-   "hash": "e133342a4c7e"
+   "hash": "858a4055d59d"
   },
   {
    "block": "problem",
-   "hash": "e133342a4c7e"
+   "hash": "858a4055d59d"
   },
   {
    "block": "starter",
@@ -24,73 +24,41 @@
   },
   {
    "block": "solution",
-   "hash": "e218ebc5d8af"
+   "hash": "634ceddb57ef"
   },
   {
    "block": "solution",
-   "hash": "e218ebc5d8af"
+   "hash": "634ceddb57ef"
   },
   {
    "block": "solution",
-   "hash": "e218ebc5d8af"
+   "hash": "634ceddb57ef"
   },
   {
    "block": "solution",
-   "hash": "e218ebc5d8af"
+   "hash": "634ceddb57ef"
   },
   {
    "block": "solution",
-   "hash": "e218ebc5d8af"
+   "hash": "634ceddb57ef"
   },
   {
    "block": "solution",
-   "hash": "e218ebc5d8af"
+   "hash": "634ceddb57ef"
   },
   {
    "block": "solution",
-   "hash": "e218ebc5d8af"
-  },
-  {
-   "block": "solution",
-   "hash": "e218ebc5d8af"
-  },
-  {
-   "block": "solution",
-   "hash": "e218ebc5d8af"
-  },
-  {
-   "block": "solution",
-   "hash": "e218ebc5d8af"
-  },
-  {
-   "block": "solution",
-   "hash": "e218ebc5d8af"
-  },
-  {
-   "block": "solution",
-   "hash": "e218ebc5d8af"
-  },
-  {
-   "block": "solution",
-   "hash": "e218ebc5d8af"
-  },
-  {
-   "block": "solution",
-   "hash": "e218ebc5d8af"
-  },
-  {
-   "block": "solution",
-   "hash": "e218ebc5d8af"
+   "hash": "634ceddb57ef"
   }
  ],
  "entry": [
   [
    "problem",
-   "자, 표를 파일로 남겨 두는 법이에요. orders를 CSV로 저장하고, 그 파일을 다시 읽어 saved에 담아요."
+   "자, 표를 파일로 남겨 두는 법이에요. orders를 CSV로 저장하고, 다시 읽어 saved에 담아요. print로 출력해서 4행 3열이 맞는지 보면 돼요."
   ],
   [
    "hint",
-   "저장할 때 index=False를 꼭 붙이세요. 빼면 Unnamed: 0이라는 열이 하나 더 생기거든요."
+   "저장할 땐 index=False를 꼭 붙이세요. 빼면 Unnamed: 0 열이 하나 더 생기거든요. 그럼 열이 넷이 돼요."
   ],
   [
    "starter",
@@ -102,33 +70,8 @@
    "to_csv로 orders.csv에 저장해요. index=False로 행 번호는 빼고요."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 화면에 보여 준 건 없고 파일만 만들어졌거든요."
-  ],
-  [
    "caution",
    "index=False를 빼먹기 쉬운데, 그러면 행 번호가 열로 저장돼요. 다시 읽을 때 열이 넷이 되니 조심하세요."
-  ],
-  [
-   "try",
-   "saved = pd.read_csv(orders.csv)\n",
-   "이번엔 그 파일을 읽어 볼까요? 이렇게요."
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "AttributeError가 나요. 'DataFrame' object has no attribute 'csv'라고요. 따옴표가 없으니 파이썬이 orders 표 안에서 csv를 찾은 거예요."
-  ],
-  [
-   "undo",
-   "파일 이름은 글자니까 따옴표로 감싸야 해요. 되돌릴게요."
   ],
   [
    "code",
@@ -136,17 +79,9 @@
    "read_csv에 'orders.csv'를 따옴표째 넘겨요. 읽은 표는 saved에 담고요."
   ],
   [
-   "run",
-   "다시 실행해요."
-  ],
-  [
-   "output",
-   "아직 아무것도 안 보이죠? saved에 넣기만 하고 꺼내지 않았거든요."
-  ],
-  [
    "code",
-   "# 마지막 줄에 변수 이름만 적으면 표가 화면에 보여요. 4행 3열인지 확인하세요.\nsaved\n",
-   "마지막 줄에 saved만 적으면 표가 보여요."
+   "# print로 표를 출력해 값을 확인해요.\nprint(saved)\n",
+   "print로 표를 출력해 값을 확인해요."
   ],
   [
    "run",
@@ -154,7 +89,7 @@
   ],
   [
    "output",
-   "여기선 아무것도 안 나오죠? 이 실행 창은 마지막 줄 변수를 그려 주지 않아요. saved는 이미 만들어졌으니, 제출하면 검사가 4행 3열인지 봐요."
+   "표가 나왔죠? 열은 product, price, quantity 셋이고 행은 넷이에요. Unnamed: 0 열은 없고요. price는 10000.0처럼 읽혔고, C의 price는 NaN 그대로예요."
   ],
   [
    "submit",

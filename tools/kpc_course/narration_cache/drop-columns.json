@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "f0d43ecbb2c7e797",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "6b55ff6a8b3f",
   "problem": "8ee09573c890",
@@ -21,30 +21,6 @@
   {
    "block": "starter",
    "hash": "ee02bab0e980"
-  },
-  {
-   "block": "solution",
-   "hash": "cb40c9cc817c"
-  },
-  {
-   "block": "solution",
-   "hash": "cb40c9cc817c"
-  },
-  {
-   "block": "solution",
-   "hash": "cb40c9cc817c"
-  },
-  {
-   "block": "solution",
-   "hash": "cb40c9cc817c"
-  },
-  {
-   "block": "solution",
-   "hash": "cb40c9cc817c"
-  },
-  {
-   "block": "solution",
-   "hash": "cb40c9cc817c"
   },
   {
    "block": "solution",
@@ -90,38 +66,13 @@
    "titanic.drop에 columns로 뺄 열 일곱 개를 리스트로 넘겨요. 돌아온 새 표를 candidates에 담아요."
   ],
   [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 새 표를 만들어 candidates에 담기만 했거든요. print가 없으면 화면엔 안 보여요."
-  ],
-  [
-   "try",
-   "print(list(titanic.columns))\n",
-   "남은 열을 보려고 이렇게 해 볼까요?"
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "열이 열네 개 다 나왔죠? 두 번째에 생존, 세 번째에 이름이 그대로 있어요. drop은 원본 titanic을 안 바꿔요. 새 표를 돌려줄 뿐이에요."
-  ],
-  [
-   "undo",
-   "그래서 원본이 아니라 candidates를 봐야 해요."
-  ],
-  [
    "code",
    "# 남은 열 이름을 확인해요. list()로 감싸면 보기 편한 리스트로 나와요. 일곱 개면 맞아요.\nprint(list(candidates.columns))\n",
    "candidates.columns를 list로 감싸 남은 열 이름을 출력해요."
   ],
   [
    "run",
-   "다시 실행해요."
+   "실행해 볼게요."
   ],
   [
    "output",

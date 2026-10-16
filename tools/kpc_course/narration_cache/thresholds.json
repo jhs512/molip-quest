@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "42eff3dab51694af",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "b67f05d38044",
   "problem": "fdeae22216b4",
@@ -45,30 +45,6 @@
   {
    "block": "solution",
    "hash": "3fc5fb54645f"
-  },
-  {
-   "block": "solution",
-   "hash": "3fc5fb54645f"
-  },
-  {
-   "block": "solution",
-   "hash": "3fc5fb54645f"
-  },
-  {
-   "block": "solution",
-   "hash": "3fc5fb54645f"
-  },
-  {
-   "block": "solution",
-   "hash": "3fc5fb54645f"
-  },
-  {
-   "block": "solution",
-   "hash": "3fc5fb54645f"
-  },
-  {
-   "block": "solution",
-   "hash": "3fc5fb54645f"
   }
  ],
  "entry": [
@@ -81,34 +57,9 @@
    "numpy를 불러오고 확률 다섯 개를 probabilities에 넣는 준비 코드는 그대로 둘게요."
   ],
   [
-   "try",
-   "pred_05 = probabilities >= 0.5.astype(int)\n",
-   "괄호 없이 이렇게 써 볼까요? 이렇게 쓰기 쉽거든요."
-  ],
-  [
-   "run",
-   "실행해 볼게요."
-  ],
-  [
-   "output",
-   "AttributeError가 나죠? float에는 astype이 없다고 해요. .astype이 비교 결과가 아니라 0.5에 붙었거든요."
-  ],
-  [
-   "undo",
-   "그래서 비교를 괄호로 먼저 감싸야 해요."
-  ],
-  [
    "code",
    "\n# probabilities >= 0.5 는 다섯 칸을 한 번에 비교해요. 결과는 참·거짓 배열이에요.\n# 괄호로 먼저 감싸야 .astype이 비교 결과에 붙어요. 괄호가 없으면 0.5에 붙어서 오류예요.\n# .astype(int)는 참을 1, 거짓을 0으로 바꿔요. 0.49는 0.5보다 작아서 0이 돼요.\npred_05 = (probabilities >= 0.5).astype(int)\n",
    "괄호 안이 참·거짓 배열이에요. 뒤에 astype(int)를 붙이면 참이 1, 거짓이 0이 되죠?"
-  ],
-  [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 배열을 만들어 pred_05에 넣기만 했거든요."
   ],
   [
    "code",
@@ -122,7 +73,7 @@
   ],
   [
    "run",
-   "다시 실행해요."
+   "실행해 볼게요."
   ],
   [
    "output",

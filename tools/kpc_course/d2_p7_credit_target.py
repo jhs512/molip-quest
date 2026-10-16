@@ -134,7 +134,7 @@ UNIT = unit('credit-target', '부도 정의와 연체 이력', [
         `(credit[pay_columns] >= 1)`은 여섯 열 전부에 참·거짓을 매긴 표예요. `.any(axis=1)`은 행마다 그중 하나라도 참이면 참이고요. `credit.groupby('has_delay')[target].agg(['count', 'sum', 'mean'])`으로 마무리하세요.
         """,
         starter=CR + "pay_columns = ['상환_9월', '상환_8월', '상환_7월', '상환_6월', '상환_5월', '상환_4월']\n# has_delay와 summary를 만드세요\n",
-        solution=CR + "pay_columns = ['상환_9월', '상환_8월', '상환_7월', '상환_6월', '상환_5월', '상환_4월']\ncredit['has_delay'] = (credit[pay_columns] >= 1).any(axis=1)\nsummary = credit.groupby('has_delay')[target].agg(['count', 'sum', 'mean'])\nsummary\n",
+        solution=CR + "pay_columns = ['상환_9월', '상환_8월', '상환_7월', '상환_6월', '상환_5월', '상환_4월']\ncredit['has_delay'] = (credit[pay_columns] >= 1).any(axis=1)\nsummary = credit.groupby('has_delay')[target].agg(['count', 'sum', 'mean'])\nprint(summary)\n",
         check="assert s['summary']['count'].sum() == 30000 and s['summary']['sum'].sum() == 6636\nassert set(s['summary'].index) == {False, True}\nassert s['credit']['has_delay'].equals((s['credit'][['상환_9월', '상환_8월', '상환_7월', '상환_6월', '상환_5월', '상환_4월']] >= 1).any(axis=1))"),
     coding('pay0-rate', '최근 상환 상태별 부도율',
         goal="""

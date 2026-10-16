@@ -60,9 +60,16 @@ def run_solution(problem, solution):
         prelude = ("import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as _plt; "
                    "import logging as _lg; _lg.getLogger('matplotlib.font_manager').setLevel(_lg.ERROR); from matplotlib import font_manager as _fm; _installed = {f.name for f in _fm.fontManager.ttflist}; _plt.rcParams['font.family'] = [n for n in ['Malgun Gothic', 'Apple SD Gothic Neo', 'AppleGothic', 'NanumGothic', 'Noto Sans KR', 'Noto Sans CJK KR'] if n in _installed] or ['DejaVu Sans']; "
                    "_plt.rcParams['axes.unicode_minus'] = False\n")
-        result = subprocess.run([python_executable(), "-X", "utf8", "-c", prelude + solution], input=stdin, capture_output=True,
+        # The app captures figures separately. Distinguish an actual chart from blank stdout.
+        graph_marker = "__MOLIP_GRAPH_OUTPUT__"
+        graph_probe = ("\nif any(ax.has_data() for num in _plt.get_fignums() for ax in _plt.figure(num).axes):\n"
+                       f"    print('{graph_marker}', file=__import__('sys').stderr)\n")
+        result = subprocess.run([python_executable(), "-X", "utf8", "-c", prelude + solution + "\n" + graph_probe], input=stdin, capture_output=True,
                                 text=True, encoding="utf-8", timeout=120, cwd=os.environ.get("MOLIP_RUN_CWD", str(ROOT / "courses")), env=env)
-        out = (result.stdout + ("\n" + result.stderr if result.returncode else "")).strip()
+        out = (f"(실행 실패: exit {result.returncode})\n{result.stderr}\n{result.stdout}"
+               if result.returncode else result.stdout).strip()
+        if not out and result.returncode == 0 and graph_marker in result.stderr:
+            out = "(그래프 출력)"
     except Exception as error:  # noqa: BLE001
         out = f"(실행 실패: {error})"
     return out[:1500]
@@ -110,9 +117,10 @@ def coding_prompt(activity, solution, prefix, keep=""):
 {VOICE}
 
 아래 코딩 미션의 해설 대본을 JSON으로만 답하세요. 형식: 단계 목록
-[["problem", "말"], ["starter", "말"], ["code", "코드 조각", "말"], ["run", "말"], ["output", "말"], ["caution", "말"], ["try", "코드 조각", "말"], ["run", "말"], ["output", "말"], ["undo", "말"], ["code", "코드 조각", "말"], ["run", "말"], ["output", "말"], ..., ["submit", "말"]]
+[["problem", "말"], ["starter", "말"], ["code", "코드 조각", "말"], ["run", "말"], ["output", "말"], ["caution", "말"], ["code", "코드 조각", "말"], ["run", "말"], ["output", "말"], ..., ["submit", "말"]]
 - 살짝 코딩 → 실행 → 출력 읽기를 반복한다: 한 번에 다 쓰고 끝에 한 번 실행하지 않는다. 조각은 1~3줄, 조각마다(또는 두 조각마다) run과 output을 넣는다. 실행했을 때 오류 없이 무언가 보이는 자리에서 run 한다(예: 변수를 만든 뒤 print로 확인).
-- "이렇게 해볼까요? 이렇게 하기 쉬운데, 그러면 이런 문제가 생기니 조심하세요"를 1~2번 넣는다. 방법은 둘 중 하나: ["try", 틀리기 쉬운 코드, "이렇게 해 볼까요?"] → ["run", ...] → ["output", 무엇이 잘못됐는지] → ["undo", "그래서 이렇게 고쳐요"]로 실제로 보여 주거나, 코드를 치지 않고 ["caution", "…하기 쉬운데 …하니 조심하세요"]로 말만 한다. try는 반드시 undo로 되돌린다.
+- 처음부터 올바른 코드를 쓴다. 일부러 오타를 내거나 print를 빼먹는 시연, try/undo는 금지한다. 주의점이 필요하면 caution으로 말만 한다.
+- 출력할 값은 print로 보여 준다. 변수 이름만 적거나 주석·대입문만 작성하고 실행하지 않는다. 출력문이나 실제 그래프까지 작성한 뒤 run한다. 출력 지점이 하나인 짧은 문제는 실행도 한 번이면 된다.
 - "code" 조각들을 순서대로 이어 붙이면(try는 undo로 되돌린 뒤) 아래 '타이핑할 코드'와 글자 하나까지 같아야 한다(띄어쓰기·줄 바꿈 포함). 조각을 더 잘게 나눌 수는 있지만 글자를 바꾸면 안 된다.
 - "starter"는 준비 코드가 있을 때만 넣고, 무엇이 준비되어 있는지 말한다. "examples", "hint", "input"은 필요할 때만.
 - "output"은 그 시점에 실제로 나오는 값을 말한다. 지금은 모르면 "결과를 보세요"처럼 두면 되고, 제가 실제 출력을 알려 주면 그때 고쳐 쓴다.
@@ -148,7 +156,7 @@ def outputs_prompt(activity, entry, outputs):
     return f"""{VOICE}
 
 아래는 코딩 미션 「{activity['title']}」의 해설 대본과, 각 run 시점에 실제로 나온 출력입니다.
-"output" 줄만 실제 출력에 맞게 다시 쓰세요(값을 말하고, 길면 무엇을 볼지를 말한다). try 뒤의 output은 무엇이 잘못됐는지 실제 출력으로 설명한다.
+"output" 줄만 실제 출력에 맞게 다시 쓰세요(값을 말하고, 길면 무엇을 볼지를 말한다). 출력이 없다는 시연이나 일부러 오류를 내는 설명은 넣지 않는다.
 다른 줄은 글자 그대로 두고, 전체 목록을 같은 형식의 JSON으로만 답하세요.
 
 {chr(10).join(rows)}
@@ -218,8 +226,9 @@ def run_errors(entry, outputs):
         elif step[0] == "run":
             out = outputs[run_index]
             run_index += 1
-            if "Traceback" in out and last_typed != "try":
-                problems.append(f"{run_index}번째 run이 오류로 끝납니다 (try가 아닌 조각 뒤): {out.strip().splitlines()[-1][:120]}")
+            if ("Traceback" in out or out.startswith("(실행 실패:") or not out.strip()) and last_typed != "try":
+                detail = out.strip().splitlines()[-1][:120] if out.strip() else "출력도 그래프도 없습니다"
+                problems.append(f"{run_index}번째 run 실패: {detail}")
     return problems
 
 
@@ -296,9 +305,70 @@ def missions(chapters):
                     yield unit, activity
 
 
+def clean_coding(chapters, solutions, jobs, ids=()):
+    """Migrate every cached coding script and replay all retained checkpoints for real."""
+    from kpc_course.clean_narration import clean_entry, needs_output_rewrite
+
+    items = [(unit, activity) for unit, activity in missions(chapters)
+             if activity["kind"] == "coding" and (not ids or activity["id"] in ids)]
+
+    def work(item):
+        unit, activity = item
+        solution = solutions[activity["problem"]["id"]]
+        old, _ = narration.entry_for(activity, solution)
+        entry = clean_entry(old)
+        error = validate(activity, entry, solution)
+        if error:
+            raise RuntimeError(error)
+        outputs = run_states(activity, entry, solution)
+        errors = run_errors(entry, outputs)
+        if errors:
+            raise RuntimeError(f"{activity['id']}: {errors}")
+        if needs_output_rewrite(entry):
+            fixed = parse_entry(ask_claude(outputs_prompt(activity, entry, outputs)))
+            entry = restore_except_outputs(fixed, entry)
+            if needs_output_rewrite(entry):
+                # Graphs intentionally have no stdout; describe the graph itself.
+                entry = [(("output", "실행 결과를 확인하세요. 그래프는 그림 영역에 보여요.")
+                          if step[0] == "output" and not out else step)
+                         for step, out in _steps_with_outputs(entry, outputs)]
+        error = validate(activity, entry, solution)
+        if error:
+            raise RuntimeError(error)
+        cached = narration.read_cache(activity["id"])
+        if entry != old or cached["hash"] != narration.source_hash(activity, solution):
+            narration.write_cache(activity["id"], narration.source_hash(activity, solution), entry, "hand",
+                                  narration.line_sources(activity, entry, solution), sources.index(activity, solution))
+        return f"  ✓ {unit['id']}/{activity['id']}: {len(outputs)}개 실행 지점 확인"
+
+    failures = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=jobs) as pool:
+        futures = {pool.submit(work, item): item[1]["id"] for item in items}
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                print(future.result(), flush=True)
+            except Exception as error:
+                failures.append(f"{futures[future]}: {error}")
+                print(f"  ! {failures[-1]}", flush=True)
+    if failures:
+        raise SystemExit("\n".join(failures))
+    print(f"{len(items)}개 코딩 해설 정리·실행 확인 완료")
+
+
+def _steps_with_outputs(entry, outputs):
+    index = 0
+    for step in entry:
+        out = None
+        if step[0] == "output":
+            out = outputs[index]
+            index += 1
+        yield step, out
+
+
 def main():
     parser = argparse.ArgumentParser(description="AI 나레이션 재작업")
     parser.add_argument("--all", action="store_true", help="모든 개념·코딩 미션을 다시 쓴다")
+    parser.add_argument("--clean-coding", action="store_true", help="기존 코딩 해설의 의도적 오류·빈 실행을 제거하고 실제 실행 검사")
     parser.add_argument("--kind", choices=["concept", "coding"], help="이 종류의 미션만 (--all과 함께)")
     parser.add_argument("--ids", nargs="*", default=[], help="이 미션들만")
     parser.add_argument("--import", dest="import_modules", action="store_true", help="narration_*.py의 손글 항목을 캐시로 옮긴다")
@@ -311,6 +381,9 @@ def main():
     chapters = outline.build()
     # The commented solutions: the 해설 types code with its comments (docs/content-rules.md 3).
     solutions = comments.apply(dsl.SOLUTIONS)
+    if args.clean_coding:
+        clean_coding(chapters, solutions, args.jobs, args.ids)
+        return
     todo = []
     for unit, activity in missions(chapters):
         solution = solutions[activity["problem"]["id"]] if activity["kind"] == "coding" else None

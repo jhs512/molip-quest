@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "c34e66b79d997c80",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "b3dfe1d2c8ff",
   "problem": "86cb0daf4a1d",
@@ -53,38 +53,6 @@
   {
    "block": "solution",
    "hash": "ea7108c94d30"
-  },
-  {
-   "block": "solution",
-   "hash": "ea7108c94d30"
-  },
-  {
-   "block": "solution",
-   "hash": "ea7108c94d30"
-  },
-  {
-   "block": "solution",
-   "hash": "ea7108c94d30"
-  },
-  {
-   "block": "solution",
-   "hash": "ea7108c94d30"
-  },
-  {
-   "block": "solution",
-   "hash": "ea7108c94d30"
-  },
-  {
-   "block": "solution",
-   "hash": "ea7108c94d30"
-  },
-  {
-   "block": "solution",
-   "hash": "ea7108c94d30"
-  },
-  {
-   "block": "solution",
-   "hash": "ea7108c94d30"
   }
  ],
  "entry": [
@@ -97,34 +65,9 @@
    "credit 자료를 읽고, 타깃 열 이름을 target에 담아 둔 준비 코드는 그대로 둘게요."
   ],
   [
-   "try",
-   "rate_by_sex = credit.groupby(성별)[target].mean()\n",
-   "성별로 묶어 볼게요. 이렇게 해 볼까요?"
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "NameError가 나죠? name '성별' is not defined이래요. 따옴표가 없으면 열 이름이 아니라 변수를 찾거든요."
-  ],
-  [
-   "undo",
-   "그래서 열 이름엔 따옴표를 꼭 쳐요."
-  ],
-  [
    "code",
    "# 성별로 묶어서 타깃의 평균을 구해요. 타깃이 0/1이라 평균이 곧 부도율이에요\nrate_by_sex = credit.groupby('성별')[target].mean()\n",
    "성별로 묶어 타깃 평균을 내면 그게 부도율이거든요. 타깃이 0과 1이라서요."
-  ],
-  [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 담기만 했거든요. 오류가 없으니 된 거예요."
   ],
   [
    "code",
@@ -135,14 +78,6 @@
    "code",
    "# 나이는 숫자라서 그대로 묶으면 칸이 너무 많아요. pd.cut으로 구간을 나눠 새 열을 만들어요\n# bins는 경계, right=False면 왼쪽은 포함하고 오른쪽은 빼요(20 이상 30 미만이 20대)\n# labels는 구간 이름이에요. 경계가 6개니 이름은 5개, 하나 적어야 해요\ncredit['나이대'] = pd.cut(credit['나이'], bins=[20, 30, 40, 50, 60, 80], right=False, labels=['20대', '30대', '40대', '50대', '60대 이상'])\n",
    "나이는 pd.cut으로 다섯 구간에 넣어 나이대 열을 만들어요. right=False라서 20 이상 30 미만이 20대예요."
-  ],
-  [
-   "run",
-   "여기까지 실행해요."
-  ],
-  [
-   "output",
-   "역시 조용하죠? 오류 없이 나이대 열이 생겼어요."
   ],
   [
    "caution",

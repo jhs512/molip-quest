@@ -33,7 +33,7 @@ next, prev, goto{mission}, next_slide, finish_slides, say{target, text}, type_co
 흐름: say{target:\"problem\", text:문제가 무엇을 묻는지} → say{target:\"examples\", text:예제 입력과 출력 읽기} → \
 type_code{code:첫 조각, say:설명, replace:true}(기존 코드를 지우고 시작) → run{say} → say{target:\"output\", text:그 시점의 결과 읽기} → \
 type_code{code:다음 조각 1~3줄, say:그 줄들이 하는 일} → run → say{target:\"output\"} … 를 반복한다(한 번에 다 쓰고 끝에 한 번 실행하지 않는다: 살짝 쓰고 실행해 출력을 읽는 걸 되풀이해 프로그램이 자라는 걸 보여 준다). \
-중간에 1~2번 '이렇게 해볼까요?'로 틀리기 쉬운 줄을 type_code로 쳐 보고 run → say{target:\"output\", text:무엇이 잘못됐는지} → set_code{code:그 줄을 뺀 전체 코드, say:\"그래서 이렇게 고쳐요\"}로 되돌리거나, say{target:\"editor\", text:\"…하기 쉬운데 …하니 조심하세요\"}로 말만 한다. \
+처음부터 올바른 코드를 쓴다. 일부러 오타나 오류를 만들거나 print를 빼먹는 시연은 금지한다. 출력할 값은 print로 보여 주고, 출력문이나 실제 그래프까지 작성한 뒤 실행한다. 출력 지점이 하나인 문제는 한 번 실행해도 된다. 주의점은 필요할 때 say로 말만 한다. \
 마지막은 run → say{target:\"output\"} → submit{say}. 퀴즈는 say{target:\"quiz:1\", text:문항 풀이} 뒤 answer_quiz{answers, say}. \
 빈칸 문제는 say{target:\"blanks\"} 뒤 fill_blanks{values, say}. 개념 미션은 say{target:\"problem\"}을 2~4번 이어 핵심을 짚은 뒤 확인 문항이 있으면 answer_quiz{answers, say}. \
 슬라이드 미션은 장마다 say{target:\"slides\", text:그 장의 요지}와 next_slide를 번갈아 넣고 마지막에 finish_slides. \

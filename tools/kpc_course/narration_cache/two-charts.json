@@ -1,7 +1,7 @@
 {
  "format": 2,
  "hash": "731fafa85c99a4e0",
- "by": "claude",
+ "by": "hand",
  "blocks": {
   "title": "e8066d2aa909",
   "problem": "d56298b63679",
@@ -57,30 +57,6 @@
   {
    "block": "solution",
    "hash": "d1b9ddce6949"
-  },
-  {
-   "block": "solution",
-   "hash": "d1b9ddce6949"
-  },
-  {
-   "block": "solution",
-   "hash": "d1b9ddce6949"
-  },
-  {
-   "block": "solution",
-   "hash": "d1b9ddce6949"
-  },
-  {
-   "block": "solution",
-   "hash": "d1b9ddce6949"
-  },
-  {
-   "block": "solution",
-   "hash": "d1b9ddce6949"
-  },
-  {
-   "block": "solution",
-   "hash": "d1b9ddce6949"
   }
  ],
  "entry": [
@@ -93,23 +69,6 @@
    "pandas로 titanic을 읽고, matplotlib과 seaborn을 불러오는 준비 코드는 그대로 둘게요."
   ],
   [
-   "try",
-   "wide = titanic.groupby('객실등급', '성별')['생존'].mean()\n",
-   "이렇게 해 볼까요? 객실등급과 성별, 두 열을 쉼표로 그냥 나열하는 거예요."
-  ],
-  [
-   "run",
-   "실행하면요."
-  ],
-  [
-   "output",
-   "오류가 나요. 맨 아래 ValueError를 보세요. 성별이 인덱스 이름이 아니라고 하죠? groupby 괄호의 두 번째 자리는 열 이름 자리가 아니거든요."
-  ],
-  [
-   "undo",
-   "그래서 열이 둘이면 대괄호로 한 번 더 묶어요."
-  ],
-  [
    "code",
    "# 객실등급과 성별로 묶어 생존 평균(=생존율)을 구해요. 두 열이라 대괄호로 묶어요.\n# unstack('성별')로 성별을 열로 펼치고, 100을 곱해 퍼센트로 바꿔요.\nwide = titanic.groupby(['객실등급', '성별'])['생존'].mean().unstack('성별') * 100\n",
    "먼저 왼쪽 그림의 재료예요. 객실등급과 성별로 묶어 생존 평균을 내고, 성별을 열로 펼친 뒤 100을 곱해 퍼센트로 만들어요."
@@ -118,14 +77,6 @@
    "code",
    "# 나이가 빈칸(결측)이 아닌 승객만 남겨요. notna()가 '기록된 칸'을 골라 줘요.\nknown_age = titanic[titanic['나이'].notna()]\n",
    "오른쪽 그림의 재료예요. 나이가 기록된 승객만 골라 known_age에 담아요."
-  ],
-  [
-   "run",
-   "일단 실행해 볼게요."
-  ],
-  [
-   "output",
-   "아무것도 안 나오죠? 재료 둘을 담아 두기만 했거든요. 오류가 없으면 된 거예요."
   ],
   [
    "code",
@@ -157,7 +108,7 @@
   ],
   [
    "output",
-   "글자 출력은 없고 그림 창이 떠요. 왼쪽에 막대 여섯 개, 오른쪽에 막대 스무 개가 보이면 맞게 한 거예요."
+   "그림 창이 떠요. 왼쪽에 막대 여섯 개, 오른쪽에 막대 스무 개가 보이면 맞게 한 거예요."
   ],
   [
    "submit",
