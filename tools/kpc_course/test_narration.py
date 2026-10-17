@@ -124,6 +124,50 @@ def test_final_notebook_only_expression_is_rejected_even_after_an_earlier_print(
         narration.compile_coding(ACTIVITY, GOOD, solution, "test")
 
 
+def test_choice_narration_explains_the_question_before_all_options_in_display_order():
+    question = {"type": "choice", "id": "q1", "prompt": "맞지 않는 설명은 무엇인가요?",
+                "options": ["첫 설명", "둘째 설명", "셋째 설명"], "correct": 1,
+                "explanation": "둘째 설명이 틀렸어요.\n\n**다른 보기는 왜 아닌가**\n- 「첫 설명」: 첫 조건에 맞아요.\n- 「셋째 설명」: 셋째 조건에 맞아요."}
+    actions = narration.compile_quiz({"questions": [question]})
+    assert actions[0]["target"] == "quiz:1"
+    assert question["prompt"] in actions[0]["text"]
+    assert "틀린 설명" in actions[0]["text"]
+    assert [a["target"] for a in actions[1:4]] == ["option:1:1", "option:1:2", "option:1:3"]
+    assert "둘째 설명이 틀렸어요" in actions[2]["text"]
+    assert actions[4]["action"] == "answer_quiz" and actions[4]["submit"] is False
+
+    concept = {"id": "concept-choice", "kind": "concept", "title": "개념", "body": "본문", "check": question}
+    actions = narration.compile_concept(concept, [("title", "개념부터 볼게요.")], "test")
+    assert [a["target"] for a in actions[1:5]] == ["quiz:1", "option:1:1", "option:1:2", "option:1:3"]
+    assert actions[5]["action"] == "answer_quiz"
+
+
+def test_ambiguous_short_choice_labels_do_not_pick_the_first_matching_option():
+    question = {"options": ["전체 그래프 그려 줘", "매출 그래프 그려 줘", "월별 매출 그래프 그려 줘"]}
+    assert narration._option_index(question, "그래프 그려 줘") is None
+
+
+def test_all_course_choice_checks_explain_question_then_every_option():
+    import json
+    course = json.loads((ROOT / "courses/kpc-finance.json").read_text(encoding="utf-8"))
+    count = 0
+    for chapter in course["chapters"]:
+        for unit in chapter["units"]:
+            for activity in unit["activities"]:
+                questions = activity.get("questions", [activity["check"]] if "check" in activity else [])
+                actions = activity.get("narration", [])
+                for n, question in enumerate(questions, 1):
+                    if question["type"] != "choice":
+                        continue
+                    start = next(i for i, a in enumerate(actions) if a.get("target") == f"quiz:{n}")
+                    assert narration.spoken(question["prompt"]) in actions[start]["text"], activity["id"]
+                    assert [a.get("target") for a in actions[start + 1:start + 1 + len(question["options"])]] == [
+                        f"option:{n}:{i}" for i in range(1, len(question["options"]) + 1)
+                    ], activity["id"]
+                    count += 1
+    assert count >= 134
+
+
 def test_chunks_must_join_into_the_solution_with_comments_intact():
     commented = "price = 10000\nquantity = 3\n# 금액을 계산해요.\namount = price * quantity\nprint(amount)  # 출력\n"
     entry = [GOOD[0], GOOD[1],

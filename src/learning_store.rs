@@ -62,10 +62,28 @@ impl LearningStore {
     pub fn open(path: &Path) -> Result<Self, String> {
         let db = Connection::open(path).map_err(|e| e.to_string())?;
         db.execute_batch("CREATE TABLE IF NOT EXISTS attempts (id INTEGER PRIMARY KEY, course TEXT NOT NULL, unit TEXT NOT NULL, revision INTEGER NOT NULL, code TEXT NOT NULL, report TEXT NOT NULL); CREATE TABLE IF NOT EXISTS completed (course TEXT NOT NULL, unit TEXT NOT NULL, revision INTEGER NOT NULL, PRIMARY KEY(course,unit));").map_err(|e| e.to_string())?;
+        db.execute_batch("CREATE TABLE IF NOT EXISTS study_positions (course TEXT PRIMARY KEY, unit TEXT NOT NULL, activity TEXT NOT NULL)")
+            .map_err(|e| e.to_string())?;
         Ok(Self(db))
     }
     pub fn user_store() -> Result<Self, String> {
         Self::open(&crate::data_dir()?.join("learning.sqlite3"))
+    }
+    /// Last viewed mission, independent of completion. IDs survive insertions and reordering.
+    pub fn save_position(&self, course: &str, unit: &str, activity: &str) -> Result<(), String> {
+        self.0.execute("INSERT INTO study_positions(course,unit,activity) VALUES (?1,?2,?3) ON CONFLICT(course) DO UPDATE SET unit=excluded.unit,activity=excluded.activity", params![course,unit,activity])
+            .map(|_| ()).map_err(|e| e.to_string())
+    }
+    pub fn resume_position(&self, course: &crate::Course) -> Result<Option<(String, usize)>, String> {
+        let saved: Option<(String, String)> = self.0.query_row(
+            "SELECT unit,activity FROM study_positions WHERE course=?1", [&course.id],
+            |row| Ok((row.get(0)?, row.get(1)?)),
+        ).optional().map_err(|e| e.to_string())?;
+        Ok(saved.and_then(|(unit_id, activity_id)| {
+            let unit = course.chapters.iter().flat_map(|c| &c.units).find(|u| u.id == unit_id)?;
+            let index = if unit.activities.is_empty() { Some(0) } else { unit.activities.iter().position(|a| a.id == activity_id) }?;
+            Some((unit_id, index))
+        }))
     }
     pub fn save(
         &mut self,
@@ -105,6 +123,8 @@ impl LearningStore {
         tx.execute("DELETE FROM attempts WHERE course=?1", [course])
             .map_err(|e| e.to_string())?;
         tx.execute("DELETE FROM completed WHERE course=?1", [course])
+            .map_err(|e| e.to_string())?;
+        tx.execute("DELETE FROM study_positions WHERE course=?1", [course])
             .map_err(|e| e.to_string())?;
         tx.commit().map_err(|e| e.to_string())
     }
@@ -162,5 +182,48 @@ impl LearningStore {
             }
         }
         Ok(units)
+    }
+}
+
+#[cfg(test)]
+mod position_tests {
+    use super::*;
+
+    #[test]
+    fn last_viewed_mission_survives_reopening_and_is_scoped_to_the_course() {
+        let root = tempfile::tempdir().unwrap();
+        let path = root.path().join("learning.sqlite3");
+        let course = crate::Course::parse(include_str!("../courses/kpc-finance.json")).unwrap();
+        let unit = &course.chapters[1].units[1];
+        let store = LearningStore::open(&path).unwrap();
+        assert_eq!(store.resume_position(&course).unwrap(), None);
+        store.save_position(&course.id, &unit.id, &unit.activities[5].id).unwrap();
+        // Going backwards must save the last view, not the furthest completed mission.
+        store.save_position(&course.id, &unit.id, &unit.activities[2].id).unwrap();
+        drop(store);
+        let mut store = LearningStore::open(&path).unwrap();
+        assert_eq!(store.resume_position(&course).unwrap(), Some((unit.id.clone(), 2)));
+        let mut other = course.clone();
+        other.id = "another-course".into();
+        assert_eq!(store.resume_position(&other).unwrap(), None);
+        store.save_position(&other.id, &unit.id, &unit.activities[1].id).unwrap();
+        store.reset(&course.id).unwrap();
+        assert_eq!(store.resume_position(&course).unwrap(), None);
+        assert_eq!(store.resume_position(&other).unwrap(), Some((unit.id.clone(), 1)));
+    }
+
+    #[test]
+    fn positions_follow_mission_ids_and_ignore_removed_missions() {
+        let mut course = crate::Course::parse(include_str!("../courses/kpc-finance.json")).unwrap();
+        let store = LearningStore::open(Path::new(":memory:")).unwrap();
+        let unit = &course.chapters[0].units[0];
+        let unit_id = unit.id.clone();
+        store.save_position(&course.id, &unit.id, &unit.activities[3].id).unwrap();
+        course.chapters[0].units[0].activities.swap(0, 3);
+        assert_eq!(store.resume_position(&course).unwrap(), Some((unit_id.clone(), 0)));
+        course.chapters[0].units[0].activities.remove(0);
+        assert_eq!(store.resume_position(&course).unwrap(), None);
+        store.save_position(&course.id, "removed-unit", "removed-mission").unwrap();
+        assert_eq!(store.resume_position(&course).unwrap(), None);
     }
 }

@@ -237,9 +237,7 @@ pub(crate) fn PracticeView() -> Element {
             button {class:"curriculum-toggle",onclick:move |_|{document::eval(r#"const dialog = document.querySelector('.practice-list');
                 if (!dialog.dataset.dismissBound) {dialog.addEventListener('click', event => {if(event.target === dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}});dialog.dataset.dismissBound='true';}
                 dialog.showModal();"#);},"도전 과제 목록"}
-            if materials().is_some() {
-                crate::instructor_mode::InstructorControls {key:"instructor-practice-{unit.id}",activity:activity.clone()}
-            }
+            crate::instructor_mode::MissionControls {key:"instructor-practice-{unit.id}",activity:activity.clone()}
         }
         button {class:"assistant-open",onclick:move |_|{let v=assistant_open();assistant_open.set(!v);},{if assistant_open() {"AI 접기"} else {"AI에게 물어보기"}}}
         span {class:"practice-current-title","{unit.title}"}

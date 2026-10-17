@@ -22,8 +22,10 @@ The rule this module enforces: when a body or a solution changes, its narration 
 A stale hash, a stale anchor or a chunk set that no longer matches the solution fails the build.
 """
 import ast
+import difflib
 import hashlib
 import importlib
+import itertools
 import json
 import os
 import pathlib
@@ -258,12 +260,10 @@ def _option_index(question, label):
     """1-based index of the option a 「label」 bullet names, by its text without marks."""
     wanted = spoken(label)
     options = [spoken(o) for o in question.get("options", [])]
-    for i, option in enumerate(options, start=1):
-        if option == wanted or option.startswith(wanted):
-            return i
-    for i, option in enumerate(options, start=1):
-        if wanted in option or option in wanted:
-            return i
+    for matches in ([i for i, option in enumerate(options, start=1) if option == wanted or option.startswith(wanted)],
+                    [i for i, option in enumerate(options, start=1) if wanted in option or option in wanted]):
+        if matches:
+            return matches[0] if len(matches) == 1 else None
     return None
 
 
@@ -291,6 +291,43 @@ def explanation_lines(n, question):
     explanation = question["explanation"]
     parts = WRONG_HEADING.split(explanation, maxsplit=1)
     main = parts[0].strip()
+    if question["type"] == "choice":
+        intro = f"{n}번 문제예요. {spoken(question['prompt'])}"
+        if re.search(r"옳지 않|맞지 않|잘못된|틀린 설명|아닌 것은", question["prompt"]):
+            intro += " 맞는 설명이 아니라 틀린 설명을 찾아야 해요."
+        intro += " 보기를 하나씩 비교해 볼게요."
+        lines = [_say(f"quiz:{n}", intro)]
+        reasons = {}
+        unmatched = []
+        correct = int(_answer(question))
+        if len(parts) > 1:
+            for raw in parts[1].splitlines():
+                match = WRONG_BULLET.match(raw)
+                if match:
+                    # Some authored bullets explain several options together.
+                    for label in re.split(r"」\s*[·,/、]\s*「", match[1]):
+                        index = _option_index(question, label)
+                        if index is not None and index != correct:
+                            reasons[index] = spoken(match[2])
+                        else:
+                            unmatched.append((label, spoken(match[2])))
+        missing = [i for i in range(1, len(question["options"]) + 1) if i != correct and i not in reasons]
+        if missing:
+            if len(missing) != len(unmatched):
+                raise SystemExit(f"보기 해설을 연결하지 못했습니다: {question['prompt']}")
+            # Short authored labels can paraphrase longer options. Assign the remaining
+            # labels together, never allowing an incorrect-option reason onto the answer.
+            normalize = lambda value: re.sub(r"\W", "", spoken(value))
+            def score(order):
+                return sum(difflib.SequenceMatcher(None, normalize(label), normalize(question['options'][index - 1])).ratio()
+                           for (label, _), index in zip(unmatched, order))
+            order = max(itertools.permutations(missing), key=score)
+            reasons.update({index: reason for (_, reason), index in zip(unmatched, order)})
+        for index, option in enumerate(question["options"], start=1):
+            text = f"{index}번 보기, {spoken(option)}. "
+            text += spoken(main) if index == correct else reasons[index]
+            lines.append(_say(f"option:{n}:{index}", text))
+        return lines
     lines = [_say(f"quiz:{n}", f"{n}번. " + main)] if main else []
     if len(parts) > 1:
         for raw in parts[1].splitlines():
@@ -336,7 +373,12 @@ def compile_concept(activity, entry, where):
                 raise SystemExit(f"{where}: 해설이 가리키는 구절이 본문에 없습니다 → {anchor!r}. 본문을 바꿨다면 해설도 고치세요.")
             actions.append(_say("text:" + anchor, line))
     check = activity["check"]
-    actions.append({"action": "answer_quiz", "answers": {"1": _answer(check)}, "say": spoken(check["explanation"])})
+    if check["type"] == "choice":
+        actions.extend(explanation_lines(1, check))
+        answer_line = _pick_line(check, _answer(check))
+    else:
+        answer_line = spoken(check["explanation"])
+    actions.append({"action": "answer_quiz", "answers": {"1": _answer(check)}, "say": answer_line})
     return actions
 
 

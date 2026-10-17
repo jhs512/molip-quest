@@ -69,6 +69,11 @@ progress { width: 100%; height: 14px; accent-color: #2c7662; margin: 12px 0 32px
 .curriculum-menu .unit { background: transparent; color: #c1d2df; }
 .curriculum-menu .unit { display: flex; align-items: center; gap: 8px; border: 1px solid transparent; border-left: 4px solid transparent; }
 .curriculum-menu .unit-title { flex: 1; }
+.curriculum-menu summary.unit { cursor:pointer; list-style:none; user-select:none; }
+.curriculum-menu summary.unit::-webkit-details-marker { display:none; }
+.curriculum-menu .unit-chevron { font-size:22px; width:14px; flex-shrink:0; transition:transform .15s; }
+.curriculum-menu .curriculum-unit[open] > summary .unit-chevron { transform:rotate(90deg); }
+.curriculum-menu summary.unit:focus-visible { outline:2px solid #79dcff; outline-offset:2px; }
 .curriculum-menu .unit.selected { background: #16476b; color: #f1f9ff; border-color: #4d9bca; border-left-color: #79dcff; font-weight: 700; box-shadow: inset 0 0 0 1px #4d9bca44; }
 .unit-current { flex-shrink: 0; font-size: 11px; padding: 3px 6px; border-radius: 4px; background: #b5eaff; color: #11334c; }
 .lesson { display: grid; grid-template-columns: var(--problem-width, minmax(300px, 39%)) 8px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); height: calc(100vh - 62px); }

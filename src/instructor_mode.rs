@@ -170,26 +170,24 @@ pub(crate) fn tour_actions(activity: &Activity) -> serde_json::Value {
 }
 
 #[component]
-pub(crate) fn InstructorControls(activity: Activity) -> Element {
+pub(crate) fn MissionControls(activity: Activity) -> Element {
     let session = use_context::<InstructorSession>().0;
     let requests = use_context::<InstructorRequests>();
     use_drop(|| {
         document::eval("window.molipAgent?.stop()");
     });
-    if session().is_none() {
-        return rsx! {};
-    }
     // A deck has nothing to fill in: "정답 보기" marks it watched, the same as "다 봤어요 · 미션 완료".
     let slides = matches!(activity.kind, ActivityKind::Slides { .. });
     let solve = serde_json::to_string(&solve_actions(&activity)).unwrap_or_else(|_| "[]".into());
-    let has_narration = !activity.narration.is_empty();
     rsx! {
         div {class:"instructor-controls",
+            if session().is_some() {
             button {class:"instructor-answer",onclick:move |_|{
                 if slides {document::eval("window.molipAgent?.stop();document.querySelector('.slides-finish')?.click()");return;}
                 requests.post(InstructorAction::Solve(solve.clone()));
             },"정답 보기"}
-            button {class:"instructor-explain",disabled:!has_narration,onclick:move |_|{requests.post(InstructorAction::Narrate);},"해설 보기"}
+            }
+            button {class:"instructor-explain",title:"채팅에서 /auto를 입력한 것처럼 이 미션을 해설해요",onclick:move |_|{requests.post(InstructorAction::Narrate);},"해설 보기 (/auto)"}
         }
     }
 }

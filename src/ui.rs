@@ -82,8 +82,17 @@ pub fn Learning(
     #[props(default)] start_unit: String,
     #[props(default = usize::MAX)] start_mission: usize,
 ) -> Element {
-    let mut selected = use_signal(|| start_unit);
-    let mut mission_index = use_signal(|| start_mission);
+    let (initial_unit, initial_mission) = use_hook(|| {
+        if start_unit.is_empty() {
+            if let Ok(Some(saved)) = molip_quest::learning_store::LearningStore::user_store()
+                .and_then(|store| store.resume_position(&course)) {
+                return saved;
+            }
+        }
+        (start_unit, start_mission)
+    });
+    let mut selected = use_signal(|| initial_unit);
+    let mut mission_index = use_signal(|| initial_mission);
     let mut clear_popup = use_signal(|| false);
     let mut earned_xp = use_signal(|| (0usize, 0usize));
     // (unit finished, unit to show next, next mission index, current mission index) for the popup.
@@ -138,6 +147,15 @@ pub fn Learning(
     } else {
         mission_index().min(active_unlocked.saturating_sub(1))
     };
+    let resume_course = course.id.clone();
+    let resume_unit = active.id.clone();
+    let resume_activity = active.activities.get(active_mission).map(|a| a.id.clone()).unwrap_or_default();
+    use_effect(use_reactive!(|resume_course, resume_unit, resume_activity| {
+        if let Err(error) = molip_quest::learning_store::LearningStore::user_store()
+            .and_then(|store| store.save_position(&resume_course, &resume_unit, &resume_activity)) {
+            toast(&format!("학습 위치를 저장하지 못했어요: {error}"), "warn");
+        }
+    }));
     let can_prev = !(active_mission == 0 && previous.is_none());
     let can_next = !(active_mission + 1 >= active_unlocked
         && !(active_mission + 1 == active_total && next.is_some()));
@@ -294,7 +312,7 @@ pub fn Learning(
             }
             dialog.showModal();"#);},"수업 목차"}
             if let Some(activity)=active.activities.get(active_mission) {
-                crate::instructor_mode::InstructorControls {key:"instructor-controls-{active.id}-{activity.id}",activity:activity.clone()}
+                crate::instructor_mode::MissionControls {key:"instructor-controls-{active.id}-{activity.id}",activity:activity.clone()}
             }
         }
         button {class:"assistant-open",onclick:move |_|{let v=assistant_open();assistant_open.set(!v);},{if assistant_open() {"AI 접기"} else {"AI에게 물어보기"}}}
@@ -325,11 +343,12 @@ pub fn Learning(
             // Chapters fold; the one being studied opens by default, the rest stay closed.
             for chapter in &course.chapters {details {class:"curriculum-chapter",open:chapter.units.iter().any(|u|u.id==active_id),
                 summary {h3 {span {class:"curriculum-kind","📚 챕터"}{format!(" {} · {}",chapter.title,mission_progress(chapter.units.iter(),&completed_items))}}}
-                for unit in &chapter.units {div {class:"curriculum-unit",button {class:format!("unit{}{}",if unit.id==active_id {" selected"}else{""},if completed.contains(&unit.id) {" done"}else{""}),aria_current:if unit.id==active_id {"step"}else{"false"},disabled:!unlocked.contains(&unit.id),onclick:{let id=unit.id.clone();let active_id=active_id.clone();move |_|{if id!=active_id {mission_index.set(usize::MAX);}selected.set(id.clone());document::eval("document.querySelector('.curriculum-menu').close();");}},
+                for unit in &chapter.units {details {key:"{unit.id}",class:"curriculum-unit",open:unit.id==active_id,summary {class:format!("unit{}{}",if unit.id==active_id {" selected"}else{""},if completed.contains(&unit.id) {" done"}else{""}),aria_current:if unit.id==active_id {"step"}else{"false"},
+                    span {class:"unit-chevron",aria_hidden:"true","›"}
                     span {class:"unit-summary",span {class:"unit-title",span {class:"curriculum-kind","📖 단원"}{format!(" {} {}",if unit.id==active_id {"▶"}else if completed.contains(&unit.id) {"✓"} else if unlocked.contains(&unit.id) {"○"} else {"🔒"},unit.title)}}span {class:"unit-progress",{mission_progress(std::iter::once(unit),&completed_items)}}}
                     if unit.id==active_id {span {class:"unit-current","학습 중"}}
                 }
-                // Every unit's missions stay on screen: the menu never folds.
+                // Unit summaries fold independently; the current unit opens by default.
                 {
                     let is_active = unit.id==active_id;
                     let unit_unlocked = if unlocked.contains(&unit.id) { unlocked_activities(unit,&completed_items) } else { 0 };
