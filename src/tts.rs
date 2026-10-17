@@ -1,8 +1,8 @@
 //! Neural Korean speech for 해설 모드: the voices of Microsoft Edge's "소리 내어 읽기" (선히, 인준,
-//! 현수), fetched the way the browser and the edge-tts package do, over a WebSocket to
-//! speech.platform.bing.com, straight from the app. No Python package is needed; the edge-tts
-//! package is only a fallback when the built-in client fails (it is updated more often than this
-//! app when Microsoft changes the handshake). The page asks for audio over the app's custom
+//! 현수), fetched with the installed edge-tts client. Its 7.3.1 release tracks the newer
+//! service handshake; the legacy built-in client remains a secondary option. The learning
+//! installer supplies the Python package, and diagnostics check both its version and the
+//! actual online connection separately. The page asks for audio over the app's custom
 //! protocol (`molip://localhost/tts`, `http://molip.localhost/tts` on Windows) and plays the MP3;
 //! with no network at all it falls back to the system voice. Clips are cached under the app data
 //! folder, so a sentence is synthesized once.
@@ -25,7 +25,7 @@ fn is_known_voice(voice: &str) -> bool {
     VOICES.iter().any(|(id, _)| *id == voice && *id != "system")
 }
 
-// ---- The Edge Read Aloud protocol (as edge-tts 7.2.8 speaks it) ----
+// ---- Legacy Edge Read Aloud protocol (edge-tts 7.2.8); try the updated Python client first. ----
 const TRUSTED_CLIENT_TOKEN: &str = "6A5AA1D4EAFF4E9FB37E23D68491D6F4";
 const CHROMIUM_FULL_VERSION: &str = "143.0.3650.75";
 const CHROMIUM_MAJOR_VERSION: &str = "143";
@@ -194,12 +194,12 @@ fn edge_native(_voice: &str, _text: &str) -> Result<Vec<u8>, String> {
     Err("Android 열람 모드에는 해설 음성이 없습니다.".into())
 }
 
-/// The edge-tts Python package, when the built-in client is refused (it tracks Microsoft's
-/// handshake changes faster than this app ships).
+/// The installed edge-tts client tracks Microsoft's newer handshake without duplicating
+/// that protocol here: https://github.com/rany2/edge-tts/tree/7.3.1
 fn edge_python(voice: &str, text: &str, path: &std::path::Path) -> Result<Vec<u8>, String> {
     let mut command = std::process::Command::new(crate::runner::python_executable());
     command
-        .args(["-m", "edge_tts", "--voice", voice, "--text", text, "--write-media"])
+        .args(["-I", "-X", "utf8", "-m", "edge_tts", "--voice", voice, "--text", text, "--write-media"])
         .arg(path)
         .stdin(std::process::Stdio::null())
         .stdout(std::process::Stdio::null())
@@ -209,14 +209,27 @@ fn edge_python(voice: &str, text: &str, path: &std::path::Path) -> Result<Vec<u8
         use std::os::windows::process::CommandExt;
         command.creation_flags(0x08000000);
     }
-    let output = command
-        .output()
+    let mut child = command
+        .spawn()
         .map_err(|e| format!("edge-tts를 실행하지 못했습니다: {e}"))?;
+    let started = std::time::Instant::now();
+    loop {
+        if child.try_wait().map_err(|e| e.to_string())?.is_some() {
+            break;
+        }
+        if started.elapsed() >= std::time::Duration::from_secs(15) {
+            let _ = child.kill();
+            let _ = child.wait();
+            let _ = std::fs::remove_file(path);
+            return Err("대체 음성 연결 시간이 초과됐어요. 기기 음성이나 자막으로 이어가요.".into());
+        }
+        std::thread::sleep(std::time::Duration::from_millis(25));
+    }
+    let output = child.wait_with_output().map_err(|e| e.to_string())?;
     if !output.status.success() {
         let _ = std::fs::remove_file(path);
         let stderr = String::from_utf8_lossy(&output.stderr);
-        let reason = stderr.lines().rev().find(|l| !l.trim().is_empty()).unwrap_or("");
-        return Err(format!("edge-tts 합성 실패: {reason}"));
+        return Err(python_failure(&stderr));
     }
     let bytes = std::fs::read(path).map_err(|e| e.to_string())?;
     if bytes.is_empty() {
@@ -224,6 +237,14 @@ fn edge_python(voice: &str, text: &str, path: &std::path::Path) -> Result<Vec<u8
         return Err("edge-tts가 빈 파일을 만들었습니다.".into());
     }
     Ok(bytes)
+}
+
+fn python_failure(stderr: &str) -> String {
+    if stderr.contains("No module named edge_tts") || stderr.contains("No module named 'edge_tts'") {
+        return "이 Python 환경에 edge-tts 음성 패키지가 없어요. 환경 설치(다시)를 눌러 추가하세요. 그동안 기기 음성이나 자막으로 이어가요.".into();
+    }
+    let reason = stderr.lines().rev().find(|l| !l.trim().is_empty()).unwrap_or("");
+    format!("대체 음성 연결 실패: {reason}")
 }
 
 fn cache_path(voice: &str, text: &str) -> Result<PathBuf, String> {
@@ -253,14 +274,23 @@ pub fn synthesize(voice: &str, text: &str) -> Result<(Vec<u8>, &'static str), St
             return Ok((bytes, "cache"));
         }
     }
-    match edge_native(voice, text) {
-        Ok(bytes) => {
-            let _ = std::fs::write(&path, &bytes);
-            Ok((bytes, "edge"))
-        }
-        Err(native_error) => match edge_python(voice, text, &path) {
-            Ok(bytes) => Ok((bytes, "edge-tts")),
-            Err(python_error) => Err(format!("{native_error} / {python_error}")),
+    let result = synthesize_from_clients(
+        || edge_python(voice, text, &path),
+        || edge_native(voice, text),
+    )?;
+    let _ = std::fs::write(&path, &result.0);
+    Ok(result)
+}
+
+fn synthesize_from_clients(
+    updated: impl FnOnce() -> Result<Vec<u8>, String>,
+    legacy: impl FnOnce() -> Result<Vec<u8>, String>,
+) -> Result<(Vec<u8>, &'static str), String> {
+    match updated() {
+        Ok(bytes) => Ok((bytes, "edge-tts")),
+        Err(python_error) => match legacy() {
+            Ok(bytes) => Ok((bytes, "edge")),
+            Err(native_error) => Err(format!("{python_error} / 내장 음성 연결: {native_error}")),
         },
     }
 }
@@ -268,6 +298,32 @@ pub fn synthesize(voice: &str, text: &str) -> Result<(Vec<u8>, &'static str), St
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn missing_voice_package_is_distinct_from_an_online_service_rejection() {
+        let missing = python_failure("python.exe: No module named edge_tts");
+        assert!(missing.contains("환경 설치(다시)"));
+        assert!(!missing.contains("403"));
+        let denied = python_failure("aiohttp.client_exceptions.WSServerHandshakeError: 403 Forbidden");
+        assert!(denied.contains("403 Forbidden"));
+        assert!(!denied.contains("패키지가 없어요"));
+    }
+
+    #[test]
+    fn updated_protocol_is_used_before_the_legacy_handshake() {
+        let (bytes, engine) = synthesize_from_clients(
+            || Ok(vec![0xff, 0xf3, 1]),
+            || panic!("Do not send the old handshake when the updated client succeeds"),
+        ).unwrap();
+        assert_eq!(engine, "edge-tts");
+        assert!(!bytes.is_empty());
+        let denied = synthesize_from_clients(
+            || Err("403 Forbidden".into()),
+            || Err("403 Forbidden".into()),
+        ).unwrap_err();
+        assert!(denied.contains("403 Forbidden"));
+        assert!(!denied.contains("패키지가 없어요"));
+    }
 
     #[test]
     fn drm_token_matches_the_edge_tts_package() {

@@ -7,3 +7,4 @@ beautifulsoup4==4.14.3
 requests==2.34.2
 finance-datareader==0.9.202
 yfinance==1.7.0
+edge-tts==7.3.1

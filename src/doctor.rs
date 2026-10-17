@@ -10,6 +10,29 @@ pub struct Check {
     pub detail: String,
 }
 
+const PACKAGE_CHECKS: &[(&str, &str)] = &[
+    ("pandas", "pandas · 표 분석"),
+    ("matplotlib", "matplotlib · 그래프"),
+    ("seaborn", "seaborn · 시각화"),
+    ("sklearn", "scikit-learn · 모델 학습"),
+    ("openpyxl", "openpyxl · Excel 읽기"),
+    ("bs4", "BeautifulSoup · HTML 분석"),
+    ("requests", "requests · 웹 페이지 받기"),
+    ("FinanceDataReader", "FinanceDataReader · 주가 받기"),
+    ("yfinance", "yfinance · 주가 받기 (야후)"),
+    ("edge_tts", "해설 음성 · 대체 실행 패키지"),
+];
+
+fn voice_package_compatible(version: &str) -> bool {
+    let parts: Option<Vec<u32>> = version.split('.').take(3).map(|v| v.parse().ok()).collect();
+    parts.is_some_and(|parts| parts.len() == 3 && parts.as_slice() >= [7, 3, 1].as_slice())
+}
+
+fn package_probe_script() -> String {
+    let modules: Vec<_> = PACKAGE_CHECKS.iter().map(|(module, _)| *module).collect();
+    format!("import json,importlib\nresult={{}}\nfor name in {}:\n try:\n  module=importlib.import_module(name); result[name]={{'version':str(getattr(module,'__version__','설치됨'))}}\n except ModuleNotFoundError as e:\n  result[name]={{'error':str(e),'missing':e.name==name}}\n except Exception as e:\n  result[name]={{'error':str(e),'missing':False}}\nprint(json.dumps(result))", serde_json::to_string(&modules).expect("module names are JSON strings"))
+}
+
 async fn probe(executable: &str, args: &[&str]) -> Option<Vec<u8>> {
     probe_with_timeout(executable, args, std::time::Duration::from_secs(20))
         .await
@@ -102,9 +125,9 @@ async fn inspect_python(python: &str, package_timeout: std::time::Duration) -> V
     });
     // A first import can build caches and be much slower than Python startup.
     // Never infer that Python or every package is absent from an import timeout.
-    let script = "import json,importlib\nresult={}\nfor name in ['pandas','matplotlib','seaborn','sklearn','openpyxl','bs4','requests','FinanceDataReader','yfinance']:\n try:\n  module=importlib.import_module(name); result[name]={'version':str(getattr(module,'__version__','설치됨'))}\n except ModuleNotFoundError as e:\n  result[name]={'error':str(e),'missing':e.name==name}\n except Exception as e:\n  result[name]={'error':str(e),'missing':False}\nprint(json.dumps(result))";
+    let script = package_probe_script();
     let result = if version.is_ok() {
-        probe_with_timeout(python, &["-I", "-X", "utf8", "-c", script], package_timeout)
+        probe_with_timeout(python, &["-I", "-X", "utf8", "-c", &script], package_timeout)
             .await
             .and_then(|out| {
                 serde_json::from_slice::<serde_json::Value>(&out)
@@ -113,30 +136,30 @@ async fn inspect_python(python: &str, package_timeout: std::time::Duration) -> V
     } else {
         Err("Python 실행을 확인한 뒤 패키지를 다시 검사하세요.".into())
     };
-    for (key, name) in [
-        ("pandas", "pandas · 표 분석"),
-        ("matplotlib", "matplotlib · 그래프"),
-        ("seaborn", "seaborn · 시각화"),
-        ("sklearn", "scikit-learn · 모델 학습"),
-        ("openpyxl", "openpyxl · Excel 읽기"),
-        ("bs4", "BeautifulSoup · HTML 분석"),
-        ("requests", "requests · 웹 페이지 받기"),
-        ("FinanceDataReader", "FinanceDataReader · 주가 받기"),
-        ("yfinance", "yfinance · 주가 받기 (야후)"),
-    ] {
+    for &(key, name) in PACKAGE_CHECKS {
         let version = result
             .as_ref()
             .ok()
             .and_then(|v| v[key]["version"].as_str());
         checks.push(Check {
             name: name.into(),
-            ready: version.is_some(),
+            ready: version.is_some_and(|v| key != "edge_tts" || voice_package_compatible(v)),
             detail: version
-                .map(|v| format!("버전 {v}"))
+                .map(|v| {
+                    if key == "edge_tts" && !voice_package_compatible(v) {
+                        format!("음성 패키지 버전 {v}은 예전 연결 규격이에요. 환경 설치(다시)를 눌러 7.3.1 이상으로 갱신하세요.")
+                    } else {
+                        format!("버전 {v}")
+                    }
+                })
                 .unwrap_or_else(|| match &result {
                     Err(error) => error.clone(),
                     Ok(value) if value[key]["missing"] == true => {
-                        "선택한 Python 환경에 패키지를 설치하세요.".into()
+                        if key == "edge_tts" {
+                            "이 Python 환경에 음성 패키지가 없어요. 환경 설치(다시)를 누르면 추가돼요. 인터넷 연결 상태는 아래 음성 연결 검사에서 따로 확인해요.".into()
+                        } else {
+                            "선택한 Python 환경에 패키지를 설치하세요.".into()
+                        }
                     }
                     Ok(value) => format!(
                         "패키지를 불러오지 못했습니다: {}",
@@ -412,9 +435,19 @@ pub async fn install(report: tokio::sync::mpsc::UnboundedSender<String>) -> Resu
     } else {
         "bin/python"
     });
-    say("[3/3] 수업 패키지를 설치합니다 (pandas, scikit-learn, matplotlib, seaborn, openpyxl, BeautifulSoup, requests, FinanceDataReader, yfinance). 몇 분 걸립니다.");
-    let requirements =
-        std::env::temp_dir().join(format!("molip-requirements-{}.txt", std::process::id()));
+    say("[3/3] 수업 패키지와 해설 음성 패키지를 설치합니다 (pandas, scikit-learn, matplotlib, seaborn, openpyxl, BeautifulSoup, requests, FinanceDataReader, yfinance, edge-tts). 몇 분 걸립니다.");
+    install_packages(&report, &uv, &python, &python_store).await?;
+    Ok(format!("설치 완료 · {}", python.display()))
+}
+
+async fn install_packages(
+    report: &tokio::sync::mpsc::UnboundedSender<String>,
+    uv: &str,
+    python: &std::path::Path,
+    python_store: &std::path::Path,
+) -> Result<(), String> {
+    let work = tempfile::tempdir().map_err(|e| e.to_string())?;
+    let requirements = work.path().join("requirements.txt");
     std::fs::write(&requirements, REQUIREMENTS).map_err(|e| e.to_string())?;
     let python_str = python.to_string_lossy().into_owned();
     let req_str = requirements.to_string_lossy().into_owned();
@@ -429,14 +462,49 @@ pub async fn install(report: tokio::sync::mpsc::UnboundedSender<String>) -> Resu
             "--no-python-downloads",
         ]);
     }
-    let result = run_logged(&report, &uv, &package_args, Some(&python_store)).await;
-    let _ = std::fs::remove_file(&requirements);
-    result?;
-    Ok(format!("설치 완료 · {python_str}"))
+    run_logged(report, uv, &package_args, Some(python_store)).await
 }
 
 #[cfg(test)]
 mod install_tests {
+    #[test]
+    fn installer_includes_the_python_voice_fallback() {
+        assert!(
+            super::REQUIREMENTS.lines().any(|line| line.starts_with("edge-tts==")),
+            "The actual installer requirements must install the edge_tts fallback used by tts.rs"
+        );
+    }
+
+    /// Fresh installation and repair both use the production installer and selected Python.
+    #[tokio::test]
+    #[ignore = "requires uv, Python download and package installation"]
+    async fn fresh_environment_installs_voice_and_repairs_an_existing_missing_package() {
+        let root = tempfile::tempdir().unwrap();
+        let store = root.path().join("python");
+        let environment = root.path().join("ml-env");
+        let uv = super::find_uv().await.expect("uv must be installed");
+        let (tx, _rx) = tokio::sync::mpsc::unbounded_channel();
+        super::create_learning_environment(&tx, &uv, &environment, &store).await.unwrap();
+        let python = environment.join(if cfg!(windows) { "python.exe" } else { "bin/python" });
+        super::install_packages(&tx, &uv, &python, &store).await.unwrap();
+        let initial = super::inspect_python(&python.to_string_lossy(), std::time::Duration::from_secs(120)).await;
+        assert!(initial.iter().all(|check| check.ready), "fresh install must include the voice package");
+        let python_text = python.to_string_lossy();
+        let mut args = vec!["pip", "uninstall", "--python", &python_text, "edge-tts"];
+        if cfg!(windows) {
+            args.push("--system");
+        }
+        super::run_logged(&tx, &uv, &args, Some(&store)).await.unwrap();
+        let missing = super::inspect_python(&python_text, std::time::Duration::from_secs(120)).await;
+        let voice = missing.iter().find(|check| check.name.contains("대체 실행 패키지")).unwrap();
+        assert!(!voice.ready);
+        assert!(voice.detail.contains("환경 설치(다시)"));
+        assert!(missing.iter().filter(|check| !check.name.contains("대체 실행 패키지")).all(|check| check.ready));
+        super::install_packages(&tx, &uv, &python, &store).await.unwrap();
+        let repaired = super::inspect_python(&python_text, std::time::Duration::from_secs(120)).await;
+        assert!(repaired.iter().all(|check| check.ready));
+    }
+
     /// Confirm the old path used the minor junction, then make that alias unusable
     /// and verify the new environment uses and runs the real patch interpreter.
     #[cfg(windows)]
@@ -558,7 +626,7 @@ mod install_tests {
         command.args([
                 "-I",
                 "-c",
-                "import pandas, sklearn, matplotlib, seaborn, openpyxl, bs4, requests, FinanceDataReader, yfinance; print('ok')",
+                "import pandas, sklearn, matplotlib, seaborn, openpyxl, bs4, requests, FinanceDataReader, yfinance, edge_tts; print('ok')",
             ]).kill_on_drop(true);
         #[cfg(windows)]
         command.creation_flags(0x08000000);
@@ -584,7 +652,7 @@ mod install_tests {
             && check.detail.contains("검사 시간 초과")
             && !check.detail.contains("패키지를 설치하세요")));
         let checks = super::inspect_python(python, std::time::Duration::from_secs(120)).await;
-        assert_eq!(checks.len(), 10);
+        assert_eq!(checks.len(), 11);
         for check in checks {
             assert!(check.ready, "{}: {}", check.name, check.detail);
         }
@@ -593,6 +661,15 @@ mod install_tests {
 
 #[cfg(test)]
 mod diagnostic_tests {
+    #[test]
+    fn voice_dependency_is_probed_and_old_protocol_clients_are_not_ready() {
+        assert!(super::package_probe_script().contains("edge_tts"));
+        assert!(!super::voice_package_compatible("7.2.8"));
+        assert!(super::voice_package_compatible("7.3.1"));
+        assert!(super::voice_package_compatible("7.4.0"));
+        assert!(!super::voice_package_compatible("설치됨"));
+    }
+
     /// Recheck the existing app-owned environment without reinstalling it.
     #[tokio::test]
     #[ignore]

@@ -33,6 +33,15 @@ jobs:
         run: cargo build --release --locked --bin molip-quest
       - name: Verify Windows update helper
         run: cargo test --locked --lib updater::tests
+      - name: Verify speech failure fallback
+        shell: pwsh
+        run: |
+          cargo test --locked --lib tts::tests
+          if ($LASTEXITCODE -ne 0) { throw 'Speech client tests failed.' }
+          cargo test --locked --lib doctor::diagnostic_tests
+          if ($LASTEXITCODE -ne 0) { throw 'Speech package diagnostics failed.' }
+          node tools/test-voice-fallback.cjs
+          if ($LASTEXITCODE -ne 0) { throw 'System voice and caption fallback failed.' }
       - name: Verify Windows learning environment installation
         shell: pwsh
         run: |
